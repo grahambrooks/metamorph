@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" InitialTargets="GenerateAntlrCode" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B40E32F-D354-4BF6-A081-2B92E686FDF8}</ProjectGuid>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputType>Exe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>Parse</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>CSharpQuery</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;AST</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>618,105</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>618</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <UseHostCompilerIfAvailable>FALSE</UseHostCompilerIfAvailable>
+    <JavaDir>C:\Program Files\Java\jre6\bin\</JavaDir>
+    <JarDir>C:\Program Files\Java\jre6\lib\</JarDir>
+    <AntlrDebug>
+    </AntlrDebug>
+    <AntlrOutput>
+    </AntlrOutput>
+    <AntlrMake>-make</AntlrMake>
+    <NFAConversionTimeout>-Xconversiontimeout 2500</NFAConversionTimeout>
+    <Multithreaded>-Xmultithreaded</Multithreaded>
+  </PropertyGroup>
+  <Target Name="GenerateAntlrCode" Inputs="@(Antlr3)" Outputs="%(Antlr3.OutputFiles)">
+    <Exec Command="%22$(JavaDir)java%22 -cp %22$(JarDir)\antlr-3.3.jar%22 org.antlr.Tool -message-format vs2005 @(Antlr3) $(AntlrDebug) $(AntlrMake) $(AntlrOutput) $(NFAConversionTimeout) $(Multithreaded)" Outputs="%(Antlr3.OutputFiles)" />
+  </Target>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr3 Include="cs.g">
+      <OutputFiles>csLexer.cs;csParser.cs</OutputFiles>
+    </Antlr3>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Args.cs" />
+    <Compile Include="ConsolePause.cs" />
+    <Compile Include="parse.cs" />
+    <Compile Include="PreProcessor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="csLexer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>cs.g</DependentUpon>
+    </Compile>
+    <Compile Include="csParser.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>cs.g</DependentUpon>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Tests\1\primary_expression_list_00.cs" />
+    <None Include="Tests\1\primary_expression_list_01.cs" />
+    <None Include="Tests\1\primary_expression_part_00.cs" />
+    <None Include="Tests\1\primary_expression_start_00.cs" />
+    <None Include="Tests\1\primary_expression_start_01.cs" />
+    <None Include="Tests\1\type_00.cs" />
+    <None Include="Tests\1\type_01.cs" />
+    <None Include="Tests\1\type_02.cs" />
+    <None Include="Tests\1\type_03.cs" />
+    <None Include="Tests\1\type_05.cs" />
+    <None Include="Tests\1\type_06.cs" />
+    <None Include="Tests\1\type_07.cs" />
+    <None Include="Tests\1\type_08.cs" />
+    <None Include="Tests\1\type_09.cs" />
+    <None Include="Tests\1\type_10.cs" />
+    <None Include="Tests\1\type_or_generic_00.cs" />
+    <None Include="Tests\1\type_or_generic_01.cs" />
+    <None Include="Tests\1\type_or_generic_02.cs" />
+    <None Include="Tests\1\unbound_type_name_10.cs" />
+    <None Include="Tests\anonymous_object_creation_expression_00.cs" />
+    <None Include="Tests\arguments_00.cs" />
+    <None Include="Tests\arguments_01.cs" />
+    <None Include="Tests\arguments_02.cs" />
+    <None Include="Tests\argument_value_00.cs" />
+    <None Include="Tests\array_creation_expression_02.cs" />
+    <None Include="Tests\array_creation_expression_03.cs" />
+    <None Include="Tests\array_initializer_00.cs" />
+    <None Include="Tests\attributes_00.cs" />
+    <None Include="Tests\class_base_00.cs" />
+    <None Include="Tests\class_declaration_09.cs" />
+    <None Include="Tests\class_member_declaration_08.cs" />
+    <None Include="Tests\expression_list_00.cs" />
+    <None Include="Tests\formal_parameter_list_00.cs" />
+    <None Include="Tests\formal_parameter_list_01.cs" />
+    <None Include="Tests\from_clause_00.cs" />
+    <None Include="Tests\global_namespace_declaration.cs" />
+    <None Include="Tests\identifier_00.cs" />
+    <None Include="Tests\interface_declaration_09.cs" />
+    <None Include="Tests\interface_member_declaration_00.cs" />
+    <None Include="Tests\interface_method_declaration_04.cs" />
+    <None Include="Tests\interface_type_list_00.cs" />
+    <None Include="Tests\lambda_expression_00.cs" />
+    <None Include="Tests\lambda_expression_01.cs" />
+    <None Include="Tests\member_declarator_00.cs" />
+    <None Include="Tests\method_header_01.cs" />
+    <None Include="Tests\namespace_or_type_name_02.cs" />
+    <None Include="Tests\non_assignment_expression_list_00.cs" />
+    <None Include="Tests\operator_declarator_00.cs" />
+    <None Include="Tests\parenthesized_expression_00.cs" />
+    <None Include="Tests\primary_no_array_creation_expression_00.cs" />
+    <None Include="Tests\primary_no_array_creation_expression_list_00.cs" />
+    <None Include="Tests\primary_or_array_creation_expression_00.cs" />
+    <None Include="Tests\query_body_00.cs" />
+    <None Include="Tests\query_body_clause_00.cs" />
+    <None Include="Tests\query_expression_00.cs" />
+    <None Include="Tests\query_expression_01.cs" />
+    <None Include="Tests\ref_variable_reference_00.cs" />
+    <None Include="Tests\simple_name_00.cs" />
+    <None Include="Tests\typeof_expression_03.cs" />
+    <None Include="Tests\typeof_expression_04.cs" />
+    <None Include="Tests\type_parameter_constraints_clause_00.cs" />
+    <None Include="Tests\csParser.cs" />
+    <None Include="Tests\brackets_00.cs" />
+    <None Include="Tests\conditional_expression_04.cs" />
+    <None Include="Tests\delegate_declaration_02.cs" />
+    <None Include="Tests\if_statement_01.cs" />
+    <None Include="Tests\interface_declaration_08.cs" />
+    <None Include="Tests\invocation_expression_list_01.cs" />
+    <None Include="Tests\method_declarations_02.cs" />
+    <None Include="Tests\paren_expression_00.cs" />
+    <None Include="Tests\relational_expression_01.cs" />
+    <None Include="Tests\variant_generic_parameter_list_00.cs" />
+    <None Include="Tests\assignment_11.cs" />
+    <None Include="Tests\cast_expression_04.cs" />
+    <None Include="Tests\cast_expression_05.cs" />
+    <None Include="Tests\conditional_expression_01.cs" />
+    <None Include="Tests\conditional_expression_02.cs" />
+    <None Include="Tests\conditional_expression_03.cs" />
+    <None Include="Tests\expression_03.cs" />
+    <None Include="Tests\expression_statement_06.cs" />
+    <None Include="Tests\local_variable_declaration_03.cs" />
+    <None Include="Tests\method_declaration_03.cs" />
+    <None Include="Tests\pp_test3.cs" />
+    <None Include="Tests\relational_expression_00.cs" />
+    <None Include="Tests\statement_expression_03.cs" />
+    <None Include="Tests\switch_statement_00.cs" />
+    <None Include="Tests\while_statement_03.cs" />
+    <None Include="Tests\while_statement_11.cs" />
+    <None Include="Tests\access_operator_00.cs" />
+    <None Include="Tests\anonymous_method_expression_00.cs" />
+    <None Include="Tests\cast_expression_02.cs" />
+    <None Include="Tests\cast_expression_03.cs" />
+    <None Include="Tests\class_declaration_05.cs" />
+    <None Include="Tests\class_declaration_06.cs" />
+    <None Include="Tests\class_declaration_07.cs" />
+    <None Include="Tests\class_declaration_08.cs" />
+    <None Include="Tests\declaration_statement_01.cs" />
+    <None Include="Tests\destructor_declaration_00.cs" />
+    <None Include="Tests\embedded_statement_00.cs" />
+    <None Include="Tests\embedded_statement_01.cs" />
+    <None Include="Tests\enum_member_declaration_02.cs" />
+    <None Include="Tests\event_declaration_00.cs" />
+    <None Include="Tests\expression_statement_02.cs" />
+    <None Include="Tests\expression_statement_03.cs" />
+    <None Include="Tests\expression_statement_08.cs" />
+    <None Include="Tests\field_declaration_00.cs" />
+    <None Include="Tests\fixed_statement_00.cs" />
+    <None Include="Tests\fixed_statement_01.cs" />
+    <None Include="Tests\for_statement_00.cs" />
+    <None Include="Tests\for_statement_01.cs" />
+    <None Include="Tests\global_attributes_00.cs" />
+    <None Include="Tests\if_statement_00.cs" />
+    <None Include="Tests\invocation_expression_01.cs" />
+    <None Include="Tests\invocation_expression_02.cs" />
+    <None Include="Tests\invocation_expression_03.cs" />
+    <None Include="Tests\invocation_expression_04.cs" />
+    <None Include="Tests\invocation_expression_05.cs" />
+    <None Include="Tests\invocation_expression_06.cs" />
+    <None Include="Tests\literal_00.cs" />
+    <None Include="Tests\local_constant_declaration_00.cs" />
+    <None Include="Tests\local_variable_declaration_01.cs" />
+    <None Include="Tests\local_variable_declaration_02.cs" />
+    <None Include="Tests\namespace_declaration.cs" />
+    <None Include="Tests\namespace_or_type_name_01.cs" />
+    <None Include="Tests\pp_test.cs" />
+    <None Include="Tests\pp_test2.cs" />
+    <None Include="Tests\qid_part_00.cs" />
+    <None Include="Tests\return_statement_02.cs" />
+    <None Include="Tests\statement_01.cs" />
+    <None Include="Tests\statement_02.cs" />
+    <None Include="Tests\statement_03.cs" />
+    <None Include="Tests\statement_04.cs" />
+    <None Include="Tests\statement_expression_00.cs" />
+    <None Include="Tests\statement_expression_01.cs" />
+    <None Include="Tests\statement_expression_02.cs" />
+    <None Include="Tests\static_constructor_declaration_00.cs" />
+    <None Include="Tests\static_constructor_modifiers_list_00.cs" />
+    <None Include="Tests\try_statement_02.cs" />
+    <None Include="Tests\try_statement_03.cs" />
+    <None Include="Tests\typeof_expression_02.cs" />
+    <None Include="Tests\unary_expression_00.cs" />
+    <None Include="Tests\while_statement_00.cs" />
+    <None Include="Tests\while_statement_01.cs" />
+    <None Include="Tests\cast_expression_01.cs" />
+    <None Include="Tests\collection_initializer_00.cs" />
+    <None Include="Tests\conditional_expression_00.cs" />
+    <None Include="Tests\member_name_00.cs" />
+    <None Include="Tests\method_body_00.cs" />
+    <None Include="Tests\method_declaration_01.cs" />
+    <None Include="Tests\method_declaration_02.cs" />
+    <None Include="Tests\namespace_or_type_name_00.cs" />
+    <None Include="Tests\object_creation_expression_02.cs" />
+    <None Include="Tests\object_creation_expression_03.cs" />
+    <None Include="Tests\return_statement_00.cs" />
+    <None Include="Tests\return_statement_01.cs" />
+    <None Include="Tests\try_statement_01.cs" />
+    <None Include="Tests\typeof_expression_00.cs" />
+    <None Include="Tests\typeof_expression_01.cs" />
+    <None Include="Tests\additive_expression_00.cs" />
+    <None Include="Tests\additive_expression_01.cs" />
+    <None Include="Tests\additive_expression_02.cs" />
+    <None Include="Tests\array_creation_expression_00.cs" />
+    <None Include="Tests\array_creation_expression_01.cs" />
+    <None Include="Tests\assignment_04.cs" />
+    <None Include="Tests\assignment_07.cs" />
+    <None Include="Tests\assignment_08.cs" />
+    <None Include="Tests\cast_expression_00.cs" />
+    <None Include="Tests\local_variable_declarator_00.cs" />
+    <None Include="Tests\member_access_00.cs" />
+    <None Include="Tests\member_access_01.cs" />
+    <None Include="Tests\multiplicative_expression_00.cs" />
+    <None Include="Tests\non_array_type_00.cs" />
+    <None Include="Tests\assignment_01.cs" />
+    <None Include="Tests\assignment_05.cs" />
+    <None Include="Tests\assignment_06.cs" />
+    <None Include="Tests\assignment_09.cs" />
+    <None Include="Tests\assignment_list_00.cs" />
+    <None Include="Tests\block_00.cs" />
+    <None Include="Tests\block_01.cs" />
+    <None Include="Tests\block_02.cs" />
+    <None Include="Tests\class_declaration_00.cs" />
+    <None Include="Tests\class_declaration_01.cs" />
+    <None Include="Tests\class_declaration_02.cs" />
+    <None Include="Tests\class_declaration_03.cs" />
+    <None Include="Tests\class_declaration_04.cs" />
+    <None Include="Tests\declaration_statement_00.cs" />
+    <None Include="Tests\delegate_declaration_00.cs" />
+    <None Include="Tests\delegate_declaration_01.cs" />
+    <None Include="Tests\delegate_declaration_list_00.cs" />
+    <None Include="Tests\enum_declaration_00.cs" />
+    <None Include="Tests\enum_member_declarations_00.cs" />
+    <None Include="Tests\enum_member_declaration_00.cs" />
+    <None Include="Tests\enum_member_declaration_01.cs" />
+    <None Include="Tests\expression_00.cs" />
+    <None Include="Tests\expression_01.cs" />
+    <None Include="Tests\expression_02.cs" />
+    <None Include="Tests\expression_list_test_02.cs" />
+    <None Include="Tests\expression_statement_00.cs" />
+    <None Include="Tests\expression_statement_01.cs" />
+    <None Include="Tests\expression_statement_05.cs" />
+    <None Include="Tests\expression_statement_09.cs" />
+    <None Include="Tests\field_declarations_00.cs" />
+    <None Include="Tests\interface_declaration_00.cs" />
+    <None Include="Tests\interface_declaration_01.cs" />
+    <None Include="Tests\interface_declaration_02.cs" />
+    <None Include="Tests\interface_declaration_03.cs" />
+    <None Include="Tests\interface_declaration_04.cs" />
+    <None Include="Tests\interface_declaration_05.cs" />
+    <None Include="Tests\interface_declaration_06.cs" />
+    <None Include="Tests\interface_declaration_07.cs" />
+    <None Include="Tests\interface_indexer_declaration_00.cs" />
+    <None Include="Tests\interface_method_declaration_02.cs" />
+    <None Include="Tests\interface_method_declaration_03.cs" />
+    <None Include="Tests\invocation_expression_00.cs" />
+    <None Include="Tests\invocation_expression_list_00.cs" />
+    <None Include="Tests\literals_00.cs" />
+    <None Include="Tests\literal_01.cs" />
+    <None Include="Tests\literal_02.cs" />
+    <None Include="Tests\literal_03.cs" />
+    <None Include="Tests\literal_04.cs" />
+    <None Include="Tests\local_variable_declaration_00.cs" />
+    <None Include="Tests\local_variable_declaration_list_00.cs" />
+    <None Include="Tests\local_variable_initializer_list_00.cs" />
+    <None Include="Tests\method_declarations_00.cs" />
+    <None Include="Tests\method_declarations_01.cs" />
+    <None Include="Tests\method_declaration_00.cs" />
+    <None Include="Tests\method_header_00.cs" />
+    <None Include="Tests\namespace_declaration_00.cs" />
+    <None Include="Tests\namespace_declaration_01.cs" />
+    <None Include="Tests\namespace_declaration_02.cs" />
+    <None Include="Tests\namespace_declaration_03.cs" />
+    <None Include="Tests\namespace_declaration_04.cs" />
+    <None Include="Tests\object_creation_expression_00.cs" />
+    <None Include="Tests\object_creation_expression_01.cs" />
+    <None Include="Tests\PluginInterfaces.cs" />
+    <None Include="Tests\property_declaration_list_00.cs" />
+    <None Include="Tests\return_type_00.cs" />
+    <None Include="Tests\statement_00.cs" />
+    <None Include="Tests\try_statement_00.cs" />
+    <None Include="Tests\unary_expression_list_00.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tests\assignment_00.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\browse\browse\Antlr.Runtime\Antlr3.Runtime.csproj">
+      <Project>{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}</Project>
+      <Name>Antlr3.Runtime</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>
