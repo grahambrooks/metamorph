@@ -9,15 +9,15 @@ namespace CSharpQuery
 	/// </summary>
 	public class ConsolePause : IDisposable
 	{
-		int BeforeConsoleTop;
-		int ExpectedLines = 0;
-		bool Wait;
+	    readonly int _beforeConsoleTop;
+		int _expectedLines;
+	    readonly bool _wait;
 		public ConsolePause(bool wait)
 		{
-			Wait = wait;
+			_wait = wait;
 			try
 			{
-				BeforeConsoleTop = Console.CursorTop;
+				_beforeConsoleTop = Console.CursorTop;
 			}
 			catch (IOException)
 			{
@@ -27,16 +27,16 @@ namespace CSharpQuery
 		public void WriteLine(string s)
 		{
 			Console.WriteLine(s);
-			ExpectedLines++;
+			_expectedLines++;
 		}
-		public void warn(string s)
+		public void Warn(string s)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			Console.WriteLine(s);
 			Console.ForegroundColor = ConsoleColor.White;
-			ExpectedLines++;
+			_expectedLines++;
 		}
-		public void err(string s)
+		public void Err(string s)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine(s);
@@ -49,7 +49,7 @@ namespace CSharpQuery
 			{
 				try
 				{
-					if (Console.CursorTop > BeforeConsoleTop + ExpectedLines)
+					if (Console.CursorTop > _beforeConsoleTop + _expectedLines)
 						return true;
 				}
 				catch (IOException)
@@ -64,8 +64,8 @@ namespace CSharpQuery
 			{
 				if (HasMessages)
 				{
-					err("Errors");
-					if (Wait)
+					Err("Errors");
+					if (_wait)
 						if (Console.ReadKey().Key == ConsoleKey.Escape)
 							throw new ApplicationException("done");
 				}

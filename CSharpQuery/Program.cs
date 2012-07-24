@@ -8,11 +8,11 @@ namespace CSharpQuery
     {
         protected static void PrintStats(object sender, ConsoleCancelEventArgs args)
         {
-            Console.WriteLine("Parsed {0} of {1} files. ({2}%)", count, files_total, count*100.0/files_total);
+            Console.WriteLine("Parsed {0} of {1} files. ({2}%)", _count, _filesTotal, _count*100.0/_filesTotal);
         }
 
-        private static int count;
-        private static int files_total;
+        private static int _count;
+        private static int _filesTotal;
 
         private static void Main(string[] args)
         {
@@ -32,13 +32,12 @@ namespace CSharpQuery
             try
             {
                 var searchPattern = Path.GetFileName(args[0]);
-                var dir = string.Empty;
 
-                dir = Path.GetDirectoryName(args[0]);
-                if (dir == string.Empty)
+                var dir = Path.GetDirectoryName(args[0]);
+                if (String.IsNullOrEmpty(dir))
                     dir = Environment.CurrentDirectory;
 
-                parser.ParseDirectory(dir, searchPattern, ref count, ref files_total);
+                parser.ParseDirectory(dir, searchPattern, ref _count, ref _filesTotal);
             }
             catch (ApplicationException ae)
             {
@@ -48,7 +47,7 @@ namespace CSharpQuery
             }
             finally
             {
-                Console.WriteLine("Parsed {0} of {1} files. ({2}%)", count, files_total, count*100.0/files_total);
+                Console.WriteLine("Parsed {0} of {1} files. ({2}%)", _count, _filesTotal, _count*100.0/_filesTotal);
             }
 
             // Pause if debugging so the console doesn't disappear.

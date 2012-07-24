@@ -3,20 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpQuery", "CSharpQuery.csproj", "{0B40E32F-D354-4BF6-A081-2B92E686FDF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr3.Runtime", "..\browse\browse\Antlr.Runtime\Antlr3.Runtime.csproj", "{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr3.Runtime", "..\Antlr.Runtime\Antlr3.Runtime.csproj", "{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs07.codeplex.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = UnitTest.csproj
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = ..\\browse\\browse\\Antlr.Runtime\\Antlr3.Runtime.csproj
-		SccProjectName2 = ../browse/browse/Antlr.Runtime
-		SccLocalPath2 = ..\\browse\\browse\\Antlr.Runtime
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
