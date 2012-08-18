@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using NLog;
 
 namespace CSharpQuery
 {
     internal class Program
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        static readonly DefaultQueryResults results = new DefaultQueryResults();
+
         protected static void PrintStats(object sender, ConsoleCancelEventArgs args)
         {
-            Console.WriteLine("Parsed {0} of {1} files. ({2}%)", _count, _filesTotal, _count*100.0/_filesTotal);
+            results.PrintSummaryToConsole();
         }
-
-        private static int _count;
-        private static int _filesTotal;
 
         private static void Main(string[] args)
         {
@@ -37,17 +38,28 @@ namespace CSharpQuery
                 if (String.IsNullOrEmpty(dir))
                     dir = Environment.CurrentDirectory;
 
-                parser.ParseDirectory(dir, searchPattern, ref _count, ref _filesTotal);
+                parser.ParseDirectory(dir, searchPattern, results);
+
+                results.PrintSummaryToConsole();
+
+//                var statement = MethodCall("Logger.Log", new Parameters[]
+//                {
+//                    "Auto-inserted logging statement for empty catch block",
+//                    CatchClause.Identifier.Name;
+//                })                ;
+//
+//
+//
+//                CodeEdit.Insert(CatchClause("Exception", "e"), After(Catch.WithNot(CatchClause));
+//
+//                CodeEdit.Insert(statement, Empty(CatchBlock).After(OpeningBrace));
+
             }
             catch (ApplicationException ae)
             {
                 Console.WriteLine(ae.Message);
                 Console.ForegroundColor = ConsoleColor.White;
                 return;
-            }
-            finally
-            {
-                Console.WriteLine("Parsed {0} of {1} files. ({2}%)", _count, _filesTotal, _count*100.0/_filesTotal);
             }
 
             // Pause if debugging so the console doesn't disappear.

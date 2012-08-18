@@ -7,14 +7,7 @@ namespace CSharpQuery
 {
     public class Parse
     {
-        /// <summary>
-        ///   ParseDirectory Depth first recursive parse of a directory.
-        /// </summary>
-        /// <param name="count"> Parsed successfully. </param>
-        /// <param name="files"> Total files. </param>
-        /// <param name="path"> </param>
-        /// <param name="searchPattern"> File search pattern (*.cs) </param>
-        public void ParseDirectory(string path, string searchPattern, ref int count, ref int files)
+        public void ParseDirectory(string path, string searchPattern, IQueryResults results)
         {
             // use current directory if no path given
             if (path == string.Empty)
@@ -22,7 +15,9 @@ namespace CSharpQuery
 
             // recurse
             foreach (var subdir in Directory.GetDirectories(path))
-                ParseDirectory(subdir, searchPattern, ref count, ref files);
+            {
+                ParseDirectory(subdir, searchPattern, results);
+            }
 
             // parse the files
             foreach (var f in Directory.GetFiles(path, searchPattern))
@@ -31,14 +26,13 @@ namespace CSharpQuery
                 var wait = searchPattern.IndexOfAny(new[] {'*', '?'}) != -1;
                 if (Args.IsFlagSet("-q")) // Quick set?
                     wait = false;
-                files++;
 
 #if AST
-                ParseFileAST(f, wait, ref count);
+                ParseFileAST(f, wait, results);
 #else
                 ParseFile(f, wait, ref count);
 #endif
-            } // foreach File
+            }
         }
 
         /// <summary>
@@ -55,135 +49,94 @@ namespace CSharpQuery
             // if the -a and the Archive attribute is set on the file, then skip it
             if (ArchiveFlagIsClear(fileName, ref count))
                 return;
-
             Console.WriteLine("---------------");
             Console.Error.WriteLine(fileName);
 
             var tokens = CreateLexer<PreProcessor>(fileName);
             var p = new csParser(tokens);
 
-            using (var con = new ConsolePause(wait))
+            // Try and call a rule like CSParser.namespace_body() 
+            // Use reflection to find the rule to use.
+            var mi = p.GetType().GetMethod(ruleName);
+
+            // did we find a method the same as file name?
+            if (mi != null)
             {
-                // Try and call a rule like CSParser.namespace_body() 
-                // Use reflection to find the rule to use.
-                var mi = p.GetType().GetMethod(ruleName);
-
-                // did we find a method the same as file name?
-                if (mi != null)
-                {
-                    con.Warn(string.Format("parser using rule -- {0}:", ruleName));
-                    mi.Invoke(p, new object[0]);
-                }
-                else
-                {
-                    // by default use the start rule for csharp, I called this compilation_unit in the grammar.
-                    con.Warn("parser using rule -- compilation_unit:");
-                    p.compilation_unit();
-                }
-
-
-                // If we parsed the file (no error messages), clear the Archive flag
-                if (!con.HasMessages)
-                {
-                    // Clear archive attribute
-                    File.SetAttributes(fileName, File.GetAttributes(fileName) & ~FileAttributes.Archive);
-                    ++count;
-                }
+//                    con.Warn(string.Format("parser using rule -- {0}:", ruleName));
+                mi.Invoke(p, new object[0]);
+            }
+            else
+            {
+                // by default use the start rule for csharp, I called this compilation_unit in the grammar.
+                //con.Warn("parser using rule -- compilation_unit:");
+                p.compilation_unit();
             }
         }
 
 #if AST
-        /// <summary>
-        ///   ParseFile
-        /// </summary>
-        /// <param name="fileName"> I expect some_rule_01.ext for a file name. If the rule name matches a real rule I will call that method. Otherwise, we call parse.compilation_unit(), the start of the grammar. </param>
-        /// <param name="wait"> Wait on errors or keep going. </param>
-        /// <param name="count"> Count of files successfully parsed. </param>
-        /// <returns> parser.[rule]_return </returns>
-        public CommonTreeNodeStream ParseFileAST(string fileName, bool wait, ref int count)
+        public void ParseFileAST(string fileName, bool wait, IQueryResults results)
         {
-            var ruleName = RuleNameFromFilePath(fileName);
-
-            // if the -a and the Archive attribute is set on the file, then skip it
-            if (ArchiveFlagIsClear(fileName, ref count))
-                return null;
-
-            Console.WriteLine("---------------");
-            Console.Error.WriteLine(fileName);
+            results.ProcessingFile(fileName);
 
             var tokens = CreateLexer<PreProcessor>(fileName);
             var p = new csParser(tokens);
-            object parserResult = null;
+            p.TreeAdaptor = new CommonTreeAdaptor();
             CommonTree tree = null;
 
-            using (var con = new ConsolePause(wait))
+            var parserResult = p.compilation_unit();
+
+            if (parserResult != null) tree = (CommonTree) parserResult.Tree;
+            // Check if we didn't get an AST
+            // This often happens if your grammar and tree grammar don't match
+            if (tree == null)
             {
-                // Try and call a rule like CSParser.namespace_body()
-                // Use reflection to find the rule to use.
-                var mi = p.GetType().GetMethod(ruleName);
-
-                // did we find a method the same as file name?
-                if (mi != null)
+                if (tokens.Count > 0)
                 {
-                    con.Warn(string.Format("parser using rule -- {0}:", ruleName));
-                    parserResult = mi.Invoke(p, new object[0]);
+                    results.ErrorProcessingFile(fileName);
                 }
-                else
-                {
-                    // by default use the start rule for csharp, I called this compilation_unit in the grammar.
-                    con.Warn("parser using rule -- compilation_unit:");
-                    p.compilation_unit();
-//                    parser_rt = p.compilation_unit();
-                }
-
-                #region Error Checking
-
-                // Sometimes ANTLR returns a CommonErrorNode if we can't parse the file
-                if (parserResult != null && parserResult is CommonErrorNode)
-                {
-                    Console.WriteLine(((CommonErrorNode) parserResult).trappedException.Message);
-                    return null;
-                }
-
-                var ruleReturnScope = parserResult as RuleReturnScope;
-                if (ruleReturnScope != null) tree = (CommonTree) ruleReturnScope.Tree;
-                // Check if we didn't get an AST
-                // This often happens if your grammar and tree grammar don't match
-                if (tree == null)
-                {
-                    if (tokens.Count > 0)
-                    {
-                        con.Err("No Tree returned from parsing! (Your rule did not parse correctly)");
-                    }
-                    else
-                    {
-                        // the file was empty, this is not an error.
-                        // Clear archive attribute
-                        File.SetAttributes(fileName, File.GetAttributes(fileName) & ~FileAttributes.Archive);
-                        ++count;
-                    }
-                    return null;
-                }
-
-                // If we parsed the file (no error messages), clear the Archive flag
-                if (!con.HasMessages)
-                {
-                    // Clear archive attribute
-                    File.SetAttributes(fileName, File.GetAttributes(fileName) & ~FileAttributes.Archive);
-                    ++count;
-                }
-
-                #endregion
             }
 
+            // If we parsed the file (no error messages), clear the Archive flag
             // Get the AST stream
             var nodes = new CommonTreeNodeStream(tree) {TokenStream = tokens};
             // Add the tokens for DumpNodes, otherwise there are no token names to print out.
 
             // Dump the tree nodes if -n is passed on the command line.
-            DumpNodes(nodes);
+//            DumpNodes(nodes);
 
-            return nodes;
+            DumpEmptyCatchBlocks(fileName, nodes, results);
+        }
+
+        private void DumpEmptyCatchBlocks(string fileName, CommonTreeNodeStream nodes, IQueryResults results)
+        {
+            try
+            {
+                var o = nodes.NextElement() as CommonTree;
+                while (!nodes.IsEndOfFile(o))
+                {
+                    if (o.Token != null && o.Token.Text == "catch")
+                    {
+                        var catchToken = o;
+                        results.CatchFound(o.Token);
+                        o = nodes.NextElement() as CommonTree;
+
+                        if (o.Token != null && o.Token.Text == "{")
+                        {
+                            o = nodes.NextElement() as CommonTree;
+                            if (o != null && o.Token.Text == "}")
+                            {
+                                results.EmptyCatchFound(catchToken.Token);
+                            }
+                        }
+                    }
+
+                    o = nodes.NextElement() as CommonTree;
+                }
+            }
+            catch (Exception)
+            {
+                results.ErrorProcessingFile(fileName);
+            }
         }
 #endif
 
@@ -198,7 +151,6 @@ namespace CSharpQuery
             if (!Path.IsPathRooted(inputFileName))
                 inputFileName = Path.Combine(Environment.CurrentDirectory, inputFileName);
 
-            Console.WriteLine(inputFileName);
             ICharStream input = new ANTLRFileStream(inputFileName);
             var lex = new TL {CharStream = input};
 

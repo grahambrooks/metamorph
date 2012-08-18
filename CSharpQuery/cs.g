@@ -3,10 +3,12 @@ grammar cs;
 options {
     memoize=true;
     language=CSharp2;
+	output=AST;
 }
 
 @lexer::header       
 {
+	using System;
 	using System.Collections.Generic;
 	using Debug = System.Diagnostics.Debug;
 }
@@ -28,7 +30,7 @@ options {
 	}
 }
 
-compilation_unit:
+public compilation_unit:
 	namespace_body[true];
 
 namespace_declaration:

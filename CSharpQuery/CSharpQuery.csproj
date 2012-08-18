@@ -48,7 +48,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;AST</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -81,6 +81,9 @@
     <Exec Command="%22$(JavaDir)java%22 -cp %22$(JarDir)\antlr-3.3.jar%22 org.antlr.Tool -message-format vs2005 @(Antlr3) $(AntlrDebug) $(AntlrMake) $(AntlrOutput) $(NFAConversionTimeout) $(Multithreaded)" Outputs="%(Antlr3.OutputFiles)" />
   </Target>
   <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\..\LCP\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -97,7 +100,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Args.cs" />
-    <Compile Include="ConsolePause.cs" />
+    <Compile Include="ConsoleWriter.cs" />
+    <Compile Include="DefaultQueryResults.cs" />
+    <Compile Include="IQueryResults.cs" />
     <Compile Include="parse.cs" />
     <Compile Include="PreProcessor.cs" />
     <Compile Include="Program.cs" />
@@ -111,6 +116,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>cs.g</DependentUpon>
     </Compile>
+    <Compile Include="SourceCodeReWriter.cs" />
+    <Compile Include="SourceFileReader.cs" />
+    <Compile Include="SourceLine.cs" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -139,8 +147,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Antlr.Runtime\Antlr3.Runtime.csproj">
-      <Project>{CF15D0D5-BE72-4F98-B70F-229ABA1DF0E8}</Project>
+    <ProjectReference Include="..\..\..\Users\Graham\Downloads\antlr-3.4\runtime\CSharp3\Sources\Antlr3.Runtime\Antlr3.Runtime.csproj">
+      <Project>{8FDC0A87-9005-4D5A-AB75-E55CEB575559}</Project>
       <Name>Antlr3.Runtime</Name>
     </ProjectReference>
   </ItemGroup>

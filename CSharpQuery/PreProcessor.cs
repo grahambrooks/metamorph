@@ -36,7 +36,7 @@ namespace CSharpQuery
             // if the Count is 0, we are in a bad state.
             if (Processing.Count > 0)
             {
-                state.token = Processing.Peek() == false ? Token.SKIP_TOKEN : state.token;
+                state.token = Processing.Peek() == false ? Tokens.Skip : state.token;
             }
             else if (_warn)
             {
@@ -63,7 +63,10 @@ namespace CSharpQuery
             base.NextToken();
             if (_tokens.Count == 0)
             {
-                return Token.EOF_TOKEN;
+                IToken eof = new CommonToken((ICharStream)input, CharStreamConstants.EndOfFile, TokenChannels.Default, input.Index, input.Index);
+                eof.Line = Line;
+                eof.CharPositionInLine = CharPositionInLine;
+                return eof;
             }
             return _tokens.Dequeue();
         }
@@ -74,7 +77,7 @@ namespace CSharpQuery
         public override String GetErrorMessage(RecognitionException e, String[] tokenNames)
         {
             //IList stack = GetRuleInvocationStack(e, this.GetType().Name);
-            var stack = GetRuleInvocationStack(e, GetType().Name);
+            var stack = GetRuleInvocationStack(new StackTrace(e));
             var sb = new StringBuilder();
             sb.Append("\r\n");
             foreach (var o in stack)
@@ -85,9 +88,9 @@ namespace CSharpQuery
                 var nvae = (NoViableAltException) e;
                 sb.AppendFormat(" no viable alt; token = {0} (decision = {1} state {2}) decision=<<{3}>>\r\n",
                                 e.Token.Text,
-                                nvae.decisionNumber,
-                                nvae.stateNumber,
-                                nvae.grammarDecisionDescription);
+                                nvae.DecisionNumber,
+                                nvae.StateNumber,
+                                nvae.GrammarDecisionDescription);
             }
             else
                 sb.Append(base.GetErrorMessage(e, tokenNames));
