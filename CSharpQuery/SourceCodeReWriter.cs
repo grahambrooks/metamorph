@@ -1,9 +1,5 @@
 ﻿namespace CSharpQuery
 {
-    internal class SourceFileWriter
-    {
-    }
-
     internal class SourceCodeReWriter
     {
         private readonly SourceFileReader _input;

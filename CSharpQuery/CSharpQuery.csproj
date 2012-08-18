@@ -117,7 +117,9 @@
       <DependentUpon>cs.g</DependentUpon>
     </Compile>
     <Compile Include="SourceCodeReWriter.cs" />
+    <Compile Include="SourceEdit.cs" />
     <Compile Include="SourceFileReader.cs" />
+    <Compile Include="SourceFileWriter.cs" />
     <Compile Include="SourceLine.cs" />
     <None Include="app.config" />
   </ItemGroup>
