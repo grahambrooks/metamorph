@@ -27,5 +27,28 @@ namespace CSharpQuery
             Console.WriteLine(s, p);
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+        private static int TickCount;
+
+        public static void Tick()
+        {
+            var ticks = new[]
+                            {
+                                '-',
+                                '\\',
+                                '|',
+                                '/',
+                            };
+            if (TickCount == 0)
+            {
+                Console.Write(ticks[0]);
+            }
+            else
+            {
+                Console.Write('\b');
+                Console.Write(ticks[TickCount%ticks.Length]);
+            }
+            TickCount++;
+        }
     }
 }

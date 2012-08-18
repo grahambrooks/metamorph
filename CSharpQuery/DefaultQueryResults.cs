@@ -29,7 +29,7 @@ namespace CSharpQuery
 
         public void ProcessingFile(string filename)
         {
-            Console.Write('.');
+            ConsoleWriter.Tick();
             _currentFileList = new List<CatchToken>();
             _scannedFiles.Add(filename, _currentFileList);
         }
