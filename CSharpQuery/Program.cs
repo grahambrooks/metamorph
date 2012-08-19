@@ -1,18 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using NLog;
 
 namespace CSharpQuery
 {
     internal class Program
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        static readonly DefaultQueryResults results = new DefaultQueryResults();
+        private static readonly DefaultQueryResults Results = new DefaultQueryResults();
 
         protected static void PrintStats(object sender, ConsoleCancelEventArgs args)
         {
-            results.PrintSummaryToConsole();
+            Results.PrintSummaryToConsole();
         }
 
         private static void Main(string[] args)
@@ -32,28 +31,17 @@ namespace CSharpQuery
 
             try
             {
-                var searchPattern = Path.GetFileName(args[0]);
+                string searchPattern = Path.GetFileName(args[0]);
 
-                var dir = Path.GetDirectoryName(args[0]);
+                string dir = Path.GetDirectoryName(args[0]);
                 if (String.IsNullOrEmpty(dir))
                     dir = Environment.CurrentDirectory;
 
-                parser.ParseDirectory(dir, searchPattern, results);
+                parser.ParseDirectory(dir, searchPattern, Results);
 
-                results.PrintSummaryToConsole();
+                Results.PrintSummaryToConsole();
 
-//                var statement = MethodCall("Logger.Log", new Parameters[]
-//                {
-//                    "Auto-inserted logging statement for empty catch block",
-//                    CatchClause.Identifier.Name;
-//                })                ;
-//
-//
-//
-//                CodeEdit.Insert(CatchClause("Exception", "e"), After(Catch.WithNot(CatchClause));
-//
-//                CodeEdit.Insert(statement, Empty(CatchBlock).After(OpeningBrace));
-
+                ApplyEdits(Results);
             }
             catch (ApplicationException ae)
             {
@@ -68,6 +56,39 @@ namespace CSharpQuery
                 Console.WriteLine("Done...press the any key :)");
                 Console.ReadKey();
             }
+        }
+
+        private static void ApplyEdits(DefaultQueryResults results)
+        {
+            results.EachFile(AddLogging);
+        }
+
+        private static void AddLogging(string filepath)
+        {
+            List<CatchToken> emptyCatches = Results.EmptyCatches(filepath);
+
+            var edits = new CSharpCodeEdits();
+
+            foreach (CatchToken emptyCatch in emptyCatches)
+            {
+                edits.Add(emptyCatch.Line, SourceEdit.Insert("(Exception exp)").After(emptyCatch.CatchStatement));
+                edits.Add(emptyCatch.OpeningBrace.Line,
+                          SourceEdit.Insert("Logger.ErrorException(\"Auto inserted log\", exp);").OnAnNewIndentedLine().
+                              After(emptyCatch.OpeningBrace));
+            }
+
+            string editedPath = filepath + ".edited";
+            using (var source = new SourceFileReader(filepath))
+            {
+                using (var destinaton = new SourceFileWriter(editedPath))
+                {
+                    var reWriter = new SourceCodeReWriter(source, destinaton);
+                    reWriter.ReWrite(edits);
+                }
+            }
+
+            File.Copy(editedPath, filepath, true);
+            File.Delete(editedPath);
         }
     }
 }

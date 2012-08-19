@@ -122,10 +122,11 @@ namespace CSharpQuery
 
                         if (o.Token != null && o.Token.Text == "{")
                         {
+                            var openingBrace = o.Token;
                             o = nodes.NextElement() as CommonTree;
                             if (o != null && o.Token.Text == "}")
                             {
-                                results.EmptyCatchFound(catchToken.Token);
+                                results.EmptyCatchFound(catchToken.Token, openingBrace, o.Token);
                             }
                         }
                     }

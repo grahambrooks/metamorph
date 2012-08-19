@@ -101,9 +101,15 @@
   <ItemGroup>
     <Compile Include="Args.cs" />
     <Compile Include="ConsoleWriter.cs" />
+    <Compile Include="CSharpCodeEdits.cs" />
     <Compile Include="DefaultQueryResults.cs" />
+    <Compile Include="EditContext.cs" />
+    <Compile Include="IndentedLineEdit.cs" />
+    <Compile Include="InsertionSourceEdit.cs" />
     <Compile Include="IQueryResults.cs" />
+    <Compile Include="ISourceLocation.cs" />
     <Compile Include="parse.cs" />
+    <Compile Include="PositionalSourceEdit.cs" />
     <Compile Include="PreProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="csLexer.cs">

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace CSharpQuery
 {
-    public class SourceFileReader
+    public class SourceFileReader : IDisposable
     {
         private readonly TextReader _input;
 
@@ -28,6 +28,11 @@ namespace CSharpQuery
                 line = _input.ReadLine();
                 lineNumber++;
             }
+        }
+
+        public void Dispose()
+        {
+            _input.Close();
         }
     }
 }

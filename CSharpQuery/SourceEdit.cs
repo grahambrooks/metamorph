@@ -11,48 +11,20 @@ namespace CSharpQuery
 
         public PositionalSourceEdit At()
         {
-            return new PositionalSourceEdit(this);
+            return new PositionalSourceEdit(this, 0);
         }
 
-        public abstract void Apply(string text, StringBuilder replacement);
-    }
-
-    public class PositionalSourceEdit : SourceEdit
-    {
-        private  int _characterOffset;
-        private readonly SourceEdit _parent;
-
-        public PositionalSourceEdit(SourceEdit parent)
+        public PositionalSourceEdit After(ISourceLocation sourceLocation)
         {
-            _parent = parent;
+            return new PositionalSourceEdit(this, sourceLocation.EndCharacterOffset);
         }
 
-        public SourceEdit CharacterOffset(int offset)
+        public IndentedLineEdit OnAnNewIndentedLine()
         {
-            _characterOffset = offset;
-            return this;
+            return new IndentedLineEdit(this);
         }
 
-        public override void Apply(string input, StringBuilder output)
-        {
-            output.Append(input.Substring(0, _characterOffset));
-            _parent.Apply(input, output);
-            output.Append(input.Substring(_characterOffset));
-        }
-    }
 
-    public class InsertionSourceEdit : SourceEdit
-    {
-        private readonly string _content;
-
-        public InsertionSourceEdit(string content)
-        {
-            _content = content;
-        }
-
-        public override void Apply(string text, StringBuilder output)
-        {
-            output.Append(_content);
-        }
+        public abstract void Apply(EditContext ctx, StringBuilder replacement);
     }
 }
