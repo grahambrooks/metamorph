@@ -21,10 +21,7 @@ namespace Coder
 
             if (args.Length == 0)
             {
-                Console.Error.WriteLine("Usage: cparse <input-file> -q -n -a -D MACRO");
-                Console.Error.WriteLine("-q go Quick, don't wait if errors");
-                Console.Error.WriteLine("-n print Nodes");
-                Console.Error.WriteLine("-a skip files with Archive attribute set");
+                Console.Error.WriteLine("Usage: coder <source-path>");
                 return;
             }
 
