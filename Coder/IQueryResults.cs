@@ -1,6 +1,6 @@
 using Antlr.Runtime;
 
-namespace CSharpQuery
+namespace Coder
 {
     public interface IQueryResults
     {

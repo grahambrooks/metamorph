@@ -1,7 +1,8 @@
 ﻿using System.IO;
+using CSharpQuery;
 using NUnit.Framework;
 
-namespace CSharpQuery.Test
+namespace Coder.Test
 {
     [TestFixture]
     internal class SourceFileWriterTests

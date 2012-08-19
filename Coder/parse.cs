@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using CSharpQuery;
 
-namespace CSharpQuery
+namespace Coder
 {
     public class Parse
     {

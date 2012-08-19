@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using CSharpQuery;
 
-namespace CSharpQuery
+namespace Coder
 {
     public class CSharpCodeEdits : ICodeEdits
     {

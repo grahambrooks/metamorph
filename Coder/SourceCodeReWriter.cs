@@ -1,4 +1,6 @@
-﻿namespace CSharpQuery
+﻿using CSharpQuery;
+
+namespace Coder
 {
     internal class SourceCodeReWriter
     {

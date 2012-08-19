@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using Antlr.Runtime;
 
-namespace CSharpQuery
+namespace Coder
 {
     /// <summary>
     ///   PreProcessor The lexer preprocesses the CSharp code.

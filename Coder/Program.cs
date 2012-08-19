@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using CSharpQuery;
 
-namespace CSharpQuery
+namespace Coder
 {
     internal class Program
     {
@@ -17,7 +18,7 @@ namespace CSharpQuery
         private static void Main(string[] args)
         {
             var parser = new Parse();
-            // Check usage.
+
             if (args.Length == 0)
             {
                 Console.Error.WriteLine("Usage: cparse <input-file> -q -n -a -D MACRO");

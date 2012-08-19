@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
+using CSharpQuery;
 
-namespace CSharpQuery
+namespace Coder
 {
     internal class SourceStatement : ISourceLocation
     {
