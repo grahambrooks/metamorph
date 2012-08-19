@@ -6,8 +6,8 @@ namespace CSharpQuery
 {
     internal class SourceStatement : ISourceLocation
     {
-        private readonly int _line;
         private readonly int _charPositionInLine;
+        private readonly int _line;
         private readonly string _text;
 
         private SourceStatement(int line, int charPositionInLine, string text)
@@ -17,10 +17,7 @@ namespace CSharpQuery
             _text = text;
         }
 
-        public static SourceStatement FromToken(IToken t)
-        {
-            return new SourceStatement(t.Line, t.CharPositionInLine, t.Text);
-        }
+        #region ISourceLocation Members
 
         public int Line
         {
@@ -36,50 +33,64 @@ namespace CSharpQuery
         {
             get { return _charPositionInLine + _text.Length; }
         }
+
+        #endregion
+
+        public static SourceStatement FromToken(IToken t)
+        {
+            return new SourceStatement(t.Line, t.CharPositionInLine, t.Text);
+        }
     }
 
     internal class CatchToken
     {
-        private ISourceLocation catchStatement;
-        private ISourceLocation openingBrace;
-        private ISourceLocation closingBrace;
-        private readonly int _line;
+        private readonly ISourceLocation _catchStatement;
+        private readonly ISourceLocation _closingBrace;
+        private readonly ISourceLocation _openingBrace;
 
         public CatchToken(IToken ct)
         {
-            catchStatement = SourceStatement.FromToken(ct);
+            _catchStatement = SourceStatement.FromToken(ct);
         }
+
         public CatchToken(IToken ct, IToken ob, IToken cb)
         {
-            catchStatement = SourceStatement.FromToken(ct);
-            openingBrace = SourceStatement.FromToken(ob);
-            closingBrace = SourceStatement.FromToken(cb);
+            _catchStatement = SourceStatement.FromToken(ct);
+            _openingBrace = SourceStatement.FromToken(ob);
+            _closingBrace = SourceStatement.FromToken(cb);
         }
 
         public int Line
         {
-            get { return catchStatement.Line; }
+            get { return _catchStatement.Line; }
         }
 
         public ISourceLocation CatchStatement
         {
-            get { return catchStatement; }
+            get { return _catchStatement; }
         }
 
         public ISourceLocation OpeningBrace
         {
-            get { return openingBrace; }
+            get { return _openingBrace; }
+        }
+
+        public ISourceLocation ClosingBrace
+        {
+            get { return _closingBrace; }
         }
     }
 
 
     internal class DefaultQueryResults : IQueryResults
     {
-        private readonly Dictionary<string, List<CatchToken>> _scannedFiles = new Dictionary<string, List<CatchToken>>();
         private readonly List<CatchToken> _catchStatements = new List<CatchToken>();
         private readonly List<CatchToken> _emptyCatchStatements = new List<CatchToken>();
-        private List<CatchToken> _currentFileList = new List<CatchToken>();
         private readonly List<String> _erroredFiles = new List<string>();
+        private readonly Dictionary<string, List<CatchToken>> _scannedFiles = new Dictionary<string, List<CatchToken>>();
+        private List<CatchToken> _currentFileList = new List<CatchToken>();
+
+        #region IQueryResults Members
 
         public void ProcessingFile(string filename)
         {
@@ -103,6 +114,8 @@ namespace CSharpQuery
             _emptyCatchStatements.Add(new CatchToken(catchToken, openingBrace, closingBrace));
             _currentFileList.Add(new CatchToken(catchToken, openingBrace, closingBrace));
         }
+
+        #endregion
 
         public void PrintSummaryToConsole()
         {
@@ -134,7 +147,7 @@ namespace CSharpQuery
             writer.WriteLine("Failed to scan:");
             Separator(writer);
 
-            foreach (var erroredFile in _erroredFiles)
+            foreach (string erroredFile in _erroredFiles)
             {
                 writer.Error("Error processing file {0}", erroredFile);
             }

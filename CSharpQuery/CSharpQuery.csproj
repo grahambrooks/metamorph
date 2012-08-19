@@ -155,8 +155,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Users\Graham\Downloads\antlr-3.4\runtime\CSharp3\Sources\Antlr3.Runtime\Antlr3.Runtime.csproj">
-      <Project>{8FDC0A87-9005-4D5A-AB75-E55CEB575559}</Project>
+    <ProjectReference Include="..\antlr-3.4\runtime\CSharp3\Sources\Antlr3.Runtime\Antlr3.Runtime.csproj">
+      <Project>{8fdc0a87-9005-4d5a-ab75-e55ceb575559}</Project>
       <Name>Antlr3.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
