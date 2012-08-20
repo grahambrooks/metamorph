@@ -1,7 +1,6 @@
 using System.Text;
-using CSharpQuery;
 
-namespace Coder
+namespace Coder.Edit
 {
     public class InsertionSourceEdit : SourceEdit
     {

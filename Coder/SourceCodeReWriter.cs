@@ -1,6 +1,4 @@
-﻿using CSharpQuery;
-
-namespace Coder
+﻿namespace Coder
 {
     internal class SourceCodeReWriter
     {
@@ -17,10 +15,5 @@ namespace Coder
         {
             _input.EachLine(line => edits.Apply(line, _output));
         }
-    }
-
-    internal interface ICodeEdits
-    {
-        void Apply(SourceLine line, SourceFileWriter output);
     }
 }

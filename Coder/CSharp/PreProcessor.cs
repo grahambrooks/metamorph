@@ -4,22 +4,22 @@ using System.Diagnostics;
 using System.Text;
 using Antlr.Runtime;
 
-namespace Coder
+namespace Coder.CSharp
 {
-    /// <summary>
-    ///   PreProcessor The lexer preprocesses the CSharp code.
-    /// </summary>
     public class PreProcessor : csLexer
     {
-        // if there's an #if / #else mismatch, don't complain every token :)
+        private readonly Queue<IToken> _tokens = new Queue<IToken>();
         private bool _warn = true;
 
         public PreProcessor()
         {
-            // By default we are preprocessing input
             Processing.Push(true);
 
-            // Grab what's defined from the command line
+            DefineCommandlineMacros();
+        }
+
+        private void DefineCommandlineMacros()
+        {
             var args = Environment.GetCommandLineArgs();
             for (var n = 0; n < args.Length; ++n)
             {
@@ -47,11 +47,6 @@ namespace Coder
             }
         }
 
-        // Code for Emiting new tokens
-        // I Emit() multiple tokens in the case of 0123.ToString()
-        // TODO:  There's a better way to do this just in the grammar (who knew)!  This works fine at the moment.
-        private readonly Queue<IToken> _tokens = new Queue<IToken>();
-
         public override void Emit(IToken token)
         {
             state.token = token;
@@ -63,7 +58,8 @@ namespace Coder
             base.NextToken();
             if (_tokens.Count == 0)
             {
-                IToken eof = new CommonToken((ICharStream)input, CharStreamConstants.EndOfFile, TokenChannels.Default, input.Index, input.Index);
+                IToken eof = new CommonToken(input, CharStreamConstants.EndOfFile, TokenChannels.Default, input.Index,
+                                             input.Index);
                 eof.Line = Line;
                 eof.CharPositionInLine = CharPositionInLine;
                 return eof;
@@ -71,12 +67,8 @@ namespace Coder
             return _tokens.Dequeue();
         }
 
-        /// <summary>
-        ///   These two functions prints a stack of rules for a failure. It sounds really useful but it's mostly noise and didn't help me locate errors any quicker (mostly slower). Feel free to comment out. From "The ANTLR Reference" pg. 247 (translated to C#)
-        /// </summary>
         public override String GetErrorMessage(RecognitionException e, String[] tokenNames)
         {
-            //IList stack = GetRuleInvocationStack(e, this.GetType().Name);
             var stack = GetRuleInvocationStack(new StackTrace(e));
             var sb = new StringBuilder();
             sb.Append("\r\n");

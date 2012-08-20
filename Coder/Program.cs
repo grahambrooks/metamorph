@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using CSharpQuery;
+using Coder.CSharp;
+using Coder.Edit;
 
 namespace Coder
 {
@@ -17,7 +18,7 @@ namespace Coder
 
         private static void Main(string[] args)
         {
-            var parser = new Parse();
+            var parser = new CSharpParser();
 
             if (args.Length == 0)
             {

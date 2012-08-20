@@ -1,4 +1,4 @@
-namespace CSharpQuery
+namespace Coder
 {
     public class SourceLine
     {

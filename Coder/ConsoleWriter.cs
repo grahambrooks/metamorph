@@ -1,9 +1,11 @@
 using System;
 
-namespace CSharpQuery
+namespace Coder
 {
     public class ConsoleWriter
     {
+        private static int _tickCount;
+
         public void WriteLine()
         {
             Console.WriteLine();
@@ -28,8 +30,6 @@ namespace CSharpQuery
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        private static int TickCount;
-
         public static void Tick()
         {
             var ticks = new[]
@@ -39,16 +39,25 @@ namespace CSharpQuery
                                 '|',
                                 '/',
                             };
-            if (TickCount == 0)
+            if (_tickCount == 0)
             {
                 Console.Write(ticks[0]);
             }
             else
             {
                 Console.Write('\b');
-                Console.Write(ticks[TickCount%ticks.Length]);
+                Console.Write(ticks[_tickCount%ticks.Length]);
             }
-            TickCount++;
+            _tickCount++;
+        }
+
+        public void WriteSeparator(char c)
+        {
+            for (var i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write(c);
+            }
+            Console.WriteLine();
         }
     }
 }

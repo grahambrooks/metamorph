@@ -1,88 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
-using CSharpQuery;
 
 namespace Coder
 {
-    internal class SourceStatement : ISourceLocation
-    {
-        private readonly int _charPositionInLine;
-        private readonly int _line;
-        private readonly string _text;
-
-        private SourceStatement(int line, int charPositionInLine, string text)
-        {
-            _line = line;
-            _charPositionInLine = charPositionInLine;
-            _text = text;
-        }
-
-        #region ISourceLocation Members
-
-        public int Line
-        {
-            get { return _line; }
-        }
-
-        public int StartCharacterOffset
-        {
-            get { return _charPositionInLine; }
-        }
-
-        public int EndCharacterOffset
-        {
-            get { return _charPositionInLine + _text.Length; }
-        }
-
-        #endregion
-
-        public static SourceStatement FromToken(IToken t)
-        {
-            return new SourceStatement(t.Line, t.CharPositionInLine, t.Text);
-        }
-    }
-
-    internal class CatchToken
-    {
-        private readonly ISourceLocation _catchStatement;
-        private readonly ISourceLocation _closingBrace;
-        private readonly ISourceLocation _openingBrace;
-
-        public CatchToken(IToken ct)
-        {
-            _catchStatement = SourceStatement.FromToken(ct);
-        }
-
-        public CatchToken(IToken ct, IToken ob, IToken cb)
-        {
-            _catchStatement = SourceStatement.FromToken(ct);
-            _openingBrace = SourceStatement.FromToken(ob);
-            _closingBrace = SourceStatement.FromToken(cb);
-        }
-
-        public int Line
-        {
-            get { return _catchStatement.Line; }
-        }
-
-        public ISourceLocation CatchStatement
-        {
-            get { return _catchStatement; }
-        }
-
-        public ISourceLocation OpeningBrace
-        {
-            get { return _openingBrace; }
-        }
-
-        public ISourceLocation ClosingBrace
-        {
-            get { return _closingBrace; }
-        }
-    }
-
-
     internal class DefaultQueryResults : IQueryResults
     {
         private readonly List<CatchToken> _catchStatements = new List<CatchToken>();
@@ -127,7 +49,7 @@ namespace Coder
         {
             writer.WriteLine();
             writer.WriteLine("Query summary {0}", DateTime.Now);
-            Separator(writer);
+            writer.WriteSeparator('_');
             writer.WriteLine("Files found                 {0}", _scannedFiles.Count + _erroredFiles.Count);
             writer.WriteLine("Successfully scanned        {0}", _scannedFiles.Count);
             writer.WriteLine("Catch blocks found          {0}", _catchStatements.Count);
@@ -144,29 +66,21 @@ namespace Coder
             }
 
 
-            writer.WriteLine("");
+            writer.WriteLine();
             writer.WriteLine("Failed to scan:");
-            Separator(writer);
+            writer.WriteSeparator('_');
 
-            foreach (string erroredFile in _erroredFiles)
+            foreach (var erroredFile in _erroredFiles)
             {
                 writer.Error("Error processing file {0}", erroredFile);
             }
         }
 
-        private static void Separator(ConsoleWriter writer)
-        {
-            writer.WriteLine("----------------------------------------------------------------------");
-        }
-
         public void EachFile(Action<string> action)
         {
-            foreach (var pair in _scannedFiles)
+            foreach (var pair in _scannedFiles.Where(pair => pair.Value.Count > 0))
             {
-                if (pair.Value.Count > 0)
-                {
-                    action.Invoke(pair.Key);
-                }
+                action.Invoke(pair.Key);
             }
         }
 

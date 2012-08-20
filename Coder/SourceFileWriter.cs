@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Text;
-using Coder;
+using Coder.Edit;
 
-namespace CSharpQuery
+namespace Coder
 {
     public class SourceFileWriter : IDisposable
     {

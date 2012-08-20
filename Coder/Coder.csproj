@@ -100,17 +100,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Args.cs" />
+    <Compile Include="CatchToken.cs" />
     <Compile Include="ConsoleWriter.cs" />
     <Compile Include="CSharpCodeEdits.cs" />
     <Compile Include="DefaultQueryResults.cs" />
-    <Compile Include="EditContext.cs" />
-    <Compile Include="IndentedLineEdit.cs" />
-    <Compile Include="InsertionSourceEdit.cs" />
+    <Compile Include="Edit\EditContext.cs" />
+    <Compile Include="Edit\IndentedLineEdit.cs" />
+    <Compile Include="Edit\InsertionSourceEdit.cs" />
+    <Compile Include="ICodeEdits.cs" />
     <Compile Include="IQueryResults.cs" />
     <Compile Include="ISourceLocation.cs" />
-    <Compile Include="parse.cs" />
-    <Compile Include="PositionalSourceEdit.cs" />
-    <Compile Include="PreProcessor.cs" />
+    <Compile Include="CSharp\CSharpParser.cs" />
+    <Compile Include="Edit\PositionalSourceEdit.cs" />
+    <Compile Include="CSharp\PreProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="csLexer.cs">
       <AutoGen>True</AutoGen>
@@ -123,10 +125,11 @@
       <DependentUpon>cs.g</DependentUpon>
     </Compile>
     <Compile Include="SourceCodeReWriter.cs" />
-    <Compile Include="SourceEdit.cs" />
+    <Compile Include="Edit\SourceEdit.cs" />
     <Compile Include="SourceFileReader.cs" />
     <Compile Include="SourceFileWriter.cs" />
     <Compile Include="SourceLine.cs" />
+    <Compile Include="SourceStatement.cs" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +163,7 @@
       <Name>Antlr3.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

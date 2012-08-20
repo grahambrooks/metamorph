@@ -1,6 +1,6 @@
 using System;
 
-namespace CSharpQuery
+namespace Coder
 {
     public static class Args
     {

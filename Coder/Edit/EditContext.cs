@@ -1,4 +1,4 @@
-namespace Coder
+namespace Coder.Edit
 {
     public class EditContext
     {

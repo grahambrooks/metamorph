@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using CSharpQuery;
+using Coder.Edit;
 using NUnit.Framework;
 
 namespace Coder.Test

@@ -1,7 +1,6 @@
 using System.Text;
-using CSharpQuery;
 
-namespace Coder
+namespace Coder.Edit
 {
     public class IndentedLineEdit : SourceEdit
     {
@@ -15,7 +14,7 @@ namespace Coder
         public override void Apply(EditContext ctx, StringBuilder replacement)
         {
             replacement.Append("\n");
-            for (var i = 0; i < ctx.CharacterOffset + 3; i++)
+            for (int i = 0; i < ctx.CharacterOffset + 3; i++)
             {
                 replacement.Append(' ');
             }

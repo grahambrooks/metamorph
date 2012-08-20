@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using CSharpQuery;
 using NUnit.Framework;
 
 namespace Coder.Test

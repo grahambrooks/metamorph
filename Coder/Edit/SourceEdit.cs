@@ -1,7 +1,6 @@
 ﻿using System.Text;
-using Coder;
 
-namespace CSharpQuery
+namespace Coder.Edit
 {
     public abstract class SourceEdit
     {
