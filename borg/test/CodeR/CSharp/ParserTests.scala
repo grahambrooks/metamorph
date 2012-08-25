@@ -6,7 +6,68 @@ import org.antlr.runtime.{ANTLRStringStream, CommonTokenStream}
 import CodeR.PreProcessor
 import org.antlr.runtime.tree.CommonTree
 
-class ParserTests extends FlatSpec with ShouldMatchers {
+trait ParserSpec extends FlatSpec {
+
+  final class IntoWord {}
+  final class ParsesWord (source: String) {
+
+    def testParser(text: String): csParser = {
+      val input = new ANTLRStringStream(text)
+
+      val tokenStream = new CommonTokenStream(new PreProcessor(input))
+
+      return new csParser(tokenStream)
+    }
+
+    def printNode(node: CommonTree, depth: Int) {
+      for (d <- 0 to depth * 3) {
+        print(' ')
+      }
+
+      if (node == null)
+        println("<NULL>")
+      else {
+        println(node.getText)
+
+        for (i <- 0 to node.getChildCount - 1) {
+          printNode(node.getChild(i).asInstanceOf[CommonTree], depth + 1)
+        }
+      }
+    }
+
+
+    def printTree(scope: AnyRef) {
+      if (scope != null)
+        printNode(scope.asInstanceOf[CommonTree], 0)
+      else
+        println("No tree available")
+    }
+
+
+
+    def into(testFun: => Unit) {
+      it should source in {
+
+        printTree(testParser(source).primary_expression_part.getTree)
+
+        testFun
+      }
+    }
+  }
+
+  final class ParserWord {
+    def parses(source: String) : ParsesWord = { new ParsesWord(source) }
+  }
+
+  final class AstTree {
+    def token(name:String) : AstTree= {return null}
+  }
+
+  protected val parser = new ParserWord
+//  protected val ast = new AstTree
+}
+
+class ParserTests extends ParserSpec with ShouldMatchers {
 
   def testParser(text: String): csParser = {
     val input = new ANTLRStringStream(text)
@@ -32,13 +93,13 @@ class ParserTests extends FlatSpec with ShouldMatchers {
     }
   }
 
+
   def printTree(scope: AnyRef) {
     if (scope != null)
       printNode(scope.asInstanceOf[CommonTree], 0)
     else
       println("No tree available")
   }
-
 
 
   it should "parse basic primary expression list" in {
@@ -71,7 +132,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "this.foo();" +
         "this.foo[0];" +
         ""
-
+    println(text)
     printTree(testParser(text).primary_expression_list.getTree)
   }
 
@@ -128,6 +189,11 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
     printTree(testParser(text).primary_expression_list.getTree)
   }
+
+  parser parses "(args)" into {
+    println("Inside into")
+  }
+
 
 
   it should "primary expression part 00" in {
@@ -1127,7 +1193,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
   it should "for statement 00" in {
     val text = "for (int i = Stack.Count - 2; i >= 0; i++)" +
-        ";"
+      ";"
 
     printTree(testParser(text).for_statement.getTree)
   }
@@ -1226,12 +1292,12 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
   it should "interface declaration 00" in {
     val text = "//public" +
-        "interface IPlugin" +
-        "{" +
-        "void Register();" +
-        "void Startup();" +
-        "void Shutdown();" +
-        "}"
+      "interface IPlugin" +
+      "{" +
+      "void Register();" +
+      "void Startup();" +
+      "void Shutdown();" +
+      "}"
 
     printTree(testParser(text).interface_declaration.getTree)
   }

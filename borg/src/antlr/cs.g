@@ -234,7 +234,7 @@ arguments
 	;
 
 argument_list
-	:	argument (',' argument)*
+	:	argument (',' argument)* -> argument+
 	;
 // 4.0
 argument
