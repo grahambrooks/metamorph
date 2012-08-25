@@ -3242,6 +3242,15 @@ class ParserTests extends FlatSpec with ShouldMatchers {
     testParser(text).try_statement
   }
 
+  it should "parse basic try-catch block" in {
+    testParser("try" +
+      "{" +
+      "}" +
+      "catch" +
+      "{" +
+      "}").try_statement()
+  }
+
 
   it should "type 001" in {
     val text =
