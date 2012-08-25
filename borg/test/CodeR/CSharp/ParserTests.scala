@@ -4,6 +4,7 @@ import org.scalatest._
 import matchers.ShouldMatchers
 import org.antlr.runtime.{ANTLRStringStream, CommonTokenStream}
 import CodeR.PreProcessor
+import org.antlr.runtime.tree.CommonTree
 
 class ParserTests extends FlatSpec with ShouldMatchers {
 
@@ -15,8 +16,32 @@ class ParserTests extends FlatSpec with ShouldMatchers {
     return new csParser(tokenStream)
   }
 
+  def printNode(node: CommonTree, depth: Int) {
+    for (d <- 0 to depth * 3) {
+      print(' ')
+    }
 
-  it should "primary expression list 00" in {
+    if (node == null)
+      println("<NULL>")
+    else {
+      println(node.getText)
+
+      for (i <- 0 to node.getChildCount - 1) {
+        printNode(node.getChild(i).asInstanceOf[CommonTree], depth + 1)
+      }
+    }
+  }
+
+  def printTree(scope: AnyRef) {
+    if (scope != null)
+      printNode(scope.asInstanceOf[CommonTree], 0)
+    else
+      println("No tree available")
+  }
+
+
+
+  it should "parse basic primary expression list" in {
     val text =
       "//();" +
         "1;" +
@@ -45,9 +70,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "this.foo;" +
         "this.foo();" +
         "this.foo[0];" +
-        "" +
         ""
-    testParser(text).primary_expression_list
+
+    printTree(testParser(text).primary_expression_list.getTree)
   }
 
 
@@ -99,126 +124,107 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "//doc.LoadXml(new StreamReader(context.Request.InputStream).ReadToEnd());" +
         "((ModuleResolveEventHandler) ds[i])(this, new ResolveEventArgs(moduleName));" +
         "\"string\"[i%3];" +
-        "test<asdf>;" +
-        ""
-    testParser(text).primary_expression_list
+        "test<asdf>;"
+
+    printTree(testParser(text).primary_expression_list.getTree)
   }
 
 
   it should "primary expression part 00" in {
-    val text =
-      "(args)" +
-        "" +
-        ""
-    testParser(text).primary_expression_part
+    val text = "(args)"
+
+    printTree(testParser(text).primary_expression_part.getTree)
   }
 
 
   it should "primary expression start 00" in {
-    val text =
-      "foo" +
-        "" +
-        "" +
-        ""
-    testParser(text).primary_expression_start
+    val text = "foo"
+
+    printTree(testParser(text).primary_expression_start.getTree)
   }
 
 
   it should "primary expression start 01" in {
-    val text =
-      "Foso" +
-        "" +
-        "" +
-        ""
-    testParser(text).primary_expression_start
+    val text = "Foso"
+
+    printTree(testParser(text).primary_expression_start.getTree)
   }
 
 
   it should "type 00" in {
-    val text =
-      "SomeType?" +
-        ""
-    testParser(text).`type`
+    val text = "SomeType?"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 01" in {
-    val text =
-      "bool?" +
-        ""
-    testParser(text).`type`()
+    val text = "bool?"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 02" in {
-    val text =
-      "bool*" +
-        ""
-    testParser(text).`type`
+    val text = "bool*"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 03" in {
-    val text =
-      "void**" +
-        ""
-    testParser(text).`type`
+    val text = "void**"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 05" in {
-    val text =
-      "List<string>" +
-        ""
-    testParser(text).`type`
+    val text = "List<string>"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 06" in {
-    val text =
-      "List[]" +
-        ""
-    testParser(text).`type`
+    val text = "List[]"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 07" in {
-    val text =
-      "List<Foo<sstring>>" +
-        ""
-    testParser(text).`type`
+    val text = "List<Foo<sstring>>"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 08" in {
-    val text =
-      "int[]" +
-        ""
-    testParser(text).`type`
+    val text = "int[]"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 09" in {
-    val text =
-      "List<one,two>.Foo.Bar" +
-        ""
-    testParser(text).`type`
+    val text = "List<one,two>.Foo.Bar"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type 10" in {
-    val text =
-      "Foo[]" +
-        ""
-    testParser(text).`type`
+    val text = "Foo[]"
+
+    printTree(testParser(text).`type`.getTree)
   }
 
 
   it should "type or generic 00" in {
-    val text =
-      "Nullable<T>" +
-        ""
-    testParser(text).type_or_generic
+    val text = "Nullable<T>"
+
+    printTree(testParser(text).type_or_generic.getTree)
   }
 
 
@@ -533,29 +539,27 @@ class ParserTests extends FlatSpec with ShouldMatchers {
   }
 
 
-  it should "class declaration 00" in {
+  it should "parse empty class declaration" in {
     val text =
       "class DisplayPaneCommands" +
-        "{}" +
-        ""
-    testParser(text).class_declaration
+        "{}"
+
+    printTree(testParser(text).class_declaration.getTree)
   }
 
 
-  it should "class declaration 01" in {
+  it should "parse class declaration with single field" in {
     val text =
       "class DisplayPaneCommands" +
-        "{	public int foo;    }" +
-        ""
-    testParser(text).class_declaration
+        "{	public int foo;    }"
+    printTree(testParser(text).class_declaration.getTree)
   }
 
 
-  it should "class declaration 02" in {
+  it should "parse class declaration with single const field" in {
     val text =
       "class DisplayPaneCommands" +
-        "{	public const int foo;    }" +
-        ""
+        "{	public const int foo;    }"
     testParser(text).class_declaration
   }
 
@@ -755,18 +759,14 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
 
   it should "declaration statement 00" in {
-    val text =
-      "string searchPattern = Path.GetFileName(args);" +
-        ""
-    testParser(text).declaration_statement
+    val text = "string searchPattern = Path.GetFileName(args);"
+    printTree(testParser(text).declaration_statement.getTree)
   }
 
 
-  it should "declaration statement 01" in {
-    val text =
-      "int minimumHelpTextColumn = 5;" +
-        ""
-    testParser(text).declaration_statement
+  it should "parse declaration statement with constant initializer" in {
+    val text = "int minimumHelpTextColumn = 5;"
+    printTree(testParser(text).declaration_statement.getTree)
   }
 
 
@@ -1037,35 +1037,31 @@ class ParserTests extends FlatSpec with ShouldMatchers {
   }
 
 
-  it should "expression statement 03" in {
-    val text =
-      "++i;" +
-        ""
-    testParser(text).expression_statement
+  it should "parse expression statement increment expression" in {
+    val text = "++i;"
+
+    printTree(testParser(text).expression_statement.getTree)
   }
 
 
   it should "expression statement 05" in {
-    val text =
-      "this.StartupUri = 100;" +
-        ""
-    testParser(text).expression_statement
+    val text = "this.StartupUri = 100;"
+
+    printTree(testParser(text).expression_statement.getTree)
   }
 
 
   it should "expression statement 08" in {
-    val text =
-      "strings[index++] = new ArgumentHelpStrings(\"@<file>\", \"Read response file for more options\");" +
-        ""
-    testParser(text).expression_statement
+    val text = "strings[index++] = new ArgumentHelpStrings(\"@<file>\", \"Read response file for more options\");"
+
+    printTree(testParser(text).expression_statement.getTree)
   }
 
 
   it should "expression statement 09" in {
-    val text =
-      "this.StartupUri = new System.Uri(\"DemoWindow.xaml\", System.UriKind.Relative);" +
-        ""
-    testParser(text).expression_statement
+    val text = "this.StartupUri = new System.Uri(\"DemoWindow.xaml\", System.UriKind.Relative);"
+
+    printTree(testParser(text).expression_statement.getTree)
   }
 
 
@@ -1096,9 +1092,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "typeof(Missing)," +
         "typeof(DBNull)," +
         "};" +
-        "/* */" +
-        ""
-    testParser(text).field_declaration
+        "/* */"
+
+    printTree(testParser(text).field_declaration.getTree)
   }
 
 
@@ -1112,9 +1108,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "" +
         "// We need \"expression\" for these next tests." +
         "//public const string Foo = string.Empty;" +
-        "//public const string Foo = 0.ToString();" +
-        ""
-    testParser(text).field_declarations
+        "//public const string Foo = 0.ToString();"
+
+    printTree(testParser(text).field_declarations.getTree)
   }
 
 
@@ -1123,18 +1119,17 @@ class ParserTests extends FlatSpec with ShouldMatchers {
       "fixed(byte* b = basePtr)" +
         "{" +
         "IntPtr currentPtr = new IntPtr( (vsoid *) b);" +
-        "}" +
-        ""
-    testParser(text).fixed_statement
+        "}"
+
+    printTree(testParser(text).fixed_statement.getTree)
   }
 
 
   it should "for statement 00" in {
-    val text =
-      "for (int i = Stack.Count - 2; i >= 0; i++)" +
-        ";" +
-        ""
-    testParser(text).for_statement
+    val text = "for (int i = Stack.Count - 2; i >= 0; i++)" +
+        ";"
+
+    printTree(testParser(text).for_statement.getTree)
   }
 
 
@@ -1148,27 +1143,23 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
 
   it should "formal parameter list 00" in {
-    val text =
-      "WordPtr[] words" +
-        ""
-    testParser(text).formal_parameter_list
+    val text = "WordPtr[] words"
+
+    printTree(testParser(text).formal_parameter_list.getTree)
   }
 
 
   it should "formal parameter list 01" in {
-    val text =
-      "void** words" +
-        ""
-    testParser(text).formal_parameter_list
+    val text = "void** words"
+
+    printTree(testParser(text).formal_parameter_list.getTree)
   }
 
 
   it should "from clause 00" in {
-    val text =
-      "from from_ in students" +
-        "" +
-        ""
-    testParser(text).from_clause
+    val text = "from from_ in students"
+
+    printTree(testParser(text).from_clause.getTree)
   }
 
 
@@ -1182,9 +1173,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "[assembly: AssemblyCopyright(\"Copyright @ Microsoft 2006\")]" +
         "[assembly: AssemblyTrademark(\"\")]" +
         "[assembly: AssemblyCulture(\"\")]" +
-        "[assembly: ComVisible(false)]" +
-        ""
-    testParser(text).global_attributes
+        "[assembly: ComVisible(false)]"
+
+    printTree(testParser(text).global_attributes.getTree)
   }
 
 
@@ -1220,32 +1211,29 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "" +
         "namespace Bar" +
         "{" +
-        "}" +
-        ""
-    testParser(text).namespace_declaration
+        "}"
+
+    printTree(testParser(text).namespace_declaration.getTree)
   }
 
 
   it should "identifier 00" in {
-    val text =
-      "Foso" +
-        "" +
-        ""
-    testParser(text).identifier
+    val text = "Foso"
+
+    printTree(testParser(text).identifier.getTree)
   }
 
 
   it should "interface declaration 00" in {
-    val text =
-      "//public" +
+    val text = "//public" +
         "interface IPlugin" +
         "{" +
         "void Register();" +
         "void Startup();" +
         "void Shutdown();" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1292,9 +1280,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "/// <returns>The array of icons, or null if no overlay icons are available.</returns>" +
         "//Icon[] GetOverlayIcons( IResource res );" +
         "Icon[] GetOverlayIcons( IResource res );" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1358,9 +1346,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "/// </summary>" +
         "/// <returns>The selected text in plain-text format, or null if there is no selection.</returns>" +
         "string GetSelectedPlainText();" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1385,9 +1373,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "/// </remarks>" +
         "void DisplayResource( IResource resource, WordPtr[] wordsToHighlight );" +
         "int AddRemoteCall(string rcName, string tokenword);" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1401,9 +1389,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "interface IDisplayPane2: IDisplayPane" +
         "{" +
         "string Foo {get;set;}" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1466,9 +1454,9 @@ class ParserTests extends FlatSpec with ShouldMatchers {
       "interface GenericArraySortHelper where TKey : new()" +
         "{" +
         "" +
-        "}" +
-        ""
-    testParser(text).interface_declaration
+        "}"
+
+    printTree(testParser(text).interface_declaration.getTree)
   }
 
 
@@ -1529,11 +1517,10 @@ class ParserTests extends FlatSpec with ShouldMatchers {
   }
 
 
-  it should "invocation expression 00" in {
-    val text =
-      "Path.Foo()" +
-        ""
-    testParser(text).invocation_expression
+  it should "parse a simple method invocation expression" in {
+    val text = "Path.Foo()"
+
+    printTree(testParser(text).invocation_expression.getTree)
   }
 
 
@@ -2154,9 +2141,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
       "(numer / denom)" +
         "//()" +
         "//(\"foobar\")" +
-        "//(\"foobar\", 2)" +
-        "" +
-        ""
+        "//(\"foobar\", 2)"
     testParser(text).paren_expression
   }
 
@@ -3195,7 +3180,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
         "finally" +
         "{}" +
         ""
-    testParser(text).try_statement
+    printTree(testParser(text).try_statement.getTree)
   }
 
 
