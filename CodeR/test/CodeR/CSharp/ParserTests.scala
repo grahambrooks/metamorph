@@ -3,8 +3,8 @@ package CodeR.CSharp
 import org.scalatest._
 import matchers.ShouldMatchers
 import org.antlr.runtime.{ANTLRStringStream, CommonTokenStream}
-import CodeR.PreProcessor
 import org.antlr.runtime.tree.CommonTree
+import Parser.PreProcessor
 
 trait ParserSpec extends FlatSpec {
 

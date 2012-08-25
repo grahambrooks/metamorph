@@ -2,6 +2,7 @@ package CodeR
 
 import org.antlr.runtime.Token
 import java.util.Date
+import CodeR.QueryResults
 
 class DefaultQueryResults extends QueryResults {
 

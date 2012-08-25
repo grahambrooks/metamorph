@@ -1,4 +1,4 @@
-package model
+package CodeR.Model
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
