@@ -40,7 +40,7 @@ trait ParserSpec extends FlatSpec {
       if (scope != null)
         printNode(scope.asInstanceOf[CommonTree], 0)
       else
-        println("No tree available")
+        println("No node available")
     }
 
 

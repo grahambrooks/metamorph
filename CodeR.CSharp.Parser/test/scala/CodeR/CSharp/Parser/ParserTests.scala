@@ -37,7 +37,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
     if (scope != null)
       printNode(scope.asInstanceOf[CommonTree], 0)
     else
-      println("No tree available")
+      println("No node available")
   }
 
 

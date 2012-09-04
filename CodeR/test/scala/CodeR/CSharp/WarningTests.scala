@@ -5,5 +5,5 @@ import org.scalatest.FlatSpec
 
 class WarningTests extends FlatSpec with ShouldMatchers {
 
-//  warn if catch block is empty
+  //  warn if catch block is empty
 }
