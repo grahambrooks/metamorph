@@ -1,11 +1,10 @@
 package CodeR
 
-import java.io.File
 
 object Program {
   def main(args: Array[String]) {
 
-    val application = new Application
+    val application = new Application(new ConsoleWriter)
 
     application.run(args)
   }

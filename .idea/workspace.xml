@@ -1,0 +1,1449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="8" />
+    <option name="CUSTOM_SCOPE_NAME" value="Module 'CodeR'" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/AUTHORS" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.sln" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vcproj.vspscc" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vcproj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vssscc" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/COPYING" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/ChangeLog" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Cvs2005.sln" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Cvs2005.vcproj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/INSTALL" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Makefile.am" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/NEWS" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/README" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/configure.ac" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/dist/libantlr3c-3.4.tar.gz" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxyfile" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/atsections.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/build.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/buildrec.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/changes31.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/doxygengroups.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/generate.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/interop.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/knownissues.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/mainpage.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/runtime.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/using.dox" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/m4/dummy" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3lexer.rules" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3lexerandparser.rules" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3parser.rules" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3treeparser.rules" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3baserecognizer.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3basetree.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3basetreeadaptor.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3bitset.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3collections.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontoken.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontree.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontreeadaptor.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontreenodestream.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3convertutf.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3cyclicdfa.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3debugeventlistener.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3defs.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3encodings.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3errors.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3exception.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3filestream.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3input.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3interfaces.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3intstream.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3lexer.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3memory.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3parser.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3parsetree.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3recognizersharedstate.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3rewritestreams.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3string.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3tokenstream.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3treeparser.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3baserecognizer.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3basetree.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3basetreeadaptor.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3bitset.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3collections.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontoken.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontree.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontreeadaptor.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontreenodestream.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3convertutf.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3cyclicdfa.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3debughandlers.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3encodings.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3exception.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3filestream.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3inputstream.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3intstream.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3lexer.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3parser.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3rewritestreams.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3string.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3tokenstream.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3treeparser.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rakefile" afterPath="$PROJECT_DIR$/rakefile" />
+    </list>
+    <ignored path="CodeR.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="DebuggerManager">
+    <breakpoint_any>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <breakpoint_rules />
+    <ui_properties />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="CodeR" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="AstReaderSpec.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#19#48#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AstReader.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="12" column="0" selection-start="257" selection-end="257" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AstWriterSpec.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstWriterSpec.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="85" column="70" selection-start="2467" selection-end="2670" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rakefile" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/rakefile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1" column="0" selection-start="34" selection-end="34" vertical-scroll-proportion="0.021406727">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AstWriter.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstWriter.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstWriterSpec.scala" />
+        <option value="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" />
+        <option value="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" />
+        <option value="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" />
+        <option value="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" />
+        <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" />
+        <option value="$PROJECT_DIR$/rakefile" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="22" />
+    <option name="width" value="1920" />
+    <option name="height" value="1137" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>!group.names.properties.files!</id>
+          </State>
+          <State>
+            <id>AOP</id>
+          </State>
+          <State>
+            <id>Abstraction issues</id>
+          </State>
+          <State>
+            <id>AccessibilityLintAndroid</id>
+          </State>
+          <State>
+            <id>Android</id>
+          </State>
+          <State>
+            <id>Annotations verifyingGroovy</id>
+          </State>
+          <State>
+            <id>Ant inspections</id>
+          </State>
+          <State>
+            <id>Assignment issues</id>
+          </State>
+          <State>
+            <id>Assignment issuesGroovy</id>
+          </State>
+          <State>
+            <id>Assignment issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Bean Validation issues</id>
+          </State>
+          <State>
+            <id>Bitwise operation issues</id>
+          </State>
+          <State>
+            <id>Bitwise operation issuesJavaScript</id>
+          </State>
+          <State>
+            <id>CDI(Contexts and Dependency Injection) issues</id>
+          </State>
+          <State>
+            <id>CFML</id>
+          </State>
+          <State>
+            <id>CSS</id>
+          </State>
+          <State>
+            <id>Class metrics</id>
+          </State>
+          <State>
+            <id>Class structure</id>
+          </State>
+          <State>
+            <id>Cloning issues</id>
+          </State>
+          <State>
+            <id>Code Quality ToolsJavaScript</id>
+          </State>
+          <State>
+            <id>Code maturity issues</id>
+          </State>
+          <State>
+            <id>Code style issues</id>
+          </State>
+          <State>
+            <id>Code style issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Compiler issues</id>
+          </State>
+          <State>
+            <id>Concurrency annotation issues</id>
+          </State>
+          <State>
+            <id>Control FlowGroovy</id>
+          </State>
+          <State>
+            <id>Control flow issues</id>
+          </State>
+          <State>
+            <id>Control flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>CorrectnessLintAndroid</id>
+          </State>
+          <State>
+            <id>DOM issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Data flow issues</id>
+          </State>
+          <State>
+            <id>Data flow issuesGroovy</id>
+          </State>
+          <State>
+            <id>Data flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Declaration redundancy</id>
+          </State>
+          <State>
+            <id>Declaration redundancyGroovy</id>
+          </State>
+          <State>
+            <id>Dependency issues</id>
+          </State>
+          <State>
+            <id>Encapsulation issues</id>
+          </State>
+          <State>
+            <id>Error handling</id>
+          </State>
+          <State>
+            <id>Error handlingGroovy</id>
+          </State>
+          <State>
+            <id>Error handlingJavaScript</id>
+          </State>
+          <State>
+            <id>Facelet format detection</id>
+          </State>
+          <State>
+            <id>Faces Model</id>
+          </State>
+          <State>
+            <id>Finalization issues</id>
+          </State>
+          <State>
+            <id>FlexUnit inspections</id>
+          </State>
+          <State>
+            <id>FreeMarker inspections</id>
+          </State>
+          <State>
+            <id>GPath inspectionsGroovy</id>
+          </State>
+          <State>
+            <id>GSPGrailsGroovy</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>Google App Engine</id>
+          </State>
+          <State>
+            <id>Google Web Toolkit issues</id>
+          </State>
+          <State>
+            <id>GrailsGroovy</id>
+          </State>
+          <State>
+            <id>Groovy</id>
+          </State>
+          <State>
+            <id>Guice Inspections</id>
+          </State>
+          <State>
+            <id>HTML</id>
+          </State>
+          <State>
+            <id>Hibernate Issues</id>
+          </State>
+          <State>
+            <id>IDEA Platform Inspections</id>
+          </State>
+          <State>
+            <id>IconsUsabilityLintAndroid</id>
+          </State>
+          <State>
+            <id>Imports</id>
+          </State>
+          <State>
+            <id>Inheritance issues</id>
+          </State>
+          <State>
+            <id>Initialization issues</id>
+          </State>
+          <State>
+            <id>Internationalization issues</id>
+          </State>
+          <State>
+            <id>InternationalizationLintAndroid</id>
+          </State>
+          <State>
+            <id>J2ME Plugin</id>
+          </State>
+          <State>
+            <id>J2ME issues</id>
+          </State>
+          <State>
+            <id>JBoss Seam issues</id>
+          </State>
+          <State>
+            <id>JSF annotated elements errors</id>
+          </State>
+          <State>
+            <id>JSP Inspections</id>
+          </State>
+          <State>
+            <id>JUnit issues</id>
+          </State>
+          <State>
+            <id>Java EE issues</id>
+          </State>
+          <State>
+            <id>Java language level issues</id>
+          </State>
+          <State>
+            <id>Java language level migration aids</id>
+          </State>
+          <State>
+            <id>JavaBeans issues</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript function metricsJavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript validity issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Javadoc issues</id>
+          </State>
+          <State>
+            <id>LESS</id>
+          </State>
+          <State>
+            <id>Language Injection</id>
+          </State>
+          <State>
+            <id>LintAndroid</id>
+          </State>
+          <State>
+            <id>Logging issues</id>
+          </State>
+          <State>
+            <id>Maven</id>
+          </State>
+          <State>
+            <id>Memory issues</id>
+          </State>
+          <State>
+            <id>MessagesCorrectnessLintAndroid</id>
+          </State>
+          <State>
+            <id>Method MetricsGroovy</id>
+          </State>
+          <State>
+            <id>Method metrics</id>
+          </State>
+          <State>
+            <id>Modularization issues</id>
+          </State>
+          <State>
+            <id>Naming ConventionsGroovy</id>
+          </State>
+          <State>
+            <id>Naming conventions</id>
+          </State>
+          <State>
+            <id>Naming conventionsJavaScript</id>
+          </State>
+          <State>
+            <id>Numeric issues</id>
+          </State>
+          <State>
+            <id>OSGi</id>
+          </State>
+          <State>
+            <id>Packaging issues</id>
+          </State>
+          <State>
+            <id>Pages Navigation Model</id>
+          </State>
+          <State>
+            <id>Pattern Validation</id>
+          </State>
+          <State>
+            <id>Performance issues</id>
+          </State>
+          <State>
+            <id>PerformanceLintAndroid</id>
+          </State>
+          <State>
+            <id>Play</id>
+          </State>
+          <State>
+            <id>Plugin DevKit</id>
+          </State>
+          <State>
+            <id>Portability issues</id>
+          </State>
+          <State>
+            <id>Potentially confusing code constructsGroovy</id>
+          </State>
+          <State>
+            <id>Potentially confusing code constructsJavaScript</id>
+          </State>
+          <State>
+            <id>Probable BugsJavaScript</id>
+          </State>
+          <State>
+            <id>Probable bugs</id>
+          </State>
+          <State>
+            <id>Probable bugsGroovy</id>
+          </State>
+          <State>
+            <id>Properties Files</id>
+          </State>
+          <State>
+            <id>RELAX NG</id>
+          </State>
+          <State>
+            <id>Resource management issues</id>
+          </State>
+          <State>
+            <id>SCSS</id>
+          </State>
+          <State>
+            <id>SQL</id>
+          </State>
+          <State>
+            <id>Scala: General</id>
+          </State>
+          <State>
+            <id>Scala: Method signature</id>
+          </State>
+          <State>
+            <id>Scala: Scaladoc</id>
+          </State>
+          <State>
+            <id>Scaladoc</id>
+          </State>
+          <State>
+            <id>Security issues</id>
+          </State>
+          <State>
+            <id>SecurityLintAndroid</id>
+          </State>
+          <State>
+            <id>Serialization issues</id>
+          </State>
+          <State>
+            <id>Spelling</id>
+          </State>
+          <State>
+            <id>Spring Integration</id>
+          </State>
+          <State>
+            <id>Spring Model</id>
+          </State>
+          <State>
+            <id>Spring Web Services</id>
+          </State>
+          <State>
+            <id>Struts</id>
+          </State>
+          <State>
+            <id>Struts 1Struts</id>
+          </State>
+          <State>
+            <id>Struts 2Struts</id>
+          </State>
+          <State>
+            <id>Tapestry inspections</id>
+          </State>
+          <State>
+            <id>TestNG</id>
+          </State>
+          <State>
+            <id>Threading issues</id>
+          </State>
+          <State>
+            <id>Threading issuesGroovy</id>
+          </State>
+          <State>
+            <id>TypographyUsabilityLintAndroid</id>
+          </State>
+          <State>
+            <id>UI Form Problems</id>
+          </State>
+          <State>
+            <id>UsabilityLintAndroid</id>
+          </State>
+          <State>
+            <id>Validity issuesGroovy</id>
+          </State>
+          <State>
+            <id>Velocity inspections</id>
+          </State>
+          <State>
+            <id>Verbose or redundant code constructs</id>
+          </State>
+          <State>
+            <id>Visibility issues</id>
+          </State>
+          <State>
+            <id>WSDL issues</id>
+          </State>
+          <State>
+            <id>Web Services Inspections</id>
+          </State>
+          <State>
+            <id>XML</id>
+          </State>
+          <State>
+            <id>XPath</id>
+          </State>
+          <State>
+            <id>XSLT</id>
+          </State>
+          <State>
+            <id>toString() issues</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Abstraction issues</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource ProjectPane="true" />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CodeR" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CodeR" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_directory_selection" value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="recentsLimit" value="5" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="options.lastSelected" value="preferences.pluginManager" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="CodeR.Ast" />
+      <recent name="CodeR.CSharp.Parser" />
+      <recent name="CodeR" />
+      <recent name="CodeR.Model" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/CodeR/test/scala" />
+      <recent name="$PROJECT_DIR$/CodeR.CSharp.Parser/src" />
+    </key>
+  </component>
+  <component name="RunManager" selected="ScalaTest.AstReaderSpec">
+    <configuration default="false" name="ParserTests" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="CodeR.CSharp.Parser.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="scalaCoverage" />
+      <module name="CodeR.CSharp.Parser" />
+      <setting name="path" value="CodeR.CSharp.Parser.ParserTests" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="AstWriterSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="CodeR.Ast.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="scalaCoverage" />
+      <module name="CodeR.Runtime" />
+      <setting name="path" value="CodeR.Ast.AstWriterSpec" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="BlockSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="CodeR.Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="scalaCoverage" />
+      <module name="CodeR.Runtime" />
+      <setting name="path" value="CodeR.Model.BlockSpec" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Program" type="Application" factoryName="Application" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="CodeR.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="CodeR.Program" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="CodeR" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="AstReaderSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="CodeR.Ast.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="scalaCoverage" />
+      <module name="CodeR.Runtime" />
+      <setting name="path" value="CodeR.Ast.AstReaderSpec" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
+      <option name="PROGRAM_PARAMETERS" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="false" name="CodeR tests" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="CodeR" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="All in package" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="CodeR CSharp Parser Tests" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="CodeR.CSharp.Parser" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="All in package" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="CodeR Runtime Tests" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="CodeR.Runtime" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="All in package" />
+      <setting name="showProgressMessages" value="true" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <list size="8">
+      <item index="0" class="java.lang.String" itemvalue="ScalaTest.ParserTests" />
+      <item index="1" class="java.lang.String" itemvalue="ScalaTest.AstWriterSpec" />
+      <item index="2" class="java.lang.String" itemvalue="ScalaTest.BlockSpec" />
+      <item index="3" class="java.lang.String" itemvalue="ScalaTest.CodeR tests" />
+      <item index="4" class="java.lang.String" itemvalue="ScalaTest.CodeR CSharp Parser Tests" />
+      <item index="5" class="java.lang.String" itemvalue="ScalaTest.CodeR Runtime Tests" />
+      <item index="6" class="java.lang.String" itemvalue="Application.Program" />
+      <item index="7" class="java.lang.String" itemvalue="ScalaTest.AstReaderSpec" />
+    </list>
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="DETECT_NESTED_COPIES" value="true" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="" />
+      <created>1345927367880</created>
+      <updated>1345927367880</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Major code reorganisation">
+      <created>1345927731111</created>
+      <updated>1345927731111</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Major code reorganisation">
+      <created>1345927756799</created>
+      <updated>1345927756799</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Further reorganisation">
+      <created>1345930743566</created>
+      <updated>1345930743566</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Moved parser tests to the right project">
+      <created>1345931726706</created>
+      <updated>1345931726706</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Moved parser tests to the right project">
+      <created>1345931779906</created>
+      <updated>1345931779906</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Moved parser tests to the right project">
+      <created>1345931900931</created>
+      <updated>1345931900931</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Added missing class">
+      <created>1345931940279</created>
+      <updated>1345931940279</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Some more file moving">
+      <created>1345932321456</created>
+      <updated>1345932321456</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Yet more code moving">
+      <created>1346726162290</created>
+      <updated>1346726162290</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="22" width="1920" height="1137" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24946581" sideWeight="0.67027557" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="true" />
+    <option name="myTodoPanelSettings">
+      <value>
+        <are-packages-shown value="false" />
+        <are-modules-shown value="false" />
+        <flatten-packages value="false" />
+        <is-autoscroll-to-source value="false" />
+      </value>
+    </option>
+    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
+    <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
+    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
+    <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
+    <option name="SHORT_DIFF_HORISONTALLY" value="true" />
+    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
+    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
+    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
+    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
+    <option name="CREATE_PATCH_EXPAND_DETAILS_DEFAULT" value="true" />
+    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
+    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
+    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
+    <option name="LAST_COMMIT_MESSAGE" value="Yet more code moving" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
+    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
+    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
+    <option name="ACTIVE_VCS_NAME" />
+    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
+    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
+    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+    <MESSAGE value="Major code reorganisation" />
+    <MESSAGE value="Further reorganisation" />
+    <MESSAGE value="Moved parser tests to the right project" />
+    <MESSAGE value="Added missing class" />
+    <MESSAGE value="Some more file moving" />
+    <MESSAGE value="Yet more code moving" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="45" selection-start="221" selection-end="221" vertical-scroll-proportion="0.17125382" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="27" selection-start="141" selection-end="141" vertical-scroll-proportion="0.14984709" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="44" selection-start="112" selection-end="112" vertical-scroll-proportion="0.12844037" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="4" selection-start="194" selection-end="194" vertical-scroll-proportion="0.17125382" />
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/lib/scala-2.9.2/src/scala-library-src.jar!/scala/collection/TraversableOnce.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="101" column="6" selection-start="4294" selection-end="4294" vertical-scroll-proportion="0.33333334" />
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/lib/scala-2.9.2/src/scala-library-src.jar!/scala/Console.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="257" column="71" selection-start="8309" selection-end="8311" vertical-scroll-proportion="0.33333334" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="24" selection-start="404" selection-end="404" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="36" selection-start="523" selection-end="523" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="19" selection-start="499" selection-end="499" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/QueryResults.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="6" selection-start="53" selection-end="53" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="0" selection-start="1887" selection-end="1887" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#19#48#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstWriter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="0" selection-start="257" selection-end="257" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstWriterSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="70" selection-start="2467" selection-end="2670" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rakefile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="34" selection-end="34" vertical-scroll-proportion="0.021406727">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Scala (CodeR.Runtime)|Scala</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Scala 2.9.2</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>CodeR</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.5" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>scala-library</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
+

@@ -16,8 +16,8 @@ class DirectoryScanner (rootPath: String, filePattern : String) {
   }
 
   def eachFile(function: (File) => Any) {
-    val rootFile = new File(rootPath);
+    val rootFile = new File(rootPath)
 
-    scan(rootFile, function)
+    scan(file = rootFile, function = function)
   }
 }

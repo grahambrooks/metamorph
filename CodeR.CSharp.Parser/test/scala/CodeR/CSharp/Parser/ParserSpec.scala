@@ -16,7 +16,7 @@ trait ParserSpec extends FlatSpec {
 
       val tokenStream = new CommonTokenStream(new PreProcessor(input))
 
-      return new csParser(tokenStream)
+      new csParser(tokenStream)
     }
 
     def printNode(node: CommonTree, depth: Int) {
@@ -61,9 +61,7 @@ trait ParserSpec extends FlatSpec {
   }
 
   final class AstTree {
-    def token(name: String): AstTree = {
-      return null
-    }
+    def token(name: String): AstTree = null
   }
 
   protected val parser = new ParserWord

@@ -1,78 +1,75 @@
 package CodeR
 
 import CSharp.Parser.CSharpParser
-import scala.Console
 import java.io.File
 
-class Application {
+class Application(console: ConsoleWriter) {
   val Results = new DefaultQueryResults()
 
   def run(args: Array[String]) {
-    println("CodeR - source CODE Rewriter")
-//    if (args.length == 0) {
-//      Console.err.println("Usage: coder <source-path>")
-//      return
-//    }
+    console.WriteLine("CodeR - source CODE Rewriter")
+    //    if (args.length == 0) {
+    //      Console.err.println("Usage: coder <source-path>")
+    //      return
+    //    }
 
 
-
-
-//    try {
+    //    try {
     val root = new File("Tests")
-      val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.cs")
+    val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.cs")
 
-      var parser = new CSharpParser()
+    val parser = new CSharpParser()
 
-//      val file = new File(args(0))
-//      val searchPattern = file.getCanonicalFile
-//
-//
-//      var dir = file.getCanonicalPath
-//
-//      if (dir.isEmpty)
-//        dir = System.getProperty("user.dir")
-//
-//      val scanner = new DirectoryScanner(dir, ".*\\.cs")
+    //      val file = new File(args(0))
+    //      val searchPattern = file.getCanonicalFile
+    //
+    //
+    //      var dir = file.getCanonicalPath
+    //
+    //      if (dir.isEmpty)
+    //        dir = System.getProperty("user.dir")
+    //
+    //      val scanner = new DirectoryScanner(dir, ".*\\.cs")
 
-      scanner.eachFile(filepath => parser.ParseFile(filepath.getCanonicalPath, true, Results))
+    scanner.eachFile(path => parser.ParseFile(path.getCanonicalPath, wait = true, results = Results))
 
-      Results.printSummaryToConsole
+    Results.printSummaryToConsole
 
-      ApplyEdits(Results)
-//    }
-//    catch  {
-//      case ae: Exception => Console.println(ae.getMessage)
-//    }
+    ApplyEdits(Results)
+    //    }
+    //    catch  {
+    //      case ae: Exception => Console.println(ae.getMessage)
+    //    }
   }
 
-  def ApplyEdits(results : DefaultQueryResults) {
+  def ApplyEdits(results: DefaultQueryResults) {
     results.EachFile(AddLogging)
   }
 
-  def AddLogging(filepath : String) {
-//    var emptyCatches = Results.EmptyCatches(filepath);
-//
-//    var edits = new CSharpCodeEdits();
-//
-//    foreach(CatchToken emptyCatch in emptyCatches) {
-//      edits.Add(emptyCatch.Line, SourceEdit.Insert("(Exception exp)").After(emptyCatch.CatchStatement));
-//      edits.Add(emptyCatch.OpeningBrace.Line,
-//        SourceEdit.Insert("Logger.ErrorException(\"Auto inserted log\", exp);").OnAnNewIndentedLine().
-//          After(emptyCatch.OpeningBrace));
-//    }
-//
-//    string editedPath = filepath + ".edited";
-//    using( var source = new SourceFileReader(filepath))
-//    {
-//      using( var destinaton = new SourceFileWriter(editedPath))
-//      {
-//        var reWriter = new SourceCodeReWriter(source, destinaton);
-//        reWriter.ReWrite(edits);
-//      }
-//    }
-//
-//    File.Copy(editedPath, filepath, true);
-//    File.Delete(editedPath);
+  def AddLogging(path: String) {
+    //    var emptyCatches = Results.EmptyCatches(path);
+    //
+    //    var edits = new CSharpCodeEdits();
+    //
+    //    foreach(CatchToken emptyCatch in emptyCatches) {
+    //      edits.Add(emptyCatch.Line, SourceEdit.Insert("(Exception exp)").After(emptyCatch.CatchStatement));
+    //      edits.Add(emptyCatch.OpeningBrace.Line,
+    //        SourceEdit.Insert("Logger.ErrorException(\"Auto inserted log\", exp);").OnAnNewIndentedLine().
+    //          After(emptyCatch.OpeningBrace));
+    //    }
+    //
+    //    string editedPath = path + ".edited";
+    //    using( var source = new SourceFileReader(path))
+    //    {
+    //      using( var destinaton = new SourceFileWriter(editedPath))
+    //      {
+    //        var reWriter = new SourceCodeReWriter(source, destinaton);
+    //        reWriter.ReWrite(edits);
+    //      }
+    //    }
+    //
+    //    File.Copy(editedPath, path, true);
+    //    File.Delete(editedPath);
   }
 
 

@@ -57,9 +57,8 @@ class CSharpParser {
     }
   }
 
-  def TokenMatches(ct: CommonTree, text: String): Boolean = {
-    return ct != null && ct.getToken != null && ct.getToken.getText == text
-  }
+  def TokenMatches(ct: CommonTree, text: String): Boolean = ct != null && ct.getToken != null && ct.getToken.getText == text
+
 
   def createLexer(fileName: String): CommonTokenStream = {
     val inputFileName = fileName

@@ -33,17 +33,17 @@ class PreProcessor(stream: CharStream) extends csLexer {
   override def nextToken(): Token = {
     super.nextToken()
     if (_tokens.size == 0) {
-      val eof = new CommonToken(input, CharStream.EOF, Token.DEFAULT_CHANNEL, input.index, input.index);
+      val eof = new CommonToken(input, CharStream.EOF, Token.DEFAULT_CHANNEL, input.index, input.index)
       eof.setLine(getLine)
       eof.setCharPositionInLine(getCharPositionInLine)
       return eof
     }
 
-    _tokens.dequeue
+    _tokens.dequeue()
   }
 
   override def getErrorMessage(e: RecognitionException, tokenNames: Array[String]): String = {
-    var sb = new StringBuffer();
+    var sb = new StringBuffer()
     //    var stack = getRuleInvocationStack(new StackTrace(e));
     //    sb.append("\r\n");
     //
@@ -65,5 +65,5 @@ class PreProcessor(stream: CharStream) extends csLexer {
     return sb.toString
   }
 
-  override def getTokenErrorDisplay(t: Token): String = t.toString()
+  override def getTokenErrorDisplay(t: Token): String = t.toString
 }

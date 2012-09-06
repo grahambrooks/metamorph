@@ -13,7 +13,7 @@ class ParserTests extends FlatSpec with ShouldMatchers {
 
     val tokenStream = new CommonTokenStream(new PreProcessor(input))
 
-    return new csParser(tokenStream)
+    new csParser(tokenStream)
   }
 
   def printNode(node: CommonTree, depth: Int) {
