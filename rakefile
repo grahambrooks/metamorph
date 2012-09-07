@@ -1,5 +1,6 @@
 $:.unshift File.dirname(__FILE__)
 require 'lib/antlr'
+require 'lib/raven'
 
 desc 'Build everything'
 task :default => :ast_grammar do
@@ -14,16 +15,21 @@ antlr 'ast_grammar' do |t|
 end
 
 
-desc 'Temp'
-task :ast_parser_lib => 'ast-parser-lib.jar'
+# desc 'Temp'
+# task :ast_parser_lib => 'ast-parser-lib.jar'
 
 antlr 'ast_grammar' do |t|
  	t.grammar = 'CodeR.Runtime/src/antlr/Ast.g'
 end
 
-javac 'compile_ast' do |t|
-	t.build_path << "src/antlr"
+# desc "Compile AST source"
+# javac 'compile_ast' => 'ast_grammar' do |t|
+# 	t.build_path << "src/antlr"
+# end
+
+# jar 'ast-parser-lib.jar' => 'compile_ast'
+
+desc "Compile AST source"
+javac 'compile_ast1' do |t|
+	t.build_path << "CodeR.Runtime/src/antlr"
 end
-
-jar 'ast-parser-lib.jar' => 'compile_ast'
-

@@ -6,105 +6,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/AUTHORS" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.sln" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vcproj.vspscc" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vcproj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/C.vssscc" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/COPYING" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/ChangeLog" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Cvs2005.sln" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Cvs2005.vcproj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/INSTALL" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/Makefile.am" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/NEWS" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/README" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/configure.ac" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/dist/libantlr3c-3.4.tar.gz" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxyfile" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/atsections.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/build.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/buildrec.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/changes31.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/doxygengroups.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/generate.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/interop.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/knownissues.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/mainpage.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/runtime.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/doxygen/using.dox" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/m4/dummy" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3lexer.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3lexerandparser.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3parser.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/vsrulefiles/antlr3treeparser.rules" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3baserecognizer.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3basetree.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3basetreeadaptor.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3bitset.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3collections.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontoken.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontree.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontreeadaptor.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3commontreenodestream.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3convertutf.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3cyclicdfa.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3debugeventlistener.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3defs.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3encodings.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3errors.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3exception.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3filestream.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3input.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3interfaces.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3intstream.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3lexer.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3memory.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3parser.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3parsetree.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3recognizersharedstate.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3rewritestreams.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3string.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3tokenstream.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/include/antlr3treeparser.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3baserecognizer.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3basetree.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3basetreeadaptor.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3bitset.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3collections.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontoken.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontree.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontreeadaptor.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3commontreenodestream.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3convertutf.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3cyclicdfa.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3debughandlers.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3encodings.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3exception.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3filestream.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3inputstream.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3intstream.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3lexer.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3parser.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3rewritestreams.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3string.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3tokenstream.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cpp/tools/antlr/c-runtime/src/antlr3treeparser.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" afterPath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cpp/graham.brooks.CodeR/CodeR" afterPath="$PROJECT_DIR$/cpp/graham.brooks.CodeR/CodeR" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstLexer.java" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstLexer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstParser.java" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstParser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rakefile" afterPath="$PROJECT_DIR$/rakefile" />
     </list>
     <ignored path="CodeR.iws" />
@@ -167,9 +71,7 @@
         <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state line="5" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#19#48#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -195,7 +97,7 @@
       <file leaf-file-name="rakefile" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/rakefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="0" selection-start="34" selection-end="34" vertical-scroll-proportion="0.021406727">
+            <state line="35" column="0" selection-start="928" selection-end="928" vertical-scroll-proportion="0.49544996">
               <folding />
             </state>
           </provider>
@@ -722,22 +624,22 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
             <PATH_ELEMENT USER_OBJECT="Root">
               <option name="myItemId" value="" />
               <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CodeR" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -757,12 +659,12 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -776,29 +678,7 @@
       <recent name="$PROJECT_DIR$/CodeR.CSharp.Parser/src" />
     </key>
   </component>
-  <component name="RunManager" selected="ScalaTest.AstReaderSpec">
-    <configuration default="false" name="ParserTests" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="CodeR.CSharp.Parser.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <extension name="scalaCoverage" />
-      <module name="CodeR.CSharp.Parser" />
-      <setting name="path" value="CodeR.CSharp.Parser.ParserTests" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Ruby.rakefile">
     <configuration default="false" name="AstWriterSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -893,6 +773,26 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="rakefile" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
+      <module name="" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="$PROJECT_DIR$" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/rakefile" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -902,6 +802,7 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -914,6 +815,50 @@
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
         <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -947,24 +892,7 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -985,6 +913,7 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
@@ -1011,6 +940,7 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
@@ -1031,6 +961,7 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
       </method>
     </configuration>
     <configuration default="false" name="CodeR tests" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
@@ -1085,14 +1016,14 @@
       <method />
     </configuration>
     <list size="8">
-      <item index="0" class="java.lang.String" itemvalue="ScalaTest.ParserTests" />
-      <item index="1" class="java.lang.String" itemvalue="ScalaTest.AstWriterSpec" />
-      <item index="2" class="java.lang.String" itemvalue="ScalaTest.BlockSpec" />
-      <item index="3" class="java.lang.String" itemvalue="ScalaTest.CodeR tests" />
-      <item index="4" class="java.lang.String" itemvalue="ScalaTest.CodeR CSharp Parser Tests" />
-      <item index="5" class="java.lang.String" itemvalue="ScalaTest.CodeR Runtime Tests" />
-      <item index="6" class="java.lang.String" itemvalue="Application.Program" />
-      <item index="7" class="java.lang.String" itemvalue="ScalaTest.AstReaderSpec" />
+      <item index="0" class="java.lang.String" itemvalue="ScalaTest.AstWriterSpec" />
+      <item index="1" class="java.lang.String" itemvalue="ScalaTest.BlockSpec" />
+      <item index="2" class="java.lang.String" itemvalue="ScalaTest.CodeR tests" />
+      <item index="3" class="java.lang.String" itemvalue="ScalaTest.CodeR CSharp Parser Tests" />
+      <item index="4" class="java.lang.String" itemvalue="ScalaTest.CodeR Runtime Tests" />
+      <item index="5" class="java.lang.String" itemvalue="Application.Program" />
+      <item index="6" class="java.lang.String" itemvalue="ScalaTest.AstReaderSpec" />
+      <item index="7" class="java.lang.String" itemvalue="Ruby.rakefile" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -1178,7 +1109,6 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1188,6 +1118,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1299,58 +1230,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="19" selection-start="499" selection-end="499" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="18" column="19" selection-start="499" selection-end="499" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/QueryResults.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="6" selection-start="53" selection-end="53" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="4" column="6" selection-start="53" selection-end="53" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="0" selection-start="1887" selection-end="1887" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="60" column="0" selection-start="1887" selection-end="1887" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#19#48#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstWriter.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="5" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="257" selection-end="257" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="12" column="0" selection-start="257" selection-end="257" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstWriterSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="70" selection-start="2467" selection-end="2670" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="85" column="70" selection-start="2467" selection-end="2670" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstWriter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/rakefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="34" selection-end="34" vertical-scroll-proportion="0.021406727">
+        <state line="35" column="0" selection-start="928" selection-end="928" vertical-scroll-proportion="0.49544996">
           <folding />
         </state>
       </provider>
