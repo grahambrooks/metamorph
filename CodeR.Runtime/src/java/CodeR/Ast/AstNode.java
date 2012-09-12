@@ -1,7 +1,6 @@
 package CodeR.Ast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AstNode {
     private int type;
@@ -9,7 +8,7 @@ public class AstNode {
     private int charPositionInLine;
     private String text;
     private int index;
-    private List<AstNode> children;
+    private ArrayList<AstNode> children;
 
     public AstNode() {
         children = new ArrayList<AstNode>();
@@ -57,5 +56,9 @@ public class AstNode {
 
     public void addChild(AstNode child) {
         children.add(child);
+    }
+
+    public AstNode getChild(int index) {
+        return children.get(index);
     }
 }

@@ -20,4 +20,19 @@ class AstReaderSpec extends FlatSpec with ShouldMatchers {
     element.getText should equal("foo")
     element.getIndex should equal(4)
   }
+
+  it should "read an item with a child" in {
+    val text = "(type:1 line:2 charPositionInLine:3 text:\"foo\" index:4" +
+      "(type:2 line:2 charPositionInLine:3 text:\"foo\" index:4))"
+
+    val stringReader = new StringReader(text)
+
+    val reader = new AstReader(stringReader)
+
+    val element = reader.read()
+
+    element.getType should equal(1)
+
+    element.getChild(0).getType should equal(2)
+  }
 }
