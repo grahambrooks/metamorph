@@ -6,3 +6,6 @@ _ReSharper.*
 *.log
 *.user
 out
+CodeR.Runtime/src/java/CodeR/Ast/Ast.tokens
+CodeR.Runtime/src/java/CodeR/Ast/AstLexer.java
+CodeR.Runtime/src/java/CodeR/Ast/AstParser.java
