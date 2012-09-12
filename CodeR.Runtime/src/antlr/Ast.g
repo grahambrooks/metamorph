@@ -1,17 +1,26 @@
 grammar Ast;
 
+@header {
+    package CodeR.Ast;
+}
+
+@lexer::header
+{
+    package CodeR.Ast;
+}
+
 ast_tree
 	:	ast_node
 	;
 
-ast_node returns [AstNode n]
+ast_node returns [AstNode n = new AstNode()]
 	:	'('
-			'type' ':' type=INT { n.setType($type); }
-			'line' ':' line=INT { n.setLine($line); }
-			'charPositionInLine' ':' posn=INT { n.setcharPositionInLine($posn); }
-			'text' ':' text=STRING { n.setText($text); }
-			'index' ':' index=INT { n.setIndex($index); }
-		(child = ast_node { n.addChild(child); })* ')'
+			'type' ':' type=INT { $n.setType(Integer.parseInt($type.getText())); }
+			'line' ':' line=INT { $n.setLine(Integer.parseInt($line.getText())); }
+			'charPositionInLine' ':' posn=INT { $n.setcharPositionInLine(Integer.parseInt($posn.getText())); }
+			'text' ':' text=STRING { $n.setText($text.getText().substring(1, $text.getText().length() - 1)); }
+			'index' ':' index=INT { $n.setIndex(Integer.parseInt($index.getText())); }
+		(child = ast_node { $n.addChild(child); })* ')'
 	;
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*

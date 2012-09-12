@@ -1,15 +1,19 @@
 $:.unshift File.dirname(__FILE__)
+require 'rake'
 require 'lib/antlr'
 require 'lib/raven'
+
+lib_dir 'lib/runtime'
 
 desc 'Build everything'
 task :default => :ast_grammar do
 end
 
 desc 'Generate C# Parser from grammar'
-antlr 'ast_grammar' do |t|
+antlr :ast_grammar do |t|
 	puts "AST Grammar"
    	t.grammar = 'CodeR.Runtime/src/antlr/Ast.g'
+   	t.output_path = 'CodeR.Runtime/src/java/CodeR/Ast'
 #  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -o CodeR/CSharp"
 #  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -fo CodeR.CSharp.Parser/src/antlr/CodeR/CSharp"
 end
@@ -30,6 +34,6 @@ end
 # jar 'ast-parser-lib.jar' => 'compile_ast'
 
 desc "Compile AST source"
-javac 'compile_ast1' do |t|
-	t.build_path << "CodeR.Runtime/src/antlr"
+javac 'compile_ast1' => 'lib/runtime/antlr-3.4-complete.jar' do |t|
+	t.build_path << "CodeR.Runtime/src/antlr/output"
 end

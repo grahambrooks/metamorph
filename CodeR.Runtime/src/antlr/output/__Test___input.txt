@@ -1,4 +1,0 @@
-(type:1 line:2 charPositionInLine:3 text:"foo" index:4
-
-(type:2 line:2 charPositionInLine:3 text:"bar" index:4)
-(type:3 line:2 charPositionInLine:3 text:"boo" index:4))

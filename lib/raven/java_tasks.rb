@@ -46,7 +46,13 @@ module Raven
     def execute(arg)
       super(arg)
       @classpath = Raven.build_cp(prerequisites)
+      
+      Dir.glob("lib/**/*.jar").select do |jar_file|
+        @classpath << jar_file
+      end
+
       @classpath << "target/classes"
+      
       @build_path = ["src/main/java"] unless @build_path
       
       puts "Building path #{@build_path.join(' ')}" if RakeFileUtils.verbose_flag
@@ -345,8 +351,10 @@ module Raven
     # Builds the classpath by getting the path to the jars bundled
     # in each gem dependency.
     def self.build_cp(prerequisites)
+      puts "Building Classpath"
       classpath = []
       Raven.prereq_filter(prerequisites, :gem_deps) do |dep_task|
+        puts "Adding dependency"
         if (dep_task.gem_deps)
             dep_task.gem_deps.each do |gempath|
             Dir.foreach(gempath + '/ext') do |file|
