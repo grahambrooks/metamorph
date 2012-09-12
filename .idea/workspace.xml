@@ -5,27 +5,7 @@
     <option name="CUSTOM_SCOPE_NAME" value="Module 'CodeR'" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="Yet more code moving">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/graham.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstLexer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/AstParser.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/Ast.tokens" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/AstLexer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/AstParser.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/__Test__.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/__Test___input.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/classes/AstLexer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/classes/AstParser.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/output/classes/__Test__.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/CodeR.Runtime.iml" afterPath="$PROJECT_DIR$/CodeR.Runtime/CodeR.Runtime.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" afterPath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/raven/java_tasks.rb" afterPath="$PROJECT_DIR$/lib/raven/java_tasks.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rakefile" afterPath="$PROJECT_DIR$/rakefile" />
-    </list>
+    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="" />
     <ignored path="CodeR.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -82,13 +62,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="AstNode.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="AstNode.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="26" selection-start="554" selection-end="554" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state line="61" column="35" selection-start="1187" selection-end="1187" vertical-scroll-proportion="1.3058105">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -105,7 +83,7 @@
       <file leaf-file-name="AstReaderSpec.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="36" selection-start="620" selection-end="620" vertical-scroll-proportion="0.0">
+            <state line="35" column="9" selection-start="987" selection-end="987" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -120,10 +98,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AstParser.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="AstParser.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="0" selection-start="7714" selection-end="7714" vertical-scroll-proportion="2.5943837">
+            <state line="219" column="0" selection-start="7714" selection-end="7714" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -174,10 +152,10 @@
         <option value="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" />
         <option value="$PROJECT_DIR$/rakefile" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" />
-        <option value="$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java" />
-        <option value="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstParser.java" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" />
+        <option value="$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java" />
       </list>
     </option>
   </component>
@@ -1478,7 +1456,11 @@
       <created>1346726162290</created>
       <updated>1346726162290</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Another AstReader test for children">
+      <created>1347478937484</created>
+      <updated>1347478937484</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1486,7 +1468,7 @@
     <editor active="false" />
     <layout>
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3297244" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1501,8 +1483,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24946581" sideWeight="0.67027557" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3297244" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24946581" sideWeight="0.67027557" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1547,7 +1529,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Yet more code moving" />
+    <option name="LAST_COMMIT_MESSAGE" value="Another AstReader test for children" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1566,6 +1548,7 @@
     <MESSAGE value="Added missing class" />
     <MESSAGE value="Some more file moving" />
     <MESSAGE value="Yet more code moving" />
+    <MESSAGE value="Another AstReader test for children" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1641,34 +1624,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="4" selection-start="363" selection-end="363" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#19#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="60" column="0" selection-start="1887" selection-end="1887" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="26" selection-start="554" selection-end="554" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="36" selection-start="620" selection-end="620" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g">
@@ -1680,7 +1638,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="219" column="0" selection-start="7714" selection-end="7714" vertical-scroll-proportion="2.5943837">
+        <state line="219" column="0" selection-start="7714" selection-end="7714" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="4" selection-start="363" selection-end="363" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#19#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="9" selection-start="987" selection-end="987" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="61" column="35" selection-start="1187" selection-end="1187" vertical-scroll-proportion="1.3058105">
           <folding />
         </state>
       </provider>
