@@ -5,9 +5,7 @@
       <root url="jar://$USER_HOME$/lib/scala-2.9.2/lib/scala-swing.jar!/" />
       <root url="jar://$USER_HOME$/lib/scala-2.9.2/lib/scala-dbc.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="file://$USER_HOME$/lib/scala-2.9.2/doc/scala-devel-docs/api" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/lib/scala-2.9.2/src/scala-library-src.jar!/" />
       <root url="jar://$USER_HOME$/lib/scala-2.9.2/src/scala-swing-src.jar!/" />

@@ -42,7 +42,7 @@ public class AstNode {
         return index;
     }
 
-    public void setcharPositionInLine(int charPositionInLine) {
+    public void setCharPositionInLine(int charPositionInLine) {
         this.charPositionInLine = charPositionInLine;
     }
 

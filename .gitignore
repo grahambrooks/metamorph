@@ -9,3 +9,11 @@ out
 CodeR.Runtime/src/java/CodeR/Ast/Ast.tokens
 CodeR.Runtime/src/java/CodeR/Ast/AstLexer.java
 CodeR.Runtime/src/java/CodeR/Ast/AstParser.java
+CodeR.Java.Parser/src/java/CodeR.Java/Java.tokens
+CodeR.Java.Parser/src/java/CodeR.Java/JavaBaseListener.java
+CodeR.Java.Parser/src/java/CodeR.Java/JavaBaseVisitor.java
+CodeR.Java.Parser/src/java/CodeR.Java/JavaLexer.java
+CodeR.Java.Parser/src/java/CodeR.Java/JavaLexer.tokens
+CodeR.Java.Parser/src/java/CodeR.Java/JavaListener.java
+CodeR.Java.Parser/src/java/CodeR.Java/JavaParser.java
+CodeR.Java.Parser/src/java/CodeR.Java/JavaVisitor.java

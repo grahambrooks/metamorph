@@ -2,11 +2,31 @@ $:.unshift File.dirname(__FILE__)
 require 'rake'
 require 'lib/antlr'
 require 'lib/raven'
+require 'lib/component_tasks'
 
 lib_dir 'lib/runtime'
 
 desc 'Build everything'
-task :default => :ast_grammar do
+task :default => ['CodeR.Java.Parser', :ast_grammar]
+
+desc "Java Parser Component"
+component 'CodeR.Java.Parser' do |c|
+  c.compile_and_jar :antlr4 => 'src/antlr/Java.g4', :java => 'src/java', :jar_file => 'coder-java-parser.jar', :libs => ['lib/runtime']
+  c.compile_and_jar :scala => 'test/scala', :jar_file => 'coder-java-parser-test.jar', :libs => ['lib/runtime', 'lib/test', 'coder.java.parser.jar']
+  c.scalatest
+end
+
+desc "CSharp Parser Component"
+component 'CodeR.CSharp.Parser' do |c|
+  c.compile_and_jar :antlr3 => 'src/antlr/cs.g4', :java => 'src/java', :jar_file => 'coder-csharp-parser.jar', :libs => ['lib/runtime']
+end
+
+desc "Build Java parser"
+task :java_parser => [:generate_java_parser, :compile_java_parser]
+
+antlr4 :generate_java_parser do |antlr|
+  antlr.grammar = 'CodeR.Java.Parser/src/antlr/Java.g4'
+  antlr.output_path = 'CodeR.Java.Parser/src/java/CodeR.Java'
 end
 
 desc 'Generate C# Parser from grammar'

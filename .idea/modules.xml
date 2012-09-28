@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CodeR/CodeR.iml" filepath="$PROJECT_DIR$/CodeR/CodeR.iml" />
       <module fileurl="file://$PROJECT_DIR$/CodeR.CSharp.Parser/CodeR.CSharp.Parser.iml" filepath="$PROJECT_DIR$/CodeR.CSharp.Parser/CodeR.CSharp.Parser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CodeR.Java.Parser/CodeR.Java.Parser.iml" filepath="$PROJECT_DIR$/CodeR.Java.Parser/CodeR.Java.Parser.iml" />
       <module fileurl="file://$PROJECT_DIR$/CodeR.Runtime/CodeR.Runtime.iml" filepath="$PROJECT_DIR$/CodeR.Runtime/CodeR.Runtime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CodeR.Sample/CodeR.Sample.iml" filepath="$PROJECT_DIR$/CodeR.Sample/CodeR.Sample.iml" />
     </modules>
   </component>
 </project>
