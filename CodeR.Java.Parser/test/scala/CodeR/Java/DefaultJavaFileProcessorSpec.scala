@@ -15,7 +15,32 @@ class DefaultJavaFileProcessorSpec extends FlatSpec with ShouldMatchers with Moc
     processSource("class foo {}") should equal("(compilationUnit (typeDeclaration (classDeclaration class foo (classBody { }))) <EOF>)\n")
   }
 
-  def processSource(text: String) : String = {
+  it should "generate a text representation of AST for method declaration" in {
+    processSource("class foo { void m() {} }") should equal("(compilationUnit (typeDeclaration (classDeclaration class foo (classBody { (classBodyDeclaration modifiers (member (methodDeclaration void m (formalParameters ( )) (methodDeclarationRest (methodBody (block { })))))) }))) <EOF>)\n")
+  }
+
+  it should "generate a text representation of AST for method call" in {
+    processSource("class foo { void m() { foo f = new foo(); f.m(); } }") should equal("(compilationUnit " +
+      "(typeDeclaration " +
+      "(classDeclaration class foo " +
+      "(classBody { " +
+      "(classBodyDeclaration modifiers " +
+      "(member " +
+      "(methodDeclaration void m (formalParameters ( )) " +
+      "(methodDeclarationRest " +
+      "(methodBody " +
+      "(block { " +
+      "(blockStatement " +
+      "(localVariableDeclarationStatement " +
+      "(localVariableDeclaration variableModifiers " +
+      "(type " +
+      "(classOrInterfaceType foo)) " +
+      "(variableDeclarators " +
+      "(variableDeclarator (variableDeclaratorId f) = (variableInitializer (expression new (creator (createdName (classOrInterfaceType foo)) (classCreatorRest (arguments ( ))))))))) ;)) " +
+      "(blockStatement (statement (statementExpression (expression (expression (expression (primary f)) . m) ( ))) ;)) })))))) }))) <EOF>)\n")
+  }
+
+  def processSource(text: String): String = {
     val processor = new DefaultJavaFileProcessor
     val input = new ANTLRInputStream(text)
     val writer = new StringWriter()

@@ -1,12 +1,13 @@
 package CodeR
 
-class Refactor {
+
+trait Refactor {
 
   protected final class Rename {
     def to(name: String) {}
   }
 
-  def rename(name: String): Rename = {
+  def rename: Rename = {
     new Rename
   }
 
@@ -48,4 +49,8 @@ class Refactor {
   def classes: ClassPredicate = new ClassPredicate
 
   def instancesOf(predicate: ClassPredicate): Predicate = new InstancePredicate(predicate)
+
+  def refactor(declaration: => scala.Unit): ChangeSet = new ChangeSet()
+
+  protected val source: SourceCode = new SourceCode()
 }

@@ -1,6 +1,7 @@
 package CodeR.Java;
 
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,6 +24,9 @@ public final class DefaultJavaFileProcessor implements JavaFileProcessor {
         JavaParser parser = new JavaParser(tokens);
         ParserRuleContext<Token> tree = parser.compilationUnit(); // parse
         out.println(tree.toStringTree(parser));
-//        ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker ExtractInterfaceListener extractor = new ExtractInterfaceListener(parser); walker.walk(extractor, tree); // initiate walk of tree with listener
+        ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
+        walker.walk(tree, new PrintingListener(out));
+// ExtractInterfaceListener extractor = new ExtractInterfaceListener(parser);
+// walker.walk(extractor, tree); // initiate walk of tree with listener
     }
 }
