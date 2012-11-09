@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="FacetManager">
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Global" />
+        <option name="compilerLibraryName" value="scala-compiler" />
+        <option name="fsc" value="true" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../metamorph.runtime">
+      <sourceFolder url="file://$MODULE_DIR$/../metamorph.runtime/src/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../metamorph.runtime/test/scala" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../metamorph.runtime/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../metamorph.runtime/src/antlr" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="runtime" level="project" />
+    <orderEntry type="library" name="test" level="project" />
+    <orderEntry type="library" name="scala-library" level="project" />
+  </component>
+</module>
+

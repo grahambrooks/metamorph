@@ -6,20 +6,67 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/ChangeSet.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/CodeChange.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Predicate/MethodCallPredicate.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Refactor.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceCode.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceFile.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR/test/acceptance/scala/MethodRenameSpec.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Refactor.scala" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/test/scala/CodeR/CSharp/WarningTests.scala" afterPath="$PROJECT_DIR$/CodeR/test/unit/scala/CodeR/CSharp/WarningTests.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scala_compiler.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.CSharp.Parser/metamorph.csharp.parser.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Java.Parser/metamorph.java.parser.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Runtime/metamorph.runtime.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR.Sample/metamorph.sample.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CodeR/metamorph.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Statement.scala" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/Statement.scala" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/CodeR.CSharp.Parser.iml" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/CodeR.CSharp.Parser.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/antlr/CodeR/CSharp/cs.tokens" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/antlr/metamorph/CSharp/cs.tokens" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/antlr/CodeR/CSharp/csLexer.java" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/antlr/metamorph/CSharp/csLexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/antlr/CodeR/CSharp/csParser.java" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/antlr/metamorph/CSharp/csParser.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/antlr/cs.g" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/antlr/cs.g" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/CSharpParser.scala" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/scala/metamorph/CSharp/Parser/CSharpParser.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/CSharp/Parser/PreProcessor.scala" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/scala/metamorph/CSharp/Parser/PreProcessor.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/src/scala/CodeR/QueryResults.scala" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/src/scala/metamorph/QueryResults.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserSpec.scala" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/test/scala/metamorph/CSharp/Parser/ParserSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.CSharp.Parser/test/scala/CodeR/CSharp/Parser/ParserTests.scala" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/test/scala/metamorph/CSharp/Parser/ParserTests.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/CodeR.Java.Parser.iml" afterPath="$PROJECT_DIR$/metamorph.java.parser/CodeR.Java.Parser.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/src/antlr/Java.g4" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/JavaFileProcessor.java" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaFileProcessor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/Tool.java" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/Tool.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/ToolSpec.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/CodeR.Runtime.iml" afterPath="$PROJECT_DIR$/metamorph.runtime/metamorph.Runtime.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g" afterPath="$PROJECT_DIR$/metamorph.runtime/src/antlr/Ast.g" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/java/CodeR/Ast/AstNode.java" afterPath="$PROJECT_DIR$/metamorph.runtime/src/java/metamorph/Ast/AstNode.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstReader.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/Ast/AstReader.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Ast/AstWriter.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/Ast/AstWriter.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/ChangeSet.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/ChangeSet.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/CodeChange.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/CodeChange.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Predicate/MethodCallPredicate.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/Predicate/MethodCallPredicate.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Refactor.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/Refactor.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceCode.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/SourceCode.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceFile.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/SourceFile.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/Block.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Block.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/CatchStatement.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/CatchStatement.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/ClassSpecification.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstReaderSpec.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/test/scala/metamorph/Ast/AstReaderSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Ast/AstWriterSpec.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/test/scala/metamorph/Ast/AstWriterSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Model/BlockSpec.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/test/scala/metamorph/Model/BlockSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Model/CatchStatementSpec.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/test/scala/metamorph/Model/CatchStatementSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Model/ClassSpecificationSpec.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/test/scala/metamorph/Model/ClassSpecificationSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Sample/CodeR.Sample.iml" afterPath="$PROJECT_DIR$/metamorph.sample/CodeR.Sample.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR.Sample/src/scala/SampleRefactor.scala" afterPath="$PROJECT_DIR$/metamorph.sample/src/scala/SampleRefactor.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/CodeR.iml" afterPath="$PROJECT_DIR$/metamorph/CodeR.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Application.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/Application.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/CatchToken.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/CatchToken.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/ConsoleWriter.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/ConsoleWriter.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DefaultQueryResults.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/DefaultQueryResults.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/DirectoryScanner.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/DirectoryScanner.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/Program.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/Program.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceLocation.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/SourceLocation.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/src/scala/CodeR/SourceStatement.scala" afterPath="$PROJECT_DIR$/metamorph/src/scala/metamorph/SourceStatement.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/test/acceptance/scala/MethodRenameSpec.scala" afterPath="$PROJECT_DIR$/metamorph/test/acceptance/scala/MethodRenameSpec.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/CodeR/test/unit/scala/CodeR/CSharp/WarningTests.scala" afterPath="$PROJECT_DIR$/metamorph/test/unit/scala/metamorph/CSharp/WarningTests.scala" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/doc/CodeR Diagrams.graffle" afterPath="$PROJECT_DIR$/doc/metamorph-diagrams.graffle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java" afterPath="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala" afterPath="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR.Sample/src/scala/SampleRefactor.scala" afterPath="$PROJECT_DIR$/CodeR.Sample/src/scala/SampleRefactor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CodeR/CodeR.iml" afterPath="$PROJECT_DIR$/CodeR/CodeR.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rakefile" afterPath="$PROJECT_DIR$/rakefile" />
     </list>
     <ignored path="CodeR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -77,37 +124,39 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ToolSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/ToolSpec.scala">
+      <file leaf-file-name="DefaultJavaFileProcessor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="6" selection-start="175" selection-end="175" vertical-scroll-proportion="0.0">
+            <state line="32" column="0" selection-start="1264" selection-end="1264" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DefaultJavaFileProcessorSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala">
+      <file leaf-file-name="MethodRenameSpec.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/metamorph/test/acceptance/scala/MethodRenameSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="21" selection-start="2302" selection-end="2302" vertical-scroll-proportion="0.0">
+            <state line="5" column="6" selection-start="173" selection-end="173" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#51#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WarningTests.scala" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/metamorph/test/unit/scala/metamorph/CSharp/WarningTests.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="6" selection-start="108" selection-end="108" vertical-scroll-proportion="0.15931372">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DefaultJavaFileProcessor.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java">
+      <file leaf-file-name="rakefile" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/rakefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="41" selection-start="1089" selection-end="1089" vertical-scroll-proportion="0.49010655">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ParseTreeWalker.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../antlr4/runtime/Java/src/org/antlr/v4/runtime/tree/ParseTreeWalker.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="55" selection-start="1757" selection-end="1757" vertical-scroll-proportion="0.0">
+            <state line="2" column="19" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -121,7 +170,8 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="CHECKOUT_INCLUDE_TAGS" value="false" />
+    <option name="UPDATE_CHANGES_POLICY" value="STASH" />
   </component>
   <component name="GitLogSettings">
     <option name="myStructureFilterPaths" />
@@ -129,12 +179,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/JavaFileProcessor.java" />
-        <option value="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/Tool.java" />
-        <option value="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/ToolSpec.scala" />
-        <option value="$PROJECT_DIR$/CodeR/test/unit/scala/CodeR/CSharp/WarningTests.scala" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/test/scala/CodeR/Refactor.scala" />
-        <option value="$PROJECT_DIR$/CodeR.Sample/src/scala/SampleRefactor.scala" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeChange.scala" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceFile.scala" />
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/CodeChange.scala" />
@@ -145,13 +190,18 @@
         <option value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Predicate/MethodCallPredicate.scala" />
         <option value="$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala" />
         <option value="$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java" />
+        <option value="$PROJECT_DIR$/CodeR.Sample/src/scala/SampleRefactor.scala" />
+        <option value="$PROJECT_DIR$/rakefile" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaFileProcessor.java" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/Tool.java" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="22" />
-    <option name="width" value="2135" />
-    <option name="height" value="1113" />
+    <option name="width" value="1366" />
+    <option name="height" value="742" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -618,6 +668,26 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CodeR" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -625,20 +695,14 @@
               <option name="myItemId" value="CodeR" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+              <option name="myItemId" value="CodeR" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scalatest_2.9.0-1.8.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scalatest" />
+              <option name="myItemId" value="metamorph.sample" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -648,307 +712,25 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scalatest_2.9.0-1.8.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala-library" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
+              <option name="myItemId" value="metamorph.sample" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v4" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v4" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="v4" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tree" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr-4.0b1-complete.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="scala" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Model" />
+              <option name="myItemId" value="metamorph.csharp.parser" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -958,29 +740,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
+              <option name="myItemId" value="metamorph.csharp.parser" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -992,7 +752,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
+              <option name="myItemId" value="metamorph" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1002,73 +762,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Predicate" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="model" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Runtime" />
+              <option name="myItemId" value="metamorph.csharp.parser" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -1086,7 +780,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Java.Parser" />
+              <option name="myItemId" value="metamorph" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1096,11 +790,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Java.Parser" />
+              <option name="myItemId" value="metamorph" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="unit" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -1108,7 +806,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Java" />
+              <option name="myItemId" value="CSharp" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1118,71 +816,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Java.Parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR.Java.Parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="antlr" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
+              <option name="myItemId" value="metamorph" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -1198,24 +832,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="metamorph" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="metamorph" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -1225,23 +861,23 @@
   <component name="PropertiesComponent">
     <property name="last_directory_selection" value="$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Facets" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="options.lastSelected" value="project.propCompiler" />
-    <property name="project.structure.side.proportion" value="0.18531469" />
+    <property name="options.lastSelected" value="org.jetbrains.plugins.scala.compiler.ScalacConfigurable" />
+    <property name="project.structure.side.proportion" value="0.18531467" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="FullScreen" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -1258,12 +894,7 @@
   </component>
   <component name="RunManager" selected="ScalaTest.DefaultJavaFileProcessorSpec">
     <configuration default="false" name="BlockSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="CodeR.Model.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
       <module name="CodeR.Runtime" />
       <setting name="path" value="CodeR.Model.BlockSpec" />
@@ -1274,18 +905,12 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
     <configuration default="false" name="AstReaderSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="CodeR.Ast.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
       <module name="CodeR.Runtime" />
       <setting name="path" value="CodeR.Ast.AstReaderSpec" />
@@ -1296,18 +921,12 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
     <configuration default="false" name="ToolSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="CodeR.Java.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
       <module name="CodeR.Java.Parser" />
       <setting name="path" value="CodeR.Java.ToolSpec" />
@@ -1318,18 +937,12 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
     <configuration default="false" name="DefaultJavaFileProcessorSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="CodeR.Java.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
       <module name="CodeR.Java.Parser" />
       <setting name="path" value="CodeR.Java.DefaultJavaFileProcessorSpec" />
@@ -1340,7 +953,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1357,7 +969,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1389,51 +1000,6 @@
         <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
       </method>
     </configuration>
-    <configuration default="true" type="RubyRunConfigurationType" factoryName="Ruby">
-      <module name="" />
-      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
-      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
-      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
-      <envs />
-      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
-      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
-        <COVERAGE_PATTERN ENABLED="true">
-          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
-        </COVERAGE_PATTERN>
-      </EXTENSION>
-      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="RakeTask" enabled="false" />
-        <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="RakeTask" enabled="false" />
-        <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -1460,6 +1026,26 @@
       <envs />
       <properties />
       <listeners />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
+        <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1531,7 +1117,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="Class" />
-      <setting name="showProgressMessages" value="true" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1553,7 +1138,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="All in package" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1570,7 +1154,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="All in package" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1587,7 +1170,6 @@
       <setting name="searchForTest" value="Across module dependencies" />
       <setting name="testName" value="" />
       <setting name="testKind" value="All in package" />
-      <setting name="showProgressMessages" value="true" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1608,7 +1190,7 @@
     </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
-  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false">
+  <component name="SvnConfiguration" maxAnnotateRevisions="500">
     <option name="USER" value="" />
     <option name="PASSWORD" value="" />
     <option name="mySSHConnectionTimeout" value="30000" />
@@ -1623,7 +1205,7 @@
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
     <option name="FORCE_UPDATE" value="false" />
-    <option name="IGNORE_EXTERNALS" value="false" />
+    <configuration useDefault="true">$USER_HOME$/.subversion_IDEA</configuration>
     <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
   </component>
   <component name="TaskManager">
@@ -1676,13 +1258,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="2135" height="1113" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="22" width="1366" height="742" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297244" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32766616" sideWeight="0.49786323" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.4957265" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1691,16 +1273,16 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.48290598" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32766616" sideWeight="0.48290598" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22376618" sideWeight="0.6895161" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31048387" sideWeight="0.9976042" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22306526" sideWeight="0.67233384" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31044775" sideWeight="0.9976042" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.49786323" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1738,10 +1320,7 @@
     <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
     <option name="CREATE_PATCH_EXPAND_DETAILS_DEFAULT" value="true" />
-    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
-    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
     <option name="LAST_COMMIT_MESSAGE" value="Another AstReader test for children" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1771,104 +1350,106 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/CodeR/test/acceptance/scala/MethodRenameSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="169" selection-end="169" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Predicate/MethodCallPredicate.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="0" selection-start="90" selection-end="90" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/antlr/Ast.g">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="6" selection-start="30" selection-end="30" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/model/ClassSpecification.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/ToolSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="6" selection-start="175" selection-end="175" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/RuleContext.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="28" selection-start="2261" selection-end="2261" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../antlr4/runtime/Java/src/org/antlr/v4/runtime/tree/Trees.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="13" selection-start="2035" selection-end="2035" vertical-scroll-proportion="0.13228346">
-          <folding />
-        </state>
+        <state line="51" column="28" selection-start="2261" selection-end="2261" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../antlr4/runtime/Java/src/org/antlr/v4/runtime/RuleContext.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="295" column="27" selection-start="10502" selection-end="10502" vertical-scroll-proportion="0.34246576">
+        <state line="295" column="27" selection-start="10502" selection-end="10502" vertical-scroll-proportion="0.34246576" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/SourceFile.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="11" selection-start="168" selection-end="168" vertical-scroll-proportion="0.14916286" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/SourceCode.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="28" selection-start="415" selection-end="415" vertical-scroll-proportion="0.42617962" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/Refactor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="53" selection-start="1342" selection-end="1342" vertical-scroll-proportion="0.82952815" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="21" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.76441514">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceFile.scala">
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="11" selection-start="168" selection-end="168" vertical-scroll-proportion="0.14916286">
+        <state line="7" column="6" selection-start="175" selection-end="175" vertical-scroll-proportion="0.14677419">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/SourceCode.scala">
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/antlr/Ast.g">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="28" selection-start="415" selection-end="415" vertical-scroll-proportion="0.42617962">
+        <state line="3" column="6" selection-start="30" selection-end="30" vertical-scroll-proportion="0.062903225">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Runtime/src/scala/CodeR/Refactor.scala">
+    <entry file="file://$PROJECT_DIR$/metamorph.sample/src/scala/SampleRefactor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="54" column="53" selection-start="1342" selection-end="1342" vertical-scroll-proportion="0.82952815">
+        <state line="0" column="10" selection-start="10" selection-end="10" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../antlr4/runtime/Java/src/org/antlr/v4/runtime/tree/SyntaxTree.java">
+    <entry file="file://$PROJECT_DIR$/metamorph.sample/CodeR.Sample.iml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="17" selection-start="1784" selection-end="1784" vertical-scroll-proportion="0.21308981">
+        <state line="1" column="0" selection-start="39" selection-end="39" vertical-scroll-proportion="0.020967742">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/JavaParser.java">
+    <entry file="file://$PROJECT_DIR$/rakefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="137" column="24" selection-start="9027" selection-end="9027" vertical-scroll-proportion="0.1583851">
+        <state line="2" column="19" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../antlr4/runtime/Java/src/org/antlr/v4/runtime/tree/ParseTreeWalker.java">
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/Tool.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="55" selection-start="1757" selection-end="1757" vertical-scroll-proportion="0.0">
+        <state line="0" column="19" selection-start="19" selection-end="19" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/test/scala/CodeR/Java/DefaultJavaFileProcessorSpec.scala">
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaFileProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="21" selection-start="2302" selection-end="2302" vertical-scroll-proportion="0.0">
+        <state line="1" column="0" selection-start="24" selection-end="24" vertical-scroll-proportion="0.031862747">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CodeR.Java.Parser/src/java/CodeR.Java/DefaultJavaFileProcessor.java">
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="41" selection-start="1089" selection-end="1089" vertical-scroll-proportion="0.49010655">
+        <state line="32" column="0" selection-start="1264" selection-end="1264" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph/test/acceptance/scala/MethodRenameSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="173" selection-end="173" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#51#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph/test/unit/scala/metamorph/CSharp/WarningTests.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="108" selection-end="108" vertical-scroll-proportion="0.15931372">
           <folding />
         </state>
       </provider>
@@ -1890,11 +1471,11 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited>Scala (CodeR)|Scala</last-edited>
+          <last-edited>Scala (CodeR.Sample)|Scala</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.18531469" />
+                <option value="0.18531467" />
               </list>
             </option>
           </splitter-proportions>
@@ -1902,11 +1483,11 @@
       </state>
       <state key="GlobalLibrariesConfigurable.UI">
         <settings>
-          <last-edited>Scala 2.9.2</last-edited>
+          <last-edited>scala-2.9.1</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.18531469" />
+                <option value="0.18531467" />
               </list>
             </option>
           </splitter-proportions>
@@ -1930,7 +1511,7 @@
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.18531469" />
+                <option value="0.18531467" />
                 <option value="0.5" />
               </list>
             </option>

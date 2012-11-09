@@ -7,33 +7,33 @@ require 'lib/component_tasks'
 lib_dir 'lib/runtime'
 
 desc 'Build everything'
-task :default => ['CodeR.Java.Parser', :ast_grammar]
+task :default => ['metamorph.java.parser', :ast_grammar]
 
 desc "Java Parser Component"
-component 'CodeR.Java.Parser' do |c|
-  c.compile_and_jar :antlr4 => 'src/antlr/Java.g4', :java => 'src/java', :jar_file => 'coder-java-parser.jar', :libs => ['lib/runtime']
+component 'metamorph.java.parser' do |c|
+  c.compile_and_jar :antlr4 => 'src/antlr/Java.g4', :java => 'src/java', :jar_file => 'metamorph-java-parser.jar', :libs => ['lib/runtime']
   c.compile_and_jar :scala => 'test/scala', :jar_file => 'coder-java-parser-test.jar', :libs => ['lib/runtime', 'lib/test', 'coder.java.parser.jar']
   c.scalatest
 end
 
 desc "CSharp Parser Component"
-component 'CodeR.CSharp.Parser' do |c|
-  c.compile_and_jar :antlr3 => 'src/antlr/cs.g4', :java => 'src/java', :jar_file => 'coder-csharp-parser.jar', :libs => ['lib/runtime']
+component 'metamorph.csharp.parser' do |c|
+  c.compile_and_jar :antlr3 => 'src/antlr/cs.g4', :java => 'src/java', :jar_file => 'metamorph-csharp-parser.jar', :libs => ['lib/runtime']
 end
 
 desc "Build Java parser"
 task :java_parser => [:generate_java_parser, :compile_java_parser]
 
 antlr4 :generate_java_parser do |antlr|
-  antlr.grammar = 'CodeR.Java.Parser/src/antlr/Java.g4'
-  antlr.output_path = 'CodeR.Java.Parser/src/java/CodeR.Java'
+  antlr.grammar = 'metamorph.java.parser/src/antlr/Java.g4'
+  antlr.output_path = 'metamorph.java.parser/src/java/metamorph.java'
 end
 
 desc 'Generate C# Parser from grammar'
 antlr :ast_grammar do |t|
 	puts "AST Grammar"
-   	t.grammar = 'CodeR.Runtime/src/antlr/Ast.g'
-   	t.output_path = 'CodeR.Runtime/src/java/CodeR/Ast'
+   	t.grammar = 'metamorph.runtime/src/antlr/Ast.g'
+   	t.output_path = 'metamorph.runtime/src/java/CodeR/Ast'
 #  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -o CodeR/CSharp"
 #  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -fo CodeR.CSharp.Parser/src/antlr/CodeR/CSharp"
 end
@@ -43,7 +43,7 @@ end
 # task :ast_parser_lib => 'ast-parser-lib.jar'
 
 antlr 'ast_grammar' do |t|
- 	t.grammar = 'CodeR.Runtime/src/antlr/Ast.g'
+ 	t.grammar = 'metamorph.runtime/src/antlr/Ast.g'
 end
 
 # desc "Compile AST source"
@@ -55,5 +55,5 @@ end
 
 desc "Compile AST source"
 javac 'compile_ast1' => 'lib/runtime/antlr-3.4-complete.jar' do |t|
-	t.build_path << "CodeR.Runtime/src/antlr/output"
+	t.build_path << "metamorph.runtime/src/antlr/output"
 end
