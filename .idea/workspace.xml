@@ -5,22 +5,10 @@
     <option name="CUSTOM_SCOPE_NAME" value="Module 'CodeR'" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.csharp.parser/metamorph.csharp.parser.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph/metamorph.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.java.parser/metamorph.java.parser.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.sample/metamorph.sample.iml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/metamorph.runtime/metamorph.Runtime.iml" afterPath="$PROJECT_DIR$/metamorph.runtime/metamorph.runtime.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/component_tasks.rb" afterPath="$PROJECT_DIR$/lib/component_tasks.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="" />
     <ignored path="CodeR.iws" />
     <ignored path=".idea/workspace.xml" />
+    <file path="$PROJECT_DIR$/.idea/workspace.xml" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352644456586" ignored="false" />
     <file path="/.gitignore" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352644117118" ignored="false" />
     <file path="/Dummy.txt" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352643966278" ignored="false" />
     <file path="/Java.g4" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352642600936" ignored="false" />
@@ -87,28 +75,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="JavaBaseListener.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaBaseListener.java">
+      <file leaf-file-name="ToolSpec.scala" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="13" selection-start="218" selection-end="218" vertical-scroll-proportion="-3.12">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Java.g4" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="23" selection-start="192" selection-end="192" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JavaLexer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaLexer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="88" selection-start="379" selection-end="379" vertical-scroll-proportion="0.0">
+            <state line="13" column="38" selection-start="409" selection-end="409" vertical-scroll-proportion="0.32019705">
               <folding />
             </state>
           </provider>
@@ -117,46 +87,10 @@
       <file leaf-file-name="DefaultJavaFileProcessorSpec.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="36" selection-start="2201" selection-end="2201" vertical-scroll-proportion="0.0">
+            <state line="9" column="6" selection-start="280" selection-end="280" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#24#53#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DefaultJavaFileProcessor.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="0" selection-start="1264" selection-end="1264" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="0" selection-start="249" selection-end="249" vertical-scroll-proportion="0.44240838">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ToolSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="20" selection-start="303" selection-end="303" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Application.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph/src/scala/metamorph/Application.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="6" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -728,38 +662,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CodeR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane">
@@ -1148,26 +1050,26 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1366" height="742" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32868218" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32868218" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.50267094" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32713178" sideWeight="0.5143939" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32713178" sideWeight="0.48290598" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32713178" sideWeight="0.48030302" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22272727" sideWeight="0.6713178" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22272727" sideWeight="0.6728682" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31044775" sideWeight="0.9976042" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.4957265" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -1281,36 +1183,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaBaseListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="13" selection-start="218" selection-end="218" vertical-scroll-proportion="-3.12">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="23" selection-start="192" selection-end="192" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaLexer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="88" selection-start="379" selection-end="379" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="36" selection-start="2201" selection-end="2201" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#24#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/metamorph/src/scala/metamorph/Program.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="7" selection-start="27" selection-end="27" vertical-scroll-proportion="0.10182767">
@@ -1318,30 +1190,62 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="20" selection-start="303" selection-end="303" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph/src/scala/metamorph/Application.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
+        <state line="13" column="0" selection-start="249" selection-end="249" vertical-scroll-proportion="0.44240838">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/DefaultJavaFileProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="0" selection-start="1264" selection-end="1264" vertical-scroll-proportion="0.0">
+        <state line="32" column="0" selection-start="1264" selection-end="1264" vertical-scroll-proportion="0.9528796">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaLexer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="249" selection-end="249" vertical-scroll-proportion="0.44240838">
+        <state line="12" column="88" selection-start="379" selection-end="379" vertical-scroll-proportion="0.16049382">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="23" selection-start="192" selection-end="192" vertical-scroll-proportion="0.2888889">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaBaseListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="13" selection-start="218" selection-end="218" vertical-scroll-proportion="0.20526315">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph/src/scala/metamorph/Application.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="80" selection-end="80" vertical-scroll-proportion="0.16049382">
+          <folding>
+            <element signature="e#19#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="6" selection-start="280" selection-end="280" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#24#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="38" selection-start="409" selection-end="409" vertical-scroll-proportion="0.32019705">
           <folding />
         </state>
       </provider>

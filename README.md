@@ -1,6 +1,7 @@
-# CodeR - Code Rewriter
+# metamorph - Code Rewriter
 
-A language aware automation tool for updating program source code.
+A language aware automation tool for analysing and updating program
+source code.
 
 # Background
 
@@ -12,7 +13,7 @@ safely. Projects take some time to accommodate changes from the
 dependencies. In the worst cases change becomes impossible for various
 reasons and re-writes are considered.
 
-CodeR intends to help this situation by allowing library and framework
+metamorph intends to help this situation by allowing library and framework
 developers define changes necessary to upgrade to a newer version of
 the library or framework. These changes specify which parts of the
 application using the library or framework need to be changed and
@@ -31,7 +32,7 @@ The problem is broken down as follows:
 
 # Design
 
-CodeR has been developed to run on the JVM and is written using a
+metamorph has been developed to run on the JVM and is written using a
 combination of Java and Scala. ANTLR is used for language parsing
 heavy lifting.
 
@@ -67,14 +68,14 @@ method2.
 The parsers take source code and generate text containing the Abstract
 Syntax Tree (AST) representation of the source files.
 
-* CodeR.CSharp.Parser
-* CodeR.Java.Parser
+* metamorph.csharp.parser
+* metamorph.java.parser
 
-### The CodeR runtime
+### The metamorph runtime
 
 Supports the generation of refactoring commands
 
-### CodeR
+### metamorph
 
-The CodeR command line shell
+The metamorph command line shell
 
