@@ -1,13 +1,10 @@
 package metamorph
 
-import CSharp.Parser.CSharpParser
-import java.io.File
-
 class Application(console: ConsoleWriter) {
   val Results = new DefaultQueryResults()
 
   def run(args: Array[String]) {
-    console.WriteLine("metamorph - source CODE Rewriter")
+    console.WriteLine("metamorph - source code analysis and rewriting")
     //    if (args.length == 0) {
     //      Console.err.println("Usage: coder <source-path>")
     //      return
@@ -15,10 +12,10 @@ class Application(console: ConsoleWriter) {
 
 
     //    try {
-    val root = new File("Tests")
-    val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.cs")
-
-    val parser = new CSharpParser()
+    //    val root = new File("Tests")
+    //    val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.cs")
+    //
+    //    val parser = new CSharpParser()
 
     //      val file = new File(args(0))
     //      val searchPattern = file.getCanonicalFile
@@ -31,11 +28,11 @@ class Application(console: ConsoleWriter) {
     //
     //      val scanner = new DirectoryScanner(dir, ".*\\.cs")
 
-    scanner.eachFile(path => parser.ParseFile(path.getCanonicalPath, wait = true, results = Results))
-
-    Results.printSummaryToConsole
-
-    ApplyEdits(Results)
+    //    scanner.eachFile(path => parser.ParseFile(path.getCanonicalPath, wait = true, results = Results))
+    //
+    //    Results.printSummaryToConsole
+    //
+    //    ApplyEdits(Results)
     //    }
     //    catch  {
     //      case ae: Exception => Console.println(ae.getMessage)

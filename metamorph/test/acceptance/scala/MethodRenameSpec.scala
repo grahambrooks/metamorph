@@ -19,7 +19,10 @@ class MethodRenameSpec extends FlatSpec with ShouldMatchers with MockitoSugar wi
     }
 
     val modified = s.apply(refactoring)
+    val contents = modified.file("X").getContents
 
-    modified.file("X").getContents should equal("class X { void M() { X variable; variable.Y(); } }")
+    println(contents)
+
+    contents should equal("class X { void M() { X variable; variable.Y(); } }")
   }
 }

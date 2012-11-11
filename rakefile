@@ -33,9 +33,7 @@ desc 'Generate C# Parser from grammar'
 antlr :ast_grammar do |t|
 	puts "AST Grammar"
    	t.grammar = 'metamorph.runtime/src/antlr/Ast.g'
-   	t.output_path = 'metamorph.runtime/src/java/CodeR/Ast'
-#  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -o CodeR/CSharp"
-#  puts exec "java -jar lib/runtime/antlr-3.4-complete.jar CodeR.CSharp.Parser/src/antlr/cs.g -fo CodeR.CSharp.Parser/src/antlr/CodeR/CSharp"
+   	t.output_path = 'metamorph.runtime/src/java/metamorph/Ast'
 end
 
 
