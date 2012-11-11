@@ -7,7 +7,7 @@
 grammar Java;
 
 @header {
-    package metamorph.Java;
+    package metamorph.java;
 }
 
 

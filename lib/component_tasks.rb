@@ -22,7 +22,7 @@ module Component
 
     def antlr4(args)
       return unless args[:antlr4]
-      output_path = File.absolute_path(File.join(name, args[:java], 'CodeR.Java'))
+      output_path = File.absolute_path(File.join(name, args[:java], 'metamorph.java'))
       grammar_path = File.dirname(File.join(name, args[:antlr4]))
       exec "cd #{grammar_path};java -jar #{tool_path}/antlr-4.0b1-complete.jar #{File.basename(args[:antlr4])} -o #{output_path} -visitor"
     end
