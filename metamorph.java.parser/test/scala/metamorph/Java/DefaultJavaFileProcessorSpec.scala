@@ -45,9 +45,6 @@ class DefaultJavaFileProcessorSpec extends FlatSpec with ShouldMatchers with Moc
 
     val input = new ANTLRInputStream(text)
 
-    val astText = processor.sourceToAst(input)
-    print(astText)
-
-    return astText
+    return processor.sourceToAst(input)
   }
 }

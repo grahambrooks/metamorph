@@ -5,6 +5,7 @@ import metamorph.parsing.PrintingListener
 import org.antlr.v4.runtime.{CommonTokenStream, ANTLRFileStream, ANTLRInputStream}
 
 final class DefaultJavaFileProcessor extends JavaFileProcessor {
+
   def processFile(filename: String) {
     var input: ANTLRInputStream = null
     try {
@@ -23,5 +24,11 @@ final class DefaultJavaFileProcessor extends JavaFileProcessor {
     val tree = parser.compilationUnit
 
     return PrintingListener.toStringTree(tree, parser)
+  }
+
+  def visitSource[T](input: ANTLRInputStream, visitor: JavaBaseVisitor[T]): T = {
+    val parser = new JavaParser(new CommonTokenStream(new JavaLexer(input)))
+
+    return visitor.visit(parser.compilationUnit())
   }
 }

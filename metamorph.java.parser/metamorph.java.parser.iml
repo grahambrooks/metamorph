@@ -23,6 +23,7 @@
     <orderEntry type="library" name="runtime" level="project" />
     <orderEntry type="library" name="test" level="project" />
     <orderEntry type="library" name="scala-library" level="project" />
+    <orderEntry type="module" module-name="metamorph.runtime" />
   </component>
 </module>
 
