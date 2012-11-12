@@ -1,7 +1,7 @@
 package metamorph.java
 
-import metamorph.model.{Namespace, MorphModel}
-import metamorph.java.JavaParser.PackageDeclarationContext
+import metamorph.model.{ClassDeclaration, Namespace, MorphModel}
+import metamorph.java.JavaParser.{ClassDeclarationContext, PackageDeclarationContext}
 
 class MorphVisitor extends JavaBaseVisitor[Any] {
   var _model: MorphModel = new MorphModel
@@ -15,5 +15,11 @@ class MorphVisitor extends JavaBaseVisitor[Any] {
     _model.setCurrentNamespace(new Namespace(ctx.qualifiedName.getText))
 
     super.visitPackageDeclaration(ctx)
+  }
+
+  override def visitClassDeclaration(ctx: ClassDeclarationContext) = {
+
+    _model.setCurrentClass(new ClassDeclaration(ctx.Identifier.getText))
+    super.visitClassDeclaration(ctx)
   }
 }

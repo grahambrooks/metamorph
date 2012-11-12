@@ -16,6 +16,14 @@ class ModelConstructionSpec extends FlatSpec with ShouldMatchers with MockitoSug
     model.namespaces("metamorph.java").name should equal("metamorph.java")
   }
 
+  it should "add a class to the defined namespace" in {
+    val model = processSource("package metamorph.java; class foo {}")
+
+    model.namespaces.size should equal(1)
+    model.namespaces("metamorph.java").classes.size should equal(1)
+    model.namespaces("metamorph.java").classes("foo").name should equal("foo")
+  }
+
   def processSource(text: String): MorphModel = {
     val processor = new DefaultJavaFileProcessor
 
@@ -26,5 +34,4 @@ class ModelConstructionSpec extends FlatSpec with ShouldMatchers with MockitoSug
 
     return visitor.model
   }
-
 }
