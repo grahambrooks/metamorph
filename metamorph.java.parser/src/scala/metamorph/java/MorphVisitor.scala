@@ -1,7 +1,7 @@
 package metamorph.java
 
-import metamorph.model.{ClassDeclaration, Namespace, MorphModel}
-import metamorph.java.JavaParser.{ClassDeclarationContext, PackageDeclarationContext}
+import metamorph.model.{MethodDeclaration, ClassDeclaration, Namespace, MorphModel}
+import metamorph.java.JavaParser.{MethodDeclarationContext, GenericMethodDeclarationContext, ClassDeclarationContext, PackageDeclarationContext}
 
 class MorphVisitor extends JavaBaseVisitor[Any] {
   var _model: MorphModel = new MorphModel
@@ -9,6 +9,13 @@ class MorphVisitor extends JavaBaseVisitor[Any] {
   def model: MorphModel = {
     return _model
   }
+
+  override def visitMethodDeclaration(ctx: MethodDeclarationContext) = {
+    _model.setCurrentMethod(new MethodDeclaration(ctx.Identifier().getText))
+    super.visitMethodDeclaration(ctx)
+  }
+
+  override def visitGenericMethodDeclaration(ctx: GenericMethodDeclarationContext) = super.visitGenericMethodDeclaration(ctx)
 
   override def visitPackageDeclaration(ctx: PackageDeclarationContext) = {
 

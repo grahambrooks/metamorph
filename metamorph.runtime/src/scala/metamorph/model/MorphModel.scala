@@ -11,6 +11,10 @@ class MorphModel {
     currentNamespace.setCurrentClass(classDeclaration)
   }
 
+  def setCurrentMethod(method: MethodDeclaration) {
+    currentNamespace.currentClass.setCurrentMethod(method)
+  }
+
   def setCurrentNamespace(namespace: Namespace) {
     _namespaces.put(namespace.name, namespace)
     currentNamespace = namespace

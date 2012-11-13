@@ -5,14 +5,12 @@ import collection.mutable
 
 class Namespace(_name: String) {
   val name = _name
-  var _classes = new mutable.ListMap[String, ClassDeclaration]()
-  var _currentClass: ClassDeclaration = _
-
-  def classes = _classes
+  var classes = new mutable.ListMap[String, ClassDeclaration]()
+  var currentClass: ClassDeclaration = _
 
   def setCurrentClass(clazz: ClassDeclaration) {
-    _classes.put(clazz.name, clazz)
-    _currentClass = clazz
+    classes.put(clazz.name, clazz)
+    currentClass = clazz
   }
 
 
