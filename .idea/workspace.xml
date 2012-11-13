@@ -6,31 +6,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/ClassDeclaration.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="CodeR.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/ModelConstructionSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352758032381" ignored="false" />
-    <file path="/Namespace.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757985412" ignored="false" />
-    <file path="/ClassDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757629659" ignored="false" />
-    <file path="/MorphModel.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757495537" ignored="false" />
-    <file path="/MorphVisitor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757449314" ignored="false" />
-    <file path="/Dummy.txt" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756960576" ignored="false" />
-    <file path="/a.dummy" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756116794" ignored="false" />
-    <file path="/Dummy.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756000954" ignored="false" />
-    <file path="/DefaultJavaFileProcessor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352752499008" ignored="false" />
-    <file path="/DefaultJavaFileProcessor1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352750324766" ignored="false" />
-    <file path="/DefaultJavaFileProcessorSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352742114845" ignored="false" />
-    <file path="/Tool1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352735335934" ignored="false" />
-    <file path="/Tool.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733984621" ignored="false" />
-    <file path="/fragment.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733657878" ignored="false" />
-    <file path="/Java.g4" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352642600936" ignored="false" />
+    <file path="/MorphModel.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823334511" ignored="false" />
+    <file path="/ModelConstructionSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823091305" ignored="false" />
+    <file path="/Dummy.txt" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352822951995" ignored="false" />
     <file path="/.gitignore" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352644117118" ignored="false" />
+    <file path="/Java.g4" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352642600936" ignored="false" />
+    <file path="/fragment.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733657878" ignored="false" />
+    <file path="/Tool.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733984621" ignored="false" />
+    <file path="/Tool1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352735335934" ignored="false" />
+    <file path="/DefaultJavaFileProcessorSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352742114845" ignored="false" />
+    <file path="/DefaultJavaFileProcessor1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352750324766" ignored="false" />
+    <file path="/DefaultJavaFileProcessor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352752499008" ignored="false" />
+    <file path="/Dummy.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756000954" ignored="false" />
+    <file path="/a.dummy" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756116794" ignored="false" />
+    <file path="/MorphVisitor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757449314" ignored="false" />
+    <file path="/ClassDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757629659" ignored="false" />
+    <file path="/Namespace.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757985412" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,8 +45,8 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <breakpoint_rules default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <breakpoint_rules default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -94,10 +91,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ModelConstructionSpec.scala" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ModelConstructionSpec.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.41034484">
+            <state line="27" column="10" selection-start="1022" selection-end="1022" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#24#53#0" expanded="true" />
               </folding>
@@ -109,17 +106,15 @@
         <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state line="21" column="21" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#24#88#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MorphModel.scala" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="MorphModel.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="30" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0">
+            <state line="10" column="53" selection-start="350" selection-end="350" vertical-scroll-proportion="0.2413793">
               <folding />
             </state>
           </provider>
@@ -128,7 +123,7 @@
       <file leaf-file-name="Namespace.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="102" selection-start="358" selection-end="358" vertical-scroll-proportion="0.0">
+            <state line="18" column="1" selection-start="357" selection-end="357" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,7 +132,7 @@
       <file leaf-file-name="ParserRuleContext.class" pinned="false" current="false" current-in-tab="false">
         <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="14" selection-start="2714" selection-end="2714" vertical-scroll-proportion="-28.56">
+            <state line="52" column="14" selection-start="2714" selection-end="2714" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -147,9 +142,7 @@
         <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state line="43" column="36" selection-start="2150" selection-end="2150" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#24#53#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -185,10 +178,10 @@
         <option value="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala" />
         <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala" />
         <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" />
-        <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala" />
         <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/ClassDeclaration.scala" />
         <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala" />
         <option value="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" />
+        <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala" />
       </list>
     </option>
   </component>
@@ -623,22 +616,22 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="PackagesPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="CodeR" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -1212,12 +1205,12 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -1358,6 +1351,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -1384,19 +1390,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -1571,7 +1564,11 @@
       <created>1352756968847</created>
       <updated>1352756968847</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Added recognition of class declarations and composition into the morph model">
+      <created>1352758170598</created>
+      <updated>1352758170598</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1601,12 +1598,11 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282981" sideWeight="0.49573106" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32664436" sideWeight="0.48932764" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39910814" sideWeight="0.49573106" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32218507" sideWeight="0.31750268" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32218507" sideWeight="0.32017076" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296371" sideWeight="0.49786323" order="7" side_tool="false" content_ui="tabs" />
@@ -1617,12 +1613,13 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22145145" sideWeight="0.67781496" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32218507" sideWeight="0.678762" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32218507" sideWeight="0.67609394" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296371" sideWeight="0.49358973" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32664436" sideWeight="0.48932764" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1662,7 +1659,7 @@
     <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added creating a namespace for Java package declarations" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added recognition of class declarations and composition into the morph model" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1687,6 +1684,7 @@
     <MESSAGE value="Mostly working tests ready to start expanding functionality of the java parser library" />
     <MESSAGE value="Added missing files" />
     <MESSAGE value="Added creating a namespace for Java package declarations" />
+    <MESSAGE value="Added recognition of class declarations and composition into the morph model" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1719,16 +1717,12 @@
     </entry>
     <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/tree/ParseTreeVisitor.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="92" selection-start="694" selection-end="694" vertical-scroll-proportion="0.3783784">
-          <folding />
-        </state>
+        <state line="16" column="92" selection-start="694" selection-end="694" vertical-scroll-proportion="0.3783784" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/tree/ParseTreeWalker.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="168" selection-end="168" vertical-scroll-proportion="0.12612613">
-          <folding />
-        </state>
+        <state line="6" column="13" selection-start="168" selection-end="168" vertical-scroll-proportion="0.12612613" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaVisitor.java">
@@ -1749,7 +1743,7 @@
     </entry>
     <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="14" selection-start="2714" selection-end="2714" vertical-scroll-proportion="-28.56">
+        <state line="52" column="14" selection-start="2714" selection-end="2714" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1757,17 +1751,13 @@
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="36" selection-start="2150" selection-end="2150" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#24#53#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/RuleContext.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="89" selection-start="307" selection-end="312" vertical-scroll-proportion="0.1627907">
-          <folding />
-        </state>
+        <state line="7" column="89" selection-start="307" selection-end="312" vertical-scroll-proportion="0.1627907" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaParser.java">
@@ -1780,15 +1770,6 @@
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="21" selection-start="607" selection-end="607" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#24#88#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="30" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1802,17 +1783,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="102" selection-start="358" selection-end="358" vertical-scroll-proportion="0.0">
+        <state line="18" column="1" selection-start="357" selection-end="357" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="607" selection-end="607" vertical-scroll-proportion="0.41034484">
+        <state line="27" column="10" selection-start="1022" selection-end="1022" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#24#53#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="53" selection-start="350" selection-end="350" vertical-scroll-proportion="0.2413793">
+          <folding />
         </state>
       </provider>
     </entry>

@@ -3,12 +3,13 @@ package metamorph.model
 import collection.mutable
 
 class MorphModel {
-  def setCurrentClass(classdecl: ClassDeclaration) {
-    currentNamespace.setCurrentClass(classdecl)
-  }
-
-  var currentNamespace: Namespace = new Namespace("GLOBAL")
+  val globalNamespace = new Namespace("##GLOBAL##")
+  var currentNamespace: Namespace = globalNamespace
   var _namespaces = new mutable.ListMap[String, Namespace]()
+
+  def setCurrentClass(classDeclaration: ClassDeclaration) {
+    currentNamespace.setCurrentClass(classDeclaration)
+  }
 
   def setCurrentNamespace(namespace: Namespace) {
     _namespaces.put(namespace.name, namespace)

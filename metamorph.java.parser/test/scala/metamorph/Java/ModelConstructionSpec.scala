@@ -24,6 +24,14 @@ class ModelConstructionSpec extends FlatSpec with ShouldMatchers with MockitoSug
     model.namespaces("metamorph.java").classes("foo").name should equal("foo")
   }
 
+  it should "add classes to global namespace if a namespace is not specified" in {
+    val model = processSource("class foo {}")
+
+    model.globalNamespace.classes.size should equal(1)
+    model.globalNamespace.classes("foo").name should equal("foo")
+
+  }
+
   def processSource(text: String): MorphModel = {
     val processor = new DefaultJavaFileProcessor
 
