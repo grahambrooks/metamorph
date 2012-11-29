@@ -534,6 +534,9 @@ expression
     |   '(' type ')' expression
     |   expression ('++' | '--')
     |   expression '(' expressionList? ')'
+        {
+            System.out.println("Method Call? ");
+        }
     |   ('+'|'-'|'++'|'--') expression
     |   ('~'|'!') expression
     |   expression ('*'|'/'|'%') expression

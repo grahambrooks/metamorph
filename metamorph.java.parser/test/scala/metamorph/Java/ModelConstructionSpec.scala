@@ -39,6 +39,14 @@ class ModelConstructionSpec extends FlatSpec with ShouldMatchers with MockitoSug
     model.globalNamespace.classes("foo").methods("bar").name should equal("bar")
   }
 
+  it should "add method calls found inside method declarations" in {
+    val model = processSource("class foo { void bar() { frodo(); } }")
+
+    model.globalNamespace.classes("foo").methods("bar").methodCalls.size should equal(1)
+    model.globalNamespace.classes("foo").methods("bar").methodCalls("frodo").name should equal("frodo")
+
+  }
+
   def processSource(text: String): MorphModel = {
     val processor = new DefaultJavaFileProcessor
 

@@ -5,31 +5,34 @@
     <option name="CUSTOM_SCOPE_NAME" value="Module 'metamorph'" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="Migrated the">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.common/src/scala/metamorph/metamorph/parsing/PrintingListener.scala" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/metamorph.common/src/java/metamorph/parsing/PrintingListener.java" afterPath="" />
+    <list default="true" id="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" name="Default" comment="Migrated printing listener from Java to Scala">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodCall.scala" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rakefile" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" afterPath="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodDeclaration.scala" afterPath="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodDeclaration.scala" />
     </list>
     <ignored path="metamorph.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352825308489" ignored="false" />
-    <file path="/MorphModel.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823990178" ignored="false" />
-    <file path="/MorphVisitor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823958632" ignored="false" />
-    <file path="/ClassDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823856917" ignored="false" />
-    <file path="/MethodDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823717693" ignored="false" />
-    <file path="/ModelConstructionSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823664473" ignored="false" />
-    <file path="/.gitignore" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352644117118" ignored="false" />
-    <file path="/Java.g4" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352642600936" ignored="false" />
-    <file path="/fragment.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733657878" ignored="false" />
-    <file path="/Tool.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733984621" ignored="false" />
-    <file path="/Tool1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352735335934" ignored="false" />
-    <file path="/DefaultJavaFileProcessorSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352742114845" ignored="false" />
-    <file path="/DefaultJavaFileProcessor1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352750324766" ignored="false" />
-    <file path="/DefaultJavaFileProcessor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352752499008" ignored="false" />
-    <file path="/Dummy.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756000954" ignored="false" />
-    <file path="/a.dummy" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756116794" ignored="false" />
     <file path="/Namespace.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352757985412" ignored="false" />
+    <file path="/a.dummy" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756116794" ignored="false" />
+    <file path="/Dummy.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352756000954" ignored="false" />
+    <file path="/DefaultJavaFileProcessor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352752499008" ignored="false" />
+    <file path="/DefaultJavaFileProcessor1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352750324766" ignored="false" />
+    <file path="/DefaultJavaFileProcessorSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352742114845" ignored="false" />
+    <file path="/Tool1.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352735335934" ignored="false" />
+    <file path="/Tool.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733984621" ignored="false" />
+    <file path="/fragment.java" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352733657878" ignored="false" />
+    <file path="/Java.g4" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352642600936" ignored="false" />
+    <file path="/.gitignore" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352644117118" ignored="false" />
+    <file path="/ModelConstructionSpec.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823664473" ignored="false" />
+    <file path="/MethodDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823717693" ignored="false" />
+    <file path="/ClassDeclaration.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823856917" ignored="false" />
+    <file path="/MorphVisitor.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823958632" ignored="false" />
+    <file path="/MorphModel.scala" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352823990178" ignored="false" />
+    <file path="/Dummy.txt" changelist="c8d6e6d6-bbe7-4e90-8a21-cd3eba2db0b6" time="1352825308489" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +47,7 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" />
     <breakpoint_any default_suspend_policy="SuspendAll">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -76,7 +80,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <ui_properties default_suspend_policy="SuspendAll" />
     <breakpoint_rules default_suspend_policy="SuspendAll" />
     <breakpoint_rules />
     <ui_properties />
@@ -88,22 +91,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="PrintingListener.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/metamorph.common/src/scala/metamorph/metamorph/parsing/PrintingListener.scala">
+      <file leaf-file-name="build.gradle" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="27" selection-start="1045" selection-end="1045" vertical-scroll-proportion="0.0">
+            <state line="3" column="28" selection-start="67" selection-end="67" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DefaultJavaFileProcessor.scala" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala">
+      <file leaf-file-name="buildfile" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/metamorph.common/buildfile">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="20" selection-start="642" selection-end="642" vertical-scroll-proportion="0.52960527">
-              <folding>
-                <element signature="e#24#57#0" expanded="true" />
-              </folding>
+            <state line="5" column="46" selection-start="200" selection-end="200" vertical-scroll-proportion="0.099857345">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -124,22 +125,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor1.scala" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/Tool.java" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/Tool.java" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/Tool1.scala" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/Tool.scala" />
         <option value="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" />
-        <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodDeclaration.scala" />
         <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/ClassDeclaration.scala" />
-        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" />
         <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/Namespace.scala" />
         <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MorphModel.scala" />
         <option value="$PROJECT_DIR$/metamorph.common/src/java/metamorph/parsing/PrintingListener.java" />
         <option value="$PROJECT_DIR$/metamorph.common/src/scala/metamorph/metamorph/parsing/PrintingListener1.scala" />
         <option value="$PROJECT_DIR$/metamorph.common/src/scala/metamorph/metamorph/parsing/PrintingListener.scala" />
         <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala" />
+        <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodCall.scala" />
+        <option value="$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodDeclaration.scala" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaParser.java" />
+        <option value="$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4" />
+        <option value="$PROJECT_DIR$/build.gradle" />
+        <option value="$PROJECT_DIR$/metamorph.common/buildfile" />
       </list>
     </option>
   </component>
@@ -149,7 +150,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="22" />
     <option name="width" value="1920" />
-    <option name="height" value="1058" />
+    <option name="height" value="1137" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -573,6 +574,16 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -587,132 +598,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.sample" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tool.scala" />
-              <option name="myItemType" value="org.jetbrains.plugins.scala.components.ScalaDefsProjectViewProvider$ScalaFileTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.java.parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="metamorph.common" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -723,56 +608,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.common" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="metamorph" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph.common" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metamorph" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="parsing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -804,12 +641,12 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="FullScreen" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -824,24 +661,7 @@
       <recent name="metamorph.CSharp" />
     </key>
   </component>
-  <component name="RunManager" selected="ScalaTest.ModelConstructionSpec">
-    <configuration default="false" name="!ScalaTests in 'scala'!" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <extension name="scalaCoverage" />
-      <module name="metamorph" />
-      <setting name="path" value="" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="testName" value="" />
-      <setting name="testKind" value="All in package" />
-      <setting name="showProgressMessages" value="true" />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Ruby.buildfile">
     <configuration default="false" name="DefaultJavaFileProcessorSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -936,6 +756,26 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="buildfile" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
+      <module name="metamorph.common" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="$PROJECT_DIR$/metamorph.common" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/metamorph.common/buildfile" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -963,17 +803,22 @@
         <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
       </method>
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
+    <configuration default="true" type="RubyRunConfigurationType" factoryName="Ruby">
       <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1009,6 +854,26 @@
       <envs />
       <properties />
       <listeners />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="RakeTask" enabled="false" />
+        <option name="SBT.BeforeRunTask" enabled="false" action="test:products" runInCurrentModule="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1109,11 +974,11 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="ScalaTest.java parser" />
-      <item index="1" class="java.lang.String" itemvalue="ScalaTest.!ScalaTests in 'scala'!" />
-      <item index="2" class="java.lang.String" itemvalue="ScalaTest.DefaultJavaFileProcessorSpec" />
-      <item index="3" class="java.lang.String" itemvalue="ScalaTest.ToolSpec" />
-      <item index="4" class="java.lang.String" itemvalue="Application.Tool" />
-      <item index="5" class="java.lang.String" itemvalue="ScalaTest.ModelConstructionSpec" />
+      <item index="1" class="java.lang.String" itemvalue="ScalaTest.DefaultJavaFileProcessorSpec" />
+      <item index="2" class="java.lang.String" itemvalue="ScalaTest.ToolSpec" />
+      <item index="3" class="java.lang.String" itemvalue="Application.Tool" />
+      <item index="4" class="java.lang.String" itemvalue="ScalaTest.ModelConstructionSpec" />
+      <item index="5" class="java.lang.String" itemvalue="Ruby.buildfile" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -1214,7 +1079,11 @@
       <created>1352825318747</created>
       <updated>1352825318747</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Migrated printing listener from Java to Scala">
+      <created>1352923145604</created>
+      <updated>1352923145604</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1238,34 +1107,34 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1920" height="1058" extended-state="0" />
+    <frame x="0" y="22" width="1920" height="1137" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3282981" sideWeight="0.49573106" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34578443" sideWeight="0.48504272" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296371" sideWeight="0.49358973" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39910814" sideWeight="0.49573106" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39862204" sideWeight="0.4871795" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32230523" sideWeight="0.5940171" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28346458" sideWeight="0.33386752" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296371" sideWeight="0.49786323" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32230523" sideWeight="0.40224358" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3218504" sideWeight="0.40064102" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296371" sideWeight="0.49786323" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22115384" sideWeight="0.6776948" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28416914" sideWeight="0.67609394" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22061966" sideWeight="0.71653545" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28346458" sideWeight="0.66239315" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34578443" sideWeight="0.48504272" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3996063" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1306,7 +1175,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added handling of method declarations so they are added to the enclosing class and namespace" />
+    <option name="LAST_COMMIT_MESSAGE" value="Migrated printing listener from Java to Scala" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1334,6 +1203,7 @@
     <MESSAGE value="Added recognition of class declarations and composition into the morph model" />
     <MESSAGE value="Added handling of java classes without packages" />
     <MESSAGE value="Added handling of method declarations so they are added to the enclosing class and namespace" />
+    <MESSAGE value="Migrated printing listener from Java to Scala" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1343,96 +1213,91 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/tree/ParseTreeVisitor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="92" selection-start="694" selection-end="694" vertical-scroll-proportion="0.3783784" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/tree/ParseTreeWalker.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="168" selection-end="168" vertical-scroll-proportion="0.12612613" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaVisitor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="6" selection-start="197" selection-end="197" vertical-scroll-proportion="0.16896552" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/RuleContext.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="89" selection-start="307" selection-end="312" vertical-scroll-proportion="0.1627907" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4254" column="31" selection-start="132682" selection-end="132682" vertical-scroll-proportion="0.5308642" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="14" selection-start="2714" selection-end="2714" vertical-scroll-proportion="0.73037034" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/DefaultJavaFileProcessorSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="36" selection-start="2150" selection-end="2150" vertical-scroll-proportion="0.73508006" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaBaseVisitor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="23" selection-start="7814" selection-end="7814" vertical-scroll-proportion="0.33333334">
-          <folding />
-        </state>
+        <state line="75" column="23" selection-start="7814" selection-end="7814" vertical-scroll-proportion="0.33333334" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ToolSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="6" selection-start="227" selection-end="227" vertical-scroll-proportion="0.09556314">
-          <folding />
-        </state>
+        <state line="8" column="6" selection-start="227" selection-end="227" vertical-scroll-proportion="0.09556314" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/Tool.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="14" selection-start="246" selection-end="246" vertical-scroll-proportion="0.3105802">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="25" selection-start="893" selection-end="893" vertical-scroll-proportion="0.5255973">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="6" selection-start="287" selection-end="287" vertical-scroll-proportion="0.09556314">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaFileProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="17" selection-start="42" selection-end="42" vertical-scroll-proportion="0.04778157">
-          <folding />
-        </state>
+        <state line="13" column="14" selection-start="246" selection-end="246" vertical-scroll-proportion="0.3105802" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.common/src/scala/metamorph/metamorph/parsing/PrintingListener.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="27" selection-start="1045" selection-end="1045" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="31" column="27" selection-start="1045" selection-end="1045" vertical-scroll-proportion="0.5705968" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaFileProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="17" selection-start="42" selection-end="42" vertical-scroll-proportion="0.040756915" />
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="18" selection-start="2729" selection-end="2729" vertical-scroll-proportion="0.6788991" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/MorphVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="4" selection-start="1180" selection-end="1180" vertical-scroll-proportion="0.7893175" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/ClassDeclaration.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="33" selection-start="381" selection-end="381" vertical-scroll-proportion="0.36503068" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodDeclaration.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="0" selection-start="217" selection-end="217" vertical-scroll-proportion="0.20771514" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/test/scala/metamorph/Java/ModelConstructionSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="6" selection-start="287" selection-end="287" vertical-scroll-proportion="0.020771513" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/scala/metamorph/java/DefaultJavaFileProcessor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="20" selection-start="642" selection-end="642" vertical-scroll-proportion="0.52960527">
-          <folding>
-            <element signature="e#24#57#0" expanded="true" />
-          </folding>
+        <state line="26" column="13" selection-start="688" selection-end="688" vertical-scroll-proportion="0.49851632" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.runtime/src/scala/metamorph/model/MethodCall.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="0" selection-start="78" selection-end="78" vertical-scroll-proportion="0.08308605" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/java/metamorph.java/JavaParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7425" column="47" selection-start="232611" selection-end="232618" vertical-scroll-proportion="0.3323263">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.java.parser/src/antlr/Java.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="535" column="42" selection-start="10296" selection-end="10296" vertical-scroll-proportion="0.01997147">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="28" selection-start="67" selection-end="67" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/metamorph.common/buildfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="46" selection-start="200" selection-end="200" vertical-scroll-proportion="0.099857345">
+          <folding />
         </state>
       </provider>
     </entry>
