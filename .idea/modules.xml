@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/metamorph/metamorph.iml" filepath="$PROJECT_DIR$/metamorph/metamorph.iml" />
-      <module fileurl="file://$PROJECT_DIR$/metamorph.common/metamorph.common.iml" filepath="$PROJECT_DIR$/metamorph.common/metamorph.common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/metamorph.java.parser/metamorph.java.parser.iml" filepath="$PROJECT_DIR$/metamorph.java.parser/metamorph.java.parser.iml" />
-      <module fileurl="file://$PROJECT_DIR$/metamorph.runtime/metamorph.runtime.iml" filepath="$PROJECT_DIR$/metamorph.runtime/metamorph.runtime.iml" />
-      <module fileurl="file://$PROJECT_DIR$/metamorph.sample/metamorph.sample.iml" filepath="$PROJECT_DIR$/metamorph.sample/metamorph.sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/Metamorph.iml" filepath="$PROJECT_DIR$/src/Metamorph.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test/Test.iml" filepath="$PROJECT_DIR$/test/Test.iml" />
     </modules>
   </component>
 </project>

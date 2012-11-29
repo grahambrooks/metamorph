@@ -1,11 +1,10 @@
 <component name="libraryTable">
   <library name="test">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/lib/test" />
-      <root url="file://$PROJECT_DIR$/lib/test" />
+      <root url="jar://$PROJECT_DIR$/lib/test/mockito-all-1.9.5-rc1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/test/scalatest_2.9.0-1.8.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/lib/test" recursive="false" />
   </library>
 </component>

@@ -1,11 +1,10 @@
 <component name="libraryTable">
   <library name="runtime">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/lib/runtime" />
-      <root url="file://$PROJECT_DIR$/lib/runtime" />
+      <root url="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/runtime/antlr-3.4-complete.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/lib/runtime" recursive="false" />
   </library>
 </component>
