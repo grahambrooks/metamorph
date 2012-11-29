@@ -2,9 +2,12 @@
 require 'buildr/scala'
 
 task :grammar do
+  project_root = File.dirname(__FILE__)
+  output_path = File.absolute_path(File.join(project_root, 'src', 'java', 'metamorph', 'Java'))
+  antlr = File.absolute_path(File.join(project_root, 'Tools', 'antlr-4.0b1-complete.jar'))
 
+  exec "cd src/antlr;java -jar #{antlr} Java.g4 -o #{output_path} -visitor"
 end
-
 
 
 project_layout = Layout.new

@@ -1,4 +1,4 @@
-package metamorph.java
+package metamorph.Java
 
 import _root_.java.io.IOException
 import org.antlr.v4.runtime.{CommonTokenStream, ANTLRFileStream, ANTLRInputStream}

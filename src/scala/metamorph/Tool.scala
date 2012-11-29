@@ -1,4 +1,6 @@
-package metamorph.java
+package metamorph
+
+import Java.{DefaultJavaFileProcessor, JavaFileProcessor}
 
 object Tool {
   def main(args: Array[String]) {

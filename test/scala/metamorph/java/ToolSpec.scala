@@ -4,7 +4,8 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito.verify
-import metamorph.java.{Tool, JavaFileProcessor}
+import metamorph.Tool
+
 
 class ToolSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
   it should "be instantiable" in {
