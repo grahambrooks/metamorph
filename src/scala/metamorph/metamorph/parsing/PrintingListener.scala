@@ -12,13 +12,13 @@ object PrintingListener {
 
     if (t.getChildCount == 0) return Utils.escapeWhitespace(getNodeText(t, ruleNames), false)
 
-    val buf: StringBuilder = new StringBuilder
+    val buf = new StringBuilder
     buf.append("(")
 
     buf.append(Utils.escapeWhitespace(getNodeText(t, ruleNames), false))
     buf.append(' ')
 
-    for (i <- 0 to t.getChildCount()) {
+    for (i <- 0 to t.getChildCount() -1) {
       if (i > 0) buf.append(' ')
       buf.append(toStringTree(t.getChild(i), ruleNames))
     }
@@ -44,7 +44,6 @@ object PrintingListener {
         }
       }
     }
-
 
     val payload = t.getPayload
     if (payload.isInstanceOf[Token]) {
