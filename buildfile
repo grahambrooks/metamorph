@@ -13,22 +13,27 @@ end
 project_layout = Layout.new
 project_layout[:source, :main, :java] = 'src/java'
 project_layout[:source, :main, :scala] = 'src/scala'
+#project_layout[:source, :test, :scala] = 'test/scala'
 
-# Version number for this release
 VERSION_NUMBER = "1.0.0"
-# Group identifier for your projects
-GROUP = "metamorph.common"
+GROUP = "metamorph"
 COPYRIGHT = ""
 
 # Specify Maven 2.0 remote repositories here, like this:
-repositories.remote << "http://repo1.maven.org/maven2"
+#repositories.remote << "http://repo1.maven.org/maven2"
 
-desc "The Metamorph.common project"
-define "metamorph.common", :layout => project_layout do
-
+desc "The Metamorph project"
+define "metamorph", :layout => project_layout do
   project.version = VERSION_NUMBER
   project.group = GROUP
   manifest["Implementation-Vendor"] = COPYRIGHT
-  package :jar
+
+  compile.with _('lib/runtime/antlr-3.4-complete.jar'),
+               _('lib/runtime/antlr-4.0b1-complete.jar'),
+               _('lib/sources/scalatest_2.9.0-1.8-sources.jar'),
+               _('lib/test/mockito-all-1.9.5-rc1.jar'),
+               _('lib/test/scalatest_2.9.0-1.8.jar')
+
+  package(:jar).with :manifest => { 'Copyright' => 'Graham Brooks'}
 
 end
