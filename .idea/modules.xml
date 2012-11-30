@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/src/Metamorph.iml" filepath="$PROJECT_DIR$/src/Metamorph.iml" />
-      <module fileurl="file://$PROJECT_DIR$/test/Test.iml" filepath="$PROJECT_DIR$/test/Test.iml" />
     </modules>
   </component>
 </project>
