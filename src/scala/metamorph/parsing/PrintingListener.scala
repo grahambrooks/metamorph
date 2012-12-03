@@ -1,4 +1,4 @@
-package metamorph.metamorph.parsing
+package metamorph.parsing
 
 import org.antlr.v4.runtime.misc.Utils
 import scala.StringBuilder

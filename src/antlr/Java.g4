@@ -16,6 +16,10 @@ grammar Java;
   protected boolean assertIsKeyword = true;
 }
 
+@parser::members {
+  public JavaParserActions parserActions;
+}
+
 // starting point for parsing a java file
 compilationUnit
     :   packageDeclaration? importDeclaration* typeDeclaration*
@@ -27,7 +31,10 @@ packageDeclaration
     ;
 
 importDeclaration
-    :   'import' 'static'? qualifiedName ('.' '*')? ';'
+    :   imp='import' 'static'? qualifiedName ('.' '*')? ';'
+        {
+            parserActions.importDeclaration($imp, $qualifiedName.name);
+        }
     ;
 
 typeDeclaration
@@ -318,8 +325,11 @@ explicitConstructorInvocation
     |   primary '.' nonWildcardTypeArguments? 'super' arguments ';'
     ;
 
-qualifiedName
-    :   Identifier ('.' Identifier)*
+qualifiedName returns [List<Token> name]
+@init {
+    $name = new ArrayList<Token>();
+}
+    :   a=Identifier { $name.add($a); } ('.' b=Identifier { $name.add($b); })*
     ;
 
 literal

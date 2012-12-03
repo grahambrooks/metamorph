@@ -2,7 +2,7 @@ package metamorph.Java
 
 import _root_.java.io.IOException
 import org.antlr.v4.runtime.{CommonTokenStream, ANTLRFileStream, ANTLRInputStream}
-import metamorph.metamorph.parsing.PrintingListener
+import metamorph.parsing.PrintingListener
 
 final class DefaultJavaFileProcessor extends JavaFileProcessor {
 
