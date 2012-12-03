@@ -4,7 +4,12 @@ import metamorph.model.{CodeModel, Import}
 import java.io.PrintWriter
 
 class ChangeSet(model: CodeModel) {
+  var packageSpec: PackageSpec = null
   var imports: List[Import] = Nil
+
+  def setPackage(packageSpec: PackageSpec) {
+    this.packageSpec = packageSpec
+  }
 
   def add(im: Import) {
     imports = imports ::: List(im)
@@ -15,11 +20,19 @@ class ChangeSet(model: CodeModel) {
   }
 
   def apply(code: CodeLine, output: PrintWriter) {
-    if (code.lineNumber == model.importInsertionPoint) {
-      writeImports(output)
+    if (packageSpec != null && model.packageLine == code.lineNumber) {
+      output.println("package " + packageSpec.toString + ";")
+      if (model.packageDeclaration == null && code.printable) {
+        output.println(code.lineText)
+      }
+    } else {
+      if (code.lineNumber == model.importInsertionPoint) {
+        writeImports(output)
+      }
+
+      if (code.printable)
+        output.println(code.lineText)
     }
-    if (code.printable)
-      output.println(code.lineText)
   }
 
 }

@@ -1,19 +1,32 @@
 package metamorph.Java
 
-import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.path.FunSpec
 
-class SourceCodeReaderSpec extends FlatSpec with ShouldMatchers {
-  it should "reader recognises imports" in {
-    val originalSource = new SourceCodeString("import metamorph.foo.bar;")
+class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
+  describe("Source Code Reader") {
+    it("recognises imports") {
+      val originalSource = new SourceCodeString("import metamorph.foo.bar;")
 
-    val reader = new SourceCodeReader(originalSource)
+      val reader = new SourceCodeReader(originalSource)
 
-    val model = reader.read
+      val model = reader.read
 
-    val importDecl = model.imports(0)
+      val importDecl = model.imports(0)
 
-    importDecl.qualifiedName should equal("metamorph.foo.bar")
+      importDecl.qualifiedName should equal("metamorph.foo.bar")
+    }
 
+    it("recognises package declarations") {
+      val originalSource = new SourceCodeString("\n\n\npackage metamorph.foo.bar;")
+
+      val reader = new SourceCodeReader(originalSource)
+
+      val model = reader.read
+
+      assert(model.packageDeclaration != null)
+      assert(model.packageDeclaration.importToken.getLine === 4)
+      assert(model.packageDeclaration.qualifiedName.name === "metamorph.foo.bar")
+    }
   }
 }

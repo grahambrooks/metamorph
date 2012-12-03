@@ -27,7 +27,10 @@ compilationUnit
     ;
 
 packageDeclaration
-    :   'package' qualifiedName ';'
+    :   p='package' qualifiedName ';'
+        {
+            parserActions.packageDeclaration($p, $qualifiedName.name);
+        }
     ;
 
 importDeclaration
