@@ -4,9 +4,9 @@ class CodeModel {
   var importInsertionPoint = 0
   var packageDeclaration: PackageDeclaration = null
 
-  var imports: List[Import] = Nil
+  var imports: List[ImportDeclaration] = Nil
 
-  def add(im: Import) {
+  def add(im: ImportDeclaration) {
     imports = imports ::: List(im)
     importInsertionPoint = im.endLineNumber
   }

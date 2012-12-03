@@ -1,7 +1,7 @@
 package metamorph.Java
 
 import org.scalatest.FunSpec
-import metamorph.model.{CodeModel, NewImport}
+import metamorph.model.{CodeModel, ImportSpec}
 import java.io.{PrintWriter, StringWriter}
 
 class RefactoringSpec extends FunSpec {
@@ -11,7 +11,7 @@ class RefactoringSpec extends FunSpec {
 
       val changeSet = new ChangeSet(modelFromSource(originalSource))
 
-      changeSet.add(new NewImport("metamorph.foo"))
+      changeSet.add(new ImportSpec("metamorph.foo"))
 
       val result = applyChanges(originalSource, changeSet)
 
@@ -27,7 +27,7 @@ class RefactoringSpec extends FunSpec {
 
       val changeSet = new ChangeSet(modelFromSource(originalSource))
 
-      changeSet.add(new NewImport("metamorph.bar"))
+      changeSet.add(new ImportSpec("metamorph.bar"))
 
       val result = applyChanges(originalSource, changeSet)
 
@@ -54,6 +54,7 @@ class RefactoringSpec extends FunSpec {
         "\nclass X {}" +
         "\n")
     }
+
     it("allows replacement of a package") {
       val originalSource = new SourceCodeString("\n\npackage some.name;\n\nclass X {}\n")
 
@@ -70,7 +71,7 @@ class RefactoringSpec extends FunSpec {
   }
 
 
-  protected def applyChanges(originalSource: SourceCodeString, changeSet: ChangeSet) :String= {
+  protected def applyChanges(originalSource: SourceCodeString, changeSet: ChangeSet): String = {
     val writer = new SourceCodeReWriter(originalSource)
 
     val sw: StringWriter = new StringWriter
@@ -79,7 +80,7 @@ class RefactoringSpec extends FunSpec {
     sw.toString
   }
 
-  def modelFromSource(originalSource: SourceCodeString) : CodeModel ={
+  def modelFromSource(originalSource: SourceCodeString): CodeModel = {
     val reader = new SourceCodeReader(originalSource)
     reader.read
   }

@@ -1,17 +1,17 @@
 package metamorph.Java
 
-import metamorph.model.{CodeModel, Import}
+import metamorph.model.{ImportSpec, CodeModel}
 import java.io.PrintWriter
 
 class ChangeSet(model: CodeModel) {
   var packageSpec: PackageSpec = null
-  var imports: List[Import] = Nil
+  var imports: List[ImportSpec] = Nil
 
   def setPackage(packageSpec: PackageSpec) {
     this.packageSpec = packageSpec
   }
 
-  def add(im: Import) {
+  def add(im: ImportSpec) {
     imports = imports ::: List(im)
   }
 
