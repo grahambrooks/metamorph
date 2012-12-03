@@ -1,29 +1,57 @@
 package metamorph.Java
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.FunSpec
 import metamorph.model.NewImport
 import java.io.{PrintWriter, StringWriter}
 
 
-class RefactoringSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
-  it should "allow imports to be added" in {
-    val originalSource = new SourceCodeString("class X {}")
+class RefactoringSpec extends FunSpec {
+  describe("Refactoring imports") {
+    it("allows imports to be added to importless code") {
+      val originalSource = new SourceCodeString("class X {}")
 
-    val reader = new SourceCodeReader(originalSource)
-    val model = reader.read
+      val reader = new SourceCodeReader(originalSource)
+      val model = reader.read
 
-    val changeSet = new ChangeSet(model)
+      val changeSet = new ChangeSet(model)
 
-    changeSet.add(new NewImport("metamorph.foo"))
+      changeSet.add(new NewImport("metamorph.foo"))
 
-    val writer = new SourceCodeReWriter(originalSource)
+      val writer = new SourceCodeReWriter(originalSource)
 
-    val sw: StringWriter = new StringWriter
-    val output: PrintWriter = new PrintWriter(sw)
-    writer.rewrite(changeSet, output)
+      val sw: StringWriter = new StringWriter
+      val output: PrintWriter = new PrintWriter(sw)
+      writer.rewrite(changeSet, output)
 
-    sw.toString should equal("import metamorph.foo;\nclass X {}")
+      assert(sw.toString === "import metamorph.foo;" +
+        "\nclass X {}" +
+        "\n")
+    }
+
+    it("adds new imports after existing imports") {
+      val originalSource = new SourceCodeString("import metamorph.foo;" +
+        "\n" +
+        "\nclass X {}")
+
+      val reader = new SourceCodeReader(originalSource)
+      val model = reader.read
+
+      val changeSet = new ChangeSet(model)
+
+      changeSet.add(new NewImport("metamorph.bar"))
+
+      val writer = new SourceCodeReWriter(originalSource)
+
+      val sw: StringWriter = new StringWriter
+      val output: PrintWriter = new PrintWriter(sw)
+      writer.rewrite(changeSet, output)
+
+      assert(sw.toString === "import metamorph.bar;" +
+        "\nimport metamorph.foo;" +
+        "\n" +
+        "\nclass X {}" +
+        "\n")
+
+    }
   }
 }

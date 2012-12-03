@@ -19,7 +19,7 @@ class ChangeSet(model: CodeModel) {
       writeImports(output)
     }
     if (code.printable)
-      output.print(code.lineText)
+      output.println(code.lineText)
   }
 
 }
