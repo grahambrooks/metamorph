@@ -7,6 +7,7 @@ _ReSharper.*
 *.user
 out
 target/
+reports/
 src/java/metamorph/Java/Java.tokens
 src/java/metamorph/Java/JavaBaseListener.java
 src/java/metamorph/Java/JavaBaseVisitor.java
