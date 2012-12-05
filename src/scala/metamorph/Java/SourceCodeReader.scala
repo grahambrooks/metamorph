@@ -1,6 +1,6 @@
 package metamorph.Java
 import scala.collection.JavaConverters._
-import metamorph.model.{QualifiedName, PackageDeclaration, ImportDeclaration, CodeModel}
+import metamorph.model._
 import org.antlr.v4.runtime.{Token, CommonTokenStream}
 import java.util
 
@@ -24,5 +24,9 @@ class SourceCodeReader(code: SourceCode) extends JavaParserActions {
 
   def packageDeclaration(packageToken: Token, nameTokens: util.List[Token]) {
     model.packageDeclaration = new PackageDeclaration(packageToken, new QualifiedName(nameTokens.asScala.toList))
+  }
+
+  def methodDeclaration(methodNameToken: Token) {
+    model.add(new MethodDeclaration(methodNameToken))
   }
 }

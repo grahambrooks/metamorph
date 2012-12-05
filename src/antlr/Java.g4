@@ -140,7 +140,13 @@ member
 
 methodDeclaration
     :   type Identifier formalParameters ('[' ']')* methodDeclarationRest
+        {
+            parserActions.methodDeclaration($Identifier);
+        }
     |   'void' Identifier formalParameters methodDeclarationRest
+        {
+            parserActions.methodDeclaration($Identifier);
+        }
     ;
 
 methodDeclarationRest
@@ -547,9 +553,6 @@ expression
     |   '(' type ')' expression
     |   expression ('++' | '--')
     |   expression '(' expressionList? ')'
-        {
-            System.out.println("Method Call? ");
-        }
     |   ('+'|'-'|'++'|'--') expression
     |   ('~'|'!') expression
     |   expression ('*'|'/'|'%') expression

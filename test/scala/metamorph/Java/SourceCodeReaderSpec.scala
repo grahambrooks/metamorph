@@ -28,5 +28,19 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
       assert(model.packageDeclaration.importToken.getLine === 4)
       assert(model.packageDeclaration.qualifiedName.name === "metamorph.foo.bar")
     }
+
+    it("Identifies named methods") {
+      val originalSource = new SourceCodeString("class X { void foo() {}; }")
+
+      val reader = new SourceCodeReader(originalSource)
+
+      val model = reader.read
+
+      assert(model.methods != Nil)
+      assert(model.methods.size === 1)
+
+      assert(model.methods(0).name === "foo")
+
+    }
   }
 }
