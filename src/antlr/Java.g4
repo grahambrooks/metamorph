@@ -29,14 +29,18 @@ compilationUnit
 packageDeclaration
     :   p='package' qualifiedName ';'
         {
-            parserActions.packageDeclaration($p, $qualifiedName.name);
+            if (parserActions != null) {
+                parserActions.packageDeclaration($p, $qualifiedName.name);
+            }
         }
     ;
 
 importDeclaration
     :   imp='import' 'static'? qualifiedName ('.' '*')? ';'
         {
-            parserActions.importDeclaration($imp, $qualifiedName.name);
+            if (parserActions != null) {
+                parserActions.importDeclaration($imp, $qualifiedName.name);
+            }
         }
     ;
 
@@ -140,13 +144,7 @@ member
 
 methodDeclaration
     :   type Identifier formalParameters ('[' ']')* methodDeclarationRest
-        {
-            parserActions.methodDeclaration($Identifier);
-        }
     |   'void' Identifier formalParameters methodDeclarationRest
-        {
-            parserActions.methodDeclaration($Identifier);
-        }
     ;
 
 methodDeclarationRest
@@ -433,7 +431,7 @@ defaultValue
 // STATEMENTS / BLOCKS
 
 block
-    :   '{' blockStatement* '}'
+    :   start='{' blockStatement* end='}'
     ;
 
 blockStatement

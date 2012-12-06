@@ -1,4 +1,5 @@
 package metamorph.Java
+
 import scala.collection.JavaConverters._
 import metamorph.model._
 import org.antlr.v4.runtime.{Token, CommonTokenStream}
@@ -12,9 +13,9 @@ class SourceCodeReader(code: SourceCode) extends JavaParserActions {
     parser.parserActions = this
     val tree = parser.compilationUnit
 
-    //    PrintingListener.toStringTree(tree, parser)
-    //
-    //    new CodeModel
+    val visitor = new CodeReaderVisitor(model)
+
+    visitor.visit(tree)
     model
   }
 
