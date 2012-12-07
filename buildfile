@@ -33,5 +33,9 @@ define "metamorph", :layout => project_layout do
                _('lib/test/mockito-all-1.9.5-rc1.jar'),
                _('lib/test/scalatest_2.9.0-1.8.jar')
 
+  package(:jar).path("lib/runtime").tap do | p |
+                  p.include "antlr-4.0b1-complete.jar"
+                  p.include "antlr-3.4-complete.jar"
+              end
   package(:jar).with :manifest => { 'Copyright' => 'Graham Brooks', 'Main-Class' => 'metamorph.Tool'}
 end

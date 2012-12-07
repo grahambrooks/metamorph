@@ -13,7 +13,7 @@ class SourceCodeReader(code: SourceCode) extends JavaParserActions {
     parser.parserActions = this
     val tree = parser.compilationUnit
 
-    val visitor = new CodeReaderVisitor(model)
+    val visitor = new CodeReaderVisitor(model, code)
 
     visitor.visit(tree)
     model

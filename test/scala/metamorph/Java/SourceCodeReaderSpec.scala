@@ -42,7 +42,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
       assert(model.methods(0).name === "foo")
     }
 
-    it("Captures the start and stop locations from the original source") {
+    it("Captures the method start and stop locations from the original source") {
       val originalSource = new SourceCodeString("class X {" +
         "\n void foo() {" +
         "\n" +
@@ -56,6 +56,19 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
       assert(model.methods(0).span.start.getCharPositionInLine === 1)
       assert(model.methods(0).span.stop.getLine === 4)
       assert(model.methods(0).span.stop.getCharPositionInLine === 2)
+    }
+
+    it ("provides a signature for a method") {
+      val originalSource = new SourceCodeString("class X {" +
+        "\n void foo() {" +
+        "\n" +
+        "\n  }; }")
+
+      val reader = new SourceCodeReader(originalSource)
+
+      val model = reader.read
+
+      model.methods(0).signature
     }
   }
 }

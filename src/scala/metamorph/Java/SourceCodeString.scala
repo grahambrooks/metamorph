@@ -7,4 +7,6 @@ class SourceCodeString(text: String) extends SourceCode {
   def getInputStream = new ANTLRInputStream(text)
 
   def getSource = Source.fromString(text)
+
+  def getFilename = "STRING"
 }
