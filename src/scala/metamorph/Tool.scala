@@ -3,7 +3,6 @@ package metamorph
 import Java._
 import java.io.File
 import model.{MethodDeclaration, CodeModel}
-import collection.mutable
 
 object Tool {
   def main(args: Array[String]) {
@@ -45,34 +44,25 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
     }
   }
 
-  def analyse(models: List[CodeModel], writer: ReportWriter) {
+  private def analyse(models: List[CodeModel], writer: ReportWriter) {
     val methodBuckets = bucketMethods(models)
 
-    methodBuckets.values foreach (methods => {
-      if (hasDuplicates(methods)) {
-        writer.println(methods(0).name + " has " + (methods.size - 1) + " duplicates")
-        methods foreach(method => {
-          writer.println(method.source.getFilename)
-        })
-      }
-    })
+    methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer))
   }
 
-  def bucketMethods(models: List[CodeModel]) :mutable.HashMap[Signature, List[MethodDeclaration]] = {
-    val methodBuckets = new mutable.HashMap[Signature, List[MethodDeclaration]]
+  private def reportDuplicates(methods: List[MethodDeclaration], writer: ReportWriter) {
+    writer.println(methods(0).name + " has " + (methods.size - 1) + " duplicates")
+    methods foreach (method => {
+      writer.println(method.source.getFilename)
+    })
+
+  }
+
+  private def bucketMethods(models: List[CodeModel]): Bucket[MethodDeclaration] = {
+    val methodBuckets = new Bucket[MethodDeclaration]
     models foreach (model => {
-      model.methods foreach (method => {
-        if (methodBuckets.contains(method.syntaxSignature)) {
-          methodBuckets(method.syntaxSignature) :::= List(method)
-        } else {
-          methodBuckets(method.syntaxSignature) = List(method)
-        }
-      })
+      model.methods foreach (method => methodBuckets.add(method.syntaxSignature, method))
     })
     methodBuckets
-  }
-
-  private def hasDuplicates(methods: List[MethodDeclaration]): Boolean = {
-    methods.size > 1
   }
 }
