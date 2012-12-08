@@ -1,5 +1,9 @@
 package metamorph
 
 trait ReportWriter {
-  def println(message: String, args: Any*)
+  def methodDetail(methodName: String)
+  def methodSummary(methodName: String, methodCount: Int)
+
+  def duplicateClassBlock(function: (ReportWriter) => Any)
+  def duplicateMethodBlock(function: (ReportWriter) => Any)
 }

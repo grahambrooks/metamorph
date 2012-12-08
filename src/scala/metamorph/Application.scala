@@ -4,7 +4,7 @@ class Application(console: ConsoleWriter) {
   val Results = new DefaultQueryResults()
 
   def run(args: Array[String]) {
-    console.WriteLine("metamorph - source code analysis and rewriting")
+    console.writeLine("metamorph - source code analysis and rewriting")
     //    if (args.length == 0) {
     //      Console.err.println("Usage: coder <source-path>")
     //      return

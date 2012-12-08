@@ -17,6 +17,16 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
     super.visitMethodDeclaration(ctx)
   }
 
+  override def visitPackageDeclaration(ctx: PackageDeclarationContext) = {
+    super.visitPackageDeclaration(ctx)
+  }
+
+  override def visitClassDeclaration(ctx: ClassDeclarationContext) = {
+    println("Class declaration " + ctx.Identifier())
+
+    super.visitClassDeclaration(ctx)
+  }
+
   private def generateSyntaxSignature(tree: ParseTree): String = {
 
     var result: String = ""

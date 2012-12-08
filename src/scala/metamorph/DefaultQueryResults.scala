@@ -37,22 +37,22 @@ class DefaultQueryResults extends QueryResults {
   }
 
   def printSummary(writer: ConsoleWriter) {
-    writer.WriteLine()
-    writer.WriteLine("Scan summary                %tF", new Date)
-    writer.WriteSeparator('_')
-    writer.WriteLine("Files found                 %d", scannedFiles.size + failedFiles.size)
-    writer.WriteLine("Successfully scanned        %d", scannedFiles.size)
-    writer.WriteLine("Catch blocks found          %d", catchStatements.size)
-    writer.WriteLine("Empty Catch blocks found    %d", emptyCatchStatements.size)
-    writer.WriteLine()
+    writer.writeLine()
+    writer.writeLine("Scan summary                %tF", new Date)
+    writer.writeSeparator('_')
+    writer.writeLine("Files found                 %d", scannedFiles.size + failedFiles.size)
+    writer.writeLine("Successfully scanned        %d", scannedFiles.size)
+    writer.writeLine("Catch blocks found          %d", catchStatements.size)
+    writer.writeLine("Empty Catch blocks found    %d", emptyCatchStatements.size)
+    writer.writeLine()
 
-    scannedFiles.foreach(e => if (e._2.size > 0) writer.WriteLine("%d empty catch blocks found in %s", e._2.size, e._1))
-    writer.WriteSeparator('_')
+    scannedFiles.foreach(e => if (e._2.size > 0) writer.writeLine("%d empty catch blocks found in %s", e._2.size, e._1))
+    writer.writeSeparator('_')
 
     if (failedFiles.size > 0) {
-      writer.WriteLine()
-      writer.WriteLine("Failed to scan:")
-      writer.WriteSeparator('_')
+      writer.writeLine()
+      writer.writeLine("Failed to scan:")
+      writer.writeSeparator('_')
 
       failedFiles.foreach(errorFile => writer.Error("Error processing file {0}", errorFile))
     }

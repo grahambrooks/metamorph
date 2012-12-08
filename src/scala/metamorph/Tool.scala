@@ -47,15 +47,14 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
   private def analyse(models: List[CodeModel], writer: ReportWriter) {
     val methodBuckets = bucketMethods(models)
 
-    methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer))
+    writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
   }
 
   private def reportDuplicates(methods: List[MethodDeclaration], writer: ReportWriter) {
-    writer.println(methods(0).name + " has " + (methods.size - 1) + " duplicates")
+    writer.methodSummary(methods(0).name, methods.size)
     methods foreach (method => {
-      writer.println(method.source.getFilename)
+      writer.methodDetail(method.source.getFilename)
     })
-
   }
 
   private def bucketMethods(models: List[CodeModel]): Bucket[MethodDeclaration] = {
