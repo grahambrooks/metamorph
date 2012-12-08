@@ -4,7 +4,7 @@
     <facet type="scala" name="Scala">
       <configuration>
         <option name="compilerLibraryLevel" value="Global" />
-        <option name="compilerLibraryName" value="Scala 2.9.2" />
+        <option name="compilerLibraryName" value="Scala 2.10" />
       </configuration>
     </facet>
   </component>
@@ -14,14 +14,15 @@
       <sourceFolder url="file://$MODULE_DIR$/scala" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../test/scala" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resource" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../Tools" />
       <excludeFolder url="file://$MODULE_DIR$/../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="runtime" level="project" />
-    <orderEntry type="library" name="Scala 2.9.2" level="application" />
     <orderEntry type="library" name="test" level="project" />
+    <orderEntry type="library" name="Scala 2.10" level="application" />
   </component>
 </module>
 

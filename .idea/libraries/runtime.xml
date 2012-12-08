@@ -3,6 +3,8 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/runtime/antlr-4.0b1-complete.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/runtime/antlr-3.4-complete.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/runtime/scalasti_2.10-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/runtime/grizzled-scala_2.10-1.1.2.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

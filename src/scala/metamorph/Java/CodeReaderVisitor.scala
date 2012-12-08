@@ -1,7 +1,7 @@
 package metamorph.Java
 
 import metamorph.Java.JavaParser._
-import metamorph.model.{MethodDeclaration, CodeModel}
+import metamorph.model._
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.Token
 import metamorph.Signature
@@ -18,6 +18,7 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   }
 
   override def visitPackageDeclaration(ctx: PackageDeclarationContext) = {
+//    model.add(new ImportDeclaration(ctx.p,buildPackageDeclaration(ctx.qualifiedName())))
     super.visitPackageDeclaration(ctx)
   }
 
@@ -26,6 +27,13 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
 
     super.visitClassDeclaration(ctx)
   }
+
+//  private def buildPackageDeclaration(ctx: QualifiedNameContext) : QualifiedName = {
+//
+//    ctx.a
+//    ctx.getChildCount
+//    ctx.qualifiedName()
+//  }
 
   private def generateSyntaxSignature(tree: ParseTree): String = {
 
