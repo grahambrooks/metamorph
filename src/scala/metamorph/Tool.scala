@@ -46,6 +46,19 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
   }
 
   def analyse(models: List[CodeModel], writer: ReportWriter) {
+    val methodBuckets = bucketMethods(models)
+
+    methodBuckets.values foreach (methods => {
+      if (hasDuplicates(methods)) {
+        writer.println(methods(0).name + " has " + (methods.size - 1) + " duplicates")
+        methods foreach(method => {
+          writer.println(method.source.getFilename)
+        })
+      }
+    })
+  }
+
+  def bucketMethods(models: List[CodeModel]) :mutable.HashMap[Signature, List[MethodDeclaration]] = {
     val methodBuckets = new mutable.HashMap[Signature, List[MethodDeclaration]]
     models foreach (model => {
       model.methods foreach (method => {
@@ -56,15 +69,7 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
         }
       })
     })
-
-    methodBuckets.values foreach (methods => {
-      if (hasDuplicates(methods)) {
-        writer.println(methods(0).name + " has " + (methods.size - 1) + " duplicates")
-        methods foreach(method => {
-          writer.println(method.source.getFilename)
-        })
-      }
-    })
+    methodBuckets
   }
 
   private def hasDuplicates(methods: List[MethodDeclaration]): Boolean = {
