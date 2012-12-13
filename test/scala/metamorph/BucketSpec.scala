@@ -3,9 +3,9 @@ package metamorph
 import org.scalatest.FunSpec
 
 class BucketSpec extends FunSpec {
-  describe("Bucket") {
+  describe("BucketSet") {
     it("is initially empty") {
-      val bucket = new Bucket[Object]
+      val bucket = new BucketSet[Object]
 
       var count = 0
       bucket.eachDuplicate(dups => count += 1)
@@ -13,7 +13,7 @@ class BucketSpec extends FunSpec {
     }
 
     it("identifies duplicate signatures") {
-      val bucket = new Bucket[Object]
+      val bucket = new BucketSet[Object]
 
       val s = new Signature("foo")
       bucket.add(s, this)
@@ -21,7 +21,10 @@ class BucketSpec extends FunSpec {
       var count = 0
       var duplicates = 0
 
-      bucket.eachDuplicate(items => {count += 1; duplicates += items.size})
+      bucket.eachDuplicate(items => {
+        count += 1;
+        duplicates += items.size
+      })
 
       assert(count == 1)
       assert(duplicates == 2)

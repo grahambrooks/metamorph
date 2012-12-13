@@ -23,8 +23,6 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   }
 
   override def visitClassDeclaration(ctx: ClassDeclarationContext) = {
-    println("Class declaration " + ctx.Identifier())
-
     super.visitClassDeclaration(ctx)
   }
 

@@ -1,27 +1,14 @@
 package metamorph
 
-import collection.mutable
-
-class Bucket[T] {
-  val bucket = new mutable.HashMap[Signature, List[T]]
-
-  def add(signature: Signature, item: T) {
-    if (bucket.contains(signature)) {
-      bucket(signature) :::= List(item)
-    } else {
-      bucket(signature) = List(item)
-    }
+class Bucket[T](item: T) extends Iterable[T] {
+  var bucket:List[T] = List(item)
+  def add(item:T) {
+    bucket :::= List(item)
   }
 
-  def eachDuplicate(function: (List[T]) => Any) {
-    bucket.values foreach (items => {
-      if (hasDuplicates(items)) {
-        function(items)
-      }
-    })
-  }
+  def hasDuplicates = bucket.size > 1
 
-  private def hasDuplicates(items: List[T]): Boolean = {
-    items.size > 1
-  }
+  def iterator = bucket.iterator
+
+  def apply(i: Int): T = bucket(i)
 }

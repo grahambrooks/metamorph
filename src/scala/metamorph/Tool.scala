@@ -48,17 +48,24 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
     val methodBuckets = bucketMethods(models)
 
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
+
+
+    val html = new HtmlReportWriter(methodBuckets)
+
+    html.generate()
+
+
   }
 
-  private def reportDuplicates(methods: List[MethodDeclaration], writer: ReportWriter) {
+  private def reportDuplicates(methods: Bucket[MethodDeclaration], writer: ReportWriter) {
     writer.methodSummary(methods(0).name, methods.size)
     methods foreach (method => {
       writer.methodDetail(method.source.getFilename)
     })
   }
 
-  private def bucketMethods(models: List[CodeModel]): Bucket[MethodDeclaration] = {
-    val methodBuckets = new Bucket[MethodDeclaration]
+  private def bucketMethods(models: List[CodeModel]): BucketSet[MethodDeclaration] = {
+    val methodBuckets = new BucketSet[MethodDeclaration]
     models foreach (model => {
       model.methods foreach (method => methodBuckets.add(method.syntaxSignature, method))
     })

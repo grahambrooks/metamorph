@@ -7,6 +7,7 @@ import metamorph.Signature
 class MethodDeclaration(val source: SourceCode, val syntaxSignature: Signature, nameToken: Token, val span: TextSpan) {
 
   def name: String = nameToken.getText
+  def getName = name
 
   def signature: Signature = {
     val textSource = source.getSource
