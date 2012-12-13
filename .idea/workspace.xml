@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="496d33a5-8581-4bb9-a71f-ad760210d60c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scala/metamorph/DestinationCode.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scala/metamorph/DestinationCodeString.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/resource/metamorph/templates/html/duplicate.st" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/scala/metamorph/Bucket.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/BucketSet.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Bucket.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Bucket.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala" afterPath="$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala" />
+    <list default="true" id="496d33a5-8581-4bb9-a71f-ad760210d60c" name="Default" comment="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/HtmlReportWriter.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/HtmlReportWriter.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Tool.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Tool.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/buildfile" afterPath="$PROJECT_DIR$/buildfile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" afterPath="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="metamorph.iws" />
@@ -30,15 +21,15 @@
     <file path="/ToolSpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354833443637" ignored="false" />
     <file path="/buildfile" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355173950937" ignored="false" />
     <file path="/SourceCodeReaderSpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354840550621" ignored="false" />
-    <file path="/a.dummy" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355364391324" ignored="false" />
+    <file path="/a.dummy" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355405972368" ignored="false" />
     <file path="/MethodDeclaration.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355000882108" ignored="false" />
     <file path="/TestListener.java" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354810046300" ignored="false" />
-    <file path="/CodeReaderVisitor.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354988509058" ignored="false" />
+    <file path="/CodeReaderVisitor.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407366741" ignored="false" />
     <file path="/fragment.java" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355364935693" ignored="false" />
     <file path="/SourceCodeReader.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354838785443" ignored="false" />
     <file path="/Java.g4" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354807759164" ignored="false" />
     <file path="/DefaultJavaFileProcessor.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354756544463" ignored="false" />
-    <file path="/Dummy.txt" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355359178581" ignored="false" />
+    <file path="/Dummy.txt" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355405815329" ignored="false" />
     <file path="/SourceCodeString.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354908153678" ignored="false" />
     <file path="/Bucket.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355005093318" ignored="false" />
     <file path="/BucketSpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354998581281" ignored="false" />
@@ -54,7 +45,9 @@
     <file path="$USER_HOME$/tmp/src/main/java/com/example/helloworld/HelloWorldService.java" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355076065102" ignored="false" />
     <file path="$USER_HOME$/tmp/pom.xml" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355076192972" ignored="false" />
     <file path="/pom.xml" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355076179803" ignored="false" />
-    <file path="/CopySpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355364802837" ignored="false" />
+    <file path="/CopySpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355406685472" ignored="false" />
+    <file path="/Merge.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407393033" ignored="false" />
+    <file path="/CodeModel.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407359887" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,64 +144,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Tool.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Tool.scala">
+      <file leaf-file-name="ReportWriter.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/ReportWriter.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="25" selection-start="1326" selection-end="1326" vertical-scroll-proportion="0.0">
+            <state line="2" column="6" selection-start="25" selection-end="25" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HtmlReportWriter.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/HtmlReportWriter.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="6" selection-start="201" selection-end="201" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BucketSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="6" selection-start="55" selection-end="55" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="duplicate.st" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/resource/metamorph/templates/html/duplicate.st">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Bucket.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Bucket.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="0" selection-start="100" selection-end="100" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MethodDeclaration.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="21" selection-start="548" selection-end="548" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CopySpec.scala" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="CopySpec.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="439" selection-end="439" vertical-scroll-proportion="0.39752406">
+            <state line="15" column="14" selection-start="405" selection-end="405" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#19#32#0" expanded="true" />
               </folding>
@@ -216,19 +164,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SourceCodeReaderSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/scala/metamorph/Java/SourceCodeReaderSpec.scala">
+      <file leaf-file-name="Merge.scala" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Merge.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="0" selection-start="2078" selection-end="2078" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RefactoringSpec.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/scala/metamorph/Java/RefactoringSpec.scala">
+      <file leaf-file-name="SourceCodeReader.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/SourceCodeReader.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="2" selection-start="1988" selection-end="2294" vertical-scroll-proportion="0.0">
+            <state line="15" column="27" selection-start="476" selection-end="476" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CodeReaderVisitor.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="32" selection-start="467" selection-end="467" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -252,13 +209,10 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/scala/metamorph/ConsoleWriter.scala" />
-        <option value="$PROJECT_DIR$/src/scala/metamorph/ReportWriter.scala" />
         <option value="$PROJECT_DIR$/src/scala/metamorph/ConsoleReportWriter.scala" />
         <option value="$PROJECT_DIR$/src/scala/metamorph/parsing/ParseTreeHelper.scala" />
         <option value="$PROJECT_DIR$/src/resource/metamorph/templates/text/duplicate.st" />
         <option value="$PROJECT_DIR$/test/scala/metamorph/ReportGenerationSpec.scala" />
-        <option value="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" />
         <option value="$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala" />
         <option value="$PROJECT_DIR$/src/scala/metamorph/Tool.scala" />
         <option value="$PROJECT_DIR$/src/scala/metamorph/BucketSet.scala" />
@@ -268,6 +222,9 @@
         <option value="$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala" />
         <option value="$PROJECT_DIR$/buildfile" />
         <option value="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" />
+        <option value="$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala" />
+        <option value="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" />
       </list>
     </option>
   </component>
@@ -524,6 +481,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="model" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="metamorph" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="metamorph" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="metamorph" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -727,7 +710,7 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="project.structure.side.proportion" value="0.18531469" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
@@ -1091,7 +1074,11 @@
       <created>1354998523938</created>
       <updated>1354998523938</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui">
+      <created>1355365010888</created>
+      <updated>1355365010888</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1184,7 +1171,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated to latest Scala 2.10 milestone so I can use the stringtemplate scala wrapper" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1214,6 +1201,7 @@
     <MESSAGE value="Updated the tool to use bucket class" />
     <MESSAGE value="Moved more formatting to the report writer to make it easier to write reports in different formats" />
     <MESSAGE value="Updated to latest Scala 2.10 milestone so I can use the stringtemplate scala wrapper" />
+    <MESSAGE value="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1223,91 +1211,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/BucketSet.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="98" selection-start="410" selection-end="410" vertical-scroll-proportion="0.23506366" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="21" selection-start="548" selection-end="548" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/resource/metamorph/templates/html/duplicate.st">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Bucket.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="100" selection-end="100" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/HtmlReportWriter.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="6" selection-start="201" selection-end="201" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/buildfile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="52" selection-start="127" selection-end="127" vertical-scroll-proportion="0.062849164" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/antlr/Java.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="6" selection-start="55" selection-end="55" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/SignatureSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="6" selection-start="122" selection-end="122" vertical-scroll-proportion="0.060544904">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/ReportGenerationSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="103" selection-end="103" vertical-scroll-proportion="0.060544904">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/SourceCodeString.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="44" selection-start="131" selection-end="131" vertical-scroll-proportion="0.060544904">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/ChangeSet.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="21" selection-start="120" selection-end="120" vertical-scroll-proportion="0.09353507">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/Java/RefactoringSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="2" selection-start="1988" selection-end="2294" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home/src.zip!/java/io/PrintWriter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="98" column="30" selection-start="2736" selection-end="2742" vertical-scroll-proportion="0.4965612">
@@ -1315,19 +1218,112 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Tool.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="25" selection-start="1326" selection-end="1326" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Signature.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="6" selection-start="25" selection-end="25" vertical-scroll-proportion="0.041265473">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/model/MethodDeclaration.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="21" selection-start="548" selection-end="548" vertical-scroll-proportion="0.41265476">
+          <folding>
+            <element signature="e#25#58#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Bucket.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="0" selection-start="100" selection-end="100" vertical-scroll-proportion="0.082530946">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resource/metamorph/templates/html/duplicate.st">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="20" selection-start="122" selection-end="122" vertical-scroll-proportion="0.123796426">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/BucketSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="6" selection-start="55" selection-end="55" vertical-scroll-proportion="0.082530946">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/HtmlReportWriter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="6" selection-start="201" selection-end="201" vertical-scroll-proportion="0.061898213">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test/scala/metamorph/Java/SourceCodeReaderSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="0" selection-start="2078" selection-end="2078" vertical-scroll-proportion="0.0">
+        <state line="70" column="0" selection-start="2078" selection-end="2078" vertical-scroll-proportion="0.81430537">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/scala/metamorph/Java/RefactoringSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="2" selection-start="1988" selection-end="2294" vertical-scroll-proportion="0.58734524">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/ReportWriter.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="6" selection-start="25" selection-end="25" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="439" selection-end="439" vertical-scroll-proportion="0.39752406">
+        <state line="15" column="14" selection-start="405" selection-end="405" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#19#32#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/SourceCodeReader.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="27" selection-start="476" selection-end="476" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="39" selection-start="140" selection-end="140" vertical-scroll-proportion="0.123796426">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="32" selection-start="467" selection-end="467" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Merge.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>

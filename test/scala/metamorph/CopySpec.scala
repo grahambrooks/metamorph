@@ -16,6 +16,22 @@ class CopySpec extends FunSpec {
       merge.copy(originalSource, targetSource)
 
       assert(targetSource.toString === "package metamorph.foo.bar;\n")
+    }
+
+    it("merges identical sources into a single destination source") {
+      val sources = List(
+        new SourceCodeString("package metamorph.foo;\n"),
+        new SourceCodeString("package metamorph.foo;\n"),
+        new SourceCodeString("package metamorph.foo;\n"))
+
+
+      val destination = new DestinationCodeString()
+
+      val merge = new Merge(Map("metamorph.foo" -> "metamorph.foo.bar"))
+
+      merge.merge(sources, destination)
+
+      assert(destination.toString === "package metamorph.foo.bar;\n")
 
     }
   }

@@ -8,6 +8,12 @@ import metamorph.Signature
 
 
 class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends JavaBaseVisitor[Object] {
+
+  override def visitCompilationUnit(ctx: CompilationUnitContext) = {
+    model.modelSignature = new Signature(generateSyntaxSignature(ctx))
+    super.visitCompilationUnit(ctx)
+  }
+
   override def visitMethodDeclaration(ctx: MethodDeclarationContext) = {
 
     val sig = new Signature(generateSyntaxSignature(ctx))
@@ -18,7 +24,7 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   }
 
   override def visitPackageDeclaration(ctx: PackageDeclarationContext) = {
-//    model.add(new ImportDeclaration(ctx.p,buildPackageDeclaration(ctx.qualifiedName())))
+    //    model.add(new ImportDeclaration(ctx.p,buildPackageDeclaration(ctx.qualifiedName())))
     super.visitPackageDeclaration(ctx)
   }
 
@@ -26,12 +32,12 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
     super.visitClassDeclaration(ctx)
   }
 
-//  private def buildPackageDeclaration(ctx: QualifiedNameContext) : QualifiedName = {
-//
-//    ctx.a
-//    ctx.getChildCount
-//    ctx.qualifiedName()
-//  }
+  //  private def buildPackageDeclaration(ctx: QualifiedNameContext) : QualifiedName = {
+  //
+  //    ctx.a
+  //    ctx.getChildCount
+  //    ctx.qualifiedName()
+  //  }
 
   private def generateSyntaxSignature(tree: ParseTree): String = {
 

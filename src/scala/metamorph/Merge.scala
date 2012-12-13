@@ -5,6 +5,19 @@ import model.CodeModel
 import java.io.PrintWriter
 
 class Merge(importMap: Map[String, String]) {
+  def merge(sources: List[SourceCode], destination: DestinationCode) {
+    val sourceSignatures = sources.foldLeft(List[Signature]()) {
+      (r, c) => modelFromSource(c).signature :: r
+    }
+    val uniqueSources = sourceSignatures.foldLeft(List[Signature]()) {
+      (r, c) => if (r.contains(c)) r else c :: r
+    }.reverse
+
+    if (uniqueSources.size == 1) {
+      copy(sources(0), destination)
+    }
+  }
+
   def copy(source: SourceCode, destination: DestinationCode) {
     val model: CodeModel = modelFromSource(source)
     if (importMap.contains(model.packageDeclaration.qualifiedName.name)) {
@@ -12,8 +25,7 @@ class Merge(importMap: Map[String, String]) {
 
       changeSet.setPackage(new PackageSpec(importMap(model.packageDeclaration.qualifiedName.name)))
 
-      val result = applyChanges(source, changeSet, destination)
-
+      applyChanges(source, changeSet, destination)
     }
 
   }
@@ -25,7 +37,6 @@ class Merge(importMap: Map[String, String]) {
     val output: PrintWriter = new PrintWriter(destination.getWriter)
     writer.rewrite(changeSet, output)
   }
-
 
 
   def modelFromSource(originalSource: SourceCode): CodeModel = {
