@@ -30,7 +30,7 @@ class Merge(importMap: Map[String, String]) {
 
   }
 
-  protected def applyChanges(source: SourceCode, changeSet: ChangeSet, destination: DestinationCode) {
+  private def applyChanges(source: SourceCode, changeSet: ChangeSet, destination: DestinationCode) {
     val writer = new SourceCodeReWriter(source)
 
 
@@ -39,7 +39,7 @@ class Merge(importMap: Map[String, String]) {
   }
 
 
-  def modelFromSource(originalSource: SourceCode): CodeModel = {
+  private def modelFromSource(originalSource: SourceCode): CodeModel = {
     val reader = new SourceCodeReader(originalSource)
     reader.read
   }

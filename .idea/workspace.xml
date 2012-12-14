@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="496d33a5-8581-4bb9-a71f-ad760210d60c" name="Default" comment="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/model/CodeModel.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Java/CodeReaderVisitor.scala" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" afterPath="$PROJECT_DIR$/test/scala/metamorph/CopySpec.scala" />
+    <list default="true" id="496d33a5-8581-4bb9-a71f-ad760210d60c" name="Default" comment="Merge for identical files">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" afterPath="$PROJECT_DIR$/src/scala/metamorph/Merge.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -29,7 +26,7 @@
     <file path="/SourceCodeReader.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354838785443" ignored="false" />
     <file path="/Java.g4" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354807759164" ignored="false" />
     <file path="/DefaultJavaFileProcessor.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354756544463" ignored="false" />
-    <file path="/Dummy.txt" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355405815329" ignored="false" />
+    <file path="/Dummy.txt" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407468559" ignored="false" />
     <file path="/SourceCodeString.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354908153678" ignored="false" />
     <file path="/Bucket.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355005093318" ignored="false" />
     <file path="/BucketSpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1354998581281" ignored="false" />
@@ -46,7 +43,7 @@
     <file path="$USER_HOME$/tmp/pom.xml" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355076192972" ignored="false" />
     <file path="/pom.xml" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355076179803" ignored="false" />
     <file path="/CopySpec.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355406685472" ignored="false" />
-    <file path="/Merge.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407393033" ignored="false" />
+    <file path="/Merge.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407553974" ignored="false" />
     <file path="/CodeModel.scala" changelist="496d33a5-8581-4bb9-a71f-ad760210d60c" time="1355407359887" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -167,7 +164,7 @@
       <file leaf-file-name="Merge.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Merge.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="39" column="0" selection-start="1198" selection-end="1198" vertical-scroll-proportion="0.7634113">
               <folding />
             </state>
           </provider>
@@ -1078,7 +1075,11 @@
       <created>1355365010888</created>
       <updated>1355365010888</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Merge for identical files">
+      <created>1355407463362</created>
+      <updated>1355407463362</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1123,7 +1124,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18996799" sideWeight="0.74237955" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25762045" sideWeight="0.9987539" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25762045" sideWeight="0.9987539" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1171,7 +1172,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge for identical files" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1202,6 +1203,7 @@
     <MESSAGE value="Moved more formatting to the report writer to make it easier to write reports in different formats" />
     <MESSAGE value="Updated to latest Scala 2.10 milestone so I can use the stringtemplate scala wrapper" />
     <MESSAGE value="Added renaming of package as part of a merge from source to destination. Still abstract and not wired into the tool ui" />
+    <MESSAGE value="Merge for identical files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1322,7 +1324,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scala/metamorph/Merge.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="39" column="0" selection-start="1198" selection-end="1198" vertical-scroll-proportion="0.7634113">
           <folding />
         </state>
       </provider>
