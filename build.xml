@@ -5,7 +5,6 @@
     <property name="scala.sources.dir" value="${basedir}/src/scala"/>
     <property name="scala.test.sources.dir" value="${basedir}/test/scala"/>
     <property name="build.dir" value="${basedir}/build"/>
-    <property name="build-lib.path" value="${basedir}/lib/build"/>
     <property name="scala.home" value="${basedir}/Tools/scala-2.10.0-RC5/"/>
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
 
@@ -47,7 +46,15 @@
         </taskdef>
     </target>
 
-    <target name="build" depends="init">
+    <target name="grammar">
+        <java jar="Tools/antlr-4.0b1-complete.jar" fork="yes" dir="src/antlr">
+            <arg value="Java.g4"/>
+            <arg value="-o"/>
+            <arg value="${basedir}/src/java/metamorph/Java"/>
+            <arg value="-visitor"/>
+        </java>
+    </target>
+    <target name="build" depends="init, grammar">
 
         <mkdir dir="${build.dir}"/>
 

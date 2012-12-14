@@ -6,6 +6,7 @@ _ReSharper.*
 *.log
 *.user
 out
+build/
 target/
 reports/
 src/java/metamorph/Java/Java.tokens
