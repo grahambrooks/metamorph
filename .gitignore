@@ -5,6 +5,7 @@ _ReSharper.*
 *.suo
 *.log
 *.user
+.idea/workspace.xml
 out
 build/
 target/

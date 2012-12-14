@@ -61,6 +61,7 @@
         <javac srcdir="${java.sources.dir}"
                destdir="${build.dir}"
                classpathref="build.classpath"
+               includeantruntime="no"
                 />
 
         <scalac srcdir="${scala.sources.dir}"
@@ -76,9 +77,19 @@
 
         <scalatest runpath="${build.classpath}">
             <reporter type="stdout"/>
-            <wildcard package="metamorph"/>
-            <wildcard package="metamorph.Java"/>
         </scalatest>
 
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <delete file="src/java/metamorph/Java/Java.tokens"/>
+        <delete file="src/java/metamorph/Java/JavaBaseListener.java"/>
+        <delete file="src/java/metamorph/Java/JavaBaseVisitor.java"/>
+        <delete file="src/java/metamorph/Java/JavaLexer.java"/>
+        <delete file="src/java/metamorph/Java/JavaLexer.tokens"/>
+        <delete file="src/java/metamorph/Java/JavaListener.java"/>
+        <delete file="src/java/metamorph/Java/JavaParser.java"/>
+        <delete file="src/java/metamorph/Java/JavaVisitor.java"/>
     </target>
 </project>
