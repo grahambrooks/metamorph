@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project name="metamorph" default="build" basedir=".">
+
+    <property name="java.sources.dir" value="${basedir}/src/java"/>
+    <property name="scala.sources.dir" value="${basedir}/src/scala"/>
+    <property name="scala.test.sources.dir" value="${basedir}/test/scala"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="build-lib.path" value="${basedir}/lib/build"/>
+    <property name="scala.home" value="${basedir}/Tools/scala-2.10.0-RC5/"/>
+    <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
+
+    <path id="runtime.classpath">
+        <pathelement location="lib/runtime/antlr-3.4-complete.jar"/>
+        <pathelement location="lib/runtime/antlr-4.0b1-complete.jar"/>
+        <pathelement location="lib/runtime/grizzled-scala_2.10-1.1.2.jar"/>
+        <pathelement location="lib/runtime/scalasti_2.10-1.0.0.jar"/>
+    </path>
+
+    <path id="test.classpath">
+        <pathelement location="lib/test/mockito-all-1.9.5-rc1.jar"/>
+        <pathelement location="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+        <pathelement location="lib/test/specs2_2.9.2-1.12.3.jar"/>
+    </path>
+
+    <path id="build.classpath">
+        <pathelement location="${scala-library.jar}"/>
+        <path refid="runtime.classpath"/>
+        <path refid="test.classpath"/>
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <path id="scala.classpath">
+        <pathelement location="${scala.home}/lib/scala-compiler.jar"/>
+        <pathelement location="${scala-library.jar}"/>
+        <pathelement location="${scala.home}/lib/scala-reflect.jar"/>
+    </path>
+
+    <target name="init">
+        <taskdef resource="scala/tools/ant/antlib.xml">
+            <classpath refid="scala.classpath">
+            </classpath>
+        </taskdef>
+
+        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
+            <classpath refid="test.classpath"/>
+            <classpath refid="scala.classpath"/>
+        </taskdef>
+    </target>
+
+    <target name="build" depends="init">
+
+        <mkdir dir="${build.dir}"/>
+
+        <javac srcdir="${java.sources.dir}"
+               destdir="${build.dir}"
+               classpathref="build.classpath"
+                />
+
+        <scalac srcdir="${scala.sources.dir}"
+                destdir="${build.dir}"
+                classpathref="build.classpath">
+            <include name="**/*.scala"/>
+        </scalac>
+        <scalac srcdir="${scala.test.sources.dir}"
+                destdir="${build.dir}"
+                classpathref="build.classpath">
+            <include name="**/*.scala"/>
+        </scalac>
+
+        <scalatest runpath="${build.classpath}">
+            <reporter type="stdout"/>
+            <wildcard package="metamorph"/>
+            <wildcard package="metamorph.Java"/>
+        </scalatest>
+
+    </target>
+</project>
