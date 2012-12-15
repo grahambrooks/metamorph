@@ -53,8 +53,8 @@
             <arg value="-visitor"/>
         </java>
     </target>
-    <target name="build" depends="init, grammar">
 
+    <target name="compile" depends="init">
         <mkdir dir="${build.dir}"/>
 
         <javac srcdir="${java.sources.dir}"
@@ -73,11 +73,16 @@
                 classpathref="build.classpath">
             <include name="**/*.scala"/>
         </scalac>
+    </target>
 
+    <target name="test" depends="compile">
         <scalatest fork="true" runpath="build">
             <reporter type="stdout"/>
         </scalatest>
+    </target>
 
+
+    <target name="build" depends="test">
     </target>
 
     <target name="package" depends="build">
