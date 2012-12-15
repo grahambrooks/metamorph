@@ -50,9 +50,9 @@ class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportW
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
 
 
-    val html = new HtmlReportWriter(methodBuckets)
-
-    html.generate()
+//    val html = new ConsoleReportWriter(methodBuckets)
+//
+//    html.generate()
 
 
   }

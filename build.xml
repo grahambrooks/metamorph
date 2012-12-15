@@ -11,14 +11,11 @@
     <path id="runtime.classpath">
         <pathelement location="lib/runtime/antlr-3.4-complete.jar"/>
         <pathelement location="lib/runtime/antlr-4.0b1-complete.jar"/>
-        <pathelement location="lib/runtime/grizzled-scala_2.10-1.1.2.jar"/>
-        <pathelement location="lib/runtime/scalasti_2.10-1.0.0.jar"/>
     </path>
 
     <path id="test.classpath">
         <pathelement location="lib/test/mockito-all-1.9.5-rc1.jar"/>
         <pathelement location="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
-        <pathelement location="lib/test/specs2_2.9.2-1.12.3.jar"/>
     </path>
 
     <path id="build.classpath">
@@ -40,11 +37,13 @@
             </classpath>
         </taskdef>
 
-        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
-            <classpath refid="test.classpath"/>
-            <classpath refid="scala.classpath"/>
-        </taskdef>
     </target>
+
+    <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
+        <classpath refid="test.classpath"/>
+        <classpath refid="scala.classpath"/>
+        <classpath refid="build.classpath"/>
+    </taskdef>
 
     <target name="grammar">
         <java jar="Tools/antlr-4.0b1-complete.jar" fork="yes" dir="src/antlr">
@@ -75,12 +74,32 @@
             <include name="**/*.scala"/>
         </scalac>
 
-        <scalatest runpath="${build.classpath}">
+        <scalatest fork="true" runpath="build">
             <reporter type="stdout"/>
         </scalatest>
 
     </target>
 
+    <target name="package" depends="build">
+        <jar destfile="metamorph.jar">
+            <fileset dir="build"/>
+            <restrict>
+                <name name="**/*.class"/>
+                <archives>
+                    <zips>
+                        <file file="lib/runtime/antlr-4.0b1-complete.jar"/>
+                        <file file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+                        <file file="${scala-library.jar}"/>
+                        <file file="${scala.home}/lib/scala-reflect.jar"/>
+                    </zips>
+                </archives>
+            </restrict>
+            <manifest>
+                <attribute name="Main-Class"
+                           value="metamorph.Tool"/>
+            </manifest>
+        </jar>
+    </target>
     <target name="clean">
         <delete dir="build"/>
         <delete file="src/java/metamorph/Java/Java.tokens"/>

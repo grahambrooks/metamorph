@@ -1,0 +1,49 @@
+{
+    "merge": [
+        {
+            "source": "international",
+            "paths": []
+        },
+        {
+            "source": "us",
+            "paths": []
+        },
+        {
+            "destination": "/somepath"
+        },
+        {
+            "rules": [
+                {
+                    "duplicates": {
+                        "copy": {
+                            "package-rename": "{original_package}.common"
+                        }
+                    }
+                },
+                {
+                    "partial": {
+                        "international": {
+                            "package-rename": "{original_package}.us.{classname}"
+                        },
+                        "us": {
+                            "package-rename": "{original_package}.us.{classname}"
+                        },
+
+                        "common-methods": [
+                            "pull-up",
+                            {
+                                "create-parent": "{original_package}.us.{classname}Base"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "common": {
+                        "package-rename": "{original_package}.common.{classname}"
+                    }
+                }
+
+            ]
+        }
+    ]
+}
