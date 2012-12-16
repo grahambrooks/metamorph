@@ -1,6 +1,5 @@
-package metamorph
+package metamorph.Java
 
-import Java.JavaBaseVisitor
 import metamorph.Java.JavaParser._
 
 class MorphVisitor extends JavaBaseVisitor[Any] {
