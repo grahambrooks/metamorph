@@ -78,6 +78,7 @@
     <target name="test" depends="compile">
         <scalatest fork="true" runpath="build">
             <reporter type="stdout"/>
+            <reporter type="junitxml" directory="build"/>
         </scalatest>
     </target>
 
