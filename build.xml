@@ -54,7 +54,7 @@
         </java>
     </target>
 
-    <target name="compile" depends="init">
+    <target name="compile" depends="init, grammar">
         <mkdir dir="${build.dir}"/>
 
         <javac srcdir="${java.sources.dir}"
