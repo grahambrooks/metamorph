@@ -1,6 +1,7 @@
-package metamorph.Java
+package metamorph
 
 import _root_.java.io.IOException
+import Java.{JavaBaseVisitor, JavaParserActions, JavaLexer, JavaParser}
 import org.antlr.v4.runtime.{Token, CommonTokenStream, ANTLRFileStream, ANTLRInputStream}
 import metamorph.parsing.PrintingListener
 import java.util

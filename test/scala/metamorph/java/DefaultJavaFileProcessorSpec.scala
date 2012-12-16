@@ -4,6 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.antlr.v4.runtime.ANTLRInputStream
+import metamorph.DefaultJavaFileProcessor
 
 class DefaultJavaFileProcessorSpec extends FlatSpec with ShouldMatchers with MockitoSugar {
   it should "generate a text representation of AST" in {
