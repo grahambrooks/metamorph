@@ -4,8 +4,9 @@ import _root_.java.io.IOException
 import org.antlr.v4.runtime.{Token, CommonTokenStream, ANTLRFileStream, ANTLRInputStream}
 import metamorph.parsing.PrintingListener
 import java.util
+import metamorph.SourceCodeFileProcessor
 
-final class DefaultJavaFileProcessor extends JavaFileProcessor {
+final class DefaultJavaFileProcessor extends SourceCodeFileProcessor {
 
   def processFile(filename: String) {
     try {

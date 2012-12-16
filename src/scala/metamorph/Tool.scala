@@ -12,7 +12,7 @@ object Tool {
   }
 }
 
-class Tool(processor: JavaFileProcessor, val console: ConsoleWriter, val reportWriter: ReportWriter) {
+class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val reportWriter: ReportWriter) {
   def run(args: Array[String]) {
     var models: List[CodeModel] = Nil
 

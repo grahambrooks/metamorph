@@ -4,7 +4,7 @@ import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito.verify
-import metamorph.Tool
+import metamorph.{SourceCodeFileProcessor, Tool}
 
 
 class ToolSpec extends FunSpec with ShouldMatchers with MockitoSugar {
@@ -15,7 +15,7 @@ class ToolSpec extends FunSpec with ShouldMatchers with MockitoSugar {
     }
 
     it("process each file specified on the command line") {
-//      val mockProcessor = mock[JavaFileProcessor]
+//      val mockProcessor = mock[SourceCodeFileProcessor]
 //      val tool = new Tool(mockProcessor)
 //
 //      val args = Array("foo", "bar")
@@ -27,7 +27,7 @@ class ToolSpec extends FunSpec with ShouldMatchers with MockitoSugar {
     }
 
     it("calls report for 'similarities'") {
-      val mockProcessor = mock[JavaFileProcessor]
+      val mockProcessor = mock[SourceCodeFileProcessor]
     }
   }
 }
