@@ -11,6 +11,7 @@
     <path id="runtime.classpath">
         <pathelement location="lib/runtime/antlr-3.4-complete.jar"/>
         <pathelement location="lib/runtime/antlr-4.0b1-complete.jar"/>
+	<pathelement location="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
     </path>
 
     <path id="test.classpath">
@@ -97,6 +98,7 @@
                         <file file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
                         <file file="${scala-library.jar}"/>
                         <file file="${scala.home}/lib/scala-reflect.jar"/>
+			<file file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
                     </zips>
                 </archives>
             </restrict>

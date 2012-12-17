@@ -1,8 +1,8 @@
 package metamorph
 
 import Java._
-import java.io.File
 import model.{MethodDeclaration, CodeModel}
+import java.io.File
 
 object Tool {
   def main(args: Array[String]) {
@@ -13,22 +13,50 @@ object Tool {
 }
 
 class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val reportWriter: ReportWriter) {
+
+  val parser = new scopt.immutable.OptionParser[MorphConfig]("metamorph", "0.1") {
+    def options = Seq(
+      arg("command", "merge/refactor") {
+        (cmd: String, c: MorphConfig) => c.copy(command = MorphCommand.fromString(cmd))
+      },
+      flag("v", "verbose", "Output useful execution information. Valuable in identifying processing problems") {
+        (c: MorphConfig) => c.copy(logging = Logger.verbose)
+      },
+      opt("d", "destination", "Where to put the command output") {
+        (v: String, c: MorphConfig) => c.copy(destination = v)
+      },
+      keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or refactoring commands") {
+        (key: String, value: String, c: MorphConfig) => c.copy(sources = (Map[String, String](key -> value) ++ c.sources))
+      }
+    )
+  }
+
   def run(args: Array[String]) {
-    var models: List[CodeModel] = Nil
+    parser.parse(args, MorphConfig()) map {
+      config => {
+        println("Valid command line parameters")
 
-    args foreach (arg => {
-      scanFiles(arg, path => {
-        val originalSource = new SourceCodeFile(path)
+        config.command.run(config,processor, console, reportWriter)
 
-        val reader = new SourceCodeReader(originalSource)
+        var models: List[CodeModel] = Nil
 
-        val model = reader.read
+        args foreach (arg => {
+          scanFiles(arg, path => {
+            val originalSource = new SourceCodeFile(path)
 
-        models = models ::: List(model)
-      })
-    })
+            val reader = new SourceCodeReader(originalSource)
 
-    analyse(models, reportWriter)
+            val model = reader.read
+
+            models = models ::: List(model)
+          })
+        })
+
+        analyse(models, reportWriter)
+      }
+    } getOrElse {
+      println("Invalid parameters")
+    }
   }
 
   def scanFiles(pathOrFilename: String, function: (File) => Any) {
@@ -50,9 +78,9 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
 
 
-//    val html = new ConsoleReportWriter(methodBuckets)
-//
-//    html.generate()
+    //    val html = new ConsoleReportWriter(methodBuckets)
+    //
+    //    html.generate()
 
 
   }
