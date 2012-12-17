@@ -1,8 +1,10 @@
-package metamorph
+package metamorph.command
 
 import java.io.File
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
 import metamorph.model.{MethodDeclaration, CodeModel}
+import metamorph._
+import metamorph.MorphConfig
 
 class MergeCommand extends MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {

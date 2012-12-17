@@ -1,5 +1,6 @@
 package metamorph
 
+import command.MorphCommand
 import Java._
 
 object Tool {
@@ -36,7 +37,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
         config.command.run(config, processor, console, reportWriter)
       }
     } getOrElse {
-      println("Invalid parameters")
+      println("Invalid Arguments - abort.")
     }
   }
 }
