@@ -24,7 +24,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
         (v: String, c: MorphConfig) => c.copy(destination = v)
       },
       keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or refactoring commands") {
-        (key: String, value: String, c: MorphConfig) => c.copy(sources = (Map[String, String](key -> value) ++ c.sources))
+        (key: String, value: String, c: MorphConfig) => c.copy(sources = (c.sources ++ Map(key -> value)))
       }
     )
   }
@@ -32,6 +32,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
   def run(args: Array[String]) {
     parser.parse(args, MorphConfig()) map {
       config => {
+        Logger.current = config.logging
         config.command.run(config, processor, console, reportWriter)
       }
     } getOrElse {

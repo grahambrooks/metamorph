@@ -11,6 +11,8 @@ class MergeCommand extends MorphCommand {
     config.sources foreach {
       case (name, path) => {
         scanFiles(path, console, p => {
+          Logger.trace("Processing source file %s", p.getAbsolutePath)
+
           val originalSource = new SourceCodeFile(p)
 
           val reader = new SourceCodeReader(originalSource)
@@ -27,9 +29,11 @@ class MergeCommand extends MorphCommand {
 
   def scanFiles(pathOrFilename: String, console: ConsoleWriter, function: (File) => Any) {
     try {
+      Logger.trace("Scanning %s", pathOrFilename)
       val root = new File(pathOrFilename)
 
       val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.java")
+
 
       scanner eachFile function
     }
