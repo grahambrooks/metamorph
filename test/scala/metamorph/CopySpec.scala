@@ -17,22 +17,41 @@ class CopySpec extends FunSpec {
 
       assert(targetSource.toString === "package metamorph.foo.bar;\n")
     }
+    ignore("Still in development") {
 
-    it("merges identical sources into a single destination source") {
-      val sources = List(
-        new SourceCodeString("package metamorph.foo;\n"),
-        new SourceCodeString("package metamorph.foo;\n"),
-        new SourceCodeString("package metamorph.foo;\n"))
+      it("copies identical sources into a single destination source") {
+        val sources = List(
+          new SourceCodeString("package metamorph.foo;\n" +
+            "class A {\n" +
+            "   void commonMethod() {}\n" +
+            "\n" +
+            "   distinctMethod() {\n" +
+            "      return 1;\n" +
+            "   }\n" +
+            "}\n"),
+          new SourceCodeString("package metamorph.foo;\n" +
+            "class A {\n" +
+            "   void commonMethod() {}\n" +
+            "\n" +
+            "   distinctMethod() {\n" +
+            "      return 2;\n" +
+            "   }\n" +
+            "}\n")
+        )
 
 
-      val destination = new DestinationCodeString()
+        val destination = new DestinationCodeString()
 
-      val merge = new Merge(Map("metamorph.foo" -> "metamorph.foo.bar"))
+        val merge = new Merge(Map("metamorph.foo" -> "metamorph.foo.bar"))
 
-      merge.merge(sources, destination)
+        merge.merge(sources, destination)
 
-      assert(destination.toString === "package metamorph.foo.bar;\n")
-
+        assert(destination.toString === "package metamorph.foo.bar;\n" +
+          "class A {\n" +
+          "   void commonMethod() {}\n" +
+          "\n" +
+          "}\n")
+      }
     }
   }
 }

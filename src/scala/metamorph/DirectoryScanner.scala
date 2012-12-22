@@ -2,7 +2,7 @@ package metamorph
 
 import java.io.File
 
-class DirectoryScanner (rootPath: String, filePattern : String) {
+class DirectoryScanner (val rootPath: String, val  filePattern : String) {
 
   private def scan(file: File, function: (File) => Any) {
           if (file.isDirectory) {

@@ -2,7 +2,7 @@ package metamorph.model
 
 import org.antlr.v4.runtime.Token
 import metamorph.Java.{SourceCode, TextSpan}
-import metamorph.Signature
+import metamorph.{StringSignature, Signature}
 
 class MethodDeclaration(val source: SourceCode, val syntaxSignature: Signature, nameToken: Token, val span: TextSpan) {
 
@@ -36,6 +36,6 @@ class MethodDeclaration(val source: SourceCode, val syntaxSignature: Signature, 
       methodText += i.next().substring(0, span.stop.getCharPositionInLine + span.stop.getText.length)
     }
 
-    new Signature(nameToken.getText)
+    StringSignature(nameToken.getText)
   }
 }

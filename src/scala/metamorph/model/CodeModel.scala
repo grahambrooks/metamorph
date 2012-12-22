@@ -4,10 +4,12 @@ import metamorph.Signature
 
 class CodeModel {
   var modelSignature: Signature = null
+  var typeSignature: Signature = null
   var importInsertionPoint = 0
   var packageDeclaration: PackageDeclaration = null
   var imports: List[ImportDeclaration] = Nil
   var methods: List[MethodDeclaration] = Nil
+  var typeDeclaration: TypeDeclaration = null
 
   def add(im: ImportDeclaration) {
     imports = imports ::: List(im)

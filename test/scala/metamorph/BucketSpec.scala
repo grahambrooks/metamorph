@@ -8,21 +8,21 @@ class BucketSpec extends FunSpec {
       val bucket = new BucketSet[Object]
 
       var count = 0
-      bucket.eachDuplicate(dups => count += 1)
+      bucket.eachDuplicate(duplicate => count += 1)
       assert(count == 0)
     }
 
     it("identifies duplicate signatures") {
       val bucket = new BucketSet[Object]
 
-      val s = new Signature("foo")
+      val s = StringSignature("foo")
       bucket.add(s, this)
       bucket.add(s, this)
       var count = 0
       var duplicates = 0
 
       bucket.eachDuplicate(items => {
-        count += 1;
+        count += 1
         duplicates += items.size
       })
 

@@ -8,14 +8,21 @@ class SignatureSpec extends FunSpec {
 
   describe("Signature") {
     it("Signature hash code reflects bound object") {
-      new Signature("foo").hashCode() == new Signature("foo").hashCode()
+      StringSignature("foo").hashCode() == StringSignature("foo").hashCode()
     }
 
     it("can be used as a hash key") {
 
-      val h = HashMap(new Signature("foo") -> "foo string")
-      assert (h(new Signature("foo")) === "foo string")
+      val h = HashMap(StringSignature("foo") -> "foo string")
+      assert (h(StringSignature("foo")) === "foo string")
 
+    }
+
+    it("can compose other signatures") {
+      val s = StringSignature("foo")
+      val s2 = CompositeSignature("bar", s)
+
+      assert(s2.hashCode == "bar".hashCode + "foo".hashCode)
     }
   }
 }
