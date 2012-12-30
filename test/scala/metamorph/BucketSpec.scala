@@ -4,7 +4,7 @@ import org.scalatest.FunSpec
 
 class BucketSpec extends FunSpec {
   describe("BucketSet") {
-    it ("is initially empty") {
+    it("is initially empty") {
       val bucket = new BucketSet[Object]
 
       var count = 0
@@ -12,10 +12,10 @@ class BucketSpec extends FunSpec {
       assert(count == 0)
     }
 
-    it ("identifies duplicate signatures") {
+    it("identifies duplicate signatures") {
       val bucket = new BucketSet[Object]
 
-      val s = StringSignature("foo")
+      val s = Signature.fromString("foo")
       bucket.add(s, this)
       bucket.add(s, this)
       var count = 0
