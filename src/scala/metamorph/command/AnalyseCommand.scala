@@ -1,13 +1,16 @@
 package metamorph.command
 
-import java.io.File
+import metamorph._
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
 import metamorph.model.{MethodDeclaration, CodeModel}
-import metamorph._
+import java.io.File
 import metamorph.MorphConfig
 
-class MergeCommand extends MorphCommand {
+class AnalyseCommand extends MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {
+    if (config.sources.size != 1) {
+      console.writeLine("Analysis works best for a single collection of source files.")
+    }
     var models: List[CodeModel] = Nil
 
     config.sources foreach {

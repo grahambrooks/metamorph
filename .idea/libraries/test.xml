@@ -6,6 +6,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/lib/test" />
+      <root url="jar://$PROJECT_DIR$/lib/sources/scalatest_2.10.0-RC5-2.0.M5-B1-sources.jar!/" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib/test" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/test" recursive="false" type="SOURCES" />

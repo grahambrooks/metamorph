@@ -10,6 +10,7 @@ object MorphCommand {
   def fromString(cmdName: String): MorphCommand = {
     cmdName match {
       case "merge" => merge
+      case "analyse" => analyse
       case _ => throw new IllegalArgumentException(cmdName + " is not a valid command name. Valid command names are merge")
     }
   }
@@ -21,4 +22,5 @@ object MorphCommand {
   }
 
   val merge: MorphCommand = new MergeCommand()
+  val analyse: MorphCommand = new AnalyseCommand()
 }
