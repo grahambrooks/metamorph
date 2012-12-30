@@ -3,9 +3,10 @@ package metamorph.command
 import metamorph._
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
 import model.{BlockDeclaration, MethodDeclaration, CodeModel}
-import java.io.File
+import java.io._
 import metamorph.MorphConfig
 import reporting.Html
+import metamorph.MorphConfig
 
 class AnalyseCommand extends MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {
@@ -30,7 +31,7 @@ class AnalyseCommand extends MorphCommand {
       }
     }
 
-    analyse(models, reportWriter)
+    analyse(models, reportWriter, config.outputPath)
   }
 
   def scanFiles(pathOrFilename: String, console: ConsoleWriter, function: (File) => Any) {
@@ -47,7 +48,7 @@ class AnalyseCommand extends MorphCommand {
     }
   }
 
-  private def analyse(models: List[CodeModel], writer: ReportWriter) {
+  private def analyse(models: List[CodeModel], writer: ReportWriter, outputPath:String) {
     val methodBuckets = bucketMethods(models)
 
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
@@ -85,15 +86,7 @@ class AnalyseCommand extends MorphCommand {
 
     val report = new HtmlReport
 
-    print(report.render())
-
-
-
-    //    val html = new ConsoleReportWriter(methodBuckets)
-    //
-    //    html.generate()
-
-
+    new OutputStreamWriter(new FileOutputStream(outputPath)).write(report.render())
   }
 
   private def reportDuplicates(methods: Bucket[MethodDeclaration], writer: ReportWriter) {

@@ -24,6 +24,9 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
       opt("d", "destination", "Where to put the command output") {
         (v: String, c: MorphConfig) => c.copy(destination = v)
       },
+      opt("o", "output", "Where to write the report") {
+        (v: String, c: MorphConfig) => c.copy(outputPath = v)
+      },
       keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or refactoring commands") {
         (key: String, value: String, c: MorphConfig) => c.copy(sources = (c.sources ++ Map(key -> value)))
       }
