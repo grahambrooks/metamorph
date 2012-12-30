@@ -2,7 +2,7 @@ package metamorph.command
 
 import metamorph._
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
-import metamorph.model.{MethodDeclaration, CodeModel}
+import model.{BlockDeclaration, MethodDeclaration, CodeModel}
 import java.io.File
 import metamorph.MorphConfig
 import reporting.Html
@@ -52,6 +52,8 @@ class AnalyseCommand extends MorphCommand {
 
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
 
+    val blockBuckets = bucketBlocks(models)
+
     class HtmlReport extends Html {
 
       html {
@@ -66,6 +68,16 @@ class AnalyseCommand extends MorphCommand {
 
             p("Has " + methods.size + " duplicates")
 
+          })
+
+          h1("Duplicate Blocks")
+          blockBuckets.eachDuplicate(blocks => {
+            h2("Duplicate block")
+            blocks.foreach(block =>{
+              p(block.source.getFilename + " at " + block.span)
+
+            }
+            )
           })
         }
       }
@@ -97,5 +109,13 @@ class AnalyseCommand extends MorphCommand {
       model.methods foreach (method => methodBuckets.add(method.syntaxSignature, method))
     })
     methodBuckets
+  }
+
+  private def bucketBlocks(models: List[CodeModel]) : BucketSet[BlockDeclaration] = {
+    val blockBuckets = new BucketSet[BlockDeclaration]
+    models foreach (model => {
+      model.blocks foreach (block => blockBuckets.add(block.signature, block))
+    })
+    blockBuckets
   }
 }

@@ -9,6 +9,7 @@ class CodeModel {
   var packageDeclaration: PackageDeclaration = null
   var imports: List[ImportDeclaration] = Nil
   var methods: List[MethodDeclaration] = Nil
+  var blocks: List[BlockDeclaration] = Nil
   var typeDeclaration: TypeDeclaration = null
 
   def add(im: ImportDeclaration) {
@@ -20,6 +21,11 @@ class CodeModel {
     methods = methods ::: List(md)
   }
 
+  def add(bd: BlockDeclaration) {
+    blocks = blocks ::: List(bd)
+  }
+
   def packageLine: Int = if (packageDeclaration == null) 0 else packageDeclaration.importToken.getLine
+
   def signature: Signature = modelSignature
 }

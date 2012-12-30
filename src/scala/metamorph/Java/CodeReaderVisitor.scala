@@ -7,6 +7,16 @@ import metamorph.Signature
 
 class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends JavaBaseVisitor[Object] {
 
+  override def visitBlock(ctx: BlockContext) = {
+    model.add(
+      new BlockDeclaration(
+        source,
+        Signature.fromTree(ctx), new TextSpan(ctx.start, ctx.end)
+      ))
+
+    super.visitBlock(ctx)
+  }
+
   override def visitCompilationUnit(ctx: CompilationUnitContext) = {
     model.modelSignature = Signature.fromTree(ctx)
     super.visitCompilationUnit(ctx)

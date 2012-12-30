@@ -55,6 +55,10 @@ trait Html {
     tagIt("h1", s)
   }
 
+  def h2(s: String) {
+    tagIt("h2", s)
+  }
+
   def p(s: String) {
     tagIt("p", s)
   }
