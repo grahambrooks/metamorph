@@ -21,8 +21,7 @@ class HtmlReportSpec extends FunSpec {
 
 
       val report = new HtmlTestReport
-
-      assert(report.render() === "<html><head><title>This is a report</title><head><body><h1>You know you want to!</h1><h1>You know you want to!</h1><h1>You know you want to!</h1></body></html>")
+      assert(report.render() === "<html><head><title>This is a report</title>\n</head>\n<body><h1>You know you want to!</h1>\n<h1>You know you want to!</h1>\n<h1>You know you want to!</h1>\n</body>\n</html>\n")
     }
   }
 

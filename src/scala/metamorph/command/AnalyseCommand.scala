@@ -5,6 +5,7 @@ import metamorph.Java.{SourceCodeReader, SourceCodeFile}
 import metamorph.model.{MethodDeclaration, CodeModel}
 import java.io.File
 import metamorph.MorphConfig
+import reporting.Html
 
 class AnalyseCommand extends MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {
@@ -50,6 +51,30 @@ class AnalyseCommand extends MorphCommand {
     val methodBuckets = bucketMethods(models)
 
     writer.duplicateMethodBlock(writer => methodBuckets.eachDuplicate(methods => reportDuplicates(methods, writer)))
+
+    class HtmlReport extends Html {
+
+      html {
+        head {
+          title("This is a report")
+        }
+        body {
+
+          methodBuckets.eachDuplicate(methods => {
+
+            h1(methods(0).name)
+
+            p("Has " + methods.size + " duplicates")
+
+          })
+        }
+      }
+    }
+
+    val report = new HtmlReport
+
+    print(report.render())
+
 
 
     //    val html = new ConsoleReportWriter(methodBuckets)
