@@ -53,6 +53,7 @@ class AnalyseCommand extends MorphCommand {
   private def analyse(models: List[CodeModel], outputPath: String) {
     val analyser = new SourceCodeAnalyser
     val analysedSource = analyser.analyse(models)
+    analysedSource.modelsWithDuplicateBlocks
 
     val reportSite = new ReportSite(outputPath)
 
@@ -62,10 +63,16 @@ class AnalyseCommand extends MorphCommand {
       new AnalysisIndexHtml(analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
     })
 
-    analysedSource.modelsWithDuplicateBlocks.foreach(codeModel => {
-      reportSite.writeCodeModelAnalysis(codeModel.sourceCode, codeModelWriter => {
-        new CodeModelHtml(codeModel, codeModelWriter)
+    analysedSource.analysedModels.foreach(m => {
+      reportSite.writeCodeModelAnalysis(m.codeModel.sourceCode, codeModelWriter => {
+        new CodeModelHtml(m, codeModelWriter)
       })
     })
+
+//    analysedSource.modelsWithDuplicateBlocks.foreach(codeModel => {
+//      reportSite.writeCodeModelAnalysis(codeModel.sourceCode, codeModelWriter => {
+//        new CodeModelHtml(codeModel, codeModelWriter)
+//      })
+//    })
   }
 }

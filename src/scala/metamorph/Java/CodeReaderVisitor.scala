@@ -10,6 +10,7 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   override def visitBlock(ctx: BlockContext) = {
     model.add(
       new BlockDeclaration(
+        model,
         source,
         Signature.fromTree(ctx), new TextSpan(ctx.start, ctx.end)
       ))

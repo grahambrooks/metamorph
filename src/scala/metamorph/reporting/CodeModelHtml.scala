@@ -1,14 +1,14 @@
 package metamorph.reporting
 
 import java.io.Writer
-import metamorph.model.CodeModel
 import io.Source
+import metamorph.analysis.AnalysedCodeModel
 
-class CodeModelHtml(val codeModel: CodeModel, val output: Writer) extends Html {
-  val currentPath = codeModel.sourceCode.branchPath + '/' + codeModel.sourceCode.getName
+class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer) extends Html {
+  val currentPath = analysedCodeModel.codeModel.sourceCode.branchPath + '/' + analysedCodeModel.codeModel.sourceCode.getName
   html {
     head {
-      title(codeModel.sourceCode.getName)
+      title(analysedCodeModel.codeModel.sourceCode.getName)
       output.write("<link rel=\"stylesheet\" href=\"http://yandex.st/highlightjs/7.3/styles/default.min.css\">\n" +
         "<script src=\"" +
         relativePath(currentPath, "highlight.pack.js") +
@@ -79,29 +79,59 @@ class CodeModelHtml(val codeModel: CodeModel, val output: Writer) extends Html {
         "    .code .keyword {\n" +
         "      font-weight: bold;\n" +
         "    }\n" +
+        "    #duplicate {\n" +
+        "      background-color: red;\n" +
+        "    }\n" +
         "  </style>")
     }
     body {
-      h1(codeModel.sourceCode.getName)
+      h1(analysedCodeModel.codeModel.sourceCode.getName)
       a(relativePath(currentPath, "index.html"), "Index")
-      output.write("<table>\n")
-      output.write("<tr>\n" +
-        "    <th>File with Duplicates</th>\n" +
-        "    <td class=\"java\">\n" +
-        "      <pre><code>")
 
-      val x = Source.fromFile(codeModel.sourceCode.getFilename)
+      val x = Source.fromFile(analysedCodeModel.codeModel.sourceCode.getFilename)
+
+      var lineNumber = 1
+      var writingDuplicates = false
+      output.write("<table>\n")
+      openCodeRow(writingDuplicates)
 
       x.getLines().foreach(line => {
+        val duplicateLine = analysedCodeModel.isDuplicateLine(lineNumber)
+
+        if (duplicateLine != writingDuplicates) {
+          closeCodeRow()
+          writingDuplicates = duplicateLine
+          openCodeRow(writingDuplicates)
+        }
+
         output.write(line + "\n")
+        lineNumber = lineNumber + 1
       })
-      output.write("</code>\n" +
-        "      </pre>\n" +
-        "    </td>\n" +
-        "    </tr>")
+
+      closeCodeRow()
       output.write("</table>\n")
 
     }
   }
 
+
+  def openCodeRow(duplicateLine: Boolean) {
+    output.write("<tr>\n")
+    if (duplicateLine)
+      output.write("    <th>Duplicate</th>\n")
+    else
+      output.write("    <th>Unique</th>\n")
+    output.write("    <td class=\"java")
+    if (duplicateLine)
+      output.write(" duplicate")
+    output.write("\">\n" +
+      "      <pre><code>")
+  }
+
+  def closeCodeRow() {
+    output.write("</code>\n" +
+      "      </pre>\n" +
+      "    </td>\n" +
+      "    </tr>")
+  }
 }
