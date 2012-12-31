@@ -74,4 +74,18 @@ trait Html {
   def p(s: String) {
     tagIt("p", s)
   }
+
+  def a(href:String) {
+    a(href, href)
+  }
+  def a(href:String, text: String) {
+    output.write("<a href='%s'>%s</a>".format(href, text))
+  }
+
+  def relativePath(currentPath: String, targetPath: String): String = {
+    currentPath.foldLeft("")((x, c) => {
+      if (c == '/') x + "../" else x
+    }) + targetPath
+  }
+
 }

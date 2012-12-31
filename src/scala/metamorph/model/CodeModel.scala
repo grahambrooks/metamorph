@@ -1,8 +1,9 @@
 package metamorph.model
 
 import metamorph.Signature
+import metamorph.Java.SourceCode
 
-class CodeModel {
+class CodeModel(val sourceCode: SourceCode) {
   var modelSignature: Signature = null
   var typeSignature: Signature = null
   var importInsertionPoint = 0

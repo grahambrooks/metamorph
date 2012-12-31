@@ -15,7 +15,7 @@ class MergeCommand extends MorphCommand {
         scanFiles(path, console, p => {
           Logger.trace("Processing source file %s", p.getAbsolutePath)
 
-          val originalSource = new SourceCodeFile(p)
+          val originalSource = new SourceCodeFile(path, p)
 
           val reader = new SourceCodeReader(originalSource)
 

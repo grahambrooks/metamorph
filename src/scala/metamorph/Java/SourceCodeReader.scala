@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.{Token, CommonTokenStream}
 import java.util
 
 class SourceCodeReader(code: SourceCode) extends JavaParserActions {
-  val model = new CodeModel
+  val model = new CodeModel(code)
 
   def read: CodeModel = {
     val parser = new JavaParser(new CommonTokenStream(new JavaLexer(code.getInputStream)))
