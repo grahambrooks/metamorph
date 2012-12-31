@@ -1,0 +1,92 @@
+body {
+    font: small Arial, sans-serif;
+}
+
+h1 {
+    font: bold Arial, sans-serif;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font: bold 100% Arial, sans-serif;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+
+table {
+    width: 100%;
+    padding: 0;
+    border-collapse: collapse;
+}
+
+th {
+    width: 12em;
+    padding: 0;
+    margin: 0;
+}
+
+td {
+    padding-bottom: 1em;
+}
+
+td, th {
+    vertical-align: top;
+    text-align: left;
+}
+
+pre {
+    margin: 0;
+    font-size: medium;
+}
+
+#switch {
+    overflow: auto;
+    width: 67em;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#switch li {
+    float: left;
+    width: 12em;
+    padding: 0.1em;
+    margin: 0.1em 1em 0.1em 0;
+    background: #EEE;
+    cursor: pointer;
+}
+
+#switch li.current {
+    background: #CCC;
+}
+
+.test {
+    color: #888;
+    font-weight: normal;
+    margin: 2em 0 0 0;
+}
+
+.test var {
+    font-style: normal;
+}
+
+.passed {
+    color: green;
+}
+
+.failed {
+    color: red;
+}
+
+.code {
+    font: medium monospace;
+}
+
+.code .keyword {
+    font-weight: bold;
+}
+
+.duplicate {
+    background-color: #640000;
+}
