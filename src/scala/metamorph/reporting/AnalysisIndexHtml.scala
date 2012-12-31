@@ -5,7 +5,7 @@ import metamorph.model.{BlockDeclaration, MethodDeclaration}
 import io.Source
 import java.io.OutputStreamWriter
 
-class AnalysisHtmlReport(val methodBuckets: BucketSet[MethodDeclaration], val blockBuckets: BucketSet[BlockDeclaration], val output: OutputStreamWriter) extends Html {
+class AnalysisIndexHtml(val methodBuckets: BucketSet[MethodDeclaration], val blockBuckets: BucketSet[BlockDeclaration], val output: OutputStreamWriter) extends Html {
   html {
     head {
       title("This is a report")

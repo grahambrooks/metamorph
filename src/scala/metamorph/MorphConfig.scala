@@ -4,6 +4,6 @@ import command.MorphCommand
 
 case class MorphConfig(destination: String = "",
                        sources: Map[String, String] = Map(),
-                       outputPath: String = "analysis.html",
+                       outputPath: String = "metamorph-analysis",
                        command: MorphCommand = MorphCommand.undefined,
                        logging: Logger = Logger.default)

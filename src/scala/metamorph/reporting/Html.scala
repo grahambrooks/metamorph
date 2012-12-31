@@ -1,9 +1,9 @@
 package metamorph.reporting
 
-import java.io.OutputStreamWriter
+import java.io.Writer
 
 trait Html {
-  val output: OutputStreamWriter
+  val output: Writer
 
   private def tagIt(tag: String, content: String) {
     output.write('<')

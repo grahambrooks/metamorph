@@ -3,12 +3,14 @@ package metamorph.command
 import metamorph._
 import analysis.SourceCodeAnalyser
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
-import model.{BlockDeclaration, MethodDeclaration, CodeModel}
+import model.CodeModel
 import java.io._
-import reporting.AnalysisHtmlReport
+import reporting.{ReportSite, AnalysisIndexHtml}
 import metamorph.MorphConfig
 
 class AnalyseCommand extends MorphCommand {
+  val JavaFilePattern: String = ".*\\.java"
+
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {
     if (config.sources.size != 1) {
       console.writeLine("Analysis works best for a single collection of source files.")
@@ -39,7 +41,7 @@ class AnalyseCommand extends MorphCommand {
       Logger.trace("Scanning %s", pathOrFilename)
       val root = new File(pathOrFilename)
 
-      val scanner = new DirectoryScanner(root.getCanonicalPath, ".*\\.java")
+      val scanner = new DirectoryScanner(root.getCanonicalPath, JavaFilePattern)
 
       scanner eachFile function
     }
@@ -49,14 +51,13 @@ class AnalyseCommand extends MorphCommand {
   }
 
   private def analyse(models: List[CodeModel], outputPath: String) {
-
     val analyser = new SourceCodeAnalyser
-
     val analysedSource = analyser.analyse(models)
 
-    val output = new OutputStreamWriter(new FileOutputStream(outputPath))
-    new AnalysisHtmlReport(analysedSource.methodBuckets, analysedSource.blockBuckets, output)
-    output.close()
-  }
+    val reportSite = new ReportSite(outputPath)
 
+    reportSite.writeIndex(indexStreamWriter => {
+      new AnalysisIndexHtml(analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
+    })
+  }
 }
