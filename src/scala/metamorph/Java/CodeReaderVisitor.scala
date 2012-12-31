@@ -25,7 +25,7 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   override def visitMethodDeclaration(ctx: MethodDeclarationContext) = {
 
     model.add(
-      new MethodDeclaration(source,
+      new MethodDeclaration(model, source,
         Signature.fromTree(ctx),
         ctx.Identifier().getSymbol,
         new TextSpan(ctx.getStart, ctx.getStop)))

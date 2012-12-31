@@ -1,32 +1,34 @@
 package metamorph.reporting
 
+import java.io.OutputStreamWriter
+
 trait Html {
-  val stringBuffer = new StringBuilder
+  val output: OutputStreamWriter
 
   private def tagIt(tag: String, content: String) {
-    stringBuffer.append('<')
-    stringBuffer.append(tag)
-    stringBuffer.append('>')
-    stringBuffer.append(content)
-    stringBuffer.append('<')
-    stringBuffer.append('/')
-    stringBuffer.append(tag)
-    stringBuffer.append('>')
-    stringBuffer.append('\n')
+    output.write('<')
+    output.write(tag)
+    output.write('>')
+    output.write(content)
+    output.write('<')
+    output.write('/')
+    output.write(tag)
+    output.write('>')
+    output.write('\n')
   }
 
   def tag(tag: String) {
-    stringBuffer.append('<')
-    stringBuffer.append(tag)
-    stringBuffer.append('>')
+    output.write('<')
+    output.write(tag)
+    output.write('>')
   }
 
   def etag(tag: String) {
-    stringBuffer.append('<')
-    stringBuffer.append('/')
-    stringBuffer.append(tag)
-    stringBuffer.append('>')
-    stringBuffer.append('\n')
+    output.write('<')
+    output.write('/')
+    output.write(tag)
+    output.write('>')
+    output.write('\n')
   }
 
   def head(fun: => Unit) {
@@ -47,6 +49,16 @@ trait Html {
     etag("html")
   }
 
+  def ul(fun: => Unit) {
+    tag("ul")
+    fun
+    etag("ul")
+  }
+
+  def li(s: String) {
+    tagIt("li", s)
+  }
+
   def title(s: String) {
     tagIt("title", s)
   }
@@ -61,9 +73,5 @@ trait Html {
 
   def p(s: String) {
     tagIt("p", s)
-  }
-
-  def render(): String = {
-    stringBuffer.toString()
   }
 }

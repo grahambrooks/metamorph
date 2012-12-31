@@ -1,38 +1,10 @@
 package metamorph
 
+import analysis.SourceCodeAnalyser
 import Java._
-import model.{MethodDeclaration, CodeModel}
+import model.CodeModel
 import java.io.PrintWriter
 
-class AnalysedSourceCode() {
-
-}
-
-class SourceCodeAnalyser {
-  def analyse(models: List[CodeModel]): AnalysedSourceCode = {
-    val typeBuckets = new BucketSet[CodeModel]()
-
-    models.foreach(cm => typeBuckets.add(cm.typeSignature, cm))
-
-    var duplicateMethods = Map[Signature, MethodDeclaration]()
-
-    typeBuckets.duplicates().foreach(bucketWithDuplicates => {
-      // Find a common subset of methods shared between each of the identified duplicates
-      duplicateMethods = duplicateMethods ++ bucketWithDuplicates.bucket.foldLeft(Map[Signature, MethodDeclaration]()) {
-        (map, cm) => {
-          map ++ cm.methods.foldLeft(Map[Signature, MethodDeclaration]()) {
-            (m, method) => if (m.contains(method.syntaxSignature)) m else Map(method.syntaxSignature -> method) ++ m
-          }
-        }
-      }
-    })
-
-    duplicateMethods.foreach {
-      case (sig: Signature, methodDecl: MethodDeclaration) => printf("Duplicate Methods shared by similar types %s", methodDecl.getName)
-    }
-    new AnalysedSourceCode()
-  }
-}
 
 class Merge(importMap: Map[String, String]) {
   def merge(sources: List[SourceCode], destination: DestinationCode) {
