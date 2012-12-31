@@ -56,6 +56,8 @@ class AnalyseCommand extends MorphCommand {
 
     val reportSite = new ReportSite(outputPath)
 
+    reportSite.copyAssets()
+
     reportSite.writeIndex(indexStreamWriter => {
       new AnalysisIndexHtml(analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
     })
