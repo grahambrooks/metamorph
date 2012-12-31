@@ -46,7 +46,7 @@ class ReportSite(val reportingPath: String) {
   }
 
   def makePaths(path: String) {
-    new File(reportingPath + path).mkdirs
+    new File(reportingFile.getPath + '/' + path).mkdirs
   }
 
   def writeCodeModelAnalysis(sourceCode: SourceCode, function: (Writer) => Any) {
