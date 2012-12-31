@@ -24,7 +24,7 @@ class SourceCodeAnalyser {
     })
 
     duplicateMethods.foreach {
-      case (sig: Signature, methodDecl: MethodDeclaration) => printf("Duplicate Methods shared by similar types %s", methodDecl.getName)
+      case (sig: Signature, methodDeclaration: MethodDeclaration) => printf("Duplicate Methods shared by similar types %s\n", methodDeclaration.getName)
     }
 
     new AnalysedSourceCode(bucketMethods(models), bucketBlocks(models))
