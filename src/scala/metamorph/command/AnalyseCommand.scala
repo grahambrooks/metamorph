@@ -7,6 +7,11 @@ import model.CodeModel
 import java.io._
 import reporting.{CodeModelHtml, ReportSite, AnalysisIndexHtml}
 import metamorph.MorphConfig
+import java.security.CodeSource
+
+
+
+
 
 class AnalyseCommand extends MorphCommand {
   val JavaFilePattern: String = ".*\\.java"
@@ -19,10 +24,11 @@ class AnalyseCommand extends MorphCommand {
 
     config.sources foreach {
       case (name, path) => {
+        val source = new ContentSource(name, new RootPath(path))
         scanFiles(path, console, p => {
           Logger.trace("Processing source file %s", p.getAbsolutePath)
 
-          val originalSource = new SourceCodeFile(path, p)
+          val originalSource = new SourceCodeFile(source, p)
 
           val reader = new SourceCodeReader(originalSource)
 
@@ -33,7 +39,7 @@ class AnalyseCommand extends MorphCommand {
       }
     }
 
-    analyse(models, config.outputPath)
+    analyse(config, models, config.outputPath)
   }
 
   def scanFiles(pathOrFilename: String, console: ConsoleWriter, function: (File) => Any) {
@@ -50,7 +56,7 @@ class AnalyseCommand extends MorphCommand {
     }
   }
 
-  private def analyse(models: List[CodeModel], outputPath: String) {
+  private def analyse(config: MorphConfig, models: List[CodeModel], outputPath: String) {
     val analyser = new SourceCodeAnalyser
     val analysedSource = analyser.analyse(models)
     analysedSource.modelsWithDuplicateBlocks
@@ -60,7 +66,7 @@ class AnalyseCommand extends MorphCommand {
     reportSite.copyAssets()
 
     reportSite.writeIndex(indexStreamWriter => {
-      new AnalysisIndexHtml(analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
+      new AnalysisIndexHtml(config, analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
     })
 
     analysedSource.analysedModels.foreach(m => {
@@ -68,11 +74,5 @@ class AnalyseCommand extends MorphCommand {
         new CodeModelHtml(m, codeModelWriter)
       })
     })
-
-//    analysedSource.modelsWithDuplicateBlocks.foreach(codeModel => {
-//      reportSite.writeCodeModelAnalysis(codeModel.sourceCode, codeModelWriter => {
-//        new CodeModelHtml(codeModel, codeModelWriter)
-//      })
-//    })
   }
 }

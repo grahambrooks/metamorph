@@ -21,8 +21,9 @@ table {
 }
 
 tr {
-	border: 0;
 	padding: 0;
+	border-style: solid;
+	border-width: 1px;
 }
 
 td, th {
@@ -30,12 +31,12 @@ td, th {
     text-align: left;
     padding-bottom: 0em;
     border: 0;
+    font-size: small;
 }
 
 th {
 	padding-right: 1em;
 	padding-left: 1em;
-	text-align: right;
 	font-size: small;
 }
 

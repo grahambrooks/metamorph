@@ -24,6 +24,13 @@ trait Html {
     output.write('>')
   }
 
+  def tag(tag: String, clazz: String) {
+    output.write('<')
+    output.write(tag)
+    output.write(" class=\"%s\"".format(clazz))
+    output.write('>')
+  }
+
   def etag(tag: String) {
     output.write('<')
     output.write('/')
@@ -48,6 +55,12 @@ trait Html {
     tag("html")
     fun
     etag("html")
+  }
+
+  def div(clazz:String, fun: => Unit) {
+    tag("div", clazz)
+    fun
+    etag("div")
   }
 
   def ul(fun: => Unit) {

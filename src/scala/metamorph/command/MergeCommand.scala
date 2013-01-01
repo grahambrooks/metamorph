@@ -12,10 +12,11 @@ class MergeCommand extends MorphCommand {
 
     config.sources foreach {
       case (name, path) => {
+        val contentSource = new ContentSource(name, new RootPath(path))
         scanFiles(path, console, p => {
           Logger.trace("Processing source file %s", p.getAbsolutePath)
 
-          val originalSource = new SourceCodeFile(path, p)
+          val originalSource = new SourceCodeFile(contentSource, p)
 
           val reader = new SourceCodeReader(originalSource)
 

@@ -4,11 +4,13 @@ import org.antlr.v4.runtime.Token
 import metamorph.Java.{SourceCode, TextSpan}
 import metamorph.Signature
 
-class MethodDeclaration(val codeModel:CodeModel, val source: SourceCode, val syntaxSignature: Signature, nameToken: Token, val span: TextSpan) {
+class MethodDeclaration(val codeModel: CodeModel, val source: SourceCode, val syntaxSignature: Signature, nameToken: Token, val span: TextSpan) {
 
   def name: String = nameToken.getText
 
   def getName = name
+
+  def lineCount: Int = span.lineCount
 
   def signature: Signature = {
     val textSource = source.source
