@@ -1,9 +1,9 @@
 body {
-    font: small Arial, sans-serif;
+    font: x-small Calibri, Arial, sans-serif;
 }
 
 h1 {
-    font: bold Arial, sans-serif;
+    font: bold Calibri, Arial, sans-serif;
     margin-top: 2em;
     margin-bottom: 0.5em;
 }
@@ -20,67 +20,32 @@ table {
     border-collapse: collapse;
 }
 
-th {
-    width: 12em;
-    padding: 0;
-    margin: 0;
-}
-
-td {
-    padding-bottom: 1em;
+tr {
+	border: 0;
+	padding: 0;
 }
 
 td, th {
     vertical-align: top;
     text-align: left;
+    padding-bottom: 0em;
+    border: 0;
+}
+
+th {
+	padding-right: 1em;
+	padding-left: 1em;
+	text-align: right;
+	font-size: small;
 }
 
 pre {
     margin: 0;
-    font-size: medium;
-}
-
-#switch {
-    overflow: auto;
-    width: 67em;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#switch li {
-    float: left;
-    width: 12em;
-    padding: 0.1em;
-    margin: 0.1em 1em 0.1em 0;
-    background: #EEE;
-    cursor: pointer;
-}
-
-#switch li.current {
-    background: #CCC;
-}
-
-.test {
-    color: #888;
-    font-weight: normal;
-    margin: 2em 0 0 0;
-}
-
-.test var {
-    font-style: normal;
-}
-
-.passed {
-    color: green;
-}
-
-.failed {
-    color: red;
+    font: small Menlo, monospaced;
 }
 
 .code {
-    font: medium monospace;
+    font: small Menlo, monospaced;
 }
 
 .code .keyword {
@@ -88,5 +53,5 @@ pre {
 }
 
 .duplicate {
-    background-color: #640000;
+    background-color: #c0c0c0;
 }
