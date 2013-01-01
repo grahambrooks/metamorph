@@ -1,6 +1,7 @@
 package metamorph.reporting
 
 import java.io.Writer
+import metamorph.PartialPath
 
 trait Html {
   val output: Writer
@@ -81,11 +82,4 @@ trait Html {
   def a(href:String, text: String) {
     output.write("<a href='%s'>%s</a>".format(href, text))
   }
-
-  def relativePath(currentPath: String, targetPath: String): String = {
-    currentPath.foldLeft("")((x, c) => {
-      if (c == '/') x + "../" else x
-    }) + targetPath
-  }
-
 }

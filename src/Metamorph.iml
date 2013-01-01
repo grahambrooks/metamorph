@@ -16,6 +16,8 @@
       <sourceFolder url="file://$MODULE_DIR$/../test/scala" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/resource" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../Tools" />
+      <excludeFolder url="file://$MODULE_DIR$/../build" />
+      <excludeFolder url="file://$MODULE_DIR$/../metamorph-analysis" />
       <excludeFolder url="file://$MODULE_DIR$/../target" />
     </content>
     <orderEntry type="inheritedJdk" />

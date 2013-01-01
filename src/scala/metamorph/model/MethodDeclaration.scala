@@ -11,7 +11,7 @@ class MethodDeclaration(val codeModel:CodeModel, val source: SourceCode, val syn
   def getName = name
 
   def signature: Signature = {
-    val textSource = source.getSource
+    val textSource = source.source
 
     val i = textSource.getLines()
     var methodText = ""

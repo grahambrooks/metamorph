@@ -1,6 +1,6 @@
 package metamorph.analysis
 
-import metamorph.BucketSet
+import metamorph.{Signature, BucketSet}
 import metamorph.model.{CodeModel, BlockDeclaration, MethodDeclaration}
 
 class AnalysedCodeModel(val codeModel: CodeModel) {
@@ -26,19 +26,19 @@ class AnalysedSourceCode(val methodBuckets: BucketSet[MethodDeclaration], val bl
   def modelsWithDuplicateBlocks: List[CodeModel] = {
     var result: List[CodeModel] = List()
 
-    var tmp = Map[String,  AnalysedCodeModel]()
+    var tmp = Map[Signature, AnalysedCodeModel]()
 
     methodBuckets.eachDuplicate(dup =>
       dup.foreach(md => {
 
-        val key: String = md.codeModel.sourceCode.getFilename
+        val key = md.codeModel.sourceCode.signature
         if (tmp.contains(key)) {
-          tmp(md.codeModel.sourceCode.getFilename).addDuplicate(md)
+          tmp(md.codeModel.sourceCode.signature).addDuplicate(md)
         } else {
           val m = new AnalysedCodeModel(md.codeModel)
           m.addDuplicate(md)
           analysedModels = analysedModels ::: List(m)
-          tmp = tmp ++ Map(md.codeModel.sourceCode.getFilename -> m)
+          tmp = tmp ++ Map(md.codeModel.sourceCode.signature -> m)
         }
 
         result = result ++ List(md.codeModel)
@@ -47,42 +47,17 @@ class AnalysedSourceCode(val methodBuckets: BucketSet[MethodDeclaration], val bl
 
     blockBuckets.eachDuplicate(dup =>
       dup.foreach(dupBlock => {
-        if (tmp.contains(dupBlock.codeModel.sourceCode.getFilename)) {
-          tmp(dupBlock.codeModel.sourceCode.getFilename).addDuplicate(dupBlock)
+        if (tmp.contains(dupBlock.codeModel.sourceCode.signature)) {
+          tmp(dupBlock.codeModel.sourceCode.signature).addDuplicate(dupBlock)
         } else {
           val m = new AnalysedCodeModel(dupBlock.codeModel)
           m.addDuplicate(dupBlock)
           analysedModels = analysedModels ::: List(m)
-          tmp = tmp ++ Map(dupBlock.codeModel.sourceCode.getFilename -> m)
+          tmp = tmp ++ Map(dupBlock.codeModel.sourceCode.signature -> m)
         }
 
       }))
 
     result
-  }
-
-  def duplicateMethod(md: MethodDeclaration) {
-    var tmp = Map[String,  AnalysedCodeModel]()
-    val key: String = md.codeModel.sourceCode.getFilename
-    if (tmp.contains(key)) {
-      tmp(md.codeModel.sourceCode.getFilename).addDuplicate(md)
-    } else {
-      val m = new AnalysedCodeModel(md.codeModel)
-      m.addDuplicate(md)
-      analysedModels = analysedModels ::: List(m)
-      tmp = tmp ++ Map(md.codeModel.sourceCode.getFilename -> m)
-    }
-  }
-
-  def duplicateBlock(dupBlock: BlockDeclaration) {
-    var tmp = Map[String, AnalysedCodeModel]()
-    if (tmp.contains(dupBlock.codeModel.sourceCode.getFilename)) {
-      tmp(dupBlock.codeModel.sourceCode.getFilename).addDuplicate(dupBlock)
-    } else {
-      val m = new AnalysedCodeModel(dupBlock.codeModel)
-      m.addDuplicate(dupBlock)
-      analysedModels = analysedModels ::: List(m)
-      tmp = tmp ++ Map(dupBlock.codeModel.sourceCode.getFilename -> m)
-    }
   }
 }

@@ -9,7 +9,7 @@ class SourceCodeReader(code: SourceCode) extends JavaParserActions {
   val model = new CodeModel(code)
 
   def read: CodeModel = {
-    val parser = new JavaParser(new CommonTokenStream(new JavaLexer(code.getInputStream)))
+    val parser = new JavaParser(new CommonTokenStream(new JavaLexer(code.antlrStream)))
     parser.parserActions = this
     val tree = parser.compilationUnit
 

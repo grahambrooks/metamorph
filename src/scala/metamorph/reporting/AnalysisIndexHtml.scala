@@ -23,7 +23,7 @@ class AnalysisIndexHtml(val methodBuckets: BucketSet[MethodDeclaration], val blo
         ul {
           methods.foreach(method => {
             li("")
-            a(method.source.branchPath + '/' + method.source.getName + ".html")
+            a(method.source.branchPath.join(method.source.name + ".html").toString)
           })
         }
       })
@@ -36,7 +36,7 @@ class AnalysisIndexHtml(val methodBuckets: BucketSet[MethodDeclaration], val blo
         ul {
           blocks.foreach(block => {
             li("")
-            a(block.source.branchPath + '/' + block.source.getName + ".html")
+            a(block.source.branchPath.join(block.source.name + ".html").toString)
             p(" at " + block.span)
           })
         }
@@ -47,7 +47,7 @@ class AnalysisIndexHtml(val methodBuckets: BucketSet[MethodDeclaration], val blo
                   "    <td class=\"java\">\n" +
                   "      <pre><code>")
 
-                val x = Source.fromFile(blocks(0).source.getFilename)
+                val x = Source.fromFile(blocks(0).source.absolutePath)
 
                 x.getLines().foreach(line => {
                   output.write(line + "\n")

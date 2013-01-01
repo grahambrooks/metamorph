@@ -7,7 +7,7 @@ class SourceCodeReWriter(code: SourceCode) {
     startOfFileChanges(changes, output)
 
     var i = 1
-    code.getSource.getLines().foreach {
+    code.source.getLines().foreach {
       line => changes.apply(new CodeLine {
         val lineText = line
         val lineNumber = i

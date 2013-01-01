@@ -3,6 +3,7 @@ package metamorph.reporting
 import java.io.{Writer, FileOutputStream, File, OutputStreamWriter}
 import io.Source
 import metamorph.Java.SourceCode
+import metamorph.Paths
 
 class ReportSite(val reportingPath: String) {
 
@@ -45,14 +46,10 @@ class ReportSite(val reportingPath: String) {
     output.close()
   }
 
-  def makePaths(path: String) {
-    new File(reportingFile.getPath + '/' + path).mkdirs
-  }
-
   def writeCodeModelAnalysis(sourceCode: SourceCode, function: (Writer) => Any) {
-    makePaths(sourceCode.branchPath)
+    Paths.make(reportingFile, sourceCode.branchPath)
 
-    val output = new OutputStreamWriter(new FileOutputStream(reportingFile.getPath + '/' + sourceCode.branchPath + '/' + sourceCode.getName + ".html"))
+    val output = new OutputStreamWriter(new FileOutputStream(reportingFile.getPath + '/' + sourceCode.branchPath + '/' + sourceCode.name + ".html"))
 
     function(output)
     output.close()

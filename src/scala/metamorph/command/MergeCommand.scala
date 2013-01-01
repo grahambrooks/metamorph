@@ -59,7 +59,7 @@ class MergeCommand extends MorphCommand {
   private def reportDuplicates(methods: Bucket[MethodDeclaration], writer: ReportWriter) {
     writer.methodSummary(methods(0).name, methods.size)
     methods foreach (method => {
-      writer.methodDetail(method.source.getFilename)
+      writer.methodDetail(method.getName)
     })
   }
 

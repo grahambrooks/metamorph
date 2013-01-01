@@ -1,24 +1,24 @@
 package metamorph.reporting
 
 import java.io.Writer
-import io.Source
 import metamorph.analysis.AnalysedCodeModel
+import metamorph.Paths
 
 class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer) extends Html {
-  val currentPath = analysedCodeModel.codeModel.sourceCode.branchPath + '/' + analysedCodeModel.codeModel.sourceCode.getName
+  val currentPath = Paths.join(analysedCodeModel.codeModel.sourceCode.branchPath, analysedCodeModel.codeModel.sourceCode.name)
   html {
     head {
-      title(analysedCodeModel.codeModel.sourceCode.getName)
+      title(analysedCodeModel.codeModel.sourceCode.name)
       output.write("<link rel=\"stylesheet\" href=\"http://yandex.st/highlightjs/7.3/styles/default.min.css\">\n" +
-        "<link rel=\"stylesheet\" href=\"" + relativePath(currentPath, "site.css") + "\">" +
-        "<script src=\"" + relativePath(currentPath, "highlight.pack.js") + "\"></script>\n" +
+        "<link rel=\"stylesheet\" href=\"" + currentPath.relativePathTo("site.css") + "\">" +
+        "<script src=\"" + currentPath.relativePathTo("highlight.pack.js") + "\"></script>\n" +
         "<script>hljs.initHighlightingOnLoad();</script>\n")
     }
     body {
-      h1(analysedCodeModel.codeModel.sourceCode.getName)
-      a(relativePath(currentPath, "index.html"), "Index")
+      h1(analysedCodeModel.codeModel.sourceCode.name)
+      a(currentPath.relativePathTo("index.html"), "Index")
 
-      val x = Source.fromFile(analysedCodeModel.codeModel.sourceCode.getFilename)
+      val x = analysedCodeModel.codeModel.sourceCode.absolutePath.source
 
       var lineNumber = 1
       var writingDuplicates = false
