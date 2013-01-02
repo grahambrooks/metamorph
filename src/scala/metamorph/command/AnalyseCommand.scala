@@ -1,16 +1,13 @@
 package metamorph.command
 
 import metamorph._
-import analysis.SourceCodeAnalyser
+import analysis.{AnalysedCodeModel, SourceCodeAnalyser}
 import metamorph.Java.{SourceCodeReader, SourceCodeFile}
 import model.CodeModel
 import java.io._
 import reporting.{CodeModelHtml, ReportSite, AnalysisIndexHtml}
 import metamorph.MorphConfig
-import java.security.CodeSource
-
-
-
+import java.nio.charset.MalformedInputException
 
 
 class AnalyseCommand extends MorphCommand {
@@ -70,9 +67,20 @@ class AnalyseCommand extends MorphCommand {
     })
 
     analysedSource.analysedModels.foreach(m => {
-      reportSite.writeCodeModelAnalysis(m.codeModel.sourceCode, codeModelWriter => {
-        new CodeModelHtml(m, codeModelWriter)
-      })
+      writeModelReport(m, reportSite)
     })
+  }
+
+  def writeModelReport(acm: AnalysedCodeModel, reportSite: ReportSite) {
+    try {
+      Logger.trace("Writing analysis report for %s:%s", acm.codeModel.sourceCode.sourceName, acm.codeModel.sourceCode.absolutePath.toString)
+
+      reportSite.writeCodeModelAnalysis(acm.codeModel.sourceCode, codeModelWriter => {
+        new CodeModelHtml(acm, codeModelWriter)
+      })
+    }
+    catch {
+      case mie: MalformedInputException => Logger.error("Failed writing report for %s %s", acm.codeModel.sourceCode.name, mie.getMessage)
+    }
   }
 }

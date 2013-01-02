@@ -34,7 +34,7 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
         output.write("<td>")
 
         methods.foreach(method => {
-          a(method.source.branchPath.join(method.source.name + ".html").toString)
+          a(method.source.sourceName + '/' + method.source.branchPath.join(method.source.name + ".html").toString)
           output.write("<br/>")
         })
         output.write("</td></tr>")
@@ -46,7 +46,7 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
         output.write("<tr><th>Duplicate block of %d lines</th>".format(blocks(0).lineCount))
         output.write("<td>")
         blocks.foreach(block => {
-          a(block.source.branchPath.join(block.source.name + ".html").toString)
+          a(block.source.sourceName + '/' + block.source.branchPath.join(block.source.name + ".html").toString)
           output.write(" at %s<br/>".format(block.span))
         })
         output.write("</td></tr>")

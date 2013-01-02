@@ -13,7 +13,9 @@ object AbsolutePath {
     val path = s
 
     def source = Source.fromFile(s)
+    override def toString = path
   }
+
 }
 
 abstract class AbsolutePath {

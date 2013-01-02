@@ -40,7 +40,9 @@ object Logger extends Logger {
       Console.println(text.format(xs: _*))
     }
 
-    def trace(text: String, xs: Any*) {}
+    def trace(text: String, xs: Any*) {
+      Console.println(text.format(xs: _*))
+    }
   }
 
   val debug: Logger = new Logger {
@@ -62,18 +64,18 @@ object Logger extends Logger {
   }
 
   def fatal(text: String, xs: Any*) {
-    current.fatal(text, xs)
+    current.fatal(text, xs: _*)
   }
 
   def error(text: String, xs: Any*) {
-    current.fatal(text, xs)
+    current.error(text, xs: _*)
   }
 
   def debug(text: String, xs: Any*) {
-    current.fatal(text, xs)
+    current.debug(text, xs: _*)
   }
 
   def trace(text: String, xs: Any*) {
-    current.fatal(text, xs)
+    current.trace(text, xs: _*)
   }
 }

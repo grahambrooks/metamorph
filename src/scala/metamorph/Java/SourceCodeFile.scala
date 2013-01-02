@@ -15,7 +15,11 @@ class SourceCodeFile(val contentSource: ContentSource, val file: File) extends S
 
   def name = file.getName
 
-  def branchPath = BranchPath.fromString(file.getParent.substring(contentSource.rootPath.length + 1))
+  def branchPath = {
+    BranchPath.fromString(contentSource.rootPath.removeFrom(file.getParent))
+  }
 
   def signature = Signature.fromString(file.getAbsolutePath)
+
+  def sourceName = contentSource.name
 }

@@ -47,9 +47,9 @@ class ReportSite(val reportingPath: String) {
   }
 
   def writeCodeModelAnalysis(sourceCode: SourceCode, function: (Writer) => Any) {
-    Paths.make(reportingFile, sourceCode.branchPath)
+    Paths.make(reportingFile, sourceCode.sourceName, sourceCode.branchPath)
 
-    val output = new OutputStreamWriter(new FileOutputStream(reportingFile.getPath + '/' + sourceCode.branchPath + '/' + sourceCode.name + ".html"))
+    val output = new OutputStreamWriter(new FileOutputStream(reportingFile.getPath + '/' + sourceCode.sourceName + '/' + sourceCode.branchPath + '/' + sourceCode.name + ".html"))
 
     function(output)
     output.close()

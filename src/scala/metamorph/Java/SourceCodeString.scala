@@ -18,4 +18,6 @@ class SourceCodeString(text: String) extends SourceCode {
   }
 
   def signature = Signature.fromString(text)
+
+  def sourceName = "STRING SOURCE"
 }

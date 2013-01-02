@@ -5,7 +5,7 @@ import metamorph.analysis.AnalysedCodeModel
 import metamorph.Paths
 
 class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer) extends Html {
-  val currentPath = Paths.join(analysedCodeModel.codeModel.sourceCode.branchPath, analysedCodeModel.codeModel.sourceCode.name)
+  val currentPath = Paths.join(analysedCodeModel.codeModel.sourceCode.branchPath, analysedCodeModel.codeModel.sourceCode.sourceName, analysedCodeModel.codeModel.sourceCode.name)
   html {
     head {
       title(analysedCodeModel.codeModel.sourceCode.name)
