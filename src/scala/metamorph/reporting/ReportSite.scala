@@ -18,9 +18,11 @@ class ReportSite(val reportingPath: String) {
   def copyAssets() {
     preRequisites()
 
-    copyAsset("/metamorph/highlight.pack.js", reportingFile.getPath + "/highlight.pack.js")
-
     copyAsset("/metamorph/site.css", reportingFile.getPath + "/site.css")
+
+    copyAsset("/metamorph/prettify.js", reportingFile.getPath + "/prettify.js")
+    copyAsset("/metamorph/prettify.css", reportingFile.getPath + "/prettify.css")
+    copyAsset("/metamorph/sunburst.css", reportingFile.getPath + "/sunburst.css")
   }
 
 

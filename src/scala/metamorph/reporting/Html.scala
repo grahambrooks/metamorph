@@ -44,20 +44,23 @@ trait Html {
     etag("head")
   }
 
-  def link(rel: String = "", href: String = "") {
-    output.write("<link rel=\"%s\" href=\"%s\">".format(rel, href))
+  def link(rel: String = "", href: String = "", linkType:String="text/css") {
+    output.write("<link rel=\"%s\" href=\"%s\" type=\"%s\">".format(rel, href, linkType))
   }
 
-  def script(src: String = null, content: String = null) {
+  def script(src: String = null, content: String = null, scriptType:String="text/javascript") {
     if (src != null) {
-      output.write("<script src=\"%s\"></script>\n".format(src))
+      output.write("<script type=\"%s\" src=\"%s\"></script>\n".format(scriptType, src))
     } else if (content != null) {
-      output.write("<script>%s</script>\n".format(content))
+      output.write("<script type=\"%s\" >%s</script>\n".format(scriptType, content))
     }
   }
 
-  def body(fun: => Unit) {
-    tag("body")
+  def body(onload:String=null, fun: => Unit) {
+    if (onload == null)
+      tag("body")
+    else
+    tag("body onload=\""+onload+"\"")
     fun
     etag("body")
   }

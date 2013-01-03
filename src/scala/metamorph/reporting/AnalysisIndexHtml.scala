@@ -9,12 +9,9 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
     head {
       title("This is a report")
 
-      link(rel="stylesheet", href="http://yandex.st/highlightjs/7.3/styles/default.min.css")
       link(rel="stylesheet", href="site.css")
-      script(src="highlight.pack.js")
-      script(content="hljs.initHighlightingOnLoad();")
     }
-    body {
+    body(fun= {
       h1("Metamorph code analysis summary")
       div("summary", {
         h2("Analysis performed on " + new java.util.Date())
@@ -55,6 +52,6 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
         output.write("</td></tr>")
       })
       output.write("<table>")
-    }
+    })
   }
 }

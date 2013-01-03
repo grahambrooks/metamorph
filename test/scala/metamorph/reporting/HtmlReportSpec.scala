@@ -13,10 +13,10 @@ class HtmlReportSpec extends FunSpec {
           head {
             title("This is a report")
           }
-          body {
+          body (fun={
             for (a <- 1 to 3)
               h1("You know you want to!")
-          }
+          })
         }
       }
 

@@ -10,17 +10,17 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
     head {
       title(analysedCodeModel.codeModel.sourceCode.name)
 
-      link(rel = "stylesheet", href = "http://yandex.st/highlightjs/7.3/styles/default.min.css")
       link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
-      script(src = currentPath.relativePathTo("highlight.pack.js"))
-      script(content = "hljs.initHighlightingOnLoad();")
+      link(href = currentPath.relativePathTo("prettify.css"), rel = "stylesheet")
+      link(href = currentPath.relativePathTo("sunburst.css"), rel = "stylesheet")
+      script(src = currentPath.relativePathTo("prettify.js"))
     }
-    body {
+    body(onload = "prettyPrint()", fun = {
       h1(analysedCodeModel.codeModel.sourceCode.name)
       p("Scanned path = " + currentPath.toString)
       a(currentPath.relativePathTo("index.html"), "Index")
 
-      val x = analysedCodeModel.codeModel.sourceCode.absolutePath.source
+      val x = analysedCodeModel.codeModel.sourceCode.source
 
       var lineNumber = 1
       var writingDuplicates = false
@@ -31,21 +31,22 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
         val duplicateLine = analysedCodeModel.isDuplicateLine(lineNumber)
 
         if (duplicateLine != writingDuplicates) {
-          closeCodeRow()
           writingDuplicates = duplicateLine
+          closeCodeRow(!writingDuplicates)
           openCodeRow(writingDuplicates)
         }
 
-        output.write(line + "\n")
+        output.write("\n" + line)
         lineNumber = lineNumber + 1
       })
-
-      closeCodeRow()
+      output.write("</code></pre>")
+      closeCodeRow(writingDuplicates)
       output.write("</table>\n")
 
-    }
-  }
 
+      //      script(content="SyntaxHighlighter.all();")
+    })
+  }
 
   def openCodeRow(duplicateLine: Boolean) {
     output.write("<tr>\n")
@@ -54,17 +55,21 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
     } else {
       output.write("    <th></th>\n")
     }
-    output.write("    <td class=\"java")
-    if (duplicateLine)
-      output.write(" duplicate")
-    output.write("\">\n" +
-      "      <pre><code>")
+
+    output.write("    <td>")
+    output.write("<pre class=\"prettyprint\"><code class=\"prettyprint language-java\">")
+
   }
 
-  def closeCodeRow() {
+  def closeCodeRow(duplicate: Boolean) {
     output.write("</code>\n" +
       "      </pre>\n" +
-      "    </td>\n" +
-      "    </tr>")
+      "    </td>\n")
+    if (duplicate)
+      output.write("    <td width=\"200px\" class=\"duplicate\"> Some metrics will go here</td>")
+    else
+      output.write("    <td width=\"200px\"></td>")
+
+    output.write("    </tr>")
   }
 }

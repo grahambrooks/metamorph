@@ -1,5 +1,6 @@
 body {
     font: x-small Calibri, Arial, sans-serif;
+    max-width: 1000px;
 }
 
 h1 {
@@ -15,13 +16,12 @@ h2 {
 }
 
 table {
-    width: 100%;
     padding: 0;
     border-collapse: collapse;
 }
 
 tr {
-	padding: 0;
+    padding: 0;
     /*border: 1px solid;*/
 }
 
@@ -34,22 +34,23 @@ td, th {
 }
 
 th {
-	padding-right: 1em;
-	padding-left: 1em;
-	font-size: small;
+    padding-right: 1em;
+    padding-left: 1em;
+    font-size: small;
 }
 
 pre {
     margin: 0;
     font: 9pt Menlo, monospaced;
-    display: inline;
 }
 
 .duplicate {
-    background-color: #c0c0c0;
-}
-
-body {
-    max-width: 1200px;
-    margin: 0 auto;
+    background-color: #000;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -o-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+    color: white;
 }
