@@ -9,10 +9,11 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
   html {
     head {
       title(analysedCodeModel.codeModel.sourceCode.name)
-      output.write("<link rel=\"stylesheet\" href=\"http://yandex.st/highlightjs/7.3/styles/default.min.css\">\n" +
-        "<link rel=\"stylesheet\" href=\"" + currentPath.relativePathTo("site.css") + "\">" +
-        "<script src=\"" + currentPath.relativePathTo("highlight.pack.js") + "\"></script>\n" +
-        "<script>hljs.initHighlightingOnLoad();</script>\n")
+
+      link(rel = "stylesheet", href = "http://yandex.st/highlightjs/7.3/styles/default.min.css")
+      link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
+      script(src = currentPath.relativePathTo("highlight.pack.js"))
+      script(content = "hljs.initHighlightingOnLoad();")
     }
     body {
       h1(analysedCodeModel.codeModel.sourceCode.name)
@@ -48,10 +49,11 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
 
   def openCodeRow(duplicateLine: Boolean) {
     output.write("<tr>\n")
-    if (duplicateLine)
+    if (duplicateLine) {
       output.write("    <th class=\"duplicate\">Duplicate</th>\n")
-    else
-      output.write("    <th>Unique</th>\n")
+    } else {
+      output.write("    <th></th>\n")
+    }
     output.write("    <td class=\"java")
     if (duplicateLine)
       output.write(" duplicate")

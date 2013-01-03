@@ -16,9 +16,9 @@ class BucketSet[T] {
 
   def duplicates(): List[Bucket[T]] = buckets.values.filter(bucket => bucket.hasDuplicates).toList
 
-  def getDuplicateCount = duplicates().size
-
-  def getDuplicates = duplicates()
+  def getDuplicateCount: Int = {
+    duplicates().foldLeft(0)((a, b) => {a + b.size - 1})
+  }
 
   def eachDuplicate(function: (Bucket[T]) => Any) {
     buckets.values foreach (bucket => {

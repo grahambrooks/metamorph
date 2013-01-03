@@ -8,10 +8,11 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
   html {
     head {
       title("This is a report")
-      output.write("<link rel=\"stylesheet\" href=\"http://yandex.st/highlightjs/7.3/styles/default.min.css\">\n" +
-        "<link rel=\"stylesheet\" href=\"" + "site.css" + "\">" +
-        "<script src=\"highlight.pack.js\"></script>\n" +
-        "<script>hljs.initHighlightingOnLoad();</script>\n")
+
+      link(rel="stylesheet", href="http://yandex.st/highlightjs/7.3/styles/default.min.css")
+      link(rel="stylesheet", href="site.css")
+      script(src="highlight.pack.js")
+      script(content="hljs.initHighlightingOnLoad();")
     }
     body {
       h1("Metamorph code analysis summary")
@@ -28,6 +29,7 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
       })
 
       h2("Analysis summary")
+      p(methodBuckets.getDuplicateCount + " Duplicate methods identified")
       output.write("<table>")
       output.write("<tr><th><h2>Duplicate Methods</h2></th><td>Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
       methodBuckets.eachDuplicate(methods => {

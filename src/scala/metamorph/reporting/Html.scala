@@ -1,7 +1,6 @@
 package metamorph.reporting
 
 import java.io.Writer
-import metamorph.PartialPath
 
 trait Html {
   val output: Writer
@@ -45,6 +44,18 @@ trait Html {
     etag("head")
   }
 
+  def link(rel: String = "", href: String = "") {
+    output.write("<link rel=\"%s\" href=\"%s\">".format(rel, href))
+  }
+
+  def script(src: String = null, content: String = null) {
+    if (src != null) {
+      output.write("<script src=\"%s\"></script>\n".format(src))
+    } else if (content != null) {
+      output.write("<script>%s</script>\n".format(content))
+    }
+  }
+
   def body(fun: => Unit) {
     tag("body")
     fun
@@ -57,7 +68,7 @@ trait Html {
     etag("html")
   }
 
-  def div(clazz:String, fun: => Unit) {
+  def div(clazz: String, fun: => Unit) {
     tag("div", clazz)
     fun
     etag("div")
@@ -89,10 +100,15 @@ trait Html {
     tagIt("p", s)
   }
 
-  def a(href:String) {
+  def a(href: String) {
     a(href, href)
   }
-  def a(href:String, text: String) {
+
+  def a(href: String, text: String) {
     output.write("<a href='%s'>%s</a>".format(href, text))
+  }
+
+  def th(content: String, clazz: String = null): String = {
+    if (clazz == null) "<th class=\"%s\">%s</th>\n".format(clazz, content) else "<th>%s</th>\n".format(content)
   }
 }
