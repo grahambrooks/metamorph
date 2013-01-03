@@ -1,6 +1,7 @@
 body {
     font: x-small Calibri, Arial, sans-serif;
     max-width: 1000px;
+    margin: 0 auto;
 }
 
 h1 {
@@ -53,4 +54,11 @@ pre {
     -khtml-border-radius: 8px;
     border-radius: 8px;
     color: white;
+}
+
+.duplicate a {
+    color: white;
+}
+.duplicate a:visited {
+    color: lightgray;
 }

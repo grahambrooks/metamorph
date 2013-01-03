@@ -10,10 +10,10 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
     head {
       title(analysedCodeModel.codeModel.sourceCode.name)
 
-      link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
       link(href = currentPath.relativePathTo("prettify.css"), rel = "stylesheet")
       link(href = currentPath.relativePathTo("sunburst.css"), rel = "stylesheet")
       script(src = currentPath.relativePathTo("prettify.js"))
+      link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
     }
     body(onload = "prettyPrint()", fun = {
       h1(analysedCodeModel.codeModel.sourceCode.name)

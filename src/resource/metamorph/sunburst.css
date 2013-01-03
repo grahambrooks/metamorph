@@ -24,9 +24,9 @@ pre.prettyprint, code.prettyprint {
 }
 
 pre.prettyprint {
-	/*width: 95%;*/
-	/*margin: 1em auto;*/
-	/*padding: 1em;*/
+	width: 95%;
+	margin: 1em auto;
+	padding: 1em;
 	white-space: pre-wrap;
 }
 
