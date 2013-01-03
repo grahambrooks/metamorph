@@ -16,6 +16,7 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
     }
     body {
       h1(analysedCodeModel.codeModel.sourceCode.name)
+      p("Scanned path = " + currentPath.toString)
       a(currentPath.relativePathTo("index.html"), "Index")
 
       val x = analysedCodeModel.codeModel.sourceCode.absolutePath.source

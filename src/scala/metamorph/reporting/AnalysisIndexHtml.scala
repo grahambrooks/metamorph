@@ -26,6 +26,7 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
         }
         output.write("</table>")
       })
+
       h2("Analysis summary")
       output.write("<table>")
       output.write("<tr><th><h2>Duplicate Methods</h2></th><td>Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
