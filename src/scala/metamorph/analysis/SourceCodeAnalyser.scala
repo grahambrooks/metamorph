@@ -6,6 +6,10 @@ import metamorph.{Signature, BucketSet}
 class SourceCodeAnalyser {
 
   def analyse(models: List[CodeModel]): AnalysedSourceCode = {
+    val modelBuckets = new BucketSet[CodeModel]
+
+    models.foreach(model => modelBuckets.add(model.modelSignature, model))
+
     val typeBuckets = new BucketSet[CodeModel]()
 
     models.foreach(cm => typeBuckets.add(cm.typeSignature, cm))
@@ -27,23 +31,18 @@ class SourceCodeAnalyser {
       case (sig: Signature, methodDeclaration: MethodDeclaration) => printf("Duplicate Methods shared by similar types %s\n", methodDeclaration.getName)
     }
 
-    new AnalysedSourceCode(bucketMethods(models), bucketBlocks(models))
-  }
-
-  private def bucketMethods(models: List[CodeModel]): BucketSet[MethodDeclaration] = {
     val methodBuckets = new BucketSet[MethodDeclaration]
-    models foreach (model => {
-      model.methods foreach (method => methodBuckets.add(method.syntaxSignature, method))
-    })
-    methodBuckets
-  }
-
-  private def bucketBlocks(models: List[CodeModel]): BucketSet[BlockDeclaration] = {
     val blockBuckets = new BucketSet[BlockDeclaration]
     models foreach (model => {
-      model.blocks foreach (block => blockBuckets.add(block.signature, block))
+      if (!modelBuckets.hasDuplicatesFor(model.modelSignature)) {
+        model.methods foreach (method => methodBuckets.add(method.syntaxSignature, method))
+        model.blocks foreach (block => blockBuckets.add(block.signature, block))
+      }
     })
-    blockBuckets
+
+    val analysedSource = new AnalysedSourceCode(modelBuckets, methodBuckets, blockBuckets)
+    analysedSource.updateAnalysis
+    analysedSource
   }
 
 }

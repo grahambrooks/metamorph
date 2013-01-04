@@ -56,14 +56,13 @@ class AnalyseCommand extends MorphCommand {
   private def analyse(config: MorphConfig, models: List[CodeModel], outputPath: String) {
     val analyser = new SourceCodeAnalyser
     val analysedSource = analyser.analyse(models)
-    analysedSource.modelsWithDuplicateBlocks
 
     val reportSite = new ReportSite(outputPath)
 
     reportSite.copyAssets()
 
     reportSite.writeIndex(indexStreamWriter => {
-      new AnalysisIndexHtml(config, analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
+      new AnalysisIndexHtml(config, analysedSource.modelBuckets, analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
     })
 
     analysedSource.analysedModels.foreach(m => {

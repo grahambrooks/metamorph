@@ -1,11 +1,11 @@
 package metamorph.reporting
 
 import metamorph.{MorphConfig, BucketSet}
-import metamorph.model.{BlockDeclaration, MethodDeclaration}
+import metamorph.model.{CodeModel, BlockDeclaration, MethodDeclaration}
 import java.io.OutputStreamWriter
 import java.util.Date
 
-class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[MethodDeclaration], val blockBuckets: BucketSet[BlockDeclaration], val output: OutputStreamWriter) extends Html {
+class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeModel], val methodBuckets: BucketSet[MethodDeclaration], val blockBuckets: BucketSet[BlockDeclaration], val output: OutputStreamWriter) extends Html {
   html {
     head {
       title("Metamorph code analysis report: " + new Date().toString)
@@ -26,7 +26,26 @@ class AnalysisIndexHtml(config: MorphConfig, val methodBuckets: BucketSet[Method
         output.write("</table>")
       })
 
+      h2("Duplicate source files")
+
+      output.write("<table>")
+      output.write("<tr><th class=\"duplicate\"><h2>%d duplicate files</h2></th><td class=\"duplicate\"></td></tr>".format(modelBuckets.getDuplicateCount))
+      modelBuckets.eachDuplicate(models => {
+
+        output.write("<tr><th class=\"duplicate\">%s</th><td class='duplicate'>".format(models(0).name))
+
+        models.foreach(model => {
+          a(model.sourceCode.sourceName + '/' + model.sourceCode.branchPath.join(model.sourceCode.name + ".html").toString)
+          output.write("<br/>")
+        })
+        output.write("</td></tr>")
+      })
+      output.write("</table>")
+
       h2("Analysis summary")
+      output.write("<table>")
+      output.write("<tr><th class=\"duplicate\"><h2>Duplicate Methods</h2></th><td class=\"duplicate\">Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
+
       p(methodBuckets.getDuplicateCount + " Duplicate methods identified")
       output.write("<table>")
       output.write("<tr><th class=\"duplicate\"><h2>Duplicate Methods</h2></th><td class=\"duplicate\">Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")

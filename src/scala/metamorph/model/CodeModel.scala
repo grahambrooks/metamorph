@@ -29,4 +29,8 @@ class CodeModel(val sourceCode: SourceCode) {
   def packageLine: Int = if (packageDeclaration == null) 0 else packageDeclaration.importToken.getLine
 
   def signature: Signature = modelSignature
+
+  def name: String = sourceCode.name
+
+
 }
