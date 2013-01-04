@@ -6,6 +6,12 @@ import metamorph.Paths
 
 class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer) extends Html {
   val currentPath = Paths.join(analysedCodeModel.codeModel.sourceCode.branchPath, analysedCodeModel.codeModel.sourceCode.sourceName, analysedCodeModel.codeModel.sourceCode.name)
+
+  object LineType extends Enumeration {
+    type LineType = Value
+    val duplicate, unique, unknown = Value
+  }
+
   html {
     head {
       title(analysedCodeModel.codeModel.sourceCode.name)
@@ -23,17 +29,22 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
       val x = analysedCodeModel.codeModel.sourceCode.source
 
       var lineNumber = 1
-      var writingDuplicates = false
+      var writingDuplicates = LineType.unknown
       output.write("<table>\n")
       openCodeRow(writingDuplicates)
 
       x.getLines().foreach(line => {
-        val duplicateLine = analysedCodeModel.isDuplicateLine(lineNumber)
+        val duplicateLine = if (analysedCodeModel.isDuplicateLine(lineNumber)) LineType.duplicate else LineType.unique
 
         if (duplicateLine != writingDuplicates) {
-          writingDuplicates = duplicateLine
-          closeCodeRow(!writingDuplicates)
-          openCodeRow(writingDuplicates)
+          if (writingDuplicates != LineType.unknown) {
+            closeCodeRow(duplicateLine)
+            writingDuplicates = duplicateLine
+            openCodeRow(writingDuplicates)
+          }
+          else
+            writingDuplicates = duplicateLine
+
         }
 
         output.write("\n" + line)
@@ -48,9 +59,9 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
     })
   }
 
-  def openCodeRow(duplicateLine: Boolean) {
+  def openCodeRow(duplicateLine: LineType.LineType) {
     output.write("<tr>\n")
-    if (duplicateLine) {
+    if (duplicateLine == LineType.duplicate) {
       output.write("    <th class=\"duplicate\">Duplicate</th>\n")
     } else {
       output.write("    <th></th>\n")
@@ -61,11 +72,11 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
 
   }
 
-  def closeCodeRow(duplicate: Boolean) {
+  def closeCodeRow(duplicate: LineType.LineType) {
     output.write("</code>\n" +
       "      </pre>\n" +
       "    </td>\n")
-    if (duplicate)
+    if (duplicate == LineType.duplicate)
       output.write("    <td width=\"200px\" class=\"duplicate\"> Some metrics will go here</td>")
     else
       output.write("    <td width=\"200px\"></td>")
