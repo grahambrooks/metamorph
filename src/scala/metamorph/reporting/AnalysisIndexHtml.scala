@@ -4,8 +4,9 @@ import metamorph.{MorphConfig, BucketSet}
 import metamorph.model.{CodeModel, BlockDeclaration, MethodDeclaration}
 import java.io.OutputStreamWriter
 import java.util.Date
+import metamorph.analysis.AnalysedSourceCode
 
-class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeModel], val methodBuckets: BucketSet[MethodDeclaration], val blockBuckets: BucketSet[BlockDeclaration], val output: OutputStreamWriter) extends Html {
+class AnalysisIndexHtml(config: MorphConfig, val source: AnalysedSourceCode, val output: OutputStreamWriter) extends Html {
   html {
     head {
       title("Metamorph code analysis report: " + new Date().toString)
@@ -33,8 +34,8 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
       h2("Duplicate source files")
 
       output.write("<table>")
-      output.write("<tr><th class=\"duplicate\"><h2>%d duplicate files</h2></th><td class=\"duplicate\">Duplicates identified as syntactically identical.</td></tr>".format(modelBuckets.getDuplicateCount))
-      modelBuckets.eachDuplicate(models => {
+      output.write("<tr><th class=\"duplicate\"><h2>%d duplicate files</h2></th><td class=\"duplicate\">Duplicates identified as syntactically identical.</td></tr>".format(source.modelBuckets.getDuplicateCount))
+      source.modelBuckets.eachDuplicate(models => {
 
         output.write("<tr><th class=\"duplicate\">%s</th><td class='duplicate'>".format(models(0).name))
 
@@ -48,10 +49,10 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
 
       h2("<a name='duplicate-methods'>Analysis summary</a>")
 
-      p(methodBuckets.getDuplicateCount + " Duplicate methods identified")
+      p(source.methodBuckets.getDuplicateCount + " Duplicate methods identified")
       output.write("<table>")
       output.write("<tr><th class=\"duplicate\"><h2>Duplicate Methods</h2></th><td class=\"duplicate\">Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
-      methodBuckets.eachDuplicate(methods => {
+      source.methodBuckets.eachDuplicate(methods => {
         output.write("<tr><th class=\"duplicate\">%s (x%d duplicates) of %d lines</th>".format(methods(0).name, methods.size - 1, methods(0).lineCount))
         output.write("<td class=\"duplicate\">")
 
@@ -64,7 +65,7 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
 
       output.write("<tr><th class=\"duplicate\"><h2><a name='duplicate-blocks'>Duplicate Blocks</a></h2></th><td>Blocks are identified by using a hash of all the text including the surrounding braces {}.</td></tr>")
 
-      blockBuckets.eachDuplicate(blocks => {
+      source.blockBuckets.eachDuplicate(blocks => {
         output.write("<tr><th>Duplicate block of %d lines</th>".format(blocks(0).lineCount))
         output.write("<td class=\"duplicate\">")
         blocks.foreach(block => {

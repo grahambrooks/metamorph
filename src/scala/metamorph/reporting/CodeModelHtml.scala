@@ -4,8 +4,8 @@ import java.io.Writer
 import metamorph.Paths
 import metamorph.model.CodeModel
 
-class CodeModelHtml(val analysedCodeModel: CodeModel, val output: Writer) extends Html {
-  val currentPath = Paths.join(analysedCodeModel.sourceCode.branchPath, analysedCodeModel.sourceCode.sourceName, analysedCodeModel.sourceCode.name)
+class CodeModelHtml(val model: CodeModel, val output: Writer) extends Html {
+  val currentPath = Paths.join(model.sourceCode.branchPath, model.sourceCode.sourceName, model.sourceCode.name)
 
   object LineType extends Enumeration {
     type LineType = Value
@@ -14,7 +14,7 @@ class CodeModelHtml(val analysedCodeModel: CodeModel, val output: Writer) extend
 
   html {
     head {
-      title(analysedCodeModel.sourceCode.name)
+      title(model.sourceCode.name)
 
       link(href = currentPath.relativePathTo("prettify.css"), rel = "stylesheet")
       link(href = currentPath.relativePathTo("sunburst.css"), rel = "stylesheet")
@@ -22,11 +22,11 @@ class CodeModelHtml(val analysedCodeModel: CodeModel, val output: Writer) extend
       link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
     }
     body(onload = "prettyPrint()", fun = {
-      h1(analysedCodeModel.sourceCode.name)
+      h1(model.sourceCode.name)
       p("Scanned path = " + currentPath.toString)
       a(currentPath.relativePathTo("index.html"), "Index")
 
-      val x = analysedCodeModel.sourceCode.source
+      val x = model.sourceCode.source
 
       var lineNumber = 1
       var writingDuplicates = LineType.unknown
@@ -34,7 +34,7 @@ class CodeModelHtml(val analysedCodeModel: CodeModel, val output: Writer) extend
       openCodeRow(writingDuplicates)
 
       x.getLines().foreach(line => {
-        val duplicateLine = if (analysedCodeModel.isDuplicateLine(lineNumber)) LineType.duplicate else LineType.unique
+        val duplicateLine = if (model.isDuplicateLine(lineNumber)) LineType.duplicate else LineType.unique
 
         if (duplicateLine != writingDuplicates) {
           if (writingDuplicates != LineType.unknown) {

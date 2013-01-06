@@ -67,7 +67,7 @@ class AnalyseCommand extends MorphCommand {
     reportSite.copyAssets()
 
     reportSite.writeIndex(indexStreamWriter => {
-      new AnalysisIndexHtml(config, analysedSource.modelBuckets, analysedSource.methodBuckets, analysedSource.blockBuckets, indexStreamWriter)
+      new AnalysisIndexHtml(config, analysedSource, indexStreamWriter)
     })
 
     analysedSource.analysedModels.foreach(m => {
