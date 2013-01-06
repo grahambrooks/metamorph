@@ -14,6 +14,10 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
     }
     body(fun = {
       h1("Metamorph code analysis summary")
+
+      output.write("<a href=\"#duplicate-methods\">Duplicate Methods</a> ")
+      output.write("<a href=\"#duplicate-blocks\">Duplicate Blocks</a>")
+
       div("summary", {
         h2("Analysis performed on " + new java.util.Date())
 
@@ -29,7 +33,7 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
       h2("Duplicate source files")
 
       output.write("<table>")
-      output.write("<tr><th class=\"duplicate\"><h2>%d duplicate files</h2></th><td class=\"duplicate\"></td></tr>".format(modelBuckets.getDuplicateCount))
+      output.write("<tr><th class=\"duplicate\"><h2>%d duplicate files</h2></th><td class=\"duplicate\">Duplicates identified as syntactically identical.</td></tr>".format(modelBuckets.getDuplicateCount))
       modelBuckets.eachDuplicate(models => {
 
         output.write("<tr><th class=\"duplicate\">%s</th><td class='duplicate'>".format(models(0).name))
@@ -42,9 +46,7 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
       })
       output.write("</table>")
 
-      h2("Analysis summary")
-      output.write("<table>")
-      output.write("<tr><th class=\"duplicate\"><h2>Duplicate Methods</h2></th><td class=\"duplicate\">Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
+      h2("<a name='duplicate-methods'>Analysis summary</a>")
 
       p(methodBuckets.getDuplicateCount + " Duplicate methods identified")
       output.write("<table>")
@@ -60,7 +62,7 @@ class AnalysisIndexHtml(config: MorphConfig, val modelBuckets:BucketSet[CodeMode
         output.write("</td></tr>")
       })
 
-      output.write("<tr><th class=\"duplicate\"><h2>Duplicate Blocks</h2></th><td>Blocks are identified by using a hash of all the text including the surrounding braces {}.</td></tr>")
+      output.write("<tr><th class=\"duplicate\"><h2><a name='duplicate-blocks'>Duplicate Blocks</a></h2></th><td>Blocks are identified by using a hash of all the text including the surrounding braces {}.</td></tr>")
 
       blockBuckets.eachDuplicate(blocks => {
         output.write("<tr><th>Duplicate block of %d lines</th>".format(blocks(0).lineCount))
