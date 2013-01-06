@@ -18,13 +18,13 @@ object PrintingListener {
     buf.append(Utils.escapeWhitespace(getNodeText(t, ruleNames), false))
     buf.append(' ')
 
-    for (i <- 0 to t.getChildCount() -1) {
+    for (i <- 0 to t.getChildCount -1) {
       if (i > 0) buf.append(' ')
       buf.append(toStringTree(t.getChild(i), ruleNames))
     }
 
     buf.append(")")
-    buf.toString
+    buf.toString()
   }
 
   def getNodeText(t: Tree, recognizer: Parser): String = getNodeText(t, if (recognizer != null) recognizer.getRuleNames else null)

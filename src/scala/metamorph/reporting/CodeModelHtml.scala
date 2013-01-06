@@ -1,11 +1,11 @@
 package metamorph.reporting
 
 import java.io.Writer
-import metamorph.analysis.AnalysedCodeModel
 import metamorph.Paths
+import metamorph.model.CodeModel
 
-class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer) extends Html {
-  val currentPath = Paths.join(analysedCodeModel.codeModel.sourceCode.branchPath, analysedCodeModel.codeModel.sourceCode.sourceName, analysedCodeModel.codeModel.sourceCode.name)
+class CodeModelHtml(val analysedCodeModel: CodeModel, val output: Writer) extends Html {
+  val currentPath = Paths.join(analysedCodeModel.sourceCode.branchPath, analysedCodeModel.sourceCode.sourceName, analysedCodeModel.sourceCode.name)
 
   object LineType extends Enumeration {
     type LineType = Value
@@ -14,7 +14,7 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
 
   html {
     head {
-      title(analysedCodeModel.codeModel.sourceCode.name)
+      title(analysedCodeModel.sourceCode.name)
 
       link(href = currentPath.relativePathTo("prettify.css"), rel = "stylesheet")
       link(href = currentPath.relativePathTo("sunburst.css"), rel = "stylesheet")
@@ -22,11 +22,11 @@ class CodeModelHtml(val analysedCodeModel: AnalysedCodeModel, val output: Writer
       link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
     }
     body(onload = "prettyPrint()", fun = {
-      h1(analysedCodeModel.codeModel.sourceCode.name)
+      h1(analysedCodeModel.sourceCode.name)
       p("Scanned path = " + currentPath.toString)
       a(currentPath.relativePathTo("index.html"), "Index")
 
-      val x = analysedCodeModel.codeModel.sourceCode.source
+      val x = analysedCodeModel.sourceCode.source
 
       var lineNumber = 1
       var writingDuplicates = LineType.unknown

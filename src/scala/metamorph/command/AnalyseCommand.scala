@@ -1,11 +1,11 @@
 package metamorph.command
 
 import metamorph._
-import analysis.{AnalysedCodeModel, SourceCodeAnalyser}
-import metamorph.Java.{SourceCodeReader, SourceCodeFile}
-import model.CodeModel
+import analysis.{AnalysedSourceCode, SourceProvider, SourceCodeAnalyser}
+import Java.{SourceCode, SourceCodeFile}
 import java.io._
-import reporting.{CodeModelHtml, ReportSite, AnalysisIndexHtml}
+import model.CodeModel
+import reporting.{DuplicateCodeModelHtml, CodeModelHtml, ReportSite, AnalysisIndexHtml}
 import metamorph.MorphConfig
 import java.nio.charset.MalformedInputException
 
@@ -17,26 +17,32 @@ class AnalyseCommand extends MorphCommand {
     if (config.sources.size != 1) {
       console.writeLine("Analysis works best for a single collection of source files.")
     }
-    var models: List[CodeModel] = Nil
+    val analyser = new SourceCodeAnalyser
 
-    config.sources foreach {
-      case (name, path) => {
-        val source = new ContentSource(name, new RootPath(path))
-        scanFiles(path, console, p => {
-          Logger.trace("Processing source file %s", p.getAbsolutePath)
+    val analysedSource = analyser.newAnalyse(sourceProvider(config, console))
 
-          val originalSource = new SourceCodeFile(source, p)
+    writeReports(config, analysedSource, config.outputPath)
 
-          val reader = new SourceCodeReader(originalSource)
+  }
 
-          val model = reader.read
+  def sourceProvider(config: MorphConfig, console: ConsoleWriter): SourceProvider = {
+    new SourceProvider {
+      def each(function: (SourceCode) => Any) {
+        config.sources foreach {
+          case (name, path) => {
+            val source = new ContentSource(name, new RootPath(path))
 
-          models = models ::: List(model)
-        })
+            scanFiles(path, console, p => {
+              Logger.trace("Processing source file %s", p.getAbsolutePath)
+
+              val originalSource = new SourceCodeFile(source, p)
+
+              function(originalSource)
+            })
+          }
+        }
       }
     }
-
-    analyse(config, models, config.outputPath)
   }
 
   def scanFiles(pathOrFilename: String, console: ConsoleWriter, function: (File) => Any) {
@@ -53,9 +59,8 @@ class AnalyseCommand extends MorphCommand {
     }
   }
 
-  private def analyse(config: MorphConfig, models: List[CodeModel], outputPath: String) {
-    val analyser = new SourceCodeAnalyser
-    val analysedSource = analyser.analyse(models)
+
+  private def writeReports(config: MorphConfig, analysedSource: AnalysedSourceCode, outputPath: String) {
 
     val reportSite = new ReportSite(outputPath)
 
@@ -66,20 +71,37 @@ class AnalyseCommand extends MorphCommand {
     })
 
     analysedSource.analysedModels.foreach(m => {
-      writeModelReport(m, reportSite)
+      if (m.duplicate)
+        writeDuplicateModelReport(m, analysedSource.modelBuckets(m.modelSignature).bucket.filter(p => p != m), reportSite)
+      else
+        writeModelReport(m, reportSite)
     })
   }
 
-  def writeModelReport(acm: AnalysedCodeModel, reportSite: ReportSite) {
+  def writeDuplicateModelReport(model: CodeModel, duplicates: List[CodeModel], reportSite: ReportSite) {
     try {
-      Logger.trace("Writing analysis report for %s:%s", acm.codeModel.sourceCode.sourceName, acm.codeModel.sourceCode.absolutePath.toString)
+      Logger.trace("Writing analysis report for %s:%s", model.sourceCode.sourceName, model.sourceCode.absolutePath.toString)
 
-      reportSite.writeCodeModelAnalysis(acm.codeModel.sourceCode, codeModelWriter => {
+      reportSite.writeCodeModelAnalysis(model.sourceCode, codeModelWriter => {
+        new DuplicateCodeModelHtml(model, duplicates, codeModelWriter)
+      })
+    }
+    catch {
+      case mie: MalformedInputException => Logger.error("Failed writing report for %s %s", model.sourceCode.name, mie.getMessage)
+    }
+
+  }
+
+  def writeModelReport(acm: CodeModel, reportSite: ReportSite) {
+    try {
+      Logger.trace("Writing analysis report for %s:%s", acm.sourceCode.sourceName, acm.sourceCode.absolutePath.toString)
+
+      reportSite.writeCodeModelAnalysis(acm.sourceCode, codeModelWriter => {
         new CodeModelHtml(acm, codeModelWriter)
       })
     }
     catch {
-      case mie: MalformedInputException => Logger.error("Failed writing report for %s %s", acm.codeModel.sourceCode.name, mie.getMessage)
+      case mie: MalformedInputException => Logger.error("Failed writing report for %s %s", acm.sourceCode.name, mie.getMessage)
     }
   }
 }

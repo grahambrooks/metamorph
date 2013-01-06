@@ -1,7 +1,7 @@
 package metamorph.Java
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.path.FunSpec
+import org.scalatest.FunSpec
 
 class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
   describe("Source Code Reader") {
@@ -58,7 +58,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
       assert(model.methods(0).span.stop.getCharPositionInLine === 2)
     }
 
-    it ("provides a signature for a method") {
+    it("provides a signature for a method") {
       val originalSource = new SourceCodeString("class X {" +
         "\n void foo() {" +
         "\n" +

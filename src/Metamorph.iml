@@ -20,12 +20,11 @@
       <excludeFolder url="file://$MODULE_DIR$/../metamorph-analysis" />
       <excludeFolder url="file://$MODULE_DIR$/../target" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="runtime" level="project" />
     <orderEntry type="library" name="test" level="project" />
     <orderEntry type="library" name="sources" level="project" />
-    <orderEntry type="library" name="Scala 2.10" level="project" />
     <orderEntry type="library" name="Scala 2.10" level="project" />
   </component>
 </module>

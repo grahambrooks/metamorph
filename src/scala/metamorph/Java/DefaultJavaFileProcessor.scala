@@ -14,7 +14,7 @@ final class DefaultJavaFileProcessor extends SourceCodeFileProcessor {
     }
     catch {
       case e: IOException => {
-        e.printStackTrace
+        e.printStackTrace()
       }
     }
   }

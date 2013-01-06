@@ -4,6 +4,7 @@ import metamorph.Signature
 import metamorph.Java.SourceCode
 
 class CodeModel(val sourceCode: SourceCode) {
+  var duplicate: Boolean = false
   var modelSignature: Signature = null
   var typeSignature: Signature = null
   var importInsertionPoint = 0
@@ -32,5 +33,20 @@ class CodeModel(val sourceCode: SourceCode) {
 
   def name: String = sourceCode.name
 
+  var duplicateMethods: List[MethodDeclaration] = List()
+  var duplicateBlocks: List[BlockDeclaration] = List()
 
+  def isDuplicateLine(lineNumber: Int): Boolean =
+    duplicate ||
+      duplicateMethods.foldLeft(false)((a, b) => if (b.span.containsLine(lineNumber)) true else a) ||
+      duplicateBlocks.foldLeft(false)((a, b) => if (b.span.containsLine(lineNumber)) true else a)
+
+
+  def addDuplicate(dup: MethodDeclaration) {
+    duplicateMethods = duplicateMethods ::: List(dup)
+  }
+
+  def addDuplicate(dup: BlockDeclaration) {
+    duplicateBlocks = duplicateBlocks ::: List(dup)
+  }
 }
