@@ -9,7 +9,8 @@ class BucketSet[T] {
   def hasDuplicatesFor(signature: Signature): Boolean =
     buckets.contains(signature) && buckets(signature).hasDuplicates
 
-  def  apply(signature: Signature): Bucket[T] = buckets(signature)
+  def apply(signature: Signature): Bucket[T] = buckets(signature)
+
   def add(signature: Signature, item: T) {
     if (buckets.contains(signature)) {
       buckets(signature).add(item)
