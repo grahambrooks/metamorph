@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.model
 
 trait SourceLocation {
     def getLine : Int

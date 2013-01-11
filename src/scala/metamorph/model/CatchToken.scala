@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.model
 
 import org.antlr.runtime.Token
 

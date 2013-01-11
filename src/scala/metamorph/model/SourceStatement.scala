@@ -1,6 +1,7 @@
-package metamorph
+package metamorph.model
 
 import org.antlr.runtime.Token
+import metamorph.model.SourceLocation
 
 object SourceStatement {
   def fromToken(t: Token): SourceStatement = {

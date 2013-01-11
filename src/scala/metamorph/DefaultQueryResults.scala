@@ -1,5 +1,6 @@
 package metamorph
 
+import model.CatchToken
 import org.antlr.runtime.Token
 import java.util.Date
 
