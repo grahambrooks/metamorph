@@ -11,7 +11,7 @@ import metamorph.Java.SourceCodeReader
  */
 class SourceCodeAnalyser {
 
-  def newAnalyse(provider: SourceProvider): AnalysedSourceCode = {
+  def analyse(provider: SourceProvider): AnalysedSourceCode = {
     var models = List[CodeModel]()
 
     provider.each(sourceCode => {
@@ -22,10 +22,10 @@ class SourceCodeAnalyser {
       models = models ::: List(model)
     })
 
-    analyse(models)
+    internalAnalyse(models)
   }
 
-  def analyse(models: List[CodeModel]): AnalysedSourceCode = {
+  def internalAnalyse(models: List[CodeModel]): AnalysedSourceCode = {
     val modelBuckets = new BucketSet[CodeModel]
 
     models.foreach(model => modelBuckets.add(model.modelSignature, model))
@@ -53,7 +53,7 @@ class SourceCodeAnalyser {
   }
 
 
-  def updateModelBlockDuplicates(blockBuckets: BucketSet[BlockDeclaration]) {
+  private def updateModelBlockDuplicates(blockBuckets: BucketSet[BlockDeclaration]) {
     // Update code model list of duplicate blocks
     blockBuckets.eachDuplicate(dup =>
       dup.foreach(dupBlock => {
@@ -61,7 +61,7 @@ class SourceCodeAnalyser {
       }))
   }
 
-  def updateModelMethodDuplicates(methodBuckets: BucketSet[MethodDeclaration]) {
+  private def updateModelMethodDuplicates(methodBuckets: BucketSet[MethodDeclaration]) {
     // Update the code model with the list of duplicate methods
     methodBuckets.eachDuplicate(dup =>
       dup.foreach(md => {
@@ -70,7 +70,7 @@ class SourceCodeAnalyser {
     )
   }
 
-  def markDuplicateModels(modelBuckets: BucketSet[CodeModel]) {
+  private def markDuplicateModels(modelBuckets: BucketSet[CodeModel]) {
     modelBuckets.eachDuplicate(bucket => {
       bucket foreach (model => {
         model.duplicate = true
@@ -78,7 +78,7 @@ class SourceCodeAnalyser {
     })
   }
 
-  def findSimilarTypesByMethod(models: List[CodeModel]) {
+  private def findSimilarTypesByMethod(models: List[CodeModel]) {
     val typeBuckets = buildTypeBucket(models)
 
     var duplicateMethods = Map[Signature, MethodDeclaration]()
@@ -99,7 +99,7 @@ class SourceCodeAnalyser {
     }
   }
 
-  def buildTypeBucket(models: List[CodeModel]): BucketSet[CodeModel] = {
+  private def buildTypeBucket(models: List[CodeModel]): BucketSet[CodeModel] = {
     val typeBuckets = new BucketSet[CodeModel]()
 
     models.foreach(cm => typeBuckets.add(cm.typeSignature, cm))

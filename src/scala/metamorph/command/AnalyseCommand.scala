@@ -20,7 +20,7 @@ class AnalyseCommand extends MorphCommand {
     }
     val analyser = new SourceCodeAnalyser
 
-    val analysedSource = analyser.newAnalyse(sourceProvider(config, console))
+    val analysedSource = analyser.analyse(sourceProvider(config, console))
 
     writeReports(config, analysedSource, config.outputPath)
 

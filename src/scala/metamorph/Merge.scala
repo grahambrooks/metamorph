@@ -26,7 +26,7 @@ class Merge(importMap: Map[String, String]) {
 
     val analyser = new SourceCodeAnalyser
 
-    analyser.analyse(codeModels)
+    analyser.internalAnalyse(codeModels)
 
   }
 
