@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.reporting
 
 trait ReportWriter {
   def methodDetail(methodName: String)

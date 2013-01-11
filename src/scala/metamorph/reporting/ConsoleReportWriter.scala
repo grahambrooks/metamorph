@@ -1,4 +1,6 @@
-package metamorph
+package metamorph.reporting
+
+import metamorph.ConsoleWriter
 
 class ConsoleReportWriter extends ConsoleWriter with ReportWriter {
 

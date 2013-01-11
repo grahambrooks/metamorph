@@ -1,6 +1,7 @@
 package metamorph.command
 
-import metamorph.{ReportWriter, ConsoleWriter, SourceCodeFileProcessor, MorphConfig}
+import metamorph.{ConsoleWriter, SourceCodeFileProcessor, MorphConfig}
+import metamorph.reporting.ReportWriter
 
 trait MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter)

@@ -2,6 +2,7 @@ package metamorph
 
 import command.MorphCommand
 import Java._
+import reporting.{ConsoleReportWriter, ReportWriter}
 
 object Tool {
   def main(args: Array[String]) {

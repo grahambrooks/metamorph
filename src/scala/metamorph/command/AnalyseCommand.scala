@@ -5,9 +5,10 @@ import analysis.{AnalysedSourceCode, SourceProvider, SourceCodeAnalyser}
 import Java.{SourceCode, SourceCodeFile}
 import java.io._
 import model.CodeModel
-import reporting.{DuplicateCodeModelHtml, CodeModelHtml, ReportSite, AnalysisIndexHtml}
+import reporting._
 import metamorph.MorphConfig
 import java.nio.charset.MalformedInputException
+import metamorph.MorphConfig
 
 
 class AnalyseCommand extends MorphCommand {
