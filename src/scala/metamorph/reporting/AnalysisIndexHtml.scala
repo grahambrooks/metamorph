@@ -1,7 +1,6 @@
 package metamorph.reporting
 
-import metamorph.{MorphConfig, BucketSet}
-import metamorph.model.{CodeModel, BlockDeclaration, MethodDeclaration}
+import metamorph.MorphConfig
 import java.io.OutputStreamWriter
 import java.util.Date
 import metamorph.analysis.AnalysedSourceCode
@@ -30,6 +29,9 @@ class AnalysisIndexHtml(config: MorphConfig, val source: AnalysedSourceCode, val
         }
         output.write("</table>")
       })
+
+      h2("Warnings")
+      source.warnings.foreach(warning => output.write("<p>%s</p>".format(warning.message)))
 
       h2("Duplicate source files")
 
