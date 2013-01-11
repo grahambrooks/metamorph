@@ -1,6 +1,6 @@
 package metamorph
 
-import Java._
+import Java.{PackageSpec, ChangeSet, SourceCodeString}
 import org.scalatest.FunSpec
 import metamorph.model.{CodeModel, ImportSpec}
 import java.io.{PrintWriter, StringWriter}

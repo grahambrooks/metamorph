@@ -4,6 +4,9 @@
     <entry_points version="2.0" />
   </component>
   <component name="IdProvider" IDEtalkID="38433A15E3551931C8A9D79034460EDA" />
+  <component name="Jenkins.Application.Settings">
+    <option name="serverUrl" value="http://build.umisiri.com" />
+  </component>
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
