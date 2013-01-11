@@ -6,7 +6,6 @@ import Java.{SourceCode, SourceCodeFile}
 import java.io._
 import model.CodeModel
 import reporting._
-import metamorph.MorphConfig
 import java.nio.charset.MalformedInputException
 import metamorph.MorphConfig
 
