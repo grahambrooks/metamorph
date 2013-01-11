@@ -1,4 +1,4 @@
-package metamorph.Java
+package metamorph
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers

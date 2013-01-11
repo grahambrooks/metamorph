@@ -1,6 +1,6 @@
 package metamorph.analysis
 
-import metamorph.model.{BlockDeclaration, MethodDeclaration, CodeModel}
+import metamorph.model.{Warning, BlockDeclaration, MethodDeclaration, CodeModel}
 import metamorph.{Signature, BucketSet}
 import metamorph.Java.SourceCodeReader
 
@@ -10,6 +10,7 @@ import metamorph.Java.SourceCodeReader
  * model based on the automated observations made on the source.
  */
 class SourceCodeAnalyser {
+  val checks = List(new ReflectionCheck)
 
   def analyse(provider: SourceProvider): AnalysedSourceCode = {
     var models = List[CodeModel]()
@@ -30,7 +31,7 @@ class SourceCodeAnalyser {
 
     models.foreach(model => modelBuckets.add(model.modelSignature, model))
 
-//    findSimilarTypesByMethod(models)
+    //    findSimilarTypesByMethod(models)
 
     val methodBuckets = new BucketSet[MethodDeclaration]
     val blockBuckets = new BucketSet[BlockDeclaration]
@@ -47,8 +48,14 @@ class SourceCodeAnalyser {
     updateModelMethodDuplicates(methodBuckets)
 
     updateModelBlockDuplicates(blockBuckets)
+    var warnings = List[Warning]()
 
-    val analysedSource = new AnalysedSourceCode(models, modelBuckets, methodBuckets, blockBuckets)
+    models.foreach(model =>
+      checks.foreach(check =>
+        warnings = warnings ::: check.apply(model)))
+
+
+    val analysedSource = new AnalysedSourceCode(models, modelBuckets, methodBuckets, blockBuckets, warnings)
     analysedSource
   }
 
