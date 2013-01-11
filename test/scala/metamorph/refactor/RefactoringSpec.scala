@@ -1,9 +1,9 @@
-package metamorph
+package metamorph.refactor
 
-import Java._
 import org.scalatest.FunSpec
 import metamorph.model.{CodeModel, ImportSpec}
 import java.io.{PrintWriter, StringWriter}
+import metamorph.Java._
 
 class RefactoringSpec extends FunSpec {
   describe("Refactoring imports") {
