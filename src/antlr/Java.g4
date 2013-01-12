@@ -538,33 +538,37 @@ constantExpression
     :   expression
     ;
 
-expression
+expression returns [int complexity, Boolean methodCall]
+@init {
+    $complexity =0;
+    $methodCall = false;
+}
     :   primary
     |   expression '.' Identifier
     |   expression '.' 'this'
-    |   expression '.' 'super' '(' expressionList? ')'
-    |   expression '.' 'new' Identifier '(' expressionList? ')'
+    |   expression '.' 'super' '(' expressionList? ')'              { $methodCall = true; }
+    |   expression '.' 'new' Identifier '(' expressionList? ')'     { $methodCall = true; }
     |   expression '.' 'super' '.' Identifier arguments?
-    |   expression '.' explicitGenericInvocation
+    |   expression '.' explicitGenericInvocation                    { $methodCall = true; }
     |   'new' creator
     |   expression '[' expression ']'
     |   '(' type ')' expression
     |   expression ('++' | '--')
-    |   expression '(' expressionList? ')'
+    |   expression '(' expressionList? ')'                          { $methodCall = true; }
     |   ('+'|'-'|'++'|'--') expression
     |   ('~'|'!') expression
-    |   expression ('*'|'/'|'%') expression
+    |   expression ('*'|'/'|'%') expression     { $complexity = 1; }
     |   expression ('+'|'-') expression
     |   expression ('<' '<' | '>' '>' '>' | '>' '>') expression
-    |   expression ('<' '=' | '>' '=' | '>' | '<') expression
+    |   expression ('<' '=' | '>' '=' | '>' | '<') expression { $complexity = 1; }
     |   expression 'instanceof' type
-    |   expression ('==' | '!=') expression
-    |   expression '&' expression
-    |   expression '^'<assoc=right> expression
-    |   expression '|' expression
-    |   expression '&&' expression
-    |   expression '||' expression
-    |   expression '?' expression ':' expression
+    |   expression ('==' | '!=') expression     { $complexity = 1; }
+    |   expression '&' expression               { $complexity = 1; }
+    |   expression '^'<assoc=right> expression  { $complexity = 1; }
+    |   expression '|' expression               { $complexity = 1; }
+    |   expression '&&' expression              { $complexity = 1; }
+    |   expression '||' expression              { $complexity = 1; }
+    |   expression '?' expression ':' expression    { $complexity = 1; }
     |   expression
         ('^='<assoc=right>
         |'+='<assoc=right>

@@ -22,6 +22,33 @@ class SourceCodeAnalyserSpec extends FunSpec with ShouldMatchers {
     }
   }
 
+  describe("statistics") {
+    it("calculates the cyclomatic complexity of a method") {
+      val results = analyse("class X {" +
+        "public void method() {" +
+        "   if (a > 1) {" +
+        "}" +
+        "}}")
+
+      assert(results.analysedModels(0).methods(0).stats.complexity == 2)
+    }
+
+    it("calculates the total cyclomatic complexity of a class") {
+      val results = analyse("class X {" +
+        "  public void method1() {" +
+        "     if (a > 1) {" +
+        "     }" +
+        "  }" +
+        "  public void method2() {" +
+        "     if (a > 1) {" +
+        "     }" +
+        "  }" +
+        "}")
+
+      assert(results.analysedModels(0).stats.complexity == 4)
+    }
+  }
+
   private def analyse(code: String): AnalysedSourceCode = {
     val analyser = new SourceCodeAnalyser
 

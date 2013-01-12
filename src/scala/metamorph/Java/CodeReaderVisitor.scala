@@ -3,6 +3,7 @@ package metamorph.Java
 import metamorph.Java.JavaParser._
 import metamorph.model._
 import metamorph.Signature
+import metamorph.analysis.CodeStatistics
 
 
 class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends JavaBaseVisitor[Object] {
@@ -20,16 +21,18 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
 
   override def visitCompilationUnit(ctx: CompilationUnitContext) = {
     model.modelSignature = Signature.fromTree(ctx)
+    model.stats = CodeStatistics.fromTree(ctx)
     super.visitCompilationUnit(ctx)
   }
 
   override def visitMethodDeclaration(ctx: MethodDeclarationContext) = {
 
-    model.add(
-      new MethodDeclaration(model, source,
-        Signature.fromTree(ctx),
-        ctx.Identifier().getSymbol,
-        new TextSpan(ctx.getStart, ctx.getStop)))
+    model.add(new MethodDeclaration(model, source,
+      Signature.fromTree(ctx),
+      CodeStatistics.fromTree(ctx),
+      ctx.Identifier().getSymbol,
+      new TextSpan(ctx.getStart, ctx.getStop))
+    )
 
     super.visitMethodDeclaration(ctx)
   }

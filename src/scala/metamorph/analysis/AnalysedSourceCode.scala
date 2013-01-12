@@ -8,4 +8,7 @@ class AnalysedSourceCode(val analysedModels: List[CodeModel],
                          val methodBuckets: BucketSet[MethodDeclaration],
                          val blockBuckets: BucketSet[BlockDeclaration],
                          val warnings: List[Warning]) {
+  def stats(declaration: MethodDeclaration): CodeStatistics = {
+    new CodeStatistics
+  }
 }

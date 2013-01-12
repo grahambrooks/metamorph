@@ -3,8 +3,9 @@ package metamorph.model
 import org.antlr.v4.runtime.Token
 import metamorph.Java.{SourceCode, TextSpan}
 import metamorph.Signature
+import metamorph.analysis.CodeStatistics
 
-class MethodDeclaration(val codeModel: CodeModel, val source: SourceCode, val syntaxSignature: Signature, nameToken: Token, val span: TextSpan) {
+class MethodDeclaration(val codeModel: CodeModel, val source: SourceCode, val syntaxSignature: Signature, val stats: CodeStatistics, nameToken: Token, val span: TextSpan) {
 
   def name: String = nameToken.getText
 

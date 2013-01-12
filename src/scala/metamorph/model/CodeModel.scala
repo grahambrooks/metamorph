@@ -2,6 +2,7 @@ package metamorph.model
 
 import metamorph.Signature
 import metamorph.Java.SourceCode
+import metamorph.analysis.CodeStatistics
 
 class CodeModel(val sourceCode: SourceCode) {
   var duplicate: Boolean = false
@@ -13,6 +14,7 @@ class CodeModel(val sourceCode: SourceCode) {
   var methods: List[MethodDeclaration] = Nil
   var blocks: List[BlockDeclaration] = Nil
   var typeDeclaration: TypeDeclaration = null
+  var stats: CodeStatistics = new CodeStatistics
 
   def add(im: ImportDeclaration) {
     imports = imports ::: List(im)
