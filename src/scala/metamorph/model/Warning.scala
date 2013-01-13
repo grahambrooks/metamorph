@@ -1,5 +1,5 @@
 package metamorph.model
 
-class Warning(val message: String) {
+class Warning(val model:CodeModel, val message: String) {
 
 }

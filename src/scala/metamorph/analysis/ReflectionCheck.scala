@@ -7,7 +7,7 @@ class ReflectionCheck {
     var warnings = List[Warning]()
     model.imports.foreach(importDecl => {
       if (importDecl.qualifiedName.startsWith("java.lang.reflect")) {
-        warnings = warnings ::: List(new Warning("Use of Java Reflection classes makes refactoring more difficult and may result in coding errors"))
+        warnings = warnings ::: List(new Warning(model, "Use of Java Reflection classes makes refactoring more difficult and may result in coding errors"))
       }
     })
     warnings

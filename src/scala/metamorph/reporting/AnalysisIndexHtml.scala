@@ -31,7 +31,7 @@ class AnalysisIndexHtml(config: MorphConfig, val source: AnalysedSourceCode, val
       })
 
       h2("Warnings")
-      source.warnings.foreach(warning => output.write("<p>%s</p>".format(warning.message)))
+      source.warnings.foreach(warning => output.write("<p><span class=\"emph\">%s</span>: %s</p>".format(warning.model.name, warning.message)))
 
       h2("Duplicate source files")
 

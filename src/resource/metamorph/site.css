@@ -121,3 +121,7 @@ pre.prettyprint {
     padding: 0;
     border: 0;
 }
+
+.emph {
+    color: rgb(76, 180, 232);
+}
