@@ -22,41 +22,68 @@ class CodeModelHtml(val model: CodeModel, val output: Writer) extends Html {
       link(rel = "stylesheet", href = currentPath.relativePathTo("site.css"))
     }
     body(onload = "prettyPrint()", fun = {
-      h1(model.sourceCode.name)
-      p("Scanned path = " + currentPath.toString)
-      a(currentPath.relativePathTo("index.html"), "Index")
+      div(clazz = "content", {
+        div(clazz = "banner", {
+          div(clazz = "header", {
+            h1(model.sourceCode.name)
+            p("Scanned path = " + currentPath.toString)
+            a(currentPath.relativePathTo("index.html"), "Index")
+          })
 
-      val x = model.sourceCode.source
+          div(clazz = "stats panel", {
+            output.write(" <ul>\n")
+            output.write(statsItem("Code size", 0, 0, 100))
+            output.write(statsItem("Cyclomatic complexity", 0, model.stats.complexity, 100))
+            output.write(statsItem("Methods", 0, 0, 100))
+            output.write(statsItem("Depth in inheritance tree", 0, 0, 100))
+            output.write(statsItem("Afferant coupling", 0, 0, 100))
+            output.write(statsItem("Efferant coupling", 0, 0, 100))
+          })
+        })
 
-      var lineNumber = 1
-      var writingDuplicates = LineType.unknown
-      output.write("<table>\n")
-      openCodeRow(writingDuplicates)
+        div(clazz = "code-block", {
+          val x = model.sourceCode.source
 
-      x.getLines().foreach(line => {
-        val duplicateLine = if (model.isDuplicateLine(lineNumber)) LineType.duplicate else LineType.unique
+          var lineNumber = 1
+          var writingDuplicates = LineType.unknown
+          output.write("<table>\n")
+          openCodeRow(writingDuplicates)
 
-        if (duplicateLine != writingDuplicates) {
-          if (writingDuplicates != LineType.unknown) {
-            closeCodeRow(duplicateLine)
-            writingDuplicates = duplicateLine
-            openCodeRow(writingDuplicates)
-          }
-          else
-            writingDuplicates = duplicateLine
+          x.getLines().foreach(line => {
+            val duplicateLine = if (model.isDuplicateLine(lineNumber)) LineType.duplicate else LineType.unique
 
-        }
+            if (duplicateLine != writingDuplicates) {
+              if (writingDuplicates != LineType.unknown) {
+                closeCodeRow(duplicateLine)
+                writingDuplicates = duplicateLine
+                openCodeRow(writingDuplicates)
+              }
+              else
+                writingDuplicates = duplicateLine
 
-        output.write("\n" + line)
-        lineNumber = lineNumber + 1
+            }
+
+            output.write("\n" + line)
+            lineNumber = lineNumber + 1
+          })
+          output.write("</code></pre>")
+          closeCodeRow(writingDuplicates)
+          output.write("</table>\n")
+
+
+          //      script(content="SyntaxHighlighter.all();")
+        })
       })
-      output.write("</code></pre>")
-      closeCodeRow(writingDuplicates)
-      output.write("</table>\n")
-
-
-      //      script(content="SyntaxHighlighter.all();")
     })
+  }
+
+  def statsItem(title: String,toxicity:Int, count: Int, max: Int): String = {
+    ("  <li>\n" +
+      "    <span class=\"title\">%s</span>\n" +
+      "    <span class=\"toxicity\">%d</span>\n" +
+      "    <span class=\"value\">%d</span>\n" +
+      "    <progress max=\"%d\" value=\"%d\"/>\n" +
+      "  </li>").format(title, toxicity, count, max, count)
   }
 
   def openCodeRow(duplicateLine: LineType.LineType) {
@@ -76,10 +103,10 @@ class CodeModelHtml(val model: CodeModel, val output: Writer) extends Html {
     output.write("</code>\n" +
       "      </pre>\n" +
       "    </td>\n")
-    if (duplicate == LineType.duplicate)
-      output.write("    <td width=\"200px\" class=\"duplicate\"> Some metrics will go here</td>")
-    else
-      output.write("    <td width=\"200px\"></td>")
+    //    if (duplicate == LineType.duplicate)
+    //      output.write("    <td width=\"200px\" class=\"duplicate\"> Some metrics will go here</td>")
+    //    else
+    //      output.write("    <td width=\"200px\"></td>")
 
     output.write("    </tr>")
   }
