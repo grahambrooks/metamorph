@@ -54,7 +54,8 @@ pre {
 }
 
 .duplicate {
-    background-color: #000;
+    background-color: #00021c;
+    /*background-color: #000;*/
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     -o-border-radius: 8px;
@@ -125,3 +126,6 @@ pre.prettyprint {
 .emph {
     color: rgb(76, 180, 232);
 }
+
+pre.prettyprint, code.prettyprint {
+    background-color: #00021c;

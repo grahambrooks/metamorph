@@ -47,6 +47,18 @@ class SourceCodeAnalyserSpec extends FunSpec with ShouldMatchers {
 
       assert(results.analysedModels(0).stats.complexity == 4)
     }
+
+    ignore("statistics that still need to be collected") {
+      it("calculates total lines of code") {}
+      it("calculates toxicity based on long methods and classes") {}
+      it("calculates total number of methods") {}
+      it("calculates toxicity for excessive number of methods per class") {}
+      it("calculates depth in inherritance tree") {}
+      it("calculates efferant coupling for a class") {}
+      it("calculates toxicity for excessive efferant coupling") {}
+      it("calcluates afferant coupling for a class") {}
+      it("calculates toxicity for excessive afferant coupling") {}
+    }
   }
 
   private def analyse(code: String): AnalysedSourceCode = {
