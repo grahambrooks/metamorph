@@ -3,7 +3,7 @@
 A language aware automation tool for analysing and updating source
 code.
 
-Read more on the (project site)[http://grahambrooks.github.com/metamorph/]
+Read more on the project site http://grahambrooks.github.com/metamorph/
 
 # License
 
