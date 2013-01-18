@@ -3,14 +3,7 @@
 A language aware automation tool for analysing and updating source
 code.
 
-# Overview
-
-IDEs provide excellent feature for manipulating source code
-interactively. Meta-morph's goal is to provide similar functionality
-but driven by scripts.
-
-Initially metamorph will manipulate Java source to help update client
-code to accommodate updated libraries and frameworks.
+Read more on the (project site)[http://grahambrooks.github.com/metamorph/]
 
 # License
 
