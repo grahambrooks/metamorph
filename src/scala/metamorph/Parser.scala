@@ -1,9 +1,8 @@
 package metamorph
 
-import io.Source
+import Java.SourceCode
 import model.CodeModel
-import refactor.CodeChange
 
 trait Parser {
-  def refactor(source: Source, changes:List[CodeChange]): CodeModel = null
+  def parse(code: SourceCode) : CodeModel
 }

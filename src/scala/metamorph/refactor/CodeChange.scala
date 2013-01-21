@@ -1,5 +1,8 @@
 package metamorph.refactor
 
-trait CodeChange {
+import org.antlr.v4.runtime.tree.ParseTree
+import metamorph.Java.CodeEditor
 
+trait CodeChange {
+  def visitJava(editor: CodeEditor, tree: ParseTree)
 }

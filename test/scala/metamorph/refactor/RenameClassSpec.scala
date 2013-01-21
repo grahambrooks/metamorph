@@ -1,8 +1,8 @@
 package metamorph.refactor
 
 import org.scalatest.FunSpec
-import io.Source
 import metamorph.SupportedLanguages
+import metamorph.Java.SourceCodeString
 
 
 //trait ClassDeclaration {}
@@ -49,16 +49,17 @@ class RenameClassSpec extends FunSpec {
   //      "}")
   //
   //    def refactor(changes: List[CodeChange]): CodeModel = {
-  //      SupportedLanguages.Java.parser.refactor(Source.fromString(text), changes)
+  //      SupportedLanguages.Java.refactoringParser.refactor(Source.fromString(text), changes)
   //    }
   //  }
   describe("Class Rename") {
-    ignore("Not yet implemented") {
-      it("is applied during parsing") {
-        val refactoredModel = SupportedLanguages.Java.parser.refactor(Source.fromString(TestJavaSource.baseClass), List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass")))
+    it("renames classes that exist and where the new name does not conflict with an existing class name") {
+      val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.baseClass)
+      SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
 
-        assert(refactoredModel.typeDeclaration.shortName == "RenamedClass")
-      }
+      val codeModel = SupportedLanguages.Java.parser.parse(sourceCode)
+
+      assert(codeModel.typeDeclaration.shortName == "RenamedClass")
     }
 
     //    it("renames classes that exist and where the new name does not conflict with an existing class name") {

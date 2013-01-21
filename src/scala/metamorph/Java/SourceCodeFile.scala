@@ -22,4 +22,10 @@ class SourceCodeFile(val contentSource: ContentSource, val file: File) extends S
   def signature = Signature.fromString(file.getAbsolutePath)
 
   def sourceName = contentSource.name
+
+  def edit(function: (CodeEditor) => Unit) {}
+
+  def rename(name: String) {
+    file.renameTo(new File(file.getParent + name))
+  }
 }
