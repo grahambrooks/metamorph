@@ -1,8 +1,8 @@
 package metamorph.analysis
 
 import metamorph.model.{Warning, BlockDeclaration, MethodDeclaration, CodeModel}
-import metamorph.{Signature, BucketSet}
 import metamorph.Java.SourceCodeReader
+import metamorph.util.{Signature, BucketSet}
 
 
 /**

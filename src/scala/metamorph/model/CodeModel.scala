@@ -1,9 +1,9 @@
 package metamorph.model
 
-import metamorph.Signature
 import metamorph.Java.SourceCode
 import metamorph.analysis.CodeStatistics
 import metamorph.refactor.CodeChange
+import metamorph.util.Signature
 
 class CodeModel(val sourceCode: SourceCode) {
   var duplicate: Boolean = false

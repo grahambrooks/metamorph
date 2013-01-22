@@ -4,6 +4,7 @@ import analysis.SourceCodeAnalyser
 import Java._
 import model.CodeModel
 import java.io.PrintWriter
+import util.Signature
 
 
 class Merge(importMap: Map[String, String]) {

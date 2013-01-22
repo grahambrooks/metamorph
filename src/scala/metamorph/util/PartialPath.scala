@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 class PartialPath(path: String) {
   def relativePathTo(target: String): String =

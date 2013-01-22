@@ -1,6 +1,7 @@
 package metamorph
 
 import org.scalatest.FunSpec
+import util.{Signature, BucketSet}
 
 class BucketSetSpec extends FunSpec {
   describe("BucketSet") {

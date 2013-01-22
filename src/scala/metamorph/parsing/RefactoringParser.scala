@@ -1,6 +1,6 @@
-package metamorph
+package metamorph.parsing
 
-import Java.SourceCode
+import metamorph.Java.SourceCode
 
 trait RefactoringParser {
   def refactor(source: SourceCode)

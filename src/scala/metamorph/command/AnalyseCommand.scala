@@ -8,6 +8,7 @@ import model.CodeModel
 import reporting._
 import java.nio.charset.MalformedInputException
 import metamorph.MorphConfig
+import util.{RootPath, DirectoryScanner, ConsoleWriter}
 
 
 class AnalyseCommand extends MorphCommand {

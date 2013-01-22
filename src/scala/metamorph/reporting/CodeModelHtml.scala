@@ -1,8 +1,8 @@
 package metamorph.reporting
 
 import java.io.Writer
-import metamorph.Paths
 import metamorph.model.CodeModel
+import metamorph.util.Paths
 
 class CodeModelHtml(val model: CodeModel, val output: Writer) extends Html {
   val currentPath = Paths.join(model.sourceCode.branchPath, model.sourceCode.sourceName, model.sourceCode.name)

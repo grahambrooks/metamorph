@@ -1,6 +1,6 @@
 package metamorph.reporting
 
-import metamorph.ConsoleWriter
+import metamorph.util.ConsoleWriter
 
 class ConsoleReportWriter extends ConsoleWriter with ReportWriter {
 

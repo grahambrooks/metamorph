@@ -6,6 +6,8 @@ import metamorph.model.{MethodDeclaration, CodeModel}
 import metamorph._
 import metamorph.MorphConfig
 import reporting.ReportWriter
+import util._
+import metamorph.MorphConfig
 
 class MergeCommand extends MorphCommand {
   def run(config: MorphConfig, processor: SourceCodeFileProcessor, console: ConsoleWriter, reportWriter: ReportWriter) {

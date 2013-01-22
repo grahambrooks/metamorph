@@ -1,6 +1,7 @@
 package metamorph
 
 import Java._
+import parsing.{ParserFactory, RefactoringParser}
 import refactor.CodeChange
 import org.antlr.v4.runtime.{Token, CommonTokenStream}
 
@@ -28,7 +29,7 @@ object SupportedLanguages {
   def Java = new Language {
     def refactoringParser(changes: List[CodeChange]) = new JavaRefactoringParser(changes)
 
-    def parser = new Parser {
+    def parser = new ParserFactory {
       def parse(code: SourceCode) = {
         new SourceCodeReader(code).read
       }

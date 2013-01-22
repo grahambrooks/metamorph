@@ -1,7 +1,7 @@
 package metamorph.analysis
 
-import metamorph.BucketSet
 import metamorph.model.{Warning, CodeModel, BlockDeclaration, MethodDeclaration}
+import metamorph.util.BucketSet
 
 class AnalysedSourceCode(val analysedModels: List[CodeModel],
                          val modelBuckets: BucketSet[CodeModel],

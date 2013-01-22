@@ -2,8 +2,8 @@ package metamorph.Java
 
 import metamorph.Java.JavaParser._
 import metamorph.model._
-import metamorph.Signature
 import metamorph.analysis.CodeStatistics
+import metamorph.util.Signature
 
 
 class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends JavaBaseVisitor[Object] {

@@ -3,7 +3,7 @@ package metamorph
 import org.antlr.runtime.Token
 
 trait QueryResults {
-  def printSummaryToConsole
+  def printSummaryToConsole()
 
   def errorProcessingFile(filename: String)
 

@@ -1,8 +1,10 @@
-package metamorph
+package metamorph.reporting
 
-import model.CatchToken
 import org.antlr.runtime.Token
 import java.util.Date
+import metamorph.QueryResults
+import metamorph.model.CatchToken
+import metamorph.util.ConsoleWriter
 
 class DefaultQueryResults extends QueryResults {
 

@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 object ConsoleWriter {
   def tick {}

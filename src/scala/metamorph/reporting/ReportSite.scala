@@ -3,7 +3,7 @@ package metamorph.reporting
 import java.io.{Writer, FileOutputStream, File, OutputStreamWriter}
 import io.Source
 import metamorph.Java.SourceCode
-import metamorph.Paths
+import metamorph.util.Paths
 
 class ReportSite(val reportingPath: String) {
 

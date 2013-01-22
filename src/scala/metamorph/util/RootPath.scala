@@ -1,5 +1,4 @@
-package metamorph
-
+package metamorph.util
 
 class RootPath(path: String) {
   def length(): Int = path.length

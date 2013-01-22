@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 class Bucket[T](item: T) extends Iterable[T] {
   var bucket:List[T] = List(item)

@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 object BranchPath {
   def fromString(sourcePath: String): BranchPath = new BranchPath {

@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 import collection.mutable
 

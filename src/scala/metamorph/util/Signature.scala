@@ -1,4 +1,4 @@
-package metamorph
+package metamorph.util
 
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.Token

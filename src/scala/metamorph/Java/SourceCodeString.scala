@@ -2,8 +2,8 @@ package metamorph.Java
 
 import org.antlr.v4.runtime.ANTLRInputStream
 import io.Source
-import metamorph.{Signature, AbsolutePath}
 import collection.mutable
+import metamorph.util.{Signature, AbsolutePath}
 
 class InMemoryEditor(code: SourceCode) extends CodeEditor {
   var lines: mutable.MutableList[String] = new mutable.MutableList[String]() ++ (code.source.getLines())

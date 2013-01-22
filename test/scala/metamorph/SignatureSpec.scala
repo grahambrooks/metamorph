@@ -2,6 +2,7 @@ package metamorph
 
 import org.scalatest.FunSpec
 import collection.immutable.HashMap
+import util.Signature
 
 class SignatureSpec extends FunSpec {
 

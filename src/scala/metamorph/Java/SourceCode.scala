@@ -2,8 +2,8 @@ package metamorph.Java
 
 import org.antlr.v4.runtime.CharStream
 import io.Source
-import metamorph.{BranchPath, Signature, AbsolutePath}
 import metamorph.model.CodeModel
+import metamorph.util.{Signature, BranchPath, AbsolutePath}
 
 trait SourceCode {
   def rename(name: String)
