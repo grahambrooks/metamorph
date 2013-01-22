@@ -33,6 +33,16 @@ object TestJavaSource {
       "    return \"Base class\";\n" +
       "  }\n" +
       "}"
+  val someClass =
+    "package ren;\n" +
+      "\n" +
+      "import ren.BaseClass;" +
+      "\n" +
+      "public class SomeClass {\n" +
+      "  public String toString() {\n" +
+      "    return \"Base class\";\n" +
+      "  }\n" +
+      "}"
 
 }
 
@@ -60,6 +70,16 @@ class RenameClassSpec extends FunSpec {
       val codeModel = SupportedLanguages.Java.parser.parse(sourceCode)
 
       assert(codeModel.typeDeclaration.shortName == "RenamedClass")
+    }
+
+    it("renames fully qualified references to renamed classes") {
+      val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.someClass)
+      SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "ren.BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
+
+      val codeModel = SupportedLanguages.Java.parser.parse(sourceCode)
+
+      assert(codeModel.imports.size == 1)
+      assert(codeModel.imports(0).qualifiedName == "ren.RenamedClass")
     }
 
     //    it("renames classes that exist and where the new name does not conflict with an existing class name") {
