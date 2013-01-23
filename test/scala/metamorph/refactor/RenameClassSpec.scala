@@ -82,6 +82,16 @@ class RenameClassSpec extends FunSpec {
       assert(codeModel.imports(0).qualifiedName == "ren.RenamedClass")
     }
 
+    it("renames un-qualified imports to renamed class if rename is not fully qualified") {
+      val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.someClass)
+      SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
+
+      val codeModel = SupportedLanguages.Java.parser.parse(sourceCode)
+
+      assert(codeModel.imports.size == 1)
+      assert(codeModel.imports(0).qualifiedName == "ren.RenamedClass")
+    }
+
     //    it("renames classes that exist and where the new name does not conflict with an existing class name") {
     //      val testProject = new TestProject(List(baseClass))
     //

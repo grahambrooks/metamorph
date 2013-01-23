@@ -17,7 +17,9 @@ class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: Strin
       (acc, n) => acc + n.getText
     }
 
-    if (qualifiedName == currentName) {
+    val className = qualifiedNameTokens.last.getText
+
+    if (qualifiedName == currentName || className == currentName) {
       val importPath = qualifiedNameTokens.take(qualifiedNameTokens.length - 1).foldLeft("") {
         (acc, n) => acc + n.getText
       }
