@@ -7,11 +7,8 @@ import org.antlr.v4.runtime.tree.ParseTree
 
 class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: String) extends JavaBaseVisitor[Object] {
 
-
   override def visitLocalVariableDeclaration(ctx: LocalVariableDeclarationContext) = {
-    val coi = ctx.`type`().classOrInterfaceType()
-
-    checkAndReplaceTypeReference(coi)
+    checkAndReplaceTypeReference(ctx.`type`().classOrInterfaceType())
 
     super.visitLocalVariableDeclaration(ctx)
   }
@@ -19,9 +16,7 @@ class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: Strin
 
   override def visitFieldDeclaration(ctx: FieldDeclarationContext) = {
 
-    val coi = ctx.`type`().classOrInterfaceType()
-
-    checkAndReplaceTypeReference(coi)
+    checkAndReplaceTypeReference(ctx.`type`().classOrInterfaceType())
 
     super.visitFieldDeclaration(ctx)
   }
@@ -77,14 +72,13 @@ class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: Strin
     }
   }
 
-  private def checkAndReplaceTypeReference(coi: ClassOrInterfaceTypeContext) {
-    if (coi != null) {
-      if (coi.Identifier(coi.Identifier().size() - 1).getText == currentName) {
-        val token = coi.Identifier(coi.Identifier().size() - 1).getSymbol
+  private def checkAndReplaceTypeReference(ctx: ClassOrInterfaceTypeContext) {
+    if (ctx != null) {
+      if (ctx.Identifier(ctx.Identifier().size() - 1).getText == currentName) {
+        val token = ctx.Identifier(ctx.Identifier().size() - 1).getSymbol
 
         editor.replace(token.getLine, token.getCharPositionInLine, token.getText.length, newName)
       }
     }
   }
-
 }
