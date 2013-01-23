@@ -39,6 +39,8 @@ object TestJavaSource {
       "import ren.BaseClass;" +
       "\n" +
       "public class SomeClass {\n" +
+      "  BaseClass baseClass;\n" +
+      "\n" +
       "  public String toString() {\n" +
       "    return \"Base class\";\n" +
       "  }\n" +
@@ -48,20 +50,6 @@ object TestJavaSource {
 
 
 class RenameClassSpec extends FunSpec {
-
-  //  val baseClass = new SourceCode {
-  //    val text = ("package ren;\n" +
-  //      "\n" +
-  //      "public class BaseClass {\n" +
-  //      "  public String toString() {\n" +
-  //      "    return \"Base class\";\n" +
-  //      "  }\n" +
-  //      "}")
-  //
-  //    def refactor(changes: List[CodeChange]): CodeModel = {
-  //      SupportedLanguages.Java.refactoringParser.refactor(Source.fromString(text), changes)
-  //    }
-  //  }
   describe("Class Rename") {
     it("renames classes that exist and where the new name does not conflict with an existing class name") {
       val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.baseClass)
@@ -90,6 +78,13 @@ class RenameClassSpec extends FunSpec {
 
       assert(codeModel.imports.size == 1)
       assert(codeModel.imports(0).qualifiedName == "ren.RenamedClass")
+    }
+
+    it("renames the type of fields") {
+      val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.someClass)
+      SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
+
+      assert(sourceCode.text.contains("RenamedClass baseClass;"))
     }
 
     //    it("renames classes that exist and where the new name does not conflict with an existing class name") {

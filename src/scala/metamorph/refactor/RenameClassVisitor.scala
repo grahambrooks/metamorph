@@ -1,11 +1,26 @@
 package metamorph.refactor
 
 import metamorph.Java.{JavaBaseVisitor, CodeEditor}
-import metamorph.Java.JavaParser.{ImportDeclarationContext, ClassDeclarationContext}
+import metamorph.Java.JavaParser.{FieldDeclarationContext, ImportDeclarationContext, ClassDeclarationContext}
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.tree.ParseTree
 
 class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: String) extends JavaBaseVisitor[Object] {
+  override def visitFieldDeclaration(ctx: FieldDeclarationContext) = {
+
+    val coi = ctx.`type`().classOrInterfaceType()
+
+    if (coi != null) {
+      if (coi.Identifier(coi.Identifier().size()-1).getText == currentName) {
+        val token = coi.Identifier(coi.Identifier().size()-1).getSymbol
+
+        editor.replace(token.getLine, token.getCharPositionInLine, token.getText.length, newName)
+      }
+    }
+
+    super.visitFieldDeclaration(ctx)
+  }
+
   override def visitImportDeclaration(ctx: ImportDeclarationContext) = {
     var qualifiedNameTokens = List[Token]()
 
