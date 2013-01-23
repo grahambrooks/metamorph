@@ -42,6 +42,7 @@ object TestJavaSource {
       "  BaseClass baseClass;\n" +
       "\n" +
       "  public String toString() {\n" +
+      "    BaseClass baseClassLocalVariable;\n" +
       "    return \"Base class\";\n" +
       "  }\n" +
       "}"
@@ -85,6 +86,13 @@ class RenameClassSpec extends FunSpec {
       SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
 
       assert(sourceCode.text.contains("RenamedClass baseClass;"))
+    }
+
+    it("renames the type of variables") {
+      val sourceCode: SourceCodeString = new SourceCodeString(TestJavaSource.someClass)
+      SupportedLanguages.Java.refactoringParser(List(new RenameClass(currentName = "BaseClass", newName = "RenamedClass"))).refactor(sourceCode)
+
+      assert(sourceCode.text.contains("RenamedClass baseClassLocalVariable;"))
     }
 
     //    it("renames classes that exist and where the new name does not conflict with an existing class name") {

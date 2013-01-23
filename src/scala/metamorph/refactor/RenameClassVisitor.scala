@@ -1,22 +1,27 @@
 package metamorph.refactor
 
 import metamorph.Java.{JavaBaseVisitor, CodeEditor}
-import metamorph.Java.JavaParser.{FieldDeclarationContext, ImportDeclarationContext, ClassDeclarationContext}
+import metamorph.Java.JavaParser._
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.tree.ParseTree
 
 class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: String) extends JavaBaseVisitor[Object] {
+
+
+  override def visitLocalVariableDeclaration(ctx: LocalVariableDeclarationContext) = {
+    val coi = ctx.`type`().classOrInterfaceType()
+
+    checkAndReplaceTypeReference(coi)
+
+    super.visitLocalVariableDeclaration(ctx)
+  }
+
+
   override def visitFieldDeclaration(ctx: FieldDeclarationContext) = {
 
     val coi = ctx.`type`().classOrInterfaceType()
 
-    if (coi != null) {
-      if (coi.Identifier(coi.Identifier().size()-1).getText == currentName) {
-        val token = coi.Identifier(coi.Identifier().size()-1).getSymbol
-
-        editor.replace(token.getLine, token.getCharPositionInLine, token.getText.length, newName)
-      }
-    }
+    checkAndReplaceTypeReference(coi)
 
     super.visitFieldDeclaration(ctx)
   }
@@ -71,4 +76,15 @@ class RenameClassVisitor(editor: CodeEditor, currentName: String, newName: Strin
       }
     }
   }
+
+  private def checkAndReplaceTypeReference(coi: ClassOrInterfaceTypeContext) {
+    if (coi != null) {
+      if (coi.Identifier(coi.Identifier().size() - 1).getText == currentName) {
+        val token = coi.Identifier(coi.Identifier().size() - 1).getSymbol
+
+        editor.replace(token.getLine, token.getCharPositionInLine, token.getText.length, newName)
+      }
+    }
+  }
+
 }
