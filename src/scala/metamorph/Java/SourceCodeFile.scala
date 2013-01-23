@@ -3,7 +3,7 @@ package metamorph.Java
 import org.antlr.v4.runtime.ANTLRInputStream
 import io.Source
 import java.io.{File, FileReader}
-import metamorph.{ContentSource}
+import metamorph.ContentSource
 import metamorph.util.{Signature, BranchPath, AbsolutePath}
 
 

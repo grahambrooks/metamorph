@@ -2,4 +2,4 @@ package metamorph
 
 import util.RootPath
 
-class ContentSource(val name:String, val rootPath: RootPath){}
+class ContentSource(val name: String, val rootPath: RootPath) {}

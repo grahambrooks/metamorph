@@ -15,8 +15,6 @@ class JavaRefactoringParser(changes: List[CodeChange]) extends RefactoringParser
     changes.foreach(change => {
       source.edit(editor => change.visitJava(editor, tree))
     })
-
-    source
   }
 
   def importDeclaration(importToken: Token, nameTokens: java.util.List[Token]) {}

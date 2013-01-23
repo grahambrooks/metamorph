@@ -2,9 +2,9 @@ package metamorph.reporting
 
 import org.antlr.runtime.Token
 import java.util.Date
-import metamorph.QueryResults
 import metamorph.model.CatchToken
 import metamorph.util.ConsoleWriter
+import metamorph.reporting.QueryResults
 
 class DefaultQueryResults extends QueryResults {
 
