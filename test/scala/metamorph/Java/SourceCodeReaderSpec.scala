@@ -70,5 +70,16 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
 
       model.methods(0).signature
     }
+
+    it("supports comments at the end of the file terminated with EOF") {
+      val originalSource = new SourceCodeString("class X {" +
+        "\n void foo() {" +
+        "\n" +
+        "\n  }; } // End of class")
+
+      val reader = new SourceCodeReader(originalSource)
+      reader.read
+
+    }
   }
 }

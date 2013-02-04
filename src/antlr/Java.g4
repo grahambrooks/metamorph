@@ -750,6 +750,10 @@ WS  :  [ \r\t\u000C\n]+ -> skip
     ;
 
 LINE_COMMENT
-    : '//' ~[\r\n]* '\r'? '\n' -> skip
+    :   '//' ~[\r\n]*
+        (
+            '\r'? '\n'
+        |   EOF
+        ) -> skip
     ;
 

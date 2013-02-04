@@ -4,7 +4,6 @@ import org.antlr.runtime.Token
 import java.util.Date
 import metamorph.model.CatchToken
 import metamorph.util.ConsoleWriter
-import metamorph.reporting.QueryResults
 
 class DefaultQueryResults extends QueryResults {
 
@@ -35,7 +34,7 @@ class DefaultQueryResults extends QueryResults {
     currentFileList = currentFileList ::: List(new CatchToken(catchToken, openingBrace, closingBrace))
   }
 
-  def printSummaryToConsole {
+  def printSummaryToConsole() {
     printSummary(new ConsoleWriter())
   }
 
