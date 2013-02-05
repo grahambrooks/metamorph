@@ -7,14 +7,14 @@ import metamorph.util.Signature
 
 class CodeModel(val sourceCode: SourceCode) {
   var duplicate: Boolean = false
-  var modelSignature: Signature = null
-  var typeSignature: Signature = null
+  var modelSignature: Signature = Signature.empty
+  var typeSignature: Signature = Signature.empty
   var importInsertionPoint = 0
   var packageDeclaration: PackageDeclaration = null
   var imports: List[ImportDeclaration] = Nil
   var methods: List[MethodDeclaration] = Nil
   var blocks: List[BlockDeclaration] = Nil
-  var typeDeclaration: TypeDeclaration = null
+  var typeDeclarations: List[TypeDeclaration] = Nil
   var stats: CodeStatistics = new CodeStatistics
 
   def add(im: ImportDeclaration) {

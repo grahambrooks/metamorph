@@ -58,7 +58,7 @@ class RenameClassSpec extends FunSpec {
 
       val codeModel = SupportedLanguages.Java.parser.parse(sourceCode)
 
-      assert(codeModel.typeDeclaration.shortName == "RenamedClass")
+      assert(codeModel.typeDeclarations(0).shortName == "RenamedClass")
     }
 
     it("renames fully qualified references to renamed classes") {

@@ -41,9 +41,10 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
     model.typeSignature = Signature.composite(ctx.Identifier.getText,
       Signature.fromTree(ctx.typeParameters),
       Signature.fromTree(ctx.typeList),
-      Signature.fromTree(ctx.`type`))
+      Signature.fromTree(ctx.`type`),
+      model.typeSignature)
 
-    model.typeDeclaration = new TypeDeclaration(ctx.Identifier().getText)
+    model.typeDeclarations = model.typeDeclarations ::: List(new TypeDeclaration(ctx.Identifier().getText))
 
     super.visitClassDeclaration(ctx)
   }

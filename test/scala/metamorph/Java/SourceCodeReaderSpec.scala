@@ -79,7 +79,18 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
 
       val reader = new SourceCodeReader(originalSource)
       reader.read
+    }
 
+    it("supports multiple classes within a single compilation unit") {
+      val originalSource = new SourceCodeString("class X {" +
+        "\n}" +
+        "\n" +
+        "class Y {}")
+
+      val reader = new SourceCodeReader(originalSource)
+      val model = reader.read
+
+      assert(model.typeDeclarations.size == 2)
     }
   }
 }
