@@ -92,5 +92,17 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
 
       assert(model.typeDeclarations.size == 2)
     }
+
+    it("supports nested classes") {
+      val originalSource = new SourceCodeString("class X {" +
+        "\n   class Y {" +
+        "\n   }" +
+        "\n}")
+
+      val reader = new SourceCodeReader(originalSource)
+      val model = reader.read
+
+      assert(model.typeDeclarations.size == 2)
+    }
   }
 }
