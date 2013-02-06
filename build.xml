@@ -7,6 +7,10 @@
     <property name="build.dir" value="${basedir}/build"/>
     <property name="scala.home" value="${basedir}/Tools/scala-2.10.0/"/>
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
+    <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/> 
+
+    <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask" 
+        classpath="Tools/one-jar-ant-task-0.97.jar" onerror="report"/>
 
     <path id="runtime.classpath">
         <pathelement location="lib/runtime/antlr-3.4-complete.jar"/>
@@ -88,27 +92,26 @@
     </target>
 
     <target name="package" depends="build">
-        <jar destfile="metamorph.jar">
-            <fileset dir="build"/>
-            <fileset dir="src/resource"/>
-            <restrict>
-                <name name="**/*.class"/>
-                <archives>
-                    <zips>
-                        <file file="lib/runtime/antlr-4.0b1-complete.jar"/>
-                        <file file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
-                        <file file="${scala-library.jar}"/>
-                        <file file="${scala.home}/lib/scala-reflect.jar"/>
-                        <file file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
-                    </zips>
-                </archives>
-            </restrict>
-            <manifest>
-                <attribute name="Main-Class"
-                           value="metamorph.Tool"/>
-            </manifest>
-        </jar>
-    </target>
+
+      <one-jar destfile="metamorph.jar">
+	<manifest>
+	  <attribute name="Main-Class"    value="metamorph.Tool"/>
+	  <attribute name="One-Jar-Main-Class" value="metamorph.Tool"/>
+	</manifest>
+	<main>
+	  <fileset dir="build"/>
+	  <fileset dir="src/resource"/>
+	</main>
+	<lib>
+	  <fileset file="lib/runtime/antlr-4.0b1-complete.jar"/>
+	  <fileset file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+	  <fileset file="${scala-library.jar}"/>
+	  <fileset file="${scala.home}/lib/scala-reflect.jar"/>
+	  <fileset file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
+	</lib>
+      </one-jar>
+   </target>
+
     <target name="clean">
         <delete dir="build"/>
         <delete file="src/java/metamorph/Java/Java.tokens"/>
