@@ -7,10 +7,10 @@
     <property name="build.dir" value="${basedir}/build"/>
     <property name="scala.home" value="${basedir}/Tools/scala-2.10.0/"/>
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
-    <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/> 
+    <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/>
 
-    <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask" 
-        classpath="Tools/one-jar-ant-task-0.97.jar" onerror="report"/>
+    <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"
+             classpath="Tools/one-jar-ant-task-0.97.jar" onerror="report"/>
 
     <path id="runtime.classpath">
         <pathelement location="lib/runtime/antlr-4.0-complete.jar"/>
@@ -58,7 +58,16 @@
         </java>
     </target>
 
-    <target name="compile" depends="init, grammar">
+    <target name="migration-grammar">
+        <java jar="Tools/antlr-4.0-complete.jar" fork="yes" dir="src/antlr">
+            <arg value="Migration.g4"/>
+            <arg value="-o"/>
+            <arg value="${basedir}/src/java/metamorph/migration"/>
+            <arg value="-visitor"/>
+        </java>
+    </target>
+
+    <target name="compile" depends="init, grammar, migration-grammar">
         <mkdir dir="${build.dir}"/>
 
         <javac srcdir="${java.sources.dir}"
@@ -92,24 +101,24 @@
 
     <target name="package" depends="build">
 
-      <one-jar destfile="metamorph.jar">
-	<manifest>
-	  <attribute name="Main-Class"    value="metamorph.Tool"/>
-	  <attribute name="One-Jar-Main-Class" value="metamorph.Tool"/>
-	</manifest>
-	<main>
-	  <fileset dir="build"/>
-	  <fileset dir="src/resource"/>
-	</main>
-	<lib>
-	  <fileset file="lib/runtime/antlr-4.0b1-complete.jar"/>
-	  <fileset file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
-	  <fileset file="${scala-library.jar}"/>
-	  <fileset file="${scala.home}/lib/scala-reflect.jar"/>
-	  <fileset file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
-	</lib>
-      </one-jar>
-   </target>
+        <one-jar destfile="metamorph.jar">
+            <manifest>
+                <attribute name="Main-Class" value="metamorph.Tool"/>
+                <attribute name="One-Jar-Main-Class" value="metamorph.Tool"/>
+            </manifest>
+            <main>
+                <fileset dir="build"/>
+                <fileset dir="src/resource"/>
+            </main>
+            <lib>
+                <fileset file="lib/runtime/antlr-4.0b1-complete.jar"/>
+                <fileset file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+                <fileset file="${scala-library.jar}"/>
+                <fileset file="${scala.home}/lib/scala-reflect.jar"/>
+                <fileset file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
+            </lib>
+        </one-jar>
+    </target>
 
     <target name="clean">
         <delete dir="build"/>
@@ -121,5 +130,6 @@
         <delete file="src/java/metamorph/Java/JavaListener.java"/>
         <delete file="src/java/metamorph/Java/JavaParser.java"/>
         <delete file="src/java/metamorph/Java/JavaVisitor.java"/>
+        <delete dir="src/java/metamorph/Migration"/>
     </target>
 </project>

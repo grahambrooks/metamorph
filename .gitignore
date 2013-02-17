@@ -18,3 +18,4 @@ src/java/metamorph/Java/JavaLexer.tokens
 src/java/metamorph/Java/JavaListener.java
 src/java/metamorph/Java/JavaParser.java
 src/java/metamorph/Java/JavaVisitor.java
+src/java/metamorph/migration/
