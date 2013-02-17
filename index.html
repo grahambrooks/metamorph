@@ -32,8 +32,35 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h3>Metamorph - scripted refactoring and analysis</h3>
-
-<p>Placeholder page</p>
+	
+	<p>
+	  <a href="https://gitgub.com/grahambrooks/metamorph">Metamorph</a>
+	  came into being after watching a Google presentation on
+	  using Clang Abstract Syntax Trees (AST) and Hadoop map
+	  reduce to refactor large (10M lines) C++
+	  codebases. Metamorph currently targets Java to allow library
+	  and framework publishers to include a scripted set of code
+	  level changes with their work. These code migrations operate
+	  on the client code to bring that code into line with the
+	  updates included in a release.
+	</p>
+	
+	<p>
+	  Lets take the example of a jar dependency where a project B
+	  uses a jar A.jar from another organisation (which may or may
+	  not be open source). The producer of A can either make
+	  changes which break B or work through a deprecation cycle
+	  encouraging client code to be updated over an extended
+	  release cycle.
+	</p>
+	<p>
+	  Metamorph offers a 3rd option where a migration file
+	  A.migration is published with the new version. Metamorph
+	  then reads that migration and examines project B's source
+	  code and makes the changes outlined in the
+	  migration. Project B can then be compiled and tested against
+	  the new version of A.
+	</p>
       </section>
     </div>
 
