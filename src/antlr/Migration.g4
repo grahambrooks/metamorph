@@ -15,8 +15,12 @@ migrationFile
 migrationDeclaration
     :   'migration'
         (
-            'rename' qualifiedName 'to' qualifiedName ';'
+            renameMigration ';'
         )
+    ;
+
+renameMigration
+    :   'rename' predicate=qualifiedName 'to' newName=Identifier
     ;
 
         
@@ -66,7 +70,7 @@ JavaIDDigit
    ;
 
 COMMENT
-    :   '/*' .* '*/'  -> skip // match anything between /* and */
+    :   '/*' .*? '*/'  -> skip // match anything between /* and */
     ;
 WS  :  [ \r\t\u000C\n]+ -> skip
     ;

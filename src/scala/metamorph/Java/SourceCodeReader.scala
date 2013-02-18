@@ -24,6 +24,6 @@ class SourceCodeReader(code: SourceCode) extends JavaParserActions {
   }
 
   def packageDeclaration(packageToken: Token, nameTokens: util.List[Token]) {
-    model.packageDeclaration = new PackageDeclaration(packageToken, new QualifiedName(nameTokens.asScala.toList))
+    model.packageDeclaration = new PackageDeclaration(packageToken, new QualifiedNameDeclaration(nameTokens.asScala.toList))
   }
 }
