@@ -11,8 +11,6 @@ trait Logger {
 }
 
 object Logger extends Logger {
-  var current = default
-
   val default: Logger = new Logger() {
     def fatal(text: String, xs: Any*) {
       Console.println(text.format(xs: _*))
@@ -78,4 +76,6 @@ object Logger extends Logger {
   def trace(text: String, xs: Any*) {
     current.trace(text, xs: _*)
   }
+
+  var current = default
 }

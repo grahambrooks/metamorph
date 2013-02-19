@@ -17,7 +17,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
 
   val parser = new scopt.immutable.OptionParser[MorphConfig]("metamorph", "0.1") {
     def options = Seq(
-      arg("command", "merge/refactor") {
+      arg("command", "merge/analyse/migrate") {
         (cmd: String, c: MorphConfig) => c.copy(command = MorphCommand.fromString(cmd))
       },
       flag("v", "verbose", "Output useful execution information. Valuable in identifying processing problems") {
@@ -29,8 +29,11 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
       opt("o", "output", "Where to write the report") {
         (v: String, c: MorphConfig) => c.copy(outputPath = v)
       },
-      keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or refactoring commands") {
+      keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or migrate commands") {
         (key: String, value: String, c: MorphConfig) => c.copy(sources = (c.sources ++ Map(key -> value)))
+      },
+      arg("<script>", "<script> merge or migration script") {
+        (v: String, c: MorphConfig) => c.copy(scriptFile = v)
       }
     )
   }
@@ -42,7 +45,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
         config.command.run(config, processor, console, reportWriter)
       }
     } getOrElse {
-      println("Invalid Arguments - abort.")
+      console.Error("Invalid Arguments - abort.")
     }
   }
 }

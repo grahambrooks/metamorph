@@ -33,7 +33,7 @@ class AnalyseCommand extends MorphCommand {
           case (name, path) => {
             val source = new ContentSource(name, new RootPath(path))
 
-            scanFiles(path, console, p => {
+            scanFiles(path, p => {
               Logger.trace("Processing source file %s", p.getAbsolutePath)
 
               val originalSource = new SourceCodeFile(source, p)
@@ -46,7 +46,7 @@ class AnalyseCommand extends MorphCommand {
     }
   }
 
-  def scanFiles(pathOrFilename: String, console: ConsoleWriter, function: (File) => Any) {
+  def scanFiles(pathOrFilename: String, function: (File) => Any) {
     try {
       Logger.trace("Scanning %s", pathOrFilename)
       val root = new File(pathOrFilename)
@@ -56,7 +56,7 @@ class AnalyseCommand extends MorphCommand {
       scanner eachFile function
     }
     catch {
-      case ae: Exception => console Error ae.getMessage
+      case ae: Exception => Logger.error(ae.getMessage)
     }
   }
 

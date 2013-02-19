@@ -111,7 +111,7 @@
                 <fileset dir="src/resource"/>
             </main>
             <lib>
-                <fileset file="lib/runtime/antlr-4.0b1-complete.jar"/>
+                <fileset file="lib/runtime/antlr-4.0-complete.jar"/>
                 <fileset file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
                 <fileset file="${scala-library.jar}"/>
                 <fileset file="${scala.home}/lib/scala-reflect.jar"/>
