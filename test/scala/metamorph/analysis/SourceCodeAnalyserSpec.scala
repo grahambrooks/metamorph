@@ -53,11 +53,11 @@ class SourceCodeAnalyserSpec extends FunSpec with ShouldMatchers {
       it("calculates toxicity based on long methods and classes") {}
       it("calculates total number of methods") {}
       it("calculates toxicity for excessive number of methods per class") {}
-      it("calculates depth in inherritance tree") {}
-      it("calculates efferant coupling for a class") {}
-      it("calculates toxicity for excessive efferant coupling") {}
-      it("calcluates afferant coupling for a class") {}
-      it("calculates toxicity for excessive afferant coupling") {}
+      it("calculates depth in inheritance tree") {}
+      it("calculates efferent coupling for a class") {}
+      it("calculates toxicity for excessive efferent coupling") {}
+      it("calculates afferent coupling for a class") {}
+      it("calculates toxicity for excessive afferent coupling") {}
     }
   }
 
