@@ -4,6 +4,7 @@ import metamorph.Java.JavaParser._
 import metamorph.model._
 import metamorph.analysis.CodeStatistics
 import metamorph.util.Signature
+import metamorph.Logger
 
 
 class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends JavaBaseVisitor[Object] {
@@ -38,15 +39,21 @@ class CodeReaderVisitor(val model: CodeModel, val source: SourceCode) extends Ja
   }
 
   override def visitClassDeclaration(ctx: ClassDeclarationContext) = {
-    model.typeSignature = Signature.composite(ctx.Identifier.getText,
-      Signature.fromTree(ctx.typeParameters),
-      Signature.fromTree(ctx.typeList),
-      Signature.fromTree(ctx.`type`),
-      model.typeSignature)
+    if (ctx.exception == null) {
+      model.typeSignature = Signature.composite(ctx.Identifier.getText,
+        Signature.fromTree(ctx.typeParameters),
+        Signature.fromTree(ctx.typeList),
+        Signature.fromTree(ctx.`type`),
+        model.typeSignature)
 
-    model.typeDeclarations = model.typeDeclarations ::: List(new TypeDeclaration(ctx.Identifier().getText))
+      model.typeDeclarations = model.typeDeclarations ::: List(new TypeDeclaration(ctx.Identifier().getText))
 
-    super.visitClassDeclaration(ctx)
+    }
+    else {
+      Logger.error("Parser problem class declaration ignored")
+    }
+      super.visitClassDeclaration(ctx)
+
   }
 
   override def visitPackageDeclaration(ctx: PackageDeclarationContext) = {

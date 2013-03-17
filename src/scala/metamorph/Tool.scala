@@ -32,7 +32,7 @@ class Tool(processor: SourceCodeFileProcessor, val console: ConsoleWriter, val r
       keyValueOpt("s", "source", "<source-name>", "<source-path>", "Define a source for merge or migrate commands") {
         (key: String, value: String, c: MorphConfig) => c.copy(sources = (c.sources ++ Map(key -> value)))
       },
-      arg("<script>", "<script> merge or migration script") {
+      argOpt("<script>", "<script> merge or migration script") {
         (v: String, c: MorphConfig) => c.copy(scriptFile = v)
       }
     )

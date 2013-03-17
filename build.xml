@@ -5,9 +5,11 @@
     <property name="scala.sources.dir" value="${basedir}/src/scala"/>
     <property name="scala.test.sources.dir" value="${basedir}/test/scala"/>
     <property name="build.dir" value="${basedir}/build"/>
+    <property name="classes" value="${build.dir}/classes"/>
     <property name="scala.home" value="${basedir}/Tools/scala-2.10.0/"/>
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
     <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/>
+    <property name="scalatest.jar" value="scalatest_2.10-2.0.M5b.jar"/>
 
     <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask"
              classpath="Tools/one-jar-ant-task-0.97.jar" onerror="report"/>
@@ -19,14 +21,14 @@
 
     <path id="test.classpath">
         <pathelement location="lib/test/mockito-all-1.9.5-rc1.jar"/>
-        <pathelement location="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+        <pathelement location="lib/test/${scalatest.jar}"/>
     </path>
 
     <path id="build.classpath">
         <pathelement location="${scala-library.jar}"/>
         <path refid="runtime.classpath"/>
         <path refid="test.classpath"/>
-        <pathelement location="${build.dir}"/>
+        <pathelement location="${classes}"/>
     </path>
 
     <path id="scala.classpath">
@@ -68,30 +70,30 @@
     </target>
 
     <target name="compile" depends="init, grammar, migration-grammar">
-        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes}"/>
 
         <javac srcdir="${java.sources.dir}"
-               destdir="${build.dir}"
+               destdir="${classes}"
                classpathref="build.classpath"
-               includeantruntime="no"
-                />
+               includeantruntime="no"/>
 
         <scalac srcdir="${scala.sources.dir}"
-                destdir="${build.dir}"
+                destdir="${classes}"
                 classpathref="build.classpath">
             <include name="**/*.scala"/>
         </scalac>
+
         <scalac srcdir="${scala.test.sources.dir}"
-                destdir="${build.dir}"
+                destdir="${classes}"
                 classpathref="build.classpath">
             <include name="**/*.scala"/>
         </scalac>
     </target>
 
     <target name="test" depends="compile">
-        <scalatest fork="true" runpath="build">
+        <scalatest fork="true" runpath="build/classes">
             <reporter type="stdout"/>
-            <reporter type="junitxml" directory="build"/>
+            <reporter type="junitxml" directory="build/junit"/>
         </scalatest>
     </target>
 
@@ -107,12 +109,12 @@
                 <attribute name="One-Jar-Main-Class" value="metamorph.Tool"/>
             </manifest>
             <main>
-                <fileset dir="build"/>
+                <fileset dir="${classes}"/>
                 <fileset dir="src/resource"/>
             </main>
             <lib>
                 <fileset file="lib/runtime/antlr-4.0-complete.jar"/>
-                <fileset file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+                <fileset file="lib/test/${scalatest.jar}"/>
                 <fileset file="${scala-library.jar}"/>
                 <fileset file="${scala.home}/lib/scala-reflect.jar"/>
                 <fileset file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>

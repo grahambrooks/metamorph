@@ -46,13 +46,16 @@ class AnalysisIndexHtml(config: MorphConfig, val source: AnalysedSourceCode, val
     output.write("<tr><th class=\"duplicate\"><h2><a name='duplicate-blocks'>Duplicate Blocks</a></h2></th><td>Blocks are identified by using a hash of all the text including the surrounding braces {}.</td></tr>")
 
     source.blockBuckets.eachDuplicate(blocks => {
-      output.write("<tr><th>Duplicate block of %d lines</th>".format(blocks(0).lineCount))
-      output.write("<td class=\"duplicate\">")
-      blocks.foreach(block => {
-        a(block.source.sourceName + '/' + block.source.branchPath.join(block.source.name + ".html").toString, block.source.sourceName + '/' + block.source.branchPath.join(block.source.name).toString)
-        output.write(" at %s<br/>".format(block.span))
-      })
-      output.write("</td></tr>")
+      if (blocks(0).lineCount > 6) {
+
+        output.write("<tr><th>Duplicate block of %d lines</th>".format(blocks(0).lineCount))
+        output.write("<td class=\"duplicate\">")
+        blocks.foreach(block => {
+          a(block.source.sourceName + '/' + block.source.branchPath.join(block.source.name + ".html").toString, block.source.sourceName + '/' + block.source.branchPath.join(block.source.name).toString)
+          output.write(" at %s<br/>".format(block.span))
+        })
+        output.write("</td></tr>")
+      }
     })
     output.write("<table>")
   }
@@ -64,14 +67,16 @@ class AnalysisIndexHtml(config: MorphConfig, val source: AnalysedSourceCode, val
     output.write("<table>")
     output.write("<tr><th class=\"duplicate\"><h2>Duplicate Methods</h2></th><td class=\"duplicate\">Duplicate methods are identified using a hash built from the method text. White space is ignored.</td></tr>")
     source.methodBuckets.eachDuplicate(methods => {
-      output.write("<tr><th class=\"duplicate\">%s (x%d duplicates) of %d lines</th>".format(methods(0).name, methods.size - 1, methods(0).lineCount))
-      output.write("<td class=\"duplicate\">")
+      if (methods(0).lineCount > 6) {
+        output.write("<tr><th class=\"duplicate\">%s (x%d duplicates) of %d lines</th>".format(methods(0).name, methods.size - 1, methods(0).lineCount))
+        output.write("<td class=\"duplicate\">")
 
-      methods.foreach(method => {
-        a(method.source.sourceName + '/' + method.source.branchPath.join(method.source.name + ".html").toString, method.source.sourceName + '/' + method.source.branchPath.join(method.source.name).toString)
-        output.write("<br/>")
-      })
-      output.write("</td></tr>")
+        methods.foreach(method => {
+          a(method.source.sourceName + '/' + method.source.branchPath.join(method.source.name + ".html").toString, method.source.sourceName + '/' + method.source.branchPath.join(method.source.name).toString)
+          output.write("<br/>")
+        })
+        output.write("</td></tr>")
+      }
     })
   }
 
