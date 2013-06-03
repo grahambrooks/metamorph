@@ -1,0 +1,156 @@
+<html><head><title>CoursesDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CoursesDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/CoursesDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Course;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.COURSES;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.name;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class CoursesDataStoreTest {
+    public static final ContentValues CONTENT_VALUES = new ContentValues();
+
+    private CoursesDataStore coursesDataStore;
+
+    @Mock
+    private Course course;
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    private Context context;
+    @Mock
+    private ContentResolver contentResolver;
+
+    public static final int ID_INDEX = 0;
+    public static final int NAME_INDEX = 1;
+    public static final Long COURSE_ID = 1L;
+
+
+    @Before
+    public void setUp(){
+        initMocks(this);
+
+        coursesDataStore = new CoursesDataStore(context);
+
+        given(context.getContentResolver()).willReturn(contentResolver);
+    }
+
+    @Test
+    public void shouldSaveAllSections() {
+        given(course.asValues()).willReturn(CONTENT_VALUES);
+
+        List<Course> courses = newArrayList(course, course);
+
+        coursesDataStore.saveAll(courses);
+
+        verify(contentResolver).bulkInsert(COURSES.uri(), new ContentValues[]{CONTENT_VALUES, CONTENT_VALUES});
+    }
+
+    @Test
+    public void shouldReturnProperCourseObjectForSuccessfulQuery() {
+        String courseName = "name";
+
+        Cursor mockCursor = mock(Cursor.class);
+
+        setupQueryForCursor(mockCursor);
+        when(mockCursor.moveToNext()).thenReturn(true);
+        when(mockCursor.getLong(ID_INDEX)).thenReturn(COURSE_ID);
+        when(mockCursor.getString(NAME_INDEX)).thenReturn(courseName);
+
+        Course course = coursesDataStore.getCourse(COURSE_ID);
+
+        assertThat(course.getName(), is(courseName));
+        assertThat(course.getId(), is(COURSE_ID));
+
+    }
+
+    @Test
+    public void shouldReturnProperCourseObjectForFailedQuery() {
+        Cursor mockCursor = mock(Cursor.class);
+
+        setupQueryForCursor(mockCursor);
+        when(mockCursor.moveToNext()).thenReturn(false);
+
+        Course course = coursesDataStore.getCourse(COURSE_ID);
+
+        assertThat(course.getId(), is(COURSE_ID));
+        assertNull(course.getName());
+    }
+
+    private void setupQueryForCursor(Cursor mockCursor) {
+        when(contentResolver.query(COURSES.uri(), COURSES.allColumnNames(), _id.equalTo(), new String[]{COURSE_ID.toString()}, null))
+                .thenReturn(mockCursor);
+
+        when(mockCursor.getColumnIndex(_id.name())).thenReturn(ID_INDEX);
+        when(mockCursor.getColumnIndex(name.name())).thenReturn(NAME_INDEX);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

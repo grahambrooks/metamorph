@@ -1,0 +1,250 @@
+<html><head><title>StudentSelectorActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentSelectorActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/StudentSelectorActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.activities.adapters.StudentSelectorAdapter;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.shadows.ShadowActivity;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentSelectorActivityTest {
+
+    public static final String HARRY = "Harry";
+    public static final String SAM = "Sam";
+    public static final String BOB = "Bob";
+
+    @Inject
+    private StudentSelectorActivity activity;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private Section section;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        newInjector(this, SharePostActivity.class)
+                .bindInstance(UserService.class, userService)
+                .configureActivity();
+
+        Intent intent = new Intent();
+        intent.putExtra(StudentSelectorActivity.PARTICIPANTS, newArrayList());
+
+        activity.setIntent(intent);
+        activity.onCreate(null);
+        activity.onResume();
+
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentSection()).willReturn(section);
+    }
+
+    @Test
+    public void shouldUpdateTotalNumberOfStudentsSelectedWhenOneStudentIsSelected() {
+        Participant selectedParticipant = new Participant(1L, SAM, true);
+        Participant unselectedParticipant = new Participant(2L, HARRY, false);
+        addStudentToAdapterAndNotify(selectedParticipant);
+        addStudentToAdapterAndNotify(unselectedParticipant);
+
+        TextView totalNumStudentsText = (TextView) activity.findViewById(R.id.total_students_selected);
+        assertThat(totalNumStudentsText.getText().toString(), is("1/2 students selected"));
+    }
+
+    @Test
+    public void shouldUpdateTotalNumberOfStudentsSelectedWhenMultipleStudentsAreSelected() {
+        Participant firstStudent = new Participant(1L, SAM, true);
+        Participant secondStudent = new Participant(2L, HARRY, true);
+        Participant thirdStudent = new Participant(3L, BOB, false);
+        addStudentToAdapterAndNotify(firstStudent);
+        addStudentToAdapterAndNotify(secondStudent);
+        addStudentToAdapterAndNotify(thirdStudent);
+
+        TextView totalNumStudentsText = (TextView) activity.findViewById(R.id.total_students_selected);
+        assertThat(totalNumStudentsText.getText().toString(), is("2/3 students selected"));
+    }
+
+    @Test
+    public void shouldSelectAllParticipantsWhenSelectAllButtonHasBeenClicked() {
+        Participant firstStudent = new Participant(1L, SAM, false);
+        Participant secondStudent = new Participant(2L, HARRY, false);
+
+        addStudentToAdapterAndNotify(firstStudent);
+        addStudentToAdapterAndNotify(secondStudent);
+
+        Button button = (Button) activity.findViewById(R.id.select_all_students_button);
+        button.performClick();
+
+        assertThat(firstStudent.isSelected(), is(true));
+        assertThat(secondStudent.isSelected(), is(true));
+    }
+
+    @Test
+    public void shouldDeselectAllParticipantsWhenClearButtonHasBeenClicked() {
+        Participant firstStudent = new Participant(1L, SAM, true);
+        Participant secondStudent = new Participant(2L, HARRY, true);
+
+        addStudentToAdapterAndNotify(firstStudent);
+        addStudentToAdapterAndNotify(secondStudent);
+
+        Button button = (Button) activity.findViewById(R.id.deselect_all_students_button);
+        button.performClick();
+
+        assertThat(firstStudent.isSelected(), is(false));
+        assertThat(secondStudent.isSelected(), is(false));
+    }
+
+    @Test
+    public void shouldBeDisabledIfNoStudentsAreSelected() {
+        Participant firstStudent = new Participant(1L, SAM, true);
+        addStudentToAdapterAndNotify(firstStudent);
+        removeStudentToAdapterAndNotify(firstStudent);
+        Button doneButton = (Button) activity.findViewById(R.id.done_button);
+        assertThat(doneButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldDismissActivityWhenPressDone() {
+        Button doneButton = (Button) activity.findViewById(R.id.done_button);
+        doneButton.performClick();
+        ShadowActivity shadowActivity = shadowOf(activity);
+        assertThat(shadowActivity.isFinishing(), is(true));
+    }
+
+    private void addStudentToAdapterAndNotify(Participant firstStudent) {
+        StudentSelectorAdapter adapter = activity.getAdapter();
+        adapter.add(firstStudent);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void removeStudentToAdapterAndNotify(Participant firstStudent) {
+        StudentSelectorAdapter adapter = activity.getAdapter();
+        adapter.remove(firstStudent);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Test
+    public void shouldLoadStudentsIntoAdapterAfterStudentsRetrievedForSection() {
+        List<Participant> students = newArrayList(new Participant(1L, "Name"));
+        when(userService.getCurrentUserSection().getAllParticipants()).thenReturn(students);
+
+        activity.retrieveStudentsForSection();
+
+        StudentSelectorAdapter adapter = activity.getAdapter();
+        assertThat(adapter.getCount(), is(1));
+    }
+
+    @Test
+    public void shouldSetAsSelectedIfUserWasPreviouslySelected() {
+        Participant student1 = new Participant(1L, HARRY);
+        Participant student2 = new Participant(2L, SAM);
+        List<Participant> students = newArrayList(student1, student2);
+
+        when(userService.getCurrentUserSection().getAllParticipants()).thenReturn(students);
+
+        Participant harry = new Participant(1L, HARRY, true);
+
+        Intent intent = new Intent();
+        intent.putExtra(StudentSelectorActivity.PARTICIPANTS, newArrayList(harry));
+
+        activity.setIntent(intent);
+        activity.retrieveStudentsForSection();
+
+        StudentSelectorAdapter adapter = activity.getAdapter();
+        List<Participant> selectedStudents = adapter.selectedStudents();
+        assertThat(selectedStudents.size(), is(1));
+        assertThat(selectedStudents, hasItem(harry));
+    }
+
+    @Test
+    public void shouldGetCurrentSectionFromIntentExtraIfExtraExists() {
+        Section realSection = new Section(null, 0L, "", "");
+        Intent intent = new Intent();
+        intent.putExtra(StudentSelectorActivity.CURRENT_SECTION, realSection);
+
+        activity.setIntent(intent);
+        assertThat(activity.getCurrentSection(), is(realSection));
+    }
+
+    @Test
+    public void shouldGetCurrentSectionFromUserServiceIfExtraDoesNotExist() {
+        verify(userService).getCurrentUserSection();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

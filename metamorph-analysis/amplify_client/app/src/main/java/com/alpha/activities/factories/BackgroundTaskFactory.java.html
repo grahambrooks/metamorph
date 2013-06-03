@@ -1,0 +1,76 @@
+<html><head><title>BackgroundTaskFactory.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BackgroundTaskFactory.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/factories/amplify_client/BackgroundTaskFactory.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.factories;
+
+import android.widget.ProgressBar;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask.DetermineNeedToUpdateCallback;
+import com.alpha.activities.callable.RetrieveThumbnailUriTask;
+import com.alpha.activities.callable.UpdateGDriveFilePermissionTask;
+import com.alpha.activities.callable.UpdateGDriveFilePermissionTask.UpdateGDrivePermissionCallback;
+import com.alpha.activities.callable.VerifyGDriveDocPermissionsTask;
+import com.alpha.activities.callable.VerifyGDriveDocPermissionsTask.VerifyGDrivePermissionCallback;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionRole;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionType;
+import com.google.inject.assistedinject.Assisted;
+
+public interface BackgroundTaskFactory {
+    RetrieveThumbnailUriTask createThumbnailUrlRetriever(String link, RetrieveThumbnailUriTask.RetrieveThumbnailUriCallback callback, ProgressBar progressBar);
+    VerifyGDriveDocPermissionsTask createVerifyGDriveDocPermissionTask(@Assisted VerifyGDrivePermissionCallback gDrivePermissionCallback, @Assisted String fileId);
+    UpdateGDriveFilePermissionTask createUpdateGDriveFilePermissionTask(@Assisted UpdateGDrivePermissionCallback gDrivePermissionCallback,
+                                                                        @Assisted("fileId") String fileId,
+                                                                        @Assisted PermissionRole role,
+                                                                        @Assisted PermissionType type,
+                                                                        @Assisted("permissions-value") String value);
+
+    DetermineNeedToUpdateTask createDetermineNeedToUpdateTask(@Assisted DetermineNeedToUpdateCallback callback);
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

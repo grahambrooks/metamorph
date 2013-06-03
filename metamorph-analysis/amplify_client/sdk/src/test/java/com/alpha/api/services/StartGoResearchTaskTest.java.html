@@ -1,0 +1,181 @@
+<html><head><title>StartGoResearchTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StartGoResearchTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/StartGoResearchTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostSection;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.events.GoResearchStartEvent;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.MatcherAssert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class StartGoResearchTaskTest {
+
+    public static final String MESSAGE = "GO RESEARCH";
+    private StartGoResearchTask goResearchTask;
+    @Mock
+    private UserService userService;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private Environment environment;
+    @Mock
+    private User user;
+    @Mock
+    private PostAuthor postAuthor;
+    @Mock
+    private PostSection postSection;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+
+    @Before
+    public void setup() {
+
+        given(user.asAuthor()).willReturn(postAuthor);
+        given(user.createPostSectionFromCurrentSection()).willReturn(postSection);
+        given(userService.getUser()).willReturn(user);
+        given(networkConnectivity.isConnected()).willReturn(true);
+
+        goResearchTask = new StartGoResearchTask(webServices, analyticsAgent, userService, environment, teacherSession, networkConnectivity, eventBus);
+
+    }
+
+    @Test
+    public void shouldNotSendControlSettingsIfNoNetworkConnectionIsAvailable() throws Exception {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+
+        goResearchTask.call();
+
+        verifyZeroInteractions(teacherSession);
+    }
+
+    @Test
+    public void shouldReturnErrorWhenNoNetworkConnectionIsAvailable() throws Exception {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+
+        goResearchTask.call();
+
+        verify(eventBus).post(GoResearchStartEvent.failure(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE));
+    }
+
+
+    @Test
+    public void shouldActivateGoResearch() throws Exception {
+
+        goResearchTask.call();
+
+        verify(teacherSession).sendMessage(MESSAGE);
+    }
+
+    @Test
+    public void shouldSendGoResearchPostWhenStartingTask(){
+        Post goResearchPost = new Post(PostType.GO_RESEARCH, userService.getUser().asAuthor(), new Date(),
+                userService.getUser().createPostSectionFromCurrentSection(),
+                StringUtils.EMPTY,
+                StringUtils.EMPTY);
+
+        goResearchTask.call();
+
+        ArgumentCaptor<ApiRequest> argumentCaptor = ArgumentCaptor.forClass(ApiRequest.class);
+        verify(webServices).post(argumentCaptor.capture());
+
+        ApiRequest apiRequest = argumentCaptor.getValue();
+        MatcherAssert.assertThat(apiRequest.postBody(), is(goResearchPost.asRequestJson()));
+    }
+
+    @Test
+    public void shouldCreateApiRequestForPostURI(){
+        when(environment.getPostsURI()).thenReturn("uri");
+
+        goResearchTask.call();
+
+        ArgumentCaptor<ApiRequest> argumentCaptor = ArgumentCaptor.forClass(ApiRequest.class);
+        verify(webServices).post(argumentCaptor.capture());
+
+        ApiRequest apiRequest = argumentCaptor.getValue();
+        MatcherAssert.assertThat(apiRequest.url(), is("uri"));
+
+    }
+
+    @Test
+    public void shouldPostSuccessEventOnSuccess() throws Exception {
+        goResearchTask.onSuccess(null);
+
+        verify(eventBus).post(GoResearchStartEvent.success());
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

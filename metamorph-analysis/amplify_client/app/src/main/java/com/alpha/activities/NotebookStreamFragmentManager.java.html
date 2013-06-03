@@ -1,0 +1,76 @@
+<html><head><title>NotebookStreamFragmentManager.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebookStreamFragmentManager.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/NotebookStreamFragmentManager.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+
+import javax.inject.Inject;
+
+import com.amplify.R;
+
+public class NotebookStreamFragmentManager {
+    private final Activity context;
+
+    @Inject
+    public NotebookStreamFragmentManager(Activity context) {
+        this.context = context;
+    }
+
+    public void loadNotebookStreamFragment() {
+        FragmentManager fragmentManager = context.getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.stream_fragment_layout, new NotebookStreamFragment(), NotebookStreamFragment.TAG);
+        fragmentTransaction.commit();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

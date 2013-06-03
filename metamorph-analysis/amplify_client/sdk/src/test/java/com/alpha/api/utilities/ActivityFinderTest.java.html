@@ -1,0 +1,116 @@
+<html><head><title>ActivityFinderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ActivityFinderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/utilities/amplify_client/ActivityFinderTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.utilities;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.Context;
+import com.alpha.api.domains.ActivityDetail;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ActivityFinderTest {
+    @Mock
+    private Context context;
+    @Mock
+    private ActivityManager activityManager;
+    @Mock
+    private BrowserUtil browserUtil;
+    @Mock
+    private ContentResolver contentResolver;
+
+    private final List<ActivityManager.RunningTaskInfo> runningTasksInfo = new ArrayList<ActivityManager.RunningTaskInfo>();
+    private ActivityFinder activityFinder;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        given(context.getSystemService(Activity.ACTIVITY_SERVICE)).willReturn(activityManager);
+        given(context.getContentResolver()).willReturn(contentResolver);
+        given(activityManager.getRunningTasks(1)).willReturn(runningTasksInfo);
+        activityFinder = new ActivityFinder();
+        activityFinder.setBrowserUtil(browserUtil);
+    }
+
+    @Test
+    public void shouldReturnBrowserActivityDetailIfTopActivityIsABrowser() {
+        String url = "http://amplify.com";
+        String packageName = "com.android.browser";
+        String className = "com.android.browser.Dashboard";
+
+        ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
+        taskInfo.topActivity = new ComponentName(packageName, className);
+        runningTasksInfo.add(taskInfo);
+
+        when(browserUtil.getRecentlyOpenedUri(contentResolver)).thenReturn(url);
+
+        ActivityDetail activityDetail = activityFinder.identifyTopActivity(context);
+
+        assertThat(activityDetail.getPackageName(), is(packageName));
+        assertThat(activityDetail.getClassName(), is(className));
+        assertThat(activityDetail.getUrl(), is(url));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

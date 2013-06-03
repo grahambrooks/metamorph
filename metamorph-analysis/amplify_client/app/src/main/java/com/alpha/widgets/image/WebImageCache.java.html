@@ -1,0 +1,373 @@
+<html><head><title>WebImageCache.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>WebImageCache.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/image/amplify_client/WebImageCache.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">31</span>
+    <progress max="100" value="31"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.image;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import com.alpha.logging.LogUtils;
+import com.google.common.hash.Hashing;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ref.SoftReference;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class WebImageCache {
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final String DISK_CACHE_PATH = "/web_image_cache/";
+
+    public static final int MAX_IMAGE_WIDTH = 600;
+    public static final int MAX_IMAGE_HEIGHT = 600;
+    public static final int TIMEOUT_IN_MILLIS = 7000;
+
+    private final ConcurrentHashMap<String, SoftReference<Bitmap>> memoryCache;
+
+    private final ConcurrentHashMap<String, Object> downloadsInProgress;
+
+    private final String diskCachePath;
+    private final boolean diskCacheAvailable;
+    private final ExecutorService writeThread;
+
+    private static final int CONNECT_TIMEOUT = 5000;
+    private static final int READ_TIMEOUT = 10000;
+
+    public WebImageCache(Context context) {
+        this(context, new ConcurrentHashMap<String, SoftReference<Bitmap>>(), new ConcurrentHashMap<String, Object>());
+    }
+
+    protected WebImageCache(Context context, ConcurrentHashMap<String, SoftReference<Bitmap>> memoryCache,
+                            ConcurrentHashMap<String, Object> downloadsInProgress){
+
+        this.memoryCache = memoryCache;
+        this.downloadsInProgress = downloadsInProgress;
+
+        // Set up disk cache store
+        diskCachePath = getDiskCachePath(context);
+
+        File outFile = new File(diskCachePath);
+        outFile.mkdirs();
+        diskCacheAvailable = outFile.exists();
+        LOG.debug("Disk caching enabled = " + diskCacheAvailable);
+
+        writeThread = Executors.newSingleThreadExecutor();
+    }
+
+    private String getDiskCachePath(Context context) {
+        Context appContext = context.getApplicationContext();
+        return new File(appContext.getCacheDir(), DISK_CACHE_PATH).getAbsolutePath();
+    }
+
+    public Bitmap get(final String url) {
+        if( hasMemoryBitmap(url) ) {
+            return getBitmapFromMemory(url);
+        }
+        else if( isDownloadInProgress(url) ) {
+            waitForUrlDownload(url);
+        }
+        else if( !hasFileBitmap(url) ) {
+            cacheInputStreamToDisk(url);
+            waitForUrlDownload(url);
+        }
+
+        if( hasFileBitmap(url) ) {
+            Bitmap bitmap = getBitmapFromDisk(url);
+            cacheBitmapToMemory(url, bitmap);
+        }
+
+        return getBitmapFromMemory(url);
+    }
+
+    private boolean isDownloadInProgress(String url) {
+        return downloadsInProgress.containsKey(getCacheKey(url));
+    }
+
+    private void waitForUrlDownload(String url) {
+        Object mutex = downloadsInProgress.get(getCacheKey(url));</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if( mutex == null ) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        try {
+            synchronized (mutex) {
+                mutex.wait(TIMEOUT_IN_MILLIS);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        LOG.debug("We're awake on (" + url + ") " + mutex.toString());
+    }
+
+    private void onBeginUrlDownload(String url) {
+        synchronized (downloadsInProgress) {
+            if( downloadsInProgress.get(getCacheKey(url)) == null ) {
+                downloadsInProgress.put(getCacheKey(url), new Object());
+            }
+        }
+    }
+
+    private void onFinishedUrlDownload(String url) {
+        synchronized (downloadsInProgress) {
+            Object mutex = downloadsInProgress.get(getCacheKey(url));
+            synchronized (mutex) {
+                mutex.notifyAll();
+            }
+            downloadsInProgress.remove(getCacheKey(url));
+        }
+    }
+
+    private void cacheBitmapToMemory(final String url, final Bitmap bitmap) {
+        memoryCache.put(getCacheKey(url), new SoftReference<Bitmap>(bitmap));
+    }
+
+    private void cacheInputStreamToDisk(final String url) {
+        onBeginUrlDownload(url);
+
+        LOG.debug("Getting image from url: " + url);
+        writeThread.execute(new Runnable() {
+            @Override
+            public void run() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (!diskCacheAvailable) {
+                    return;
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+                InputStream urlInStream = null;
+                FileOutputStream fileOutStream = null;
+                try {
+                    urlInStream = getUrlStream(url);
+
+                    File bitmapFile = getDiskCachedFile(url);
+
+                    fileOutStream = new FileOutputStream(bitmapFile);
+                    byte[] buffer = new byte[1024];
+                    int readLen = urlInStream.read(buffer);
+                    while( readLen > 0 ) {
+                        fileOutStream.write(buffer, 0, readLen);
+                        readLen = urlInStream.read(buffer);
+                    }
+
+                    fileOutStream.flush();
+
+                    LOG.debug("Caching bitmap input stream to disk: " + bitmapFile.getAbsolutePath());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                } catch (FileNotFoundException ignored) {
+                    ignored.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    flushAndCloseStream(fileOutStream);
+                    close(urlInStream, url);
+                    onFinishedUrlDownload(url);
+                }
+            }
+        });
+    }
+
+    private InputStream getUrlStream(String url) throws IOException {
+        URLConnection conn = new URL(url).openConnection();
+        conn.setConnectTimeout(CONNECT_TIMEOUT);
+        conn.setReadTimeout(READ_TIMEOUT);
+        return (InputStream) conn.getContent();
+    }
+
+    private void close(InputStream in, String url) {
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                LOG.error("Failed to close input stream for url: " + url);
+            }
+        }
+    }
+
+    private void flushAndCloseStream(OutputStream out) {
+        try {
+            if (out != null) {
+                out.flush();
+                out.close();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (IOException ignored) {
+            ignored.printStackTrace();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private Bitmap getBitmapFromMemory(String url) {
+        SoftReference<Bitmap> softRef = memoryCache.get(getCacheKey(url));
+        if (softRef != null) {
+            return softRef.get();
+        }
+
+        return null;
+    }
+
+    private boolean hasMemoryBitmap(String url) {
+        return getBitmapFromMemory(url) != null;
+    }
+
+    private Bitmap getBitmapFromDisk(String url) {
+        if (diskCacheAvailable) {
+            File file = getDiskCachedFile(url);
+
+            if (file.exists()) {
+                LOG.debug("Retrieving from disk cache: " + file.getAbsolutePath());
+
+                int sampleSize = calculateSampleSize(file);
+
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                bitmapOptions.inSampleSize = sampleSize;
+
+                return BitmapFactory.decodeFile(file.getAbsolutePath(), bitmapOptions);
+            }
+        }
+        return null;
+    }
+
+    private int calculateSampleSize(File file) {
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeFile(file.getAbsolutePath(), bitmapOptions);
+
+        int width = bitmapOptions.outWidth;
+        int height = bitmapOptions.outHeight;
+
+        int targetWidthSampleSize = 1;
+        int targetHeightSampleSize = 1;
+
+        if (width > MAX_IMAGE_WIDTH) {
+            targetWidthSampleSize = (width / MAX_IMAGE_WIDTH);
+        }
+
+        if (height > MAX_IMAGE_HEIGHT ) {
+            targetHeightSampleSize = (height / MAX_IMAGE_HEIGHT);
+        }
+
+        return Math.max(targetWidthSampleSize, targetHeightSampleSize);
+    }
+
+    private boolean hasFileBitmap(String url) {
+        if (diskCacheAvailable) {
+            File file = getDiskCachedFile(url);
+            return file.exists();
+        }
+        return false;
+    }
+
+    private File getDiskCachedFile(String url) {
+        return new File(diskCachePath, getCacheKey(url));
+    }
+
+    private String getCacheKey(String url) {
+        if (url == null) {
+            throw new RuntimeException("Null url passed in");
+        }
+
+        return Hashing.md5().hashString(url).toString();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

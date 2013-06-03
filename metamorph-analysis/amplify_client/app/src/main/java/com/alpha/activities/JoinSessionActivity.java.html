@@ -1,0 +1,238 @@
+<html><head><title>JoinSessionActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>JoinSessionActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/JoinSessionActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.ParticipantSessionService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.events.JoinSessionEvent;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+public class JoinSessionActivity extends SundaeTimedActivity {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    public static final String SECTION_ID = "sectionId";
+    public static final String TEACHER_NAME = "teacherName";
+    public static final int INVALID_SECTION_ID = -1;
+    @Inject
+    private ParticipantSessionService participantSessionService;
+
+    @Inject
+    private DeviceLockingService deviceLockingService;
+
+    @InjectView(R.id.section_name_text)
+    private TextView sectionNameText;
+
+    @InjectView(R.id.class_starting_text)
+    private TextView classStartingText;
+
+    @InjectView(R.id.full_screen_join_session_button_progress_group)
+    private ProgressBarViewGroup joinSessionProgressViewGroup;
+
+    @Inject
+    private Resources resources;
+
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private EventBus eventBus;
+
+    private Section section;
+
+    Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.join_session_layout);
+
+        long savedSectionId = sectionIdFromSavedState(savedInstanceState);
+        long sectionId = savedSectionId == INVALID_SECTION_ID ? getIntent().getLongExtra(SECTION_ID, INVALID_SECTION_ID) : savedSectionId;
+
+        if (sectionId == INVALID_SECTION_ID) {
+            LOG.warn("Invalid section id in starting intent for JoinSessionActivity (-1)");
+            finish();
+            return;
+        }
+
+        section = userService.getUser().getSectionWithId(sectionId);
+        updateSectionNameText();
+        updateClassStartingText();
+    }
+
+    private long sectionIdFromSavedState(Bundle savedInstanceState) {
+        return savedInstanceState == null ? INVALID_SECTION_ID : savedInstanceState.getLong(SECTION_ID, INVALID_SECTION_ID);
+    }
+
+    private void updateClassStartingText() {
+        String teacherName = getIntent().getStringExtra(TEACHER_NAME);
+        classStartingText.setText(getString(R.string.teacher_starting_class, teacherName));
+    }
+
+    private void updateSectionNameText() {
+        sectionNameText.setText(section.getName());
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(SECTION_ID, section.getId());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+        //Chance for other activities to come to the foreground (e.g. quickpoll)
+        //Once we hit join, as a result, if we are connected to a session when onResume is called
+        //Just kill ourselves off
+        if (userService.isSessionOngoingFor(section)) {
+            unlockAndStartStudentNotebook();
+            return;
+        }
+        deviceLockingService.lock(this, true);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(listeners);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.isSessionOngoingFor(section)) {
+            finish();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        LogUtils.getLogger().info("JoinSessionActivity.onDestroy()");
+        super.onDestroy();
+    }
+
+    public void notHereClicked(View notHereButton) {
+        unlockAndFinish();
+    }
+
+    public void joinClicked(View joinButton) {
+        joinButton.setEnabled(false);
+        Student student = userService.getUser();
+        if (student.hasLiveSection()) {
+            String messageFormat = resources.getString(R.string.student_already_in_session);
+            toaster.makeToast(String.format(messageFormat, student.getLiveSection().getName()));
+            unlockAndFinish();
+        } else {
+            participantSessionService.joinSession(student, section, joinSessionProgressViewGroup.getProgressBar());
+            unlockAndStartStudentNotebook();
+        }
+    }
+
+    private void unlockAndFinish() {
+        deviceLockingService.unlock(this);
+        finish();
+    }
+
+    private void unlockAndStartStudentNotebook() {
+        deviceLockingService.unlock(this);
+        Intent intent = new Intent(this, StudentNotebookActivity.class);
+        intent.putExtra(BaseNotebookActivity.SECTION_ID_KEY, section.getId());
+        startActivity(intent);
+        finish();
+    }
+
+    class Listeners {
+        @Subscribe
+        public void sessionJoinedSuccessfully(JoinSessionEvent event) {
+            toaster.makeToast(R.string.joined_lesson);
+        }
+
+        @Subscribe
+        public void sessionJoinFailed(JoinSessionFailureEvent event) {
+            toaster.errorToast(event.getReasonForFailure());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

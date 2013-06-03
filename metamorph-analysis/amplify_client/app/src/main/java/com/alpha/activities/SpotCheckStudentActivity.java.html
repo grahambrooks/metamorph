@@ -1,0 +1,250 @@
+<html><head><title>SpotCheckStudentActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SpotCheckStudentActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/SpotCheckStudentActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import com.alpha.api.domains.Response;
+import com.alpha.api.domains.ResponseType;
+import com.alpha.api.domains.SpotCheckResponse;
+import com.alpha.api.domains.SpotCheckResponseOption;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.events.ResponseEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectFragment;
+import roboguice.inject.InjectView;
+
+public class SpotCheckStudentActivity extends LockedInClassActivity {
+
+    @InjectView(R.id.got_it_option)
+    private View gotItButton;
+
+    @InjectView(R.id.not_sure_option)
+    private View notSureButton;
+
+    @InjectView(R.id.confused_option)
+    private View confusedButton;
+
+    @InjectView(R.id.submit_button)
+    private View submitButton;
+
+    @Inject
+    private PostService postService;
+
+    @InjectFragment(R.id.network_status_spot_check)
+    NetworkStatusFragment networkStatus;
+
+    private SpotCheckSettings spotCheckSettings;
+
+    @VisibleForTesting
+    final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.spot_check_student);
+        setUpClickListenerForSpotCheckResponses();
+        eventBus.register(listeners);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        spotCheckSettings = (SpotCheckSettings) getActivitySettings();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onDestroy() {
+        eventBus.unregister(listeners);
+        super.onDestroy();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected Optional<NetworkStatusFragment> getNetworkStatus() {
+        return Optional.of(networkStatus);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getSpotCheckSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void setUpClickListenerForSpotCheckResponses() {
+        gotItButton.setOnClickListener(toggleOption(SpotCheckResponseOption.GOT_IT));
+        notSureButton.setOnClickListener(toggleOption(SpotCheckResponseOption.NOT_SURE));
+        confusedButton.setOnClickListener(toggleOption(SpotCheckResponseOption.CONFUSED));
+        submitButton.setOnClickListener(submitOption());
+    }
+
+    private View.OnClickListener toggleOption(final SpotCheckResponseOption option) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inactivate(gotItButton, notSureButton, confusedButton);
+                submitButton.setEnabled(true);
+                submitButton.setTag(option);
+                v.setActivated(true);
+            }
+        };
+    }
+
+    private void inactivate(View... views) {
+        for (View view : views) {
+            view.setActivated(false);
+        }
+    }
+
+    private View.OnClickListener submitOption() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (spotCheckSettings.isRunning()) {
+                    SpotCheckResponseOption option = (SpotCheckResponseOption) submitButton.getTag();
+                    Response response = createSpotCheckResponse(option);
+                    postService.addResponse(spotCheckSettings.getPostId(), response);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                } else {
+                    finish();
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            }
+        };
+    }
+
+    private Response createSpotCheckResponse(SpotCheckResponseOption chosenResponse) {
+        return new SpotCheckResponse(chosenResponse, userService.getUser().asAuthor());
+    }
+
+    class Listeners {
+
+        @Subscribe
+        public void onSubmit(ResponseEvent event) {
+            SpotCheckResponse response = (SpotCheckResponse) event.getResponse();
+            if (response.getType().equals(ResponseType.SPOT_CHECK)) {
+                spotCheckSettings.setStudentChoice(response.getSelectedOption());
+                Intent intent = new Intent(SpotCheckStudentActivity.this, SpotCheckStudentResponseActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                finish();
+                startActivity(intent);
+            }
+        }
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onFailed(ResponseFailureEvent event) {
+            submitButton.setEnabled(true);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void onStudentSessionEnded(StudentSessionEndedEvent event) {
+            submitButton.setEnabled(false);
+            gotItButton.setEnabled(false);
+            notSureButton.setEnabled(false);
+            confusedButton.setEnabled(false);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

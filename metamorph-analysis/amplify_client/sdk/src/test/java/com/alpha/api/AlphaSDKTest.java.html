@@ -1,0 +1,399 @@
+<html><head><title>AlphaSDKTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AlphaSDKTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/amplify_client/AlphaSDKTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">29</span>
+    <progress max="100" value="29"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api;
+
+
+import android.accounts.*;
+import android.app.Application;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import com.alpha.api.AlphaSDK.SDKResetSteps;
+import com.alpha.api.authentication.AccountHelper;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.messaging.notifications.gcm.PushNotificationsFacade;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.properties.FeatureManager;
+import com.alpha.api.properties.PropertyFactory;
+import com.alpha.api.runner.ActivityTestInjector;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.shadow.SundaeShadowAccountManager;
+import com.alpha.api.shadow.SundaeShadowApplication;
+import com.xtremelabs.robolectric.Robolectric;
+import org.jivesoftware.smack.XMPPException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.ResourceBundle;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD.TooManyFields")
+@RunWith(AmplifySDKTestRunner.class)
+public class AlphaSDKTest {
+
+    public static final String TEST_REGISTRATION_ID = "test_registration_id";
+
+    private static final Integer CONFIG_PROPERTIES_RES_ID = 1;
+    private static final Integer FEATURES_RES_ID = 2;
+
+    public static final String ENVIRONMENT_NAME = "unit_test_environment";
+
+    public static final String DELETE_URI = "delete uri";
+
+    private AlphaSDK alphaSDK;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private StudentSession studentSession;
+    @Mock
+    private PackageManager packageManager;
+    @Mock
+    private PushNotificationsFacade pushNotificationsFacade;
+    @Mock
+    private AccountHelper accountHelper;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Resources resources;
+    private File databaseDirectory;
+    private File prefsDirectory;
+    private File gcmPrefsFile;
+
+    private File userPrefsFile;
+
+    Application spyApplication;
+    @Mock
+    private Account account1;
+    @Mock
+    private Account account2;
+    @Mock
+    private AccountManagerFuture<Boolean> accountManagerResult;
+    @Mock
+    private PropertyFactory propertyFactory;
+    @Mock
+    private Environment environment;
+    @Mock
+    private FeatureManager featureManager;
+
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        ActivityTestInjector<AlphaSDK> testInject = new ActivityTestInjector<AlphaSDK>(this, AlphaSDK.class);
+        testInject.bindInstance(TeacherSession.class, teacherSession);
+        testInject.bindInstance(StudentSession.class, studentSession);
+        testInject.bindInstance(PushNotificationsFacade.class, pushNotificationsFacade);
+        testInject.bindInstance(AccountHelper.class, accountHelper);
+        testInject.bindInstance(WebServices.class, webServices);
+        testInject.bindMocksToContext();
+        setupExampleProperties();
+        setupExampleFeatures();
+        setupTemporaryApplicationDataDirectory();
+        getShadowAccountManager().setRemoveAccountResult(accountManagerResult);
+        alphaSDK = new AlphaSDK(spyApplication, propertyFactory);
+    }
+
+    private void setupExampleProperties() throws NameNotFoundException {
+        spyApplication = spy(Robolectric.application);
+        given(spyApplication.getPackageManager()).willReturn(packageManager);
+        given(packageManager.getResourcesForApplication(anyString())).willReturn(resources);
+        given(resources.getIdentifier(Matchers.eq("environment"), Matchers.eq("raw"), anyString())).willReturn(CONFIG_PROPERTIES_RES_ID);
+        given(resources.openRawResource(CONFIG_PROPERTIES_RES_ID)).willReturn(new ByteArrayInputStream(new byte[0]));
+        given(propertyFactory.createEnvironment(any(ResourceBundle.class))).willReturn(environment);
+
+        given(environment.getName()).willReturn(ENVIRONMENT_NAME);
+        given(environment.getDeleteRegistrationIdURI(TEST_REGISTRATION_ID)).willReturn(DELETE_URI);
+
+    }
+
+    private void setupExampleFeatures() throws NameNotFoundException {
+        spyApplication = spy(Robolectric.application);
+        given(spyApplication.getPackageManager()).willReturn(packageManager);
+        given(packageManager.getResourcesForApplication(anyString())).willReturn(resources);
+        given(resources.getIdentifier(Matchers.eq("features"), Matchers.eq("raw"), anyString())).willReturn(FEATURES_RES_ID);
+        given(resources.openRawResource(FEATURES_RES_ID)).willReturn(new ByteArrayInputStream(new byte[0]));
+        given(propertyFactory.createFeatureManager(any(Environment.class), anyString())).willReturn(featureManager);
+    }
+
+    @Test
+    public void shouldLoadEnvironment() {
+        verify(propertyFactory).createEnvironment(any(ResourceBundle.class));
+    }
+
+    @Test
+    public void shouldLoadFeatureManager() {
+        verify(propertyFactory).createFeatureManager(any(Environment.class), anyString());
+
+        assertThat(alphaSDK.getFeatureManager(), is(featureManager));
+    }
+
+    @Test
+    public void shouldShutDownTheTeacherSessionWhenResettingTheSDK() {
+        alphaSDK.reset();
+        verify(teacherSession).shutdown();
+    }
+
+    @Test
+    public void shouldShutDownTheStudentSessionWhenResettingTheSDK() {
+        alphaSDK.reset();
+        verify(studentSession).shutdown();
+    }
+
+    @Test
+    public void shouldDeleteDatabaseDirectory() throws IOException {
+        alphaSDK.reset();
+
+        assertThat(databaseDirectory.exists(), is(false));
+    }
+
+    @Test
+    public void shouldNotDeleteTheApplicationSharedPrefsDirectory() throws IOException {
+        alphaSDK.reset();
+        assertThat(prefsDirectory.exists(), is(true));
+
+    }
+
+    @Test
+    public void shouldNotDeleteTheGCMPrefsFile() throws IOException {
+        alphaSDK.reset();
+        assertThat(gcmPrefsFile.exists(), is(true));
+
+    }
+
+    @Test
+    public void shouldDeleteTheUserPrefsFile() throws IOException {
+        alphaSDK.reset();
+        assertThat(userPrefsFile.exists(), is(false));
+
+    }
+
+
+    @Test
+    public void shouldDeleteAllAccounts() {
+        SundaeShadowAccountManager shadowAccountManager = getShadowAccountManager();
+        shadowAccountManager.addAccount(account1);
+        shadowAccountManager.addAccount(account2);
+
+        assertThat(shadowAccountManager.getAccounts().length, is(2));
+        alphaSDK.reset();
+        assertThat(shadowAccountManager.getAccounts().length, is(0));
+    }
+
+    @Test
+    public void shouldStateAccountDeletionFailedIfCouldNotRemoveAccount() throws IOException, AuthenticatorException, OperationCanceledException {
+        getShadowAccountManager().addAccount(account1);
+        when(accountManagerResult.getResult()).thenReturn(false);
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+        assertThat(failedStepSDKs.contains(SDKResetSteps.REMOVING_ACCOUNTS), is(true));
+    }
+
+    @Test
+    public void shouldStateAccountDeletionFailedIfExceptionIsThrownWhenDeletingAccount() throws IOException, AuthenticatorException, OperationCanceledException {
+        getShadowAccountManager().addAccount(account1);
+        when(accountManagerResult.getResult()).thenThrow(AuthenticatorException.class);
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+        assertThat(failedStepSDKs.contains(SDKResetSteps.REMOVING_ACCOUNTS), is(true));
+    }
+
+    @Test
+    public void shouldStateDataDeltetionFailedIfExceptionIsThrowWhenDeletingData() throws IOException {
+        setInvalidAppicationDataDirectory();
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+        assertThat(failedStepSDKs.contains(SDKResetSteps.DELETING_DATA), is(true));
+    }
+
+    @Test
+    public void shouldContinueToAttemptToRemoveAccountsEvenWhenExceptionIsThrown() throws IOException, AuthenticatorException, OperationCanceledException {
+        getShadowAccountManager().addAccount(account1);
+        getShadowAccountManager().addAccount(account2);
+        when(accountManagerResult.getResult()).thenThrow(AuthenticatorException.class).thenReturn(true);
+
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+
+        assertThat(failedStepSDKs.contains(SDKResetSteps.REMOVING_ACCOUNTS), is(true));
+        assertThat(getShadowAccountManager().timesRemovalAttempted(), is(2));
+
+    }
+
+    @Test
+    public void shouldStateNetworkShutdownFailureIfTeacherSessionThrowsException() {
+        doThrow(XMPPException.class).when(teacherSession).shutdown();
+
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+
+        assertThat(failedStepSDKs.contains(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION), is(true));
+    }
+
+
+    @Test
+    public void shouldStateNetworkShutdownFailureIfStudentSessionThrowsException() {
+        doThrow(XMPPException.class).when(studentSession).shutdown();
+
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+
+        assertThat(failedStepSDKs.contains(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION), is(true));
+    }
+
+    @Test
+    public void shouldNotContainAnyFailureIfAllStepsToResetSucceeds() {
+        Collection<SDKResetSteps> failedStepSDKs = alphaSDK.reset();
+        assertThat(failedStepSDKs.isEmpty(), is(true));
+    }
+
+    @Test
+    public void shouldUnregisterFromPushNotifications() {
+        alphaSDK.reset();
+        verify(pushNotificationsFacade).unregister();
+    }
+
+    @Test
+    public void shouldSpecifyNetworkingErrorIfUnregisteringFromPushNotificationsThrowsException() {
+        doThrow(IOException.class).when(pushNotificationsFacade).unregister();
+        assertThat(alphaSDK.reset().contains(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION), is(true));
+    }
+
+    @Test
+    public void shouldNotCallDeleteRegistrationIdEndpointIfNoAccountIsRegistred() {
+        when(accountHelper.isAccountRegistered()).thenReturn(false);
+        when(pushNotificationsFacade.getCurrentRegistrationId()).thenReturn(TEST_REGISTRATION_ID);
+        alphaSDK.reset();
+        verifyZeroInteractions(webServices);
+    }
+
+    @Test
+    public void shouldNotCallDeleteRegistrationIdEndpointIfTabletIsNotRegistred() {
+        when(accountHelper.isAccountRegistered()).thenReturn(true);
+        when(pushNotificationsFacade.getCurrentRegistrationId()).thenReturn("");
+        alphaSDK.reset();
+        verifyZeroInteractions(webServices);
+    }
+
+    @Test
+    public void shouldReturnNoErrorsAfterDeleteRegistrationIdRequestSucceeded() {
+        when(accountHelper.isAccountRegistered()).thenReturn(true);
+        when(pushNotificationsFacade.getCurrentRegistrationId()).thenReturn(TEST_REGISTRATION_ID);
+        when(webServices.delete(ApiRequest.createDeleteRequest(DELETE_URI))).thenReturn(new HttpClient.Response(200, ""));
+        assertThat(alphaSDK.reset().size(), is(0));
+    }
+
+    @Test
+    public void shouldReturnErrorAfterDeleteRegistrationIdRequestReturnedError() {
+        when(accountHelper.isAccountRegistered()).thenReturn(true);
+        when(pushNotificationsFacade.getCurrentRegistrationId()).thenReturn(TEST_REGISTRATION_ID);
+        when(webServices.delete(ApiRequest.createDeleteRequest(DELETE_URI))).thenReturn(new HttpClient.Response(401, ""));
+        assertThat(alphaSDK.reset().size(), is(1));
+    }
+
+    @Test
+    public void shouldReturnErrorAfterDeleteRegistrationIdRequestFailed() {
+        when(accountHelper.isAccountRegistered()).thenReturn(true);
+        when(pushNotificationsFacade.getCurrentRegistrationId()).thenReturn(TEST_REGISTRATION_ID);
+        when(webServices.delete(ApiRequest.createDeleteRequest(DELETE_URI))).thenThrow(new RuntimeException());
+        assertThat(alphaSDK.reset().size(), is(1));
+    }
+
+    private void setInvalidAppicationDataDirectory() throws IOException {
+        File invalidDirectory = File.createTempFile("robolectric", "invalid-dir");
+        ((SundaeShadowApplication) Robolectric.getShadowApplication()).setApplicationDataDirectory(invalidDirectory);
+    }
+
+    private void setupTemporaryApplicationDataDirectory() throws IOException {
+        File tempDataDir = File.createTempFile("robolectric", "data-dir");
+        tempDataDir.delete();
+        tempDataDir.mkdir();
+        tempDataDir.deleteOnExit();
+
+        databaseDirectory = File.createTempFile("database", "dir", tempDataDir);
+        databaseDirectory.delete();
+        databaseDirectory.mkdir();
+        databaseDirectory.deleteOnExit();
+
+
+        prefsDirectory = File.createTempFile(AlphaSDK.SHARED_PREFS_FOLDER_NAME, "dir", tempDataDir);
+        prefsDirectory.delete();
+        prefsDirectory.mkdir();
+        prefsDirectory.deleteOnExit();
+
+        gcmPrefsFile = File.createTempFile(AlphaSDK.GCM_SHARED_PREFS_FILE_NAME, "file", prefsDirectory);
+        gcmPrefsFile.delete();
+        gcmPrefsFile.createNewFile();
+        gcmPrefsFile.deleteOnExit();
+
+        userPrefsFile = File.createTempFile("USER_PREFS.xml", "file", prefsDirectory);
+        userPrefsFile.delete();
+        userPrefsFile.createNewFile();
+        userPrefsFile.deleteOnExit();
+
+        ((SundaeShadowApplication) Robolectric.getShadowApplication()).setApplicationDataDirectory(tempDataDir);
+    }
+
+    private SundaeShadowAccountManager getShadowAccountManager() {
+        return (SundaeShadowAccountManager) shadowOf(AccountManager.get(spyApplication));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

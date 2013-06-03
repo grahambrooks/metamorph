@@ -1,0 +1,251 @@
+<html><head><title>QuickPollGraphActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollGraphActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/QuickPollGraphActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import com.alpha.activities.adapters.QuickPollResponseCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.amplify.R;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+public class QuickPollGraphActivity extends BaseQuickActivity<QuickPollSettings> {
+
+    public static final String ANSWER_COUNT_KEY = "answerCount";
+
+    @InjectView(R.id.details)
+    private Button detailsButton;
+
+    @Inject
+    private CursorLoaderFactory cursorLoaderFactory;
+    @Inject
+    private QuickPollResponseCursorAdapter quickPollResponseCursorAdapter;
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+    @Inject
+    private PostsDataStore postsDataStore;
+
+    private ViewGroup graphContainer;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.quick_poll_teacher_graph);
+    }
+
+    @Override
+    protected void updateUI(final Long postId) {
+        graphContainer = (ViewGroup) findViewById(R.id.graph_container);
+
+        final int quickPollChoiceCount = getNumberOfOptionsForQuickPoll();
+        quickPollResponseCursorAdapter.init(graphContainer, quickPollChoiceCount, getActiveParticipantsCount());
+
+        QuickPollResponseLoaderInitializer loaderInitializer = cursorLoaderFactory.createQuickPollLoaderInitializer(postId, quickPollResponseCursorAdapter);
+        loaderInitializer.register(getLoaderManager());
+
+        updateResponseStats();
+        setupDetailsButton();
+    }
+
+    @Override
+    protected Post getNewPost() {
+        int numberOfQuickPollAnswers = getIntent().getIntExtra(ANSWER_COUNT_KEY, -1);
+
+        //ToDo This needs to be put in the AddPostTask, however there is an issue with this scaling as this is the only activity that requires other info right now
+        getActivitySettings().setNumberOfOptions(numberOfQuickPollAnswers);
+        User user = userService.getUser();
+        return new Post(PostType.QUICKPOLL, user.asAuthor(), new Date(),
+                user.createPostSectionFromCurrentSection(),
+                getString(R.string.quick_poll),
+                getString(R.string.quick_poll_post_description, numberOfQuickPollAnswers),
+                numberOfQuickPollAnswers,
+                getAllParticipants());
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickPollSettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getQuickPollSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void sessionParticipantAdded(Participant participant) {
+        updateResponseStats();
+    }
+
+    @Override
+    protected void startQuickActivityTask(Post post) {
+        int numberOfOptions = post.getNumberOfQuickPollAnswers();
+        sessionTaskFactory.createQuickPollTask(numberOfOptions).execute();
+    }
+
+    private void setupDetailsButton() {
+        detailsButton.setVisibility(View.VISIBLE);
+        detailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                Intent intent = new Intent(QuickPollGraphActivity.this, QuickPollGraphDetailsActivity.class);
+                if (getIntent().hasExtra(POST_ID_KEY)) {
+                    intent.putExtra(POST_ID_KEY, getIntent().getLongExtra(POST_ID_KEY, -1));
+                }
+                startActivity(intent);
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+
+    private void updateResponseStats() {
+        int activeParticipantsCount = getActiveParticipantsCount();
+        int numberOfQuickPollAnswers = getNumberOfOptionsForQuickPoll();
+        for (int i = 0; i < numberOfQuickPollAnswers; i++) {
+            ViewGroup progressBarParent = (ViewGroup) graphContainer.getChildAt(i);
+            progressBarParent.setVisibility(View.VISIBLE);
+            ProgressBar bar = (ProgressBar) progressBarParent.getChildAt(0);
+            bar.setMax(activeParticipantsCount);
+        }
+        quickPollResponseCursorAdapter.updateResponseStatsText(activeParticipantsCount);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private List<Participant> getAllParticipants() {
+        return newArrayList();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private int getActiveParticipantsCount() {
+        return getAllActiveParticipants().size();
+    }
+
+    private int getNumberOfOptionsForQuickPoll() {
+        Long postId = getCurrentActivityPostId();
+
+        QuickPollSettings quickPollSettings = getActivitySettings();
+
+        // First attempt to check settings from actively running quick poll</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (quickPollSettings != null && quickPollSettings.isRunning()) {
+            Long activePostId = quickPollSettings.getPostId();
+            if (postId.equals(activePostId)) {
+                return quickPollSettings.getNumberOfOptions();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        // Then attempt to retrieve the post from data store
+        Post post = postsDataStore.fetch(postId);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (post != null) {
+            return post.getNumberOfQuickPollAnswers();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        throw new IllegalStateException("Could not determine number of quick poll options");
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

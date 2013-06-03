@@ -1,0 +1,114 @@
+<html><head><title>ShowSharedWithStudentsActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShowSharedWithStudentsActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ShowSharedWithStudentsActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.TextView;
+import com.alpha.api.services.Participant;
+import com.alpha.utils.CharSequences;
+import com.amplify.R;
+import roboguice.inject.InjectView;
+
+import java.util.List;
+
+public class ShowSharedWithStudentsActivity extends SundaeTimedActivity {
+
+    public static final String PARTICIPANTS = ShowSharedWithStudentsActivity.class.getName() + ".PARTICIPANTS";
+
+    @InjectView(R.id.student_display_grid)
+    private GridView studentDisplayGrid;
+
+    @InjectView(R.id.show_shared_with_students_count)
+    private TextView studentSharedCount;
+
+    @InjectView(R.id.done_button)
+    private Button doneButton;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.show_shared_with_students);
+
+        List<Participant> sharedStudents = (List) getIntent().getExtras().getSerializable(PARTICIPANTS);
+        int participantsCount = userService.getCurrentUserSection().getAllParticipantsCount();
+
+        String text = getString(R.string.students_shared_text, sharedStudents.size(), participantsCount);
+        studentSharedCount.setText(CharSequences.highlight(text, getResources(), R.color.primary_orange));
+
+        ArrayAdapter<Participant> adapter = new ArrayAdapter<Participant>(this,
+                R.layout.select_student_group_item, R.id.group_selector_student_name, sharedStudents);
+
+        studentDisplayGrid.setAdapter(adapter);
+        adapter.sort(Participant.NAME_COMPARATOR);
+
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

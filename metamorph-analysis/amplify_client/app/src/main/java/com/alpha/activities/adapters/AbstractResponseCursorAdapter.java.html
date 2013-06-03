@@ -1,0 +1,174 @@
+<html><head><title>AbstractResponseCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AbstractResponseCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/AbstractResponseCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.DataSetObserver;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.api.adapters.ContentJsonCursorAdapter;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.Response;
+import com.alpha.api.domains.ResponseOptions;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static com.alpha.utils.CharSequences.highlight;
+
+public abstract class AbstractResponseCursorAdapter extends ContentJsonCursorAdapter<Response> {
+
+    protected ViewGroup graphContainer;
+    protected Post post;
+    private int numberOfOptions;
+    private int numberOfActiveParticipants;
+
+    protected abstract void setResponseCountForChoices(Map<String, Integer> counts);
+
+    protected abstract void setProgressBars(Map<String, Integer> counts);
+
+    protected abstract Map<String, Integer> initResponseCountMap();
+
+    protected abstract Optional<ProgressBar> getProgressBarForAnswer(ResponseOptions answer);
+
+    protected abstract List<String> queryResponses();
+
+    @Inject
+    public AbstractResponseCursorAdapter(final Context context, int layout) {
+        super(context, layout);
+        registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                if (getResponseCount() > 0) {
+                    populateView(null, null);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void populateView(View view, Response model) {
+        Map<String, Integer> counts = initResponseCountMap();
+        for (String answer : queryResponses()) {
+            counts.put(answer, counts.get(answer) + 1);
+        }
+        resetProgressBars();
+        updateResponseStatsText(numberOfActiveParticipants);
+        setResponseCountForChoices(counts);
+        setProgressBars(counts);
+    }
+
+    private void resetProgressBars() {
+        for (int i = 0; i < numberOfOptions; i++) {
+            ViewGroup progressBarParent = (ViewGroup) graphContainer.getChildAt(i);
+            ProgressBar progressBar = (ProgressBar) progressBarParent.getChildAt(0);
+            progressBar.setMax(numberOfActiveParticipants);
+        }
+    }
+
+    public void updateResponseStatsText(int numberOfActiveParticipants) {
+        this.numberOfActiveParticipants = numberOfActiveParticipants;
+        View parent = (View) graphContainer.getParent();
+        TextView responseStat = (TextView) parent.findViewById(R.id.response_stat);
+        responseStat.setText(responseStatsText(numberOfActiveParticipants));
+    }
+
+    private CharSequence responseStatsText(int activeParticipants) {
+        Resources resources = getContext().getResources();
+        String text = resources.getQuantityString(R.plurals.response_stat, activeParticipants, getResponseCount(), activeParticipants);
+        return highlight(text, resources, R.color.primary_orange);
+    }
+
+    private int getResponseCount() {
+        return getCursor() == null ? 0 : getCursor().getCount();
+    }
+
+    protected void setResponseTextFor(int countTextViewId, String text) {
+        TextView countTextView = (TextView) graphContainer.findViewById(countTextViewId);
+        countTextView.setText(text);
+    }
+
+    protected Optional<ProgressBar> findProgressBar(int id) {
+        return Optional.fromNullable((ProgressBar) graphContainer.findViewById(id));
+    }
+
+    protected List<String> queryResponses(TableColumn tableColumn) {
+        Cursor cursor = getCursor();
+        cursor.moveToFirst();
+
+        List<String> quickPollResponses = new ArrayList<String>();
+        if (cursor.getCount() > 0) {
+            while (!cursor.isAfterLast()) {
+                final String quickPollResponse = cursor.getString(cursor.getColumnIndex(tableColumn.name()));
+                quickPollResponses.add(quickPollResponse);
+                cursor.moveToNext();
+            }
+        }
+        // Cursor is left open since, its maintained by ContentJsonCursorAdapter
+        // cursor.close();
+        return quickPollResponses;
+    }
+
+    public void init(ViewGroup graphContainer, int numberOfOptions, int numberOfActiveParticipants) {
+        this.graphContainer = graphContainer;
+        this.numberOfOptions = numberOfOptions;
+        this.numberOfActiveParticipants = numberOfActiveParticipants;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

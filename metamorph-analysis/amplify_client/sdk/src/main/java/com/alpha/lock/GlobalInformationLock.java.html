@@ -1,0 +1,168 @@
+<html><head><title>GlobalInformationLock.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GlobalInformationLock.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/lock/amplify_client/GlobalInformationLock.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.lock;
+
+import com.alpha.api.services.AmplifyCallable;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+/**
+ * Class which should be used whenever the user objects information is read or database access is performed (Read or write).
+ * All operations should first request access and then relinquish access when wanting to read or write data.It is cruical in multithreaded
+ * environment to always relinquish your lock, as a result it is best to use the following pattern when requesting lock access
+ *
+ * try{
+ *     lock.reqestAccess()
+ *     do some work
+ * } finally {
+ *     lock.relinquishPermission()
+ * }
+ *
+ * The lock used here is a reentrant read/write lock. What this means is that multiple read locks can be acquired by multiple
+ * thread and the call will not block. However as soon as a write lock is acquired all other threads that request the read lock will block until we relinquish
+ * the write lock. Therefore, unlike the read lock, only one write lock can be obtained at any given time.
+ *
+ * Important to note, if the thread which has requested the write lock also goes to request the read lock, the thread will receive the read lock aswell
+ * though it must relinquish all locks it has obtained for other threads to continue doing work.
+ *
+ * The global lock should not be requested by anyone but the UserRefreshTask and the SharedPreferenceUserService.refreshUser
+ */
+@Singleton
+public class GlobalInformationLock {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final long TIMEOUT_PERIOD = 5;
+    private final ReentrantReadWriteLock lock;
+
+    public GlobalInformationLock(){
+        lock = new ReentrantReadWriteLock();
+    }
+
+    protected GlobalInformationLock(ReentrantReadWriteLock lock){
+        this.lock = lock;
+    }
+
+    private void requestPermission() {
+        LOG.trace(Thread.currentThread() + " is requesting the read lock");
+        try {
+            boolean acquired = lock.readLock().tryLock(TIMEOUT_PERIOD, TimeUnit.SECONDS);
+            if (!acquired) {
+                throw new LockTimeoutException();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread got interrupted while trying to acquire read lock",e);
+        }
+        LOG.trace(Thread.currentThread() + " has received the read lock");
+    }
+
+    private void relinquishPermission() {
+        LOG.trace(Thread.currentThread() + " is relinquishing read lock");
+        lock.readLock().unlock();
+    }
+
+    /**
+     * Dont use this, only really needed by the UserRefreshTask & SharedPreferencesUserService
+     */
+    private void requestGlobalAccessLockout() {
+        LOG.trace(Thread.currentThread() + " is requesting the write lock");
+
+        try {
+            boolean acquired = lock.writeLock().tryLock(TIMEOUT_PERIOD, TimeUnit.SECONDS);
+            if (!acquired) {
+                throw new LockTimeoutException();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread got interrupted while trying to acquire read lock", e);
+        }
+        LOG.trace(Thread.currentThread() + " has received the write lock");
+    }
+
+    private void relinquishAccessLockout() {
+        LOG.trace(Thread.currentThread() + " is relinquishing the write lock");
+        lock.writeLock().unlock();
+    }
+
+    public <T> T callWithWriteLock(AmplifyCallable<T> amplifyCallable) {
+        boolean acquired = false;
+        try {
+            requestGlobalAccessLockout();
+            acquired = true;
+            return amplifyCallable.call();
+        } finally {
+            if (acquired) {
+                relinquishAccessLockout();
+            }
+        }
+    }
+
+    protected static final class LockTimeoutException extends RuntimeException {
+        public LockTimeoutException() {
+            super("Timed out waiting to acquire the read lock");
+        }
+    }
+
+    public <T> T callWithReadLock(AmplifyCallable<T> callable) {
+        boolean acquired = false;
+        try {
+            requestPermission();
+            acquired = true;
+            return callable.call();
+        } finally {
+            if (acquired) {
+                relinquishPermission();
+            }
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<html><head><title>StudentSelectorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentSelectorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/StudentSelectorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import com.alpha.api.services.Participant;
+import com.amplify.R;
+
+import java.util.List;
+
+import static com.alpha.utils.CharSequences.highlight;
+import static com.google.common.collect.Lists.newArrayList;
+
+public class StudentSelectorAdapter extends ArrayAdapter<Participant> {
+
+    public StudentSelectorAdapter(Context context) {
+        super(context, R.layout.select_student_group_item, R.id.group_selector_student_name);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        TextView view = (TextView) super.getView(position, convertView, parent);
+        view.setOnClickListener(studentOnClickListener());
+        view.setContentDescription(String.valueOf(position));
+        drawParticipant(view, position);
+        return view;
+    }
+
+    private void drawParticipant(TextView view, int position) {
+        Participant participant = getItem(position);
+        view.setText(participant.getName());
+        view.setActivated(participant.isSelected());
+    }
+
+    private OnClickListener studentOnClickListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View clickedView) {
+                int itemIndex = Integer.parseInt(clickedView.getContentDescription().toString());
+                Participant participant = getItem(itemIndex);
+                participant.toggleSelection();
+                drawParticipant((TextView) clickedView, itemIndex);
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    public CharSequence getSelectedStudentText() {
+        Resources res = getContext().getResources();
+        String text = res.getString(R.string.students_selected_text, numberOfSelectedStudents(), getCount());
+        return highlight(text, res, R.color.primary_orange);
+    }
+
+    public int numberOfSelectedStudents() {
+        int numberOfSelectedStudents = 0;
+        int totalNumberOfStudents = getCount();
+        for (int i = 0; i < totalNumberOfStudents; i++) {
+            if (getItem(i).isSelected()) {
+                ++numberOfSelectedStudents;
+            }
+        }
+        return numberOfSelectedStudents;
+    }
+
+    public List<Participant> selectedStudents() {
+        List<Participant> selected = newArrayList();
+        for (int i = 0; i < getCount(); i++) {
+            Participant student = getItem(i);
+            if (student.isSelected()) {
+                selected.add(student);
+            }
+        }
+        return selected;
+    }
+
+    public boolean studentsSelected() {
+        return numberOfSelectedStudents() != 0;
+    }
+
+    public void selectAllStudents() {
+        for (int i = 0; i < getCount(); i++) {
+            getItem(i).select();
+        }
+        notifyDataSetChanged();
+    }
+
+    public void deselectAllStudents() {
+        for (int i = 0; i < getCount(); i++) {
+            getItem(i).deselect();
+        }
+        notifyDataSetChanged();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

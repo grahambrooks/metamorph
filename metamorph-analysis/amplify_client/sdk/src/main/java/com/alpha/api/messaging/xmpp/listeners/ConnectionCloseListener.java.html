@@ -1,0 +1,229 @@
+<html><head><title>ConnectionCloseListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ConnectionCloseListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ConnectionCloseListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.xmpp.SessionHolder;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.ConnectionClosedEvent;
+import com.alpha.api.services.events.JoinSessionEvent;
+import com.alpha.api.services.events.SessionReconnectEvent;
+import com.alpha.api.services.events.SessionStartEvent;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.utilities.UIUtils;
+import com.alpha.logging.LogUtils;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.ConnectionListener;
+import org.slf4j.Logger;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.alpha.api.messaging.xmpp.XmppSession.Status;
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.CONNECTION_LOST;
+
+public class ConnectionCloseListener implements ConnectionListener {
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final int TWO_MINUTES = 2 * 60 * 1000;
+    private final SessionHolder xmppSession;
+    private final UserService userService;
+    private final EventBus eventBus;
+
+    @VisibleForTesting
+    protected AtomicBoolean timedOut;
+    private final Timer timer;
+
+    public ConnectionCloseListener(SessionHolder xmppSession, UserService userService, EventBus eventBus) {
+        this.xmppSession = xmppSession;
+        this.userService = userService;
+        this.eventBus = eventBus;
+        timer = new Timer();
+        timedOut = new AtomicBoolean(false);
+    }
+
+    @Override
+    public void connectionClosed() {
+        LOGGER.debug("Connection was closed normally.");
+        cleanUp(false);
+    }
+
+    @Override
+    public void connectionClosedOnError(Exception e) {
+        LOGGER.error("Connection was closed abnormally.", e);
+        cleanUp(true);
+        startTimeoutCountdown();
+    }
+
+    private void startTimeoutCountdown() {
+        timer.purge();
+        timedOut.set(false);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                LOGGER.info("Reconnection timer has now expired.");
+                timedOut.set(true);
+            }
+        }, TWO_MINUTES);
+    }
+
+    private void cleanUp(final boolean closedAbnormally) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                if (closedAbnormally) {
+                    userService.session().tryRestart();
+                    eventBus.post(new ConnectionClosedEvent());
+                }
+                return null;
+            }
+        });
+        xmppSession.removeSessionListeners();
+    }
+
+    @Override
+    public void reconnectingIn(int seconds) {
+        if (userService.session().isRestarting()) {
+            UIUtils.postToUiThread(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    eventBus.post(SessionReconnectEvent.IN_PROGRESS);
+                    return null;
+                }
+            });
+        }
+        LOGGER.info("Reconnecting in {} seconds.", seconds);
+    }
+
+    @Override
+    public void reconnectionFailed(Exception e) {
+        LOGGER.warn("Reconnection to messaging server failed.");
+        if (timedOut.get()) {
+            handleTimeout();
+        }
+    }
+
+    @Override
+    public void reconnectionSuccessful() {
+        LOGGER.info("Reconnection to xmpp server successful!");
+        if (timedOut.get()) {
+            handleTimeout();
+            return;
+        }
+        if (userService.session().isRestarting()) {
+            LOGGER.info("Attempting to rejoin session.");
+            final User user = userService.getUser();
+            Status status = xmppSession.rejoin(user);
+            if (status == Status.IN_PROGRESS) {
+                LOGGER.info("Rejoined session successfully!");
+                postSessionStartOrJoin();
+            } else {
+                postSessionEnd();
+                LOGGER.info("No need to rejoin session!");
+            }
+        } else {
+            LOGGER.info("Ignoring successful reconnection because session is not restarting.");
+        }
+    }
+
+    private void postSessionStartOrJoin() {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (userService.isTeacher()) {
+                    eventBus.post(SessionStartEvent.success());
+                } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    eventBus.post(new JoinSessionEvent());
+                }
+                return null;
+            }
+        });
+    }
+
+    private void postSessionEnd() {
+        LOGGER.info("Notifying session end event.");
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                if (userService.isTeacher()) {
+                    eventBus.post(new TeacherSessionEndedEvent(CONNECTION_LOST));
+                } else {
+                    if (userService.getUser().isForceFieldEngaged()) {
+                        userService.getUser().disengageForceField();
+                    }
+                    eventBus.post(new StudentSessionEndedEvent(CONNECTION_LOST));
+                }
+                return null;
+            }
+        });
+    }
+
+    private void handleTimeout() {
+        LOGGER.info("Handling reconnection timeout");
+        xmppSession.endSession();
+        postSessionEnd();
+        timedOut.set(false);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

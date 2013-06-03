@@ -1,0 +1,162 @@
+<html><head><title>ContentJsonCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ContentJsonCursorAdapter.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/adapters/amplify_client/ContentJsonCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.adapters;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.view.View;
+import android.widget.ResourceCursorAdapter;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.google.common.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
+
+public abstract class ContentJsonCursorAdapter<T> extends ResourceCursorAdapter {
+
+    public static final String DEFAULT_CONTENT_COLUMN_NAME = TableColumn.content.name();
+    private final Context context;
+    private final Type type = new TypeToken<T>(getClass()) {
+    }.getRawType();
+    private final String contentColumnName;
+    private final Map<Integer, T> modelCache;
+
+    /**
+     * Creates a new instance of the adapter assuming <code>DEFAULT_CONTENT_COLUMN_NAME</code>
+     * to be the name of the column holding the model json.
+     *
+     * @param context the context
+     * @param layout  the id of the googledrive file
+     * @see #DEFAULT_CONTENT_COLUMN_NAME
+     */
+    public ContentJsonCursorAdapter(Context context, int layout) {
+        this(context, layout, DEFAULT_CONTENT_COLUMN_NAME);
+    }
+
+    /**
+     * Creates a new instance of the adapter. Allows the invoker to specify the name
+     * of the column holding the model json.
+     *
+     * @param context           the context
+     * @param layout            the id of the googledrive file
+     * @param contentColumnName the name of the column holding the json content.
+     *                          The value of this column is deserialized into an instance of the model object.
+     * @see #ContentJsonCursorAdapter(android.content.Context, int, String)
+     */
+    public ContentJsonCursorAdapter(Context context, int layout, String contentColumnName) {
+        super(context, layout, null, false);
+        this.context = context;
+        this.contentColumnName = contentColumnName;
+        this.modelCache = newHashMap();
+    }
+
+    @Override
+    public final void bindView(View view, Context context, Cursor cursor) {
+        T model = getModelAtCurrentPosition(cursor);
+        view.setTag(model);
+        populateView(view, model);
+    }
+
+    @Override
+    public T getItem(int position) {
+        Cursor cursor = getItemFromSuperToAllowSpyingDuringTests(position);
+        return getModelAtCurrentPosition(cursor);
+    }
+
+    @Override
+    protected void onContentChanged() {
+        modelCache.clear();
+        super.onContentChanged();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        modelCache.clear();
+        super.notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetInvalidated() {
+        modelCache.clear();
+        super.notifyDataSetInvalidated();
+    }
+
+    private T getModelAtCurrentPosition(Cursor cursor) {
+        int position = cursor.getPosition();
+        if (modelCache.containsKey(position)) {
+            return modelCache.get(position);
+        }
+
+        T newModel = buildModelForCurrentPosition(cursor);
+        modelCache.put(position, newModel);
+        return newModel;
+    }
+
+    private T buildModelForCurrentPosition(Cursor cursor) {
+        int contentIndex = cursor.getColumnIndex(contentColumnName);
+        String modelJson = cursor.getString(contentIndex);
+        return AmplifyJsonHelper.fromJson(modelJson, type);
+    }
+
+    Cursor getItemFromSuperToAllowSpyingDuringTests(int position) {
+        return (Cursor) super.getItem(position);
+    }
+
+    protected Context getContext() {
+        return context;
+    }
+
+    protected abstract void populateView(View view, T model);
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<html><head><title>TeacherActionBarMiddleContentConfiguration.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherActionBarMiddleContentConfiguration.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/actionbar/amplify_client/TeacherActionBarMiddleContentConfiguration.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionbar;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.TeacherConsoleAction;
+import com.alpha.activities.events.ActivityEventListener;
+import com.alpha.activities.events.TeacherConsoleActivityChangeEvent;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+
+public class TeacherActionBarMiddleContentConfiguration extends ActivityEventListener {
+
+    private final Activity activity;
+    private final UserService userService;
+    private final EventBus eventBus;
+    private final TeacherConsoleAction consoleAction;
+
+    private TextView sectionName;
+    private TextView notification;
+
+    @Inject
+    public TeacherActionBarMiddleContentConfiguration(Activity activity, UserService userService, EventBus eventBus,
+                                                      TeacherConsoleAction consoleAction) {
+        super(activity);
+        this.activity = activity;
+        this.userService = userService;
+        this.eventBus = eventBus;
+        this.consoleAction = consoleAction;
+    }
+
+    protected void configure() {
+        ActionBar actionBar = activity.getActionBar();
+        View component = LayoutInflater.from(activity).inflate(R.layout.teacher_action_bar_middle_component, null);
+
+        actionBar.setCustomView(component, new ActionBar.LayoutParams(Gravity.LEFT));
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        sectionName = (TextView) component.findViewById(R.id.teacher_section_name);
+        notification = (TextView) component.findViewById(R.id.teacher_console_activity_notification);
+    }
+
+    @Override
+    protected void onCreate() {
+        super.onCreate();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.isTeacher()) {
+            configure();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+        if (userService.isTeacher()) {
+            setSectionName();
+            updateActivityNotification(new TeacherConsoleActivityChangeEvent());
+        }
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void setSectionName() {
+        sectionName.setText(userService.getCurrentUserSection().getName());
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void userInformationRefreshed(UserInformationRefreshedEvent event) {
+        if (event.requiresRestart()) {
+            return;
+        }
+
+        setSectionName();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe
+    public void updateActivityNotification(TeacherConsoleActivityChangeEvent _) {
+        if (consoleAction.isActive()) {
+            notification.setText(getString(R.string.teacher_actitivity_console_notification, consoleAction.getName()));
+            notification.setVisibility(View.VISIBLE);
+        } else {
+            notification.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Subscribe
+    public void onEndSession(TeacherSessionEndedEvent event) {
+        if (event.isTeacherInitiated()) {
+            notification.setText(StringUtils.EMPTY);
+            notification.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private String getString(int resId, Object... args) {
+        return activity.getString(resId, args);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<html><head><title>StudentNotebookStateMonitorTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentNotebookStateMonitorTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/listeners/amplify_client/StudentNotebookStateMonitorTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.listeners;
+
+import android.app.Activity;
+import com.alpha.activities.*;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.services.ApplicationMonitoringService;
+import com.alpha.api.services.ApplicationMonitoringServiceConnection;
+import com.alpha.api.services.events.ConnectionClosedEvent;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.SundaeShadowApplication;
+import com.alpha.utils.ApplicationUtils;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.MatcherAssert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf_;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentNotebookStateMonitorTest {
+
+    private StudentNotebookStateMonitor monitor;
+
+    @Mock
+    private ApplicationUtils applicationUtils;
+    @Mock
+    private Activity activity;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ApplicationMonitoringServiceConnection serviceConnection;
+    @Mock
+    private ApplicationMonitoringService service;
+
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        monitor = new StudentNotebookStateMonitor(Robolectric.application, applicationUtils, eventBus, serviceConnection);
+    }
+
+    @Test
+    public void shouldRegisterAsServiceConnectionListenerInTheConstructor() {
+        verify(serviceConnection).setConnectionListener(same(monitor));
+    }
+
+    @Test
+    public void shouldRegisterListenerObjectOnTheEventBusInTheConstructor() {
+        verify(eventBus).register(same(monitor.listeners));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldRegisterForActivityLifeCycleEventsInTheConstructor() {
+        SundaeShadowApplication shadowApplication = shadowOf_(Robolectric.application);
+        MatcherAssert.assertThat(shadowApplication.hasActivityLifeCycleCallbacksRegistered(monitor), is(true));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldNotUpdateStudentWhereaboutsIfServiceDoesNotExist(){
+        when(serviceConnection.stillBoundToService()).thenReturn(false);
+        monitor.onActivityResumed(mock(NotebooksActivity.class));
+
+        verify(serviceConnection, times(0)).getService();
+    }
+
+    @Test
+    public void shouldNotSetHomeScreenLocationOnNonNotebookLauncherActivityResumed() {
+        monitor.lastKnownLocation = StudentLocation.SECTION;
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onActivityResumed(mock(TeacherConsoleActivity.class));
+
+        verify(service, times(0)).updateLocation(StudentLocation.HOME_SCREEN);
+    }
+
+    @Test
+    public void shouldUpdateLocationToHomeScreenOnNotebooksLauncherActivityResumed() {
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onActivityResumed(mock(NotebooksActivity.class));
+
+        verify(service).updateLocation(StudentLocation.HOME_SCREEN);
+    }
+
+    @Test
+    public void shouldUpdateLocationToSectionOnStudentNotebookActivityResumed() {
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onActivityResumed(mock(StudentNotebookActivity.class));
+
+        verify(service).updateLocation(StudentLocation.SECTION);
+    }
+
+    @Test
+    public void shouldUpdateLocationToSectionOnAnyLockedActivity() {
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onActivityResumed(mock(QuickPollStudentActivity.class));
+
+        verify(service).updateLocation(StudentLocation.SECTION);
+    }
+
+    @Test
+    public void shouldUpdateLocationToEyesOnTeacherOnEyesOnTeacherActivityResumed() {
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onActivityResumed(mock(EyesOnTeacherActivity.class));
+
+        verify(service).updateLocation(StudentLocation.EYES_ON_TEACHER);
+    }
+
+    @Test
+    public void shouldNotUpdateStudentLocationIfServiceDoesNotExistWhenGoingToAnotherApplication(){
+        when(serviceConnection.stillBoundToService()).thenReturn(false);
+
+        monitor.onActivityStopped(mock(Activity.class));
+
+        verify(serviceConnection, times(0)).getService();
+    }
+
+    @Test
+    public void shouldSetAnotherApplicationOnAnyActivityStoppedAndWentIntoBackground(){
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+        when(applicationUtils.isApplicationSentToBackground(activity)).thenReturn(true);
+
+        monitor.onActivityStopped(activity);
+
+        verify(service).updateLocation(StudentLocation.ANOTHER_APPLICATION);
+
+    }
+
+    @Test
+    public void shouldNotUpdateLocationOnAnyActivityStoppedButApplicationStillInForeground(){
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(applicationUtils.isApplicationSentToBackground(activity)).thenReturn(false);
+
+        monitor.onActivityStopped(activity);
+
+        verify(serviceConnection, times(0)).getService();
+    }
+
+    @Test
+    public void shouldUpdateStudentLocationWhenServiceConnected() {
+        when(serviceConnection.stillBoundToService()).thenReturn(true);
+        when(serviceConnection.getService()).thenReturn(service);
+
+        monitor.onServiceConnected(null, null);
+
+        verify(service).updateLocation(any(StudentLocation.class));
+    }
+
+    @Test
+    public void shouldBindToTheServiceOnJoiningSession() {
+        monitor.listeners.onSessionJoinEvent(null);
+
+        verify(serviceConnection).open();
+    }
+
+    @Test
+    public void shouldUnbindFromTheServiceOnEndingSession() {
+        monitor.listeners.onSessionEndEvent(null);
+
+        verify(serviceConnection).close();
+    }
+
+    @Test
+    public void shouldUnbindFromTheServiceOnConnectionClosedEvent() {
+        monitor.listeners.onConnectionClosedEvent(new ConnectionClosedEvent());
+
+        verify(serviceConnection).close();
+    }
+
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

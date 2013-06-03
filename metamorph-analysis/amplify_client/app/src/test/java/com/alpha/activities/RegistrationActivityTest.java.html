@@ -1,0 +1,339 @@
+<html><head><title>RegistrationActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RegistrationActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/RegistrationActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">23</span>
+    <progress max="100" value="23"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.widget.TextView;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.services.UserRole;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class RegistrationActivityTest {
+
+    public static final String USER_NAME = "userName";
+    @Inject
+    private RegistrationActivity activity;
+    @Inject
+    GoogleAuthenticationService googleAuthenticationService;
+    @Inject
+    private UserService userService;
+
+    public static final String COM_AMPLIFY = "com.amplify";
+    public static final ComponentName NET_NANNY_DISABLING_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.EnableNetNannyActivity");
+    public static final ComponentName PROVISIONING_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.ProvisioningActivity");;
+    public static final ComponentName WELCOME_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.WelcomeActivity");
+    public static final ComponentName UPDATE_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.UpdateApplicationActivity");
+    public static final ComponentName GET_USERINFO_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.GetUserInfoActivity");
+    public static final ComponentName NET_NANNY_CONFIG_COMPONENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.EnableNetNannyActivity");
+    public static final ComponentName THIRD_PARTY_REGISTRATION_COMPNENT = new ComponentName(COM_AMPLIFY, "com.alpha.activities.ThirdPartyRegistrationActivity");
+
+    public int STEP_FINITO = 119999;
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        newInjector(this, RegistrationActivity.class)
+                .configureActivity();
+    }
+
+    @Test
+    public void shouldFinishOnCreateIfUserIsRegistered() {
+        when(userService.hasUserRegistered()).thenReturn(true);
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldStartEnableNetNannyActivityOnCreateWithoutUserRegistrationAndNoAuthToken() {
+        initializeTestToStep(RegistrationActivity.NET_NANNY_DISABLE_STEP);
+
+        Intent nextStartedActivity = shadowOf(activity).getNextStartedActivity();
+        assertThat(nextStartedActivity.getComponent().getClassName(), is(EnableNetNannyActivity.class.getName()));
+    }
+
+    private void simulateNextStep(ComponentName component){
+        simulateNextStep(component, null, null);
+    }
+
+    private void simulateNextStep(ComponentName component, Map<String, Object> extras, Intent resultIntent){
+        Intent intent = new Intent().setComponent(component);
+        if(extras != null){
+            Set<String> keys = extras.keySet();
+            for(String key:keys){
+                intent.putExtra(key, (Serializable)extras.get(key));
+            }
+        }
+
+        shadowOf(activity).receiveResult(intent, Activity.RESULT_OK, resultIntent);
+        shadowOf(activity).getNextStartedActivity();
+    }
+
+    private void initializeTestToStep(int step){
+        activity.onCreate(null);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.NET_NANNY_DISABLE_STEP){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        Map<String, Object> extras = new HashMap<String, Object>();
+        extras.put(EnableNetNannyActivity.EXTRA_ENABLE, Boolean.FALSE);
+        simulateNextStep(NET_NANNY_DISABLING_COMPONENT, extras, null);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.PROVISIONING_APK_CHECK){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        simulateNextStep(PROVISIONING_COMPONENT);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.GOOGLE_ACCOUNT_SETUP_STEP){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        when(googleAuthenticationService.isAccountRegistered()).thenReturn(true);
+        when(userService.getAccountName()).thenReturn("eeeeeee");
+        simulateNextStep(WELCOME_COMPONENT);
+
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.UPDATE_APPLICATION_STEP){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        simulateNextStep(UPDATE_COMPONENT);
+
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.GET_USER_INFO_STEP){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        String googleToken = "token";
+        UserRole userRole = UserRole.STUDENT;
+        Intent intent = new Intent();
+        intent.putExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA, googleToken);
+        intent.putExtra(GetUserInfoActivity.USER_INFO_EXTRA, userRole);
+        simulateNextStep(GET_USERINFO_COMPONENT, null, intent);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.NET_NANNY_CONFIG_STEP){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        extras = new HashMap<String, Object>();
+        extras.put(EnableNetNannyActivity.EXTRA_ENABLE, Boolean.TRUE);
+        extras.put(EnableNetNannyActivity.EXTRA_USER_ROLE, userRole);
+        simulateNextStep(NET_NANNY_CONFIG_COMPONENT, extras, null);
+
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(step == RegistrationActivity.THIRD_PARTY_REGISTRATION){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        Intent thirdIntent = new Intent().setComponent(THIRD_PARTY_REGISTRATION_COMPNENT);
+        thirdIntent.putExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA, googleToken);
+        shadowOf(activity).receiveResult(thirdIntent, Activity.RESULT_OK, null);
+    }
+
+    @Test
+    public void shouldStartProvisioningAfterEnableNetNannyActivity() {
+        initializeTestToStep(RegistrationActivity.PROVISIONING_APK_CHECK);
+        assertNextActivity(ProvisioningActivity.class.getName());
+    }
+
+    @Test
+    public void shouldStartWelcomeActivityAfterProvisioning() {
+        when(userService.getAccountName()).thenReturn("");
+        when(googleAuthenticationService.isAccountRegistered()).thenReturn(false);
+
+        initializeTestToStep(RegistrationActivity.GOOGLE_ACCOUNT_SETUP_STEP);
+
+        assertNextActivity(WelcomeActivity.class.getName());
+    }
+
+    @Test
+    public void shouldStartUpdateActivityAfterWelcome() {
+        initializeTestToStep(RegistrationActivity.UPDATE_APPLICATION_STEP);
+
+        assertNextActivity(UpdateApplicationActivity.class.getName());
+    }
+
+    @Test
+    public void shouldGetUserInfoAfterWelcomeActivity() {
+        initializeTestToStep(RegistrationActivity.GET_USER_INFO_STEP);
+        assertNextActivity( GetUserInfoActivity.class.getName());
+    }
+
+    @Test
+    public void shouldConfigureNetNannyAfterGetUserInfo() {
+        initializeTestToStep(RegistrationActivity.NET_NANNY_CONFIG_STEP);
+        assertNextActivity( EnableNetNannyActivity.class.getName());
+    }
+
+    @Test
+    public void
+    shouldStartThirdPartyRegistrationAfterEnableNN() {
+        initializeTestToStep(RegistrationActivity.THIRD_PARTY_REGISTRATION);
+        assertNextActivity(ThirdPartyRegistrationActivity.class.getName());
+    }
+
+    @Test
+    public void shouldFinishWhenSuccessfullyReturningFromThirdPartyRegistrationActivity() {
+        initializeTestToStep(STEP_FINITO);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldShowErrorWhenActivityFailsToUpdateOrRegister() {
+        initializeTestToStep(RegistrationActivity.GOOGLE_ACCOUNT_SETUP_STEP);
+        when(googleAuthenticationService.isAccountRegistered()).thenReturn(true);
+        when(userService.getAccountName()).thenReturn(USER_NAME);
+
+        activity.onCreate(null);
+
+        shadowOf(activity).receiveResult(new Intent().setComponent(UPDATE_COMPONENT), RegistrationActivity.REGISTRATION_STEP_FAILED, null);
+
+        TextView progressText = (TextView) activity.findViewById(R.id.progress_text);
+
+        assertThat(progressText.getText().toString(), is(activity.getApplicationContext().getString(R.string.registration_failed_message)));
+    }
+
+    public void assertNextActivity(String nextActivityClassName) {
+        Intent nextStartedActivity = shadowOf(activity).getNextStartedActivity();
+        assertThat(nextStartedActivity.getComponent().getClassName(), is(nextActivityClassName));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

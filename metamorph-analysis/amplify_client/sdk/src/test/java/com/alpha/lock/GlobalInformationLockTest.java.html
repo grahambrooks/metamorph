@@ -1,0 +1,197 @@
+<html><head><title>GlobalInformationLockTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GlobalInformationLockTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/lock/amplify_client/GlobalInformationLockTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.lock;
+
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.AmplifyCallable;
+import com.alpha.lock.GlobalInformationLock.LockTimeoutException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+@RunWith(AmplifySDKTestRunner.class)
+public class GlobalInformationLockTest {
+
+    private GlobalInformationLock globalInformationLock;
+    @Mock
+    private ReentrantReadWriteLock lock;
+    @Mock
+    private ReadLock readLock;
+    @Mock
+    private WriteLock writeLock;
+    @Mock
+    private AmplifyCallable callable;
+
+    @Before
+    public void setUp() throws InterruptedException {
+        initMocks(this);
+        globalInformationLock = new GlobalInformationLock(lock);
+        given(lock.readLock()).willReturn(readLock);
+        given(lock.writeLock()).willReturn(writeLock);
+        given(readLock.tryLock(anyLong(), any(TimeUnit.class))).willReturn(true);
+        given(writeLock.tryLock(anyLong(), any(TimeUnit.class))).willReturn(true);
+    }
+
+    @Test
+    public void shouldAcquireReadLockUsingTimeout() throws InterruptedException {
+        globalInformationLock.callWithReadLock(callable);
+        verify(readLock).tryLock(anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    public void shouldAcquireWriteLockUsingTimeout() throws InterruptedException {
+        globalInformationLock.callWithWriteLock(callable);
+        verify(writeLock).tryLock(anyLong(), any(TimeUnit.class));
+    }
+
+    @Test(expected = LockTimeoutException.class)
+     public void shouldThrowExceptionIfAcquiringReadLockFails() throws InterruptedException {
+        when(readLock.tryLock(anyLong(), any(TimeUnit.class))).thenReturn(false);
+        globalInformationLock.callWithReadLock(callable);
+    }
+
+    @Test(expected = LockTimeoutException.class)
+    public void shouldThrowExceptionIfAcquiringWriteLockFails() throws InterruptedException {
+        when(writeLock.tryLock(anyLong(), any(TimeUnit.class))).thenReturn(false);
+        globalInformationLock.callWithWriteLock(callable);
+    }
+
+    @Test
+    public void shouldReleaseReadLock(){
+        globalInformationLock.callWithReadLock(callable);
+        verify(readLock).unlock();
+    }
+
+    @Test
+    public void shouldReleaseWriteLock(){
+        globalInformationLock.callWithWriteLock(callable);
+        verify(writeLock).unlock();
+    }
+
+    @Test
+    public void shouldExecuteCallableWhileReadLockIsObtained() throws InterruptedException {
+        when(readLock.tryLock(anyLong(), isA(TimeUnit.class))).thenReturn(true);
+        globalInformationLock.callWithReadLock(callable);
+        InOrder inOrder = inOrder(readLock, callable);
+        inOrder.verify(readLock).tryLock(anyLong(), isA(TimeUnit.class));
+        inOrder.verify(callable).call();
+        inOrder.verify(readLock).unlock();
+    }
+
+    @Test
+    public void shouldExecuteCallableWhileWriteLockIsObtained() throws InterruptedException {
+        when(writeLock.tryLock(anyLong(), isA(TimeUnit.class))).thenReturn(true);
+        globalInformationLock.callWithWriteLock(callable);
+        InOrder inOrder = inOrder(writeLock, callable);
+        inOrder.verify(writeLock).tryLock(anyLong(), isA(TimeUnit.class));
+        inOrder.verify(callable).call();
+        inOrder.verify(writeLock).unlock();
+    }
+
+    @Test
+      public void shouldNotRelinquishReadLockIfLockNotAcquired() throws InterruptedException {
+        when(readLock.tryLock(anyLong(), isA(TimeUnit.class))).thenReturn(false);
+        try {
+            globalInformationLock.callWithReadLock(callable);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (LockTimeoutException e) {
+            // swallow and continue test
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(readLock, never()).unlock();
+    }
+
+    @Test
+    public void shouldNotRelinquishWriteLockIfLockNotAcquired() throws InterruptedException {
+        when(writeLock.tryLock(anyLong(), isA(TimeUnit.class))).thenReturn(false);
+        try {
+            globalInformationLock.callWithWriteLock(callable);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (LockTimeoutException e) {
+            // swallow and continue test
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(writeLock, never()).unlock();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

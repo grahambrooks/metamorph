@@ -1,0 +1,490 @@
+<html><head><title>SharePostActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SharePostActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/SharePostActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">32</span>
+    <progress max="100" value="32"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.shadows.ShadowActivity;
+import com.xtremelabs.robolectric.shadows.ShadowAlertDialog;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyZeroInteractions;
+import static org.mockito.BDDMockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings({"PMD.TooManyMethods", "ClassWithTooManyMethods", "PMD.TooManyFields"})
+@RunWith(SundaeRobolectricTestRunner.class)
+public class SharePostActivityTest {
+
+    private static final String BLANK_TEXT = "";
+    private static final String DISCUSSION_TOPIC = "Why is the rum gone?";
+    private static final Participant PARTICIPANT = new Participant(1L, "Harry");
+    public static final String EXTRA_INITIAL_TEXT = "initial text";
+    public static final String SECTION_NAME = "section name";
+
+    @Inject private SharePostActivity activity;
+
+    @Mock private UserService userService;
+    @Mock private PostService postService;
+    @Mock private Toaster toaster;
+
+    @Mock private Post post;
+    @Mock private PostAuthor author;
+    @Mock private User user;
+    @Mock private Section section;
+    @Mock private Intent intent;
+
+    private Button cancelButton;
+    private EditText postText;
+    private Button shareButton;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(userService.isTeacher()).willReturn(true);
+        given(userService.getUser()).willReturn(user);
+        given(section.getName()).willReturn(SECTION_NAME);
+
+        List<Section> sections = new ArrayList<Section>();
+        sections.add(new Section(null, 0L, SECTION_NAME, null));
+        when(userService.getUser().getSections()).thenReturn(sections);
+
+        newInjector(this, SharePostActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(Toaster.class, toaster)
+                .configureActivity();
+
+        activity.setIntent(intent);
+        activity.onCreate(null);
+        activity.onResume();
+
+        cancelButton = (Button) activity.findViewById(R.id.cancel_button);
+        postText = (EditText) activity.findViewById(R.id.post_text);
+        shareButton = (Button) activity.findViewById(R.id.share_button);
+    }
+
+    @Test
+    public void shouldNotSendPostWhenDialogShareButtonClickedWhenInputIsBlank() {
+        postText.setText(BLANK_TEXT);
+
+        shareButton.performClick();
+
+        verifyZeroInteractions(postService);
+    }
+
+    @Test
+    public void shouldReenableSubmitButtonWhenMessageIsBlank() {
+        postText.setText(BLANK_TEXT);
+
+        shareButton.setEnabled(false);
+        shareButton.performClick();
+
+        assertThat(shareButton.isEnabled(), is(true));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisplayErrorToastMessageOnPostFailure() {
+        activity.onFailure(ApiErrorReason.INTERNAL_ERROR);
+
+        verify(toaster).errorToast(ApiErrorReason.INTERNAL_ERROR, R.string.sharing_post_failure);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldReenableSubmitButtonOnPostFailure() {
+        shareButton.setEnabled(false);
+
+        activity.onFailure(ApiErrorReason.INTERNAL_ERROR);
+
+        assertThat(shareButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldClearEditTextFieldOnPostSuccess() {
+        shareButton.performClick();
+        postText.setText("Hello");
+
+        activity.onSuccess(post);
+
+        assertEquals(postText.getText().toString(), "");
+    }
+
+    @Test
+    public void shouldDisplayConfirmationToastMessageOnPostSuccess() {
+        activity.onSuccess(post);
+
+        verify(toaster).makeToast(R.string.post_shared);
+    }
+
+    @Test
+    public void shouldDismissCurrentActivityWhenPostIsSharedSuccessfully() {
+        activity.onSuccess(post);
+
+        ShadowActivity shadowActivity = shadowOf(activity);
+        assertTrue(shadowActivity.isFinishing());
+    }
+
+    @Test
+    public void shouldFindShareableEditText() {
+        assertThat(postText.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHaveCancelButton() {
+        assertThat(cancelButton.getVisibility(), is(View.VISIBLE));
+        assertThat(cancelButton.getText().toString(), is("Cancel"));
+    }
+
+    @Test
+    public void shouldClearEditTextWhenPressCancelButton() {
+        postText.setText("Hi, I am text");
+        cancelButton.performClick();
+        assertThat(postText.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldShareADiscussionPostWithSpecificValuesWhenShareButtonPressed() {
+        when(post.getAuthor()).thenReturn(author);
+        when(userService.getUser()).thenReturn(user);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+
+        postText.setText(DISCUSSION_TOPIC);
+        shareButton.performClick();
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        verify(postService).addPost(postCaptor.capture(), eq(activity));
+        Post actualPost = postCaptor.getValue();
+        assertThat(actualPost.getPostType(), is(PostType.DISCUSSION));
+        assertThat(actualPost.getCreatedOn(), is(nullValue()));
+        assertThat(actualPost.getAuthor(), is(user.asAuthor()));
+        assertThat(actualPost.getPostSection().getName(), is(SECTION_NAME));
+        assertThat(actualPost.getTitle(), is(activity.getResources().getString(R.string.discussion)));
+        assertThat(actualPost.getDescription(), is(DISCUSSION_TOPIC));
+        assertThat(actualPost.countOfStudentsSharedWith(), is(0));
+    }
+
+    @Test
+    public void shouldHaveShareButton() {
+        assertThat(shareButton.getVisibility(), is(View.VISIBLE));
+        assertThat(shareButton.getText().toString(), is("Share"));
+    }
+
+    @Test
+    public void shouldUpdateNumberOfStudentsSharedWith() {
+        when(userService.isTeacher()).thenReturn(true);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.areAllStudentsSelected(newArrayList(PARTICIPANT))).thenReturn(false);
+
+        setSelectedStudents(PARTICIPANT);
+
+        Button numberOfStudentsButton = (Button) activity.findViewById(R.id.number_students_button);
+        assertThat(numberOfStudentsButton.getText().toString(), is("1"));
+    }
+
+    private void setSelectedStudents(Participant... students) {
+        Intent intent = new Intent();
+        intent.putExtra(StudentSelectorActivity.PARTICIPANTS, newArrayList(students));
+        activity.onActivityResult(SharePostActivity.REQUEST_CODE, Activity.RESULT_OK, intent);
+        activity.onResume();
+    }
+
+    @Test
+    public void shouldUpdateNumberOfStudentsSharedWithAll() {
+        List<Participant> students = newArrayList(PARTICIPANT);
+        when(userService.isTeacher()).thenReturn(true);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.areAllStudentsSelected(students)).thenReturn(true);
+        Button numberOfStudentsButton = (Button) activity.findViewById(R.id.number_students_button);
+
+        assertThat(numberOfStudentsButton.getText().toString(), is("All"));
+    }
+
+    @Test
+    public void shouldHideShareWithButtonWhenUserIsStudent() {
+        when(userService.isTeacher()).thenReturn(false);
+        activity.onResume();
+
+        Button numberOfStudentsButton = (Button) activity.findViewById(R.id.number_students_button);
+        assertThat(numberOfStudentsButton.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldGetListOfStudentIDFromParticipants() {
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.areAllStudentsSelected(newArrayList(PARTICIPANT))).thenReturn(false);
+
+        setSelectedStudents(PARTICIPANT);
+
+        List<Participant> ids = activity.populatedParticipantsList();
+        assertThat(ids.contains(PARTICIPANT), is(true));
+        assertThat(ids.size(), is(1));
+    }
+
+    @Test
+    public void shouldGetEmptyListOfStudentsIfGettingAll() {
+        List<Participant> students = newArrayList(PARTICIPANT);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.areAllStudentsSelected(students)).thenReturn(true);
+
+        List<Participant> ids = activity.populatedParticipantsList();
+        assertThat(ids.contains(PARTICIPANT), is(false));
+        assertThat(ids.size(), is(0));
+    }
+
+    @Test
+    public void shouldPopulateTextFieldIfIntentContainsInitialTextExtra() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+        when(intent.getStringExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(EXTRA_INITIAL_TEXT);
+
+        activity.onCreate(null);
+
+        EditText postEditText = (EditText) activity.findViewById(R.id.post_text);
+        assertThat(postEditText.getText().toString(), is(EXTRA_INITIAL_TEXT));
+    }
+
+    @Test
+    public void shouldDisplayDialogIfTeacherDoesNotHaveACurrentUserSectionAndThereIsInitialTextExtra() {
+        when(userService.getCurrentUserSection()).thenReturn(null);
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+
+
+        activity.onCreate(null);
+
+        assertNotNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldFinishIfTeacherDoesNotSelectASectionToShareToIfSharingInitialTextExtra() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+
+        activity.onCreate(null);
+
+        Dialog dialog = ShadowAlertDialog.getLatestDialog();
+        dialog.cancel();
+
+        Mockito.verify(toaster).makeToast(R.string.select_section_before_discussing);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+
+    }
+
+    @Test
+    public void shouldNotDisplayDialogIfNoInitialTextExtra() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(false);
+
+        activity.onCreate(null);
+
+        assertNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldSaveCurrentUserSectionIfAvailableWhenSharingInitialText() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+
+        activity.onCreate(null);
+    }
+
+    @Test
+    public void shouldNotSetupShareButtonIfSharingInitialText() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+        resetUserService();
+
+        activity.onCreate(null);
+        activity.onResume();
+        verify(userService, times(0)).getCurrentUserSection();
+    }
+
+    @Test
+    public void shouldSetupShareButtonIfNotSharingInitialText() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(false);
+        resetUserService();
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        Mockito.verify(userService).getCurrentUserSection();
+    }
+
+    @Test
+    public void shouldReturnUserServiceSectionIfTheresNoInitialText(){
+        Section expected = userService.getCurrentUserSection();
+
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(false);
+
+        Section actual = activity.getSectionToShareTo();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldSetUserSelectedSectionAfterDialogSelection(){
+        List<Section> sections = new ArrayList<Section>();
+        Section[] sectionArray = new Section[sections.size()];
+        sections.add(new Section(null, 0L, SECTION_NAME, null));
+        Dialog dialog = mock(Dialog.class);
+
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+        when(userService.getUser().getSections()).thenReturn(sections);
+
+        activity.onCreate(null);
+        activity.getOnUserSelectedSectionListener(sections.toArray(sectionArray)).onClick(dialog, 0);
+
+        Section shareToSection = activity.getSectionToShareTo();
+        assertThat(shareToSection.getName(), is(SECTION_NAME));
+    }
+
+    @Test
+    public void shouldReturnUserSelectedSectionIfTheresInitialText(){
+        activity.userSelectedSection = mock(Section.class);
+        Section expected = activity.userSelectedSection;
+
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+
+        Section actual = activity.getSectionToShareTo();
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldSendUserSelectedSectionToStudentSelectorActivityIfSharingInitialText() {
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(true);
+
+        activity.onCreate(null);
+
+        Section mockSection = new Section( null,0L, SECTION_NAME, "groupEMail");
+        activity.userSelectedSection = mockSection;
+
+        activity.onResume();
+
+        Button numberOfStudentsButton = (Button) activity.findViewById(R.id.number_students_button);
+        numberOfStudentsButton.performClick();
+
+        Intent nextIntent = shadowOf(activity).getNextStartedActivity();
+        assertThat(nextIntent.getComponent().getClassName(), is(StudentSelectorActivity.class.getName()));
+        Section extraSection = (Section) nextIntent.getSerializableExtra(StudentSelectorActivity.CURRENT_SECTION);
+        assertThat(extraSection, is(mockSection));
+
+    }
+
+    @Test
+    public void shouldNotSendUserSelectedSectionToStudentSelectorIfNotSharingInitialText() {
+        Section mockSection = mock(Section.class);
+        activity.userSelectedSection = mockSection;
+        when(intent.hasExtra(SharePostActivity.INITIAL_TEXT)).thenReturn(false);
+
+        Button numberOfStudentsButton = (Button) activity.findViewById(R.id.number_students_button);
+        numberOfStudentsButton.performClick();
+
+        Intent nextIntent = shadowOf(activity).getNextStartedActivity();
+        assertThat(nextIntent.getComponent().getClassName(), is(StudentSelectorActivity.class.getName()));
+        assertThat(nextIntent.hasExtra(StudentSelectorActivity.CURRENT_SECTION), is(false));
+
+    }
+
+    private void resetUserService() {
+        reset(userService);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(userService.isTeacher()).willReturn(true);
+        given(userService.getUser()).willReturn(user);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

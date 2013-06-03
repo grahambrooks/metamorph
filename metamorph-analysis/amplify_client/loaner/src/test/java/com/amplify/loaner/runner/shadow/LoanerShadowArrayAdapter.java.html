@@ -1,0 +1,113 @@
+<html><head><title>LoanerShadowArrayAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LoanerShadowArrayAdapter.java</h1>
+<p>Scanned path = loaner/src/test/java/com/amplify/loaner/runner/shadow/amplify_client/LoanerShadowArrayAdapter.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.loaner.runner.shadow;
+
+import android.widget.ArrayAdapter;
+import com.xtremelabs.robolectric.internal.Implementation;
+import com.xtremelabs.robolectric.internal.Implements;
+import com.xtremelabs.robolectric.shadows.ShadowArrayAdapter;
+
+@Implements(ArrayAdapter.class)
+public class LoanerShadowArrayAdapter<T> extends ShadowArrayAdapter<T> {
+
+    @Implementation
+    @Override
+    public void add(T object) {
+        super.add(object);
+        notifyDataSetChanged();
+    }
+
+    @Implementation
+    @Override
+    public void clear() {
+        super.clear();
+        notifyDataSetChanged();
+    }
+
+    @Implementation
+    @Override
+    public void remove(T object) {
+        super.remove(object);
+        notifyDataSetChanged();
+    }
+
+    @Implementation
+    @Override
+    public void insert(T object, int index) {
+        super.insert(object, index);
+        notifyDataSetChanged();
+    }
+
+    @Implementation
+    public void addAll(T... collection) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if( collection == null || collection.length == 0 ) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        for( T obj : collection ) {
+            super.add(obj);
+        }
+
+        // Notify data set changed so that the SHADOW Spinner, which registers
+        // a data observer, will update its private item count variable
+        notifyDataSetChanged();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

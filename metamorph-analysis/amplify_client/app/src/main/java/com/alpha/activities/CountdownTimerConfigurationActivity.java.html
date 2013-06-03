@@ -1,0 +1,170 @@
+<html><head><title>CountdownTimerConfigurationActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountdownTimerConfigurationActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/CountdownTimerConfigurationActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.User;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.utils.TimeTickerProvider;
+import com.alpha.widgets.NumberPickerWidget;
+import com.amplify.R;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.alpha.utils.NumberPicker.MAX_COUNT_DOWN_VALUE;
+import static com.alpha.utils.NumberPicker.MIN_COUNT_DOWN_VALUE;
+
+public class CountdownTimerConfigurationActivity extends SundaeTimedActivity implements PostResponseCallback {
+
+    @InjectView(R.id.countdown_start)
+    private Button startCountdown;
+
+    @InjectView(R.id.countdown_start_progress_bar)
+    private ProgressBarViewGroup progressBar;
+
+    @Inject
+    private PostService postService;
+
+    @Inject
+    private Toaster toaster;
+
+    @Inject
+    private TimeTickerProvider timerTickerProvider;
+
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+
+    private NumberPickerWidget countdownMinutes;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.countdown_timer_configuration_view);
+
+        countdownMinutes = new NumberPickerWidget(this, MIN_COUNT_DOWN_VALUE, MAX_COUNT_DOWN_VALUE);
+
+        if (hasSavedTimerToSettings()) {
+            countdownMinutes.setCurrent(getCountdownSettings().getCountdownTime());
+        }
+
+        startCountdown.setOnClickListener(startCountdownListener());
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private CountdownTimerSettings getCountdownSettings() {
+        return userService.session().getCountdownTimerSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private boolean hasSavedTimerToSettings() {
+        return null != getCountdownSettings().getCountdownTime(); //NOPMD
+    }
+
+    @Override
+    public void onFailure(ApiErrorReason reason) {
+        toaster.errorToast(reason);
+        startCountdown.setEnabled(true);
+    }
+
+    @Override
+    public void onSuccess(Post post) {
+        int currentCountdown = countdownMinutes.getCurrent();
+        CountdownFloatingWindow.open(this, userService.getUser().getRole());
+        timerTickerProvider.startWithMinutes(currentCountdown);
+        getCountdownSettings().setCountdownTime(currentCountdown);
+        sessionTaskFactory.createStartCountdownTimerTask().execute();
+        finish();
+    }
+
+    private View.OnClickListener startCountdownListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar.getProgressBar().setVisibility(View.VISIBLE);
+                startCountdown.setEnabled(false);
+                Post timerPost = createTimerPost(userService.getCurrentUserSection().getAllParticipants(), userService.getUser());
+                postService.addQuickActivityPost(timerPost, CountdownTimerConfigurationActivity.this, getCountdownSettings());
+            }
+        };
+    }
+
+    private Post createTimerPost(List<Participant> activeParticipants, User teacher) {
+        Post post = new Post(PostType.TIMER,
+                teacher.asAuthor(),
+                new Date(),
+                teacher.createPostSectionFromCurrentSection(),
+                getResources().getString(R.string.timer),
+                getResources().getString(R.string.timer_post_description),
+                activeParticipants);
+        return post;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<html><head><title>QuickPollResponseCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollResponseCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/QuickPollResponseCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.widget.ProgressBar;
+import com.alpha.api.domains.QuickPollResponseOptions;
+import com.alpha.api.domains.ResponseOptions;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.alpha.api.domains.QuickPollResponseOptions.A;
+import static com.alpha.api.domains.QuickPollResponseOptions.B;
+import static com.alpha.api.domains.QuickPollResponseOptions.C;
+import static com.alpha.api.domains.QuickPollResponseOptions.D;
+import static com.google.common.collect.Maps.newHashMap;
+
+public class QuickPollResponseCursorAdapter extends AbstractResponseCursorAdapter {
+
+    @Inject
+    public QuickPollResponseCursorAdapter(final Context context) {
+        super(context, R.layout.quick_poll_teacher_graph);
+    }
+
+    @Override
+    protected void setProgressBars(Map<String, Integer> counts) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        for (QuickPollResponseOptions answer : QuickPollResponseOptions.values()) {
+            int count = counts.containsKey(answer.name()) ? counts.get(answer.name()) : 0;
+            Optional<ProgressBar> answerProgress = getProgressBarForAnswer(answer);
+            if (answerProgress.isPresent()) {
+                answerProgress.get().setProgress(count);
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override
+    protected Map<String, Integer> initResponseCountMap() {
+        Map<String, Integer> responseCountMap = newHashMap();
+        responseCountMap.put(A.name(), 0);
+        responseCountMap.put(B.name(), 0);
+        responseCountMap.put(C.name(), 0);
+        responseCountMap.put(D.name(), 0);
+        responseCountMap.put(StringUtils.EMPTY, 0);
+        return responseCountMap;
+    }
+
+    @Override
+    protected void setResponseCountForChoices(Map<String, Integer> counts) {
+        setResponseTextFor(R.id.graph_a_progress_count, A + ":" + counts.get(A.name()));
+        setResponseTextFor(R.id.graph_b_progress_count, B + ":" + counts.get(B.name()));
+        setResponseTextFor(R.id.graph_c_progress_count, C + ":" + counts.get(C.name()));
+        setResponseTextFor(R.id.graph_d_progress_count, D + ":" + counts.get(D.name()));
+    }
+
+    @Override
+    protected Optional<ProgressBar> getProgressBarForAnswer(ResponseOptions answer) {
+        QuickPollResponseOptions option = (QuickPollResponseOptions) answer;
+        switch (option) {
+            case A:
+                return findProgressBar(R.id.graph_bar_a);
+            case B:
+                return findProgressBar(R.id.graph_bar_b);
+            case C:
+                return findProgressBar(R.id.graph_bar_c);
+            case D:
+                return findProgressBar(R.id.graph_bar_d);
+            default:
+                return Optional.absent();
+        }
+    }
+
+    @Override
+    protected List<String> queryResponses() {
+        return queryResponses(TableColumn.quick_poll_answer);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<html><head><title>APIRequestBuilderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>APIRequestBuilderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/authentication/amplify_client/APIRequestBuilderTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import com.alpha.api.authentication.APIRequestBuilder.HttpRequest;
+import com.alpha.api.http.QueryParameters;
+import com.alpha.api.services.Event;
+import com.alpha.api.utilities.URLEncoders;
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class APIRequestBuilderTest {
+
+    private static final String URL = "\\url";
+    private APIRequestBuilder builder;
+    private Event event;
+
+    @Before
+    public void setUp() throws Exception {
+        event = mock(Event.class);
+        when(event.asJson()).thenReturn("json");
+        builder = new APIRequestBuilder();
+    }
+
+    @Test
+    public void shouldAddUrlWithHttpPostType() {
+        ApiRequest request = builder.withEvent(event).withUrl(URL, HttpRequest.POST).build();
+        assertThat(request.url(),is(URL));
+        assertThat(request.hasPostBody(),is(true));
+    }
+
+    @Test
+    public void shouldAddUrlWithHttpGetType() {
+        ApiRequest request = builder.withUrl(URL, HttpRequest.GET).build();
+        assertThat(request.url(),is(URL));
+        assertThat(request.isGet(),is(true));
+    }
+
+    @Test
+    public void shouldContainJSonHeader() {
+        ApiRequest request = builder.withEvent(event).withUrl(URL, HttpRequest.POST).build();
+        assertThat(request.headers(), hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+    }
+
+    @Test
+    public void shouldAddEventDataToRequest() {
+        Map<String, String> eventMap = new HashMap<String, String>();
+        eventMap.put("userName", "Manu");
+        eventMap.put("sectionName", "SECTION_A");
+        eventMap.put("content", "Texas");
+
+        ApiRequest request = builder.withEvent(eventMap).withUrl(null, HttpRequest.POST).build();
+        assertThat(request.postBody(), is("{\"content\":\"Texas\",\"userName\":\"Manu\",\"sectionName\":\"SECTION_A\"}"));
+    }
+
+    @Test
+    public void shouldUseEventJsonAsBodyForRequest() {
+        when(event.asJson()).thenReturn("json");
+        ApiRequest request = builder.withEvent(event).withUrl("", HttpRequest.POST).build();
+        assertThat(request.postBody(), is("json"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotAllowOneToSpecifyBothAnEventAndMapAsBody() {
+        Map<String, String> eventMap = new HashMap<String, String>();
+        eventMap.put("userName", "Manu");
+        builder.withEvent(event).withEvent(eventMap).build();
+    }
+
+    @Test
+    public void shouldResetInternalStateAfterBuildIsCalled() {
+        builder.withEvent(event).withUrl("url", HttpRequest.GET).build();
+        assertThat(builder.getEvent(), is((Event)null));
+        assertThat(builder.getHttpRequest(), is((HttpRequest)null));
+        assertThat(builder.getUrl(), is((String)null));
+
+    }
+
+    @Test
+    public void shouldClearEventsMapAfterBuildIsCalled() {
+        Map<String, String> events = new HashMap<String, String>();
+        events.put("Asd","asdsd");
+        builder.withEvent(events).withUrl("url", HttpRequest.GET).build();
+        assertThat(builder.getEventProperties().isEmpty(), is(true));
+    }
+
+    @Test
+    public void shouldAddQueryParameterToRequest() {
+        Date date = Calendar.getInstance().getTime();
+        builder.withUrl(URL, HttpRequest.GET);
+        builder.withQueryParameter(QueryParameters.SINCE, date.toString());
+        ApiRequest request = builder.build();
+        assertThat(request.getParameters().get(QueryParameters.SINCE.getParameterText()), is(URLEncoders.encode(date.toString())));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

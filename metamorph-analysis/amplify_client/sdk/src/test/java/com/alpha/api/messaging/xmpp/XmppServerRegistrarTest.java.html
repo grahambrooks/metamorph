@@ -1,0 +1,144 @@
+<html><head><title>XmppServerRegistrarTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppServerRegistrarTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/amplify_client/XmppServerRegistrarTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.User;
+import com.alpha.api.utilities.AmplifyException;
+import org.jivesoftware.smack.AccountManager;
+import org.jivesoftware.smack.XMPPException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class XmppServerRegistrarTest {
+
+    private static final String LOGIN_ID = "login";
+    private static final String PASSWORD = "pass";
+
+    private XmppServerRegistrar registrar;
+
+    @Mock
+    private User user;
+    @Mock
+    private AmplifyXmppConnection xmppConnection;
+    @Mock
+    private AccountManager accountManager;
+
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        registrar = new XmppServerRegistrar(xmppConnection);
+    }
+
+    @Test
+    public void shouldOpenConnectionToXmppServer() throws Exception {
+        when(xmppConnection.getAccountManager()).thenReturn(accountManager);
+        registrar.registerUser(user);
+        verify(xmppConnection).connect();
+    }
+
+    @Test(expected = AmplifyException.class)
+    public void shouldThrowExceptionIfXmppConnectionExceptionOccurs() throws Exception {
+        doThrow(XMPPException.class).when(xmppConnection).connect();
+        registrar.registerUser(user);
+    }
+
+    @Test
+    public void shouldRegisterUserAfterSuccessfullyOpeningConnection() throws Exception {
+        when(user.getXmppUsername()).thenReturn(LOGIN_ID);
+        when(user.getXmppPassword()).thenReturn(PASSWORD);
+        when(xmppConnection.getAccountManager()).thenReturn(accountManager);
+
+        registrar.registerUser(user);
+
+        verify(accountManager).createAccount(LOGIN_ID, PASSWORD);
+    }
+
+    @Test
+    public void shouldCloseConnectionOnceSuccessfullyRegistered() throws Exception {
+        when(xmppConnection.getAccountManager()).thenReturn(accountManager);
+        when(xmppConnection.isConnected()).thenReturn(true);
+        registrar.registerUser(user);
+        verify(xmppConnection).disconnect();
+    }
+
+    @Test
+    public void shouldCloseConnectionIfConnectedButRegistrationFails() throws Exception {
+        when(xmppConnection.getAccountManager()).thenReturn(accountManager);
+        when(xmppConnection.isConnected()).thenReturn(true);
+        doThrow(XMPPException.class).when(accountManager).createAccount(LOGIN_ID, PASSWORD);
+        try {
+            registrar.registerUser(user);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (Exception expected) {
+            // Ignored
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(xmppConnection).disconnect();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

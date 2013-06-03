@@ -1,0 +1,178 @@
+<html><head><title>EndSessionTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EndSessionTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/EndSessionTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.EndSessionFailureEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class EndSessionTaskTest {
+    public static final long SECTION_ID = 1l;
+    private EndSessionTask task;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private WebServices webService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private Response response;
+    @Mock
+    private Section section;
+    @Mock
+    private Event event;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private Post post;
+    @Mock
+    private Response startSessionUpdateResponse;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        task = new EndSessionTask(teacherSession, webService, eventBus, analyticsAgent, teacher, progressBar);
+    }
+
+    private void setUpEndSession() throws Exception {
+        when(teacher.endSessionEvent()).thenReturn(event);
+        when(teacher.getSession()).thenReturn(classSession);
+        when(teacher.getCurrentSection()).thenReturn(section);
+        when(webService.post(eq(event))).thenReturn(response);
+        when(webService.put(any(ApiRequest.class))).thenReturn(startSessionUpdateResponse);
+        when(post.asRequestJson()).thenReturn("request");
+        when(startSessionUpdateResponse.isSuccess()).thenReturn(true);
+        when(section.getId()).thenReturn(SECTION_ID);
+    }
+
+    @Test
+    public void shouldAttemptToEndSessionWhenHttpRequestSucceeds() throws Exception {
+        setUpEndSession();
+
+        task.call();
+        verify(teacherSession).endSession();
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldCallSessionEndedCallbackOnSuccessfulEnding() throws Exception {
+        when(teacher.getSession()).thenReturn(classSession);
+
+        task.onSuccess(SessionTaskResult.SESSION_ENDED_SUCCESSFULLY);
+        verify(eventBus).post(any(TeacherSessionEndedEvent.class));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldPostCommentStatusChangeEventOnSuccessfulEndingAndAllowComment() {
+        when(teacher.getSession()).thenReturn(classSession);
+
+        task.onSuccess(SessionTaskResult.SESSION_ENDED_SUCCESSFULLY);
+
+        verify(eventBus).post(any(TeacherSessionEndedEvent.class));
+
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldCallSessionEndedCallbackOnUnsuccessfulEnding() throws Exception {
+        task.onSuccess(SessionTaskResult.REQUEST_FAILED);
+        verify(eventBus).post(any(EndSessionFailureEvent.class));
+    }
+
+    @Test
+    public void shouldCallSessionEndFailedOnHttpRequestFailure() throws Exception {
+        task.onException(new Exception());
+        verify(eventBus).post(any(EndSessionFailureEvent.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

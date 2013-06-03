@@ -1,0 +1,98 @@
+<html><head><title>QuickPollResponseLoaderInitializerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollResponseLoaderInitializerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollResponseLoaderInitializerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.CursorLoader;
+import android.database.Cursor;
+import com.alpha.activities.adapters.QuickPollResponseCursorAdapter;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollResponseLoaderInitializerTest {
+    @Mock
+    private QuickPollResponseCursorAdapter quickPollResponseCursorAdapter;
+
+    private QuickPollResponseLoaderInitializer loaderInitializer;
+    private static final Long POST_ID = 1l;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        loaderInitializer = new QuickPollResponseLoaderInitializer(Robolectric.application, POST_ID, quickPollResponseCursorAdapter);
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderWithCommentsURI() throws Exception {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(PostCursorLoaderInitializer.COMMENTS_CURSOR_LOADER_ID, null);
+        assertThat(cursorLoader.getUri().toString(), is("content://com.alpha.api.Sundae/posts/" +
+                POST_ID + "/responses"));
+    }
+
+    @Test
+    public void shouldSwapCursoronLoadFinished() {
+        Cursor cursor = mock(Cursor.class);
+
+        loaderInitializer.onLoadFinished(null, cursor);
+
+        verify(quickPollResponseCursorAdapter).swapCursor(cursor);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

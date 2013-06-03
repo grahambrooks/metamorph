@@ -1,0 +1,185 @@
+<html><head><title>ShareVideoToNotebooksActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShareVideoToNotebooksActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ShareVideoToNotebooksActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ShareVideoToNotebooksActivityTest {
+    public static final String TITLE = "title";
+    @Inject
+    ShareVideoToNotebooksActivity activity;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private Uri contentUri;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        ActivityTestInjector.newInjector(this, ShareVideoToNotebooksActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(Toaster.class, toaster)
+                .configureActivity();
+        given(userService.getUser()).willReturn(user);
+    }
+
+    @Test
+    public void shouldFinishActivityIfSendUriIsNull() throws Exception {
+        setupIntentOnActivity(contentUri);
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldFinishActivityIfUserIsStudent() throws Exception {
+        setupIntentFromPlaylist(TITLE, "/mnt/sdcard/Movies/Khan/algebra/algebra_lesson.mp4");
+        when(userService.isStudent()).thenReturn(true);
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldShareVideoFromPlaylist() throws Exception {
+        setupIntentFromPlaylist(TITLE, Environment.getExternalStorageDirectory() + "/Movies/Khan/algebra/algebra_lesson.mp4");
+
+        activity.onCreate(null);
+        assertThat(activity.isFinishing(), is(false));
+    }
+
+    @Test
+    public void shouldRejectVideosThatAreNotFromKhanAcademy() throws Exception {
+        ShareVideoToNotebooksActivity.MediaData mediaData = new ShareVideoToNotebooksActivity.MediaData();
+        mediaData.path = "/some/random/Path";
+        boolean isNotAKhanAcademyVideo = activity.notAKhanAcademyVideo(Optional.of(mediaData));
+        assertThat(isNotAKhanAcademyVideo, is(true));
+    }
+
+    @Test
+    public void shouldToastMessageForVideosThatAreNotFromKhanAcademy() throws Exception {
+        setupIntentFromPlaylist(TITLE, "/some/random/Path");
+        activity.onCreate(null);
+        verify(toaster).makeToast(R.string.not_a_khan_academy_video);
+    }
+
+    @Test
+    public void shouldAcceptKhanAcademyVideos() throws Exception {
+        ShareVideoToNotebooksActivity.MediaData mediaData = new ShareVideoToNotebooksActivity.MediaData();
+        mediaData.path = Environment.getExternalStorageDirectory() + "/Movies/Khan/algebra/algebra_lesson.mp4";
+        boolean isNotAKhanAcademyVideo = activity.notAKhanAcademyVideo(Optional.of(mediaData));
+        assertThat(isNotAKhanAcademyVideo, is(false));
+    }
+    
+    @Test
+    public void shouldSetMediaDataPathToFilePathNameIfSchemeOfURIisFile() {
+        String videoPath = Environment.getExternalStorageDirectory() + "/Movies/Khan/algebra/algebra_lesson.mp4";
+        when(contentUri.getScheme()).thenReturn("file");
+        when(contentUri.getPath()).thenReturn(videoPath);
+        when(contentUri.getLastPathSegment()).thenReturn("algebra_lesson.mp4");
+
+
+        Optional<ShareVideoToNotebooksActivity.MediaData> mediaData = activity.pathToSharedMedia(contentUri);
+
+        assertThat(mediaData.get().path, is(videoPath));
+    }
+
+    @Test
+    public void shouldSetMediaDataTitleToLastPartOfPathWithoutMp4IfSchemeOfURIisFile() {
+        String videoLastSegmentPath = "algebra_lesson.mp4";
+        when(contentUri.getScheme()).thenReturn("file");
+        when(contentUri.getLastPathSegment()).thenReturn(videoLastSegmentPath);
+
+        Optional<ShareVideoToNotebooksActivity.MediaData> mediaData = activity.pathToSharedMedia(contentUri);
+
+        assertThat(mediaData.get().title, is("algebra_lesson"));
+    }
+
+    private void setupIntentOnActivity(Uri uriToFile) {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_STREAM, uriToFile);
+        activity.setIntent(intent);
+    }
+
+    private void setupIntentFromPlaylist(String title, String mediaPath) {
+        Intent intent = new Intent();
+        intent.putExtra(VideoLearningElement.EXTRA_MEDIA_PATH, mediaPath);
+        intent.putExtra(VideoLearningElement.EXTRA_MEDIA_TITLE, title);
+        activity.setIntent(intent);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

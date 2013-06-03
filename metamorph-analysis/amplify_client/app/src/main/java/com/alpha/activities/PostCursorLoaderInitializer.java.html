@@ -1,0 +1,105 @@
+<html><head><title>PostCursorLoaderInitializer.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostCursorLoaderInitializer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/PostCursorLoaderInitializer.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
+import com.alpha.api.domains.Post;
+import com.alpha.api.services.UserRole;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+public class PostCursorLoaderInitializer implements LoaderManager.LoaderCallbacks<Cursor> {
+    protected static final int COMMENTS_CURSOR_LOADER_ID = 2;
+    public static final int POST_RESPONSE_RECORDS_CURSOR_LOADER_ID = 3;
+    private final Context context;
+    private final PostCursorLoaderCallbacks callbacks;
+    private final Long postId;
+
+    @Inject
+    public PostCursorLoaderInitializer(Context context, @Assisted PostCursorLoaderCallbacks callbacks, @Assisted Post post) {
+        this.context = context;
+        this.callbacks = callbacks;
+        this.postId = post.getId();
+    }
+
+    public void register(LoaderManager loaderManager, UserRole userRole) {
+        loaderManager.initLoader(COMMENTS_CURSOR_LOADER_ID, null, this);
+        if (UserRole.TEACHER.equals(userRole)) {
+            loaderManager.initLoader(POST_RESPONSE_RECORDS_CURSOR_LOADER_ID, null, this);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        switch (loaderId) {
+            case COMMENTS_CURSOR_LOADER_ID:
+                return new CommentCursorLoader(context, callbacks, postId);
+            case POST_RESPONSE_RECORDS_CURSOR_LOADER_ID:
+                return new PostResponseRecordsCursorLoader(context, callbacks, postId);
+            default:
+                throw new IllegalStateException("Unknown cursor loader requested");
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        ((BaseCursorLoader) cursorLoader).onLoadFinished(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        ((BaseCursorLoader) cursorLoader).onLoaderReset();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

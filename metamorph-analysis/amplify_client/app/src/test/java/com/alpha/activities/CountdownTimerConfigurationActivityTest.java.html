@@ -1,0 +1,220 @@
+<html><head><title>CountdownTimerConfigurationActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountdownTimerConfigurationActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/CountdownTimerConfigurationActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.services.*;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.tasks.StartCountdownTimerTask;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.alpha.utils.NumberPicker.DEFAULT_TIMER_VALUE;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class CountdownTimerConfigurationActivityTest {
+
+    @Inject
+    private CountdownTimerConfigurationActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private User teacher;
+    @Mock
+    Section section;
+    @Mock
+    private CountdownTimerSettings countdownTimerSettings;
+    @Mock
+    PostService postService;
+    @Mock
+    Post post;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private StartCountdownTimerTask startCountdownTimerTask;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        newInjector(this, CountdownTimerConfigurationActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .configureActivity();
+
+        given(userService.getUser()).willReturn(teacher);
+        given(userService.session()).willReturn(classSession);
+        given(classSession.getCountdownTimerSettings()).willReturn(countdownTimerSettings);
+        given(sessionTaskFactory.createStartCountdownTimerTask()).willReturn(startCountdownTimerTask);
+    }
+
+    @Test
+    public void shouldIncrementTimeOnClickOfCountUp() {
+        activity.onCreate(null);
+        int incrementCount = 1;
+        incrementCountBy(incrementCount);
+
+        TextView coundownTime = (TextView) activity.findViewById(R.id.number_picker_count);
+        assertThat(coundownTime.getText().toString(), is(String.valueOf(DEFAULT_TIMER_VALUE + incrementCount)));
+    }
+
+    @Test
+    public void shouldDecrementTimeOnClickOfCountDown() {
+        activity.onCreate(null);
+        View countDown = activity.findViewById(R.id.number_picker_down_button);
+        int incrementCount = 2;
+        incrementCountBy(incrementCount);
+
+        countDown.performClick();
+
+        TextView coundownTime = (TextView) activity.findViewById(R.id.number_picker_count);
+        assertThat(coundownTime.getText().toString(), is(String.valueOf(DEFAULT_TIMER_VALUE + (incrementCount - 1))));
+    }
+
+    @Test
+    public void shouldStartTheTimerWithDefaultValueForTheFirstTime() {
+        when(countdownTimerSettings.getCountdownTime()).thenReturn(null);
+
+        activity.onCreate(null);
+
+        TextView coundownTime = (TextView) activity.findViewById(R.id.number_picker_count);
+        assertThat(coundownTime.getText().toString(), is("5"));
+    }
+
+    @Test
+    public void shouldStartTheTimerWithPreviousValue() {
+        when(countdownTimerSettings.getCountdownTime()).thenReturn(15);
+
+        activity.onCreate(null);
+
+        TextView coundownTime = (TextView) activity.findViewById(R.id.number_picker_count);
+        assertThat(coundownTime.getText().toString(), is("15"));
+    }
+
+    @Test
+    public void shouldSaveCountdownTimeToControlSettingsOnSuccessfulPostCreation() {
+        activity.onCreate(null);
+
+        incrementCountBy(2);
+        activity.onSuccess(post);
+
+        ArgumentCaptor<Integer> coundownTimeCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(countdownTimerSettings).setCountdownTime(coundownTimeCaptor.capture());
+        assertThat(coundownTimeCaptor.getValue(), is(7));
+    }
+
+    @Test
+    public void shouldFinishCountdownActivityOnSuccessfulPostCreation() {
+        activity.onCreate(null);
+
+        activity.onSuccess(post);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldSendXmppMessageOnSuccessfulPostCreation() {
+        when(sessionTaskFactory.createStartCountdownTimerTask()).thenReturn(startCountdownTimerTask);
+        activity.onCreate(null);
+
+        activity.onSuccess(post);
+
+        verify(startCountdownTimerTask).execute();
+    }
+
+    @Test
+    public void shouldCreateAPostOnTimerStart() {
+        activity.onCreate(null);
+        Button startButton = (Button) activity.findViewById(R.id.countdown_start);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        Participant firstParticipant = mock(Participant.class);
+        Participant secondParticipant = mock(Participant.class);
+        when(section.getAllParticipants()).thenReturn(asList(firstParticipant, secondParticipant));
+        when(section.getActiveParticipants()).thenReturn(asList(firstParticipant));
+
+        startButton.performClick();
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        verify(postService).addQuickActivityPost(postCaptor.capture(), eq(activity), eq(countdownTimerSettings));
+        Post createdPost = postCaptor.getValue();
+        assertThat(createdPost.getPostType(), is(PostType.TIMER));
+        assertThat(createdPost.getDescription(), is(activity.getString(R.string.timer_post_description)));
+        assertThat(createdPost.getStudentsSharedWith().size(), is(2));
+    }
+
+    private void incrementCountBy(int increment) {
+        View countUp = activity.findViewById(R.id.number_picker_up_button);
+        for (int i = 0; i < increment; i++) {
+            countUp.performClick();
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

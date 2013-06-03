@@ -1,0 +1,135 @@
+<html><head><title>TableColumn.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TableColumn.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/sqlite/amplify_client/TableColumn.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.sqlite;
+
+import static com.alpha.api.repository.sqlite.ColumnType.INTEGER;
+import static com.alpha.api.repository.sqlite.ColumnType.TEXT;
+
+public enum TableColumn {
+
+    _id(INTEGER, true, true),
+    created_on(INTEGER),
+    modified_on(INTEGER),
+    content(TEXT),
+    section_id(INTEGER),
+    name(TEXT),
+    lesson_plan_id(INTEGER),
+    post_id(INTEGER),
+    author_id(INTEGER),
+    author_name(TEXT),
+    learning_element_id(INTEGER, false),
+    question_id(INTEGER, false),
+    selected_option_id(INTEGER, false),
+    app_name(TEXT),
+    app_package(TEXT),
+    answer(TEXT, false),
+    response_type(TEXT, false),
+    note(TEXT, false),
+    course_id(INTEGER),
+    participant_id(INTEGER),
+    quick_poll_answer(TEXT, false),
+    spot_check_answer(TEXT, false),
+    play_order(INTEGER),
+    user_id(INTEGER),
+    playlist_id(INTEGER),
+    type(TEXT),
+    post_type(TEXT),
+    shared_on(INTEGER, false),
+    group_email(TEXT, false),
+    title(TEXT),
+    url(TEXT),
+    image_url(TEXT);
+
+
+    public final boolean notNull;
+    private final ColumnType columnType;
+    protected final boolean key;
+
+
+    private TableColumn(ColumnType columnType) {
+        this(columnType, true);
+    }
+
+    private TableColumn(ColumnType columnType, boolean notNull) {
+        this(columnType, notNull, false);
+    }
+
+    private TableColumn(ColumnType columnType, boolean notNull, boolean key) {
+        this.columnType = columnType;
+        this.notNull = notNull;
+        this.key = key;
+    }
+
+    public static String[] asStrings(TableColumn... columns) {
+        String[] result = new String[columns.length];
+        for (int i = 0; i < columns.length; i++) {
+            TableColumn column = columns[i];
+            result[i] = column.name();
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append(name()).append(" ").append(columnType.name());
+        if (key) {
+            out.append(" PRIMARY KEY");
+        } else if (notNull) {
+            out.append(" NOT NULL");
+        }
+        return out.toString();
+    }
+
+    public String equalTo() {
+        return name() + " = ?";
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<html><head><title>HttpClient.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HttpClient.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/http/amplify_client/HttpClient.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.http;
+
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.properties.Environment;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.net.HttpHeaders;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.util.HashMap;
+import java.util.Map;
+
+@Singleton
+public class HttpClient {
+    private static final String JSON_MEDIA_TYPE = "application/json; charset=utf-8";
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final org.apache.http.client.HttpClient httpClient;
+
+    private final Environment environment;
+    protected static final String API_KEY_HEADER = "X-API-KEY";
+    private static final String AUTH_TOKEN_HEADER = "X-Auth-Token";
+    private final GoogleAuthenticationService authenticationService;
+    private final AnalyticsAgent analyticsAgent;
+    private final Context context;
+
+
+    @Inject
+    public HttpClient(Environment environment,
+                      HttpClientFactory httpClientFactory,
+                      GoogleAuthenticationService authenticationService,
+                      AnalyticsAgent analyticsAgent,
+                      Context context)
+            throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        this.environment = environment;
+        this.authenticationService = authenticationService;
+        this.analyticsAgent = analyticsAgent;
+        this.context = context;
+        httpClient = httpClientFactory.createClient();
+    }
+
+    public Response get(String url, Map<String, String> headers) throws IOException, URISyntaxException {
+        URI uri = new URI(url);
+        return makeRequest(headers, new HttpGet(uri));
+    }
+
+    public Response get(String url, Map<String, String> headers, String authToken) throws IOException, URISyntaxException {
+        URI uri = new URI(url);
+        HttpGet method = new HttpGet(uri);
+        method.addHeader(AUTH_TOKEN_HEADER, authToken);
+        return makeRequest(headers, method);
+    }
+
+
+    public Response post(String url, Map<String, String> headers, String postBody)
+            throws IOException, URISyntaxException {
+        URI uri = new URI(url);
+        HttpPost method = new HttpPost(uri);
+        method.setEntity(new StringEntity(postBody, "UTF-8"));
+        return makeRequest(headers, method);
+    }
+
+    public Response post(String url, String postBody)
+            throws IOException, URISyntaxException {
+        return post(url, headers(), postBody);
+    }
+
+    public Response delete(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        HttpDelete deleteMethod = new HttpDelete(uri);
+        HashMap<String, String> noHeaders = new HashMap<String, String>();
+        return makeRequest(noHeaders, deleteMethod);
+    }
+
+    public Response put(String url, String postBody) throws URISyntaxException, UnsupportedEncodingException {
+        URI uri = new URI(url);
+        HttpPut putMethod = new HttpPut(uri);
+        putMethod.setEntity(new StringEntity(postBody, "UTF-8"));
+        return makeRequest(headers(), putMethod);
+    }
+
+    private Map<String, String> headers() {
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.CONTENT_TYPE, JSON_MEDIA_TYPE);
+        return headers;
+    }
+
+    private Response makeRequest(Map<String, String> headers, HttpRequestBase method) {
+        try {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                method.setHeader(entry.getKey(), entry.getValue());
+            }
+            addApiKeyHeader(method);
+            return executeRequestWithMetrics(method);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private Response executeRequestWithMetrics(HttpRequestBase method) throws IOException {
+        final String HTTP_REQUEST = "http request";
+        final String URI = "uri";
+        final String STATUS_CODE = "status code";
+        final String HTTP_ERROR = "http error";
+        final String HTTP_EXCEPTION = "http exception";
+
+        HttpResponse httpResponse;
+        try {
+            WifiInfo wifiInfo = ((WifiManager)context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo();
+            analyticsAgent.startTimedEvent(HTTP_REQUEST, ImmutableMap.of(URI, method.getURI().toString()));
+            LOG.trace("Executing http request to " + method.getURI().toString());
+            LOG.info(String.format("Wifi statistics: BSSID=%s, Signal Strength=%d, Speed(Mbps)=%d for method=%s", wifiInfo.getBSSID(), wifiInfo.getRssi(), wifiInfo.getLinkSpeed(), method.getMethod()));
+            httpResponse = httpClient.execute(method);
+        } catch (IOException e) {
+            analyticsAgent.logEvent(HTTP_EXCEPTION, ImmutableMap.of(
+                    URI, StringUtils.substring(method.getURI().toString(), 0, 254),
+                    "type", StringUtils.substring(e.getClass().getSimpleName(), 0, 254),
+                    "message", (e.getMessage() == null ? "" : StringUtils.substring(e.getMessage(), 0, 254))));
+            throw e;
+        } finally {
+            analyticsAgent.endTimedEvent(HTTP_REQUEST);
+        }
+        final Response response = createResponse(httpResponse);
+        if (!response.isSuccess()) {
+            analyticsAgent.logEvent(HTTP_ERROR, ImmutableMap.of(URI, method.getURI().toString(), STATUS_CODE, Integer.toString(response.getStatusCode())));
+        }
+        return response;
+    }
+
+    private Response createResponse(HttpResponse httpResponse) throws IOException {
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        String responseBody = EntityUtils.toString(httpResponse.getEntity(), Charsets.UTF_8.name());
+        return new Response(statusCode, responseBody);
+    }
+
+    private void addApiKeyHeader(HttpRequestBase method) {
+        method.addHeader(API_KEY_HEADER, environment.getApiKey());
+
+        if (!method.containsHeader(AUTH_TOKEN_HEADER)) {
+            method.addHeader(AUTH_TOKEN_HEADER, authenticationService.getAuthToken());
+        }
+    }
+
+    public static class Response {
+        private final int statusCode;
+        private final String body;
+
+
+        public Response(int statusCode, String body) {
+            this.statusCode = statusCode;
+            this.body = body;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public String getBody() {
+            return body;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        public boolean isSuccess() {
+            return statusCode >= HttpStatus.SC_OK && statusCode < HttpStatus.SC_MULTIPLE_CHOICES;
+        }
+
+        public <T> T getBodyAs(Type aType) {
+            return AmplifyJsonHelper.fromJson(getBody(), aType);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("{HttpResponse status:%s success:%s}", statusCode, isSuccess());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

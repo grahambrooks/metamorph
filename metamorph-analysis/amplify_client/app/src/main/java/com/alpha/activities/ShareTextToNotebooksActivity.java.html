@@ -1,0 +1,305 @@
+<html><head><title>ShareTextToNotebooksActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShareTextToNotebooksActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ShareTextToNotebooksActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">26</span>
+    <progress max="100" value="26"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import com.alpha.activities.callable.RetrieveThumbnailUriTask;
+import com.alpha.activities.callable.VerifyGDriveDocPermissionsTask.VerifyGDrivePermissionCallback;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.*;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.GoogleDriveUtils;
+import com.alpha.widgets.googledrive.FileLoader;
+import com.alpha.widgets.googledrive.LoadAction;
+import com.alpha.widgets.googledrive.MimeResource;
+import com.amplify.R;
+import com.google.api.services.drive.model.File;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+public class ShareTextToNotebooksActivity extends ShareToNotebooksActivity
+        implements RetrieveThumbnailUriTask.RetrieveThumbnailUriCallback, VerifyGDrivePermissionCallback {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private static final String DOCS_URL = "docs.google.com";
+    private static final String WEB_URL = "http";
+    private static final String GOOGLE_MAPS_URL = "http://m.google.com/";
+    protected static final String KALDOR_BOOK = "com.kaldorgroup.amplify.BOOK";
+    protected static final String KALDOR_SECTION = "com.kaldorgroup.amplify.SECTION";
+    protected static final String KALDOR_CHAPTER = "com.kaldorgroup.amplify.CHAPTER";
+    protected static final String KALDOR_URI = "com.kaldorgroup.amplify.URI";
+
+    @Inject
+    private GoogleDriveUtils googleDriveUtils;
+    @Inject
+    private BackgroundTaskFactory backgroundTaskFactory;
+    @Inject
+    private FileLoader fileLoader;
+    @InjectView(R.id.progress_bar_overlay)
+    private ProgressBarViewGroup progressBarViewGroup;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sharedUrl = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (isUserStudent() || !isURLAvailable()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        setContentView(R.layout.choose_share_notebook);
+
+        if (sharedUrl.contains(DOCS_URL)) {
+            final String fileId = googleDriveUtils.getFileId(sharedUrl);
+            prepareGoogleDriveLayout(fileId);
+        } else if (sharedUrl.startsWith(WEB_URL)) {
+            backgroundTaskFactory.createThumbnailUrlRetriever(sharedUrl, this, progressBarViewGroup.getProgressBar()).execute();
+            shareButton.setOnClickListener(getWebpageLearningElementPostListener());
+        } else if(sharedUrl.contains(GOOGLE_MAPS_URL)){
+            renderShareGoogleMaps();
+        }else if(isEReadable()){
+            renderShareEReader();
+        } else {
+            sendTextToDiscussion(sharedUrl);
+            finish();
+            return;
+        }
+        setupNotebookSharePreview();
+    }
+
+    private void sendTextToDiscussion(String text) {
+        Intent intent = new Intent(this, SharePostActivity.class);
+        intent.putExtra(SharePostActivity.INITIAL_TEXT, text);
+        startActivity(intent);
+    }
+
+    private void renderShareGoogleMaps() {
+        title = getIntent().getExtras().getString(Intent.EXTRA_SUBJECT);
+        String addressInfo = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
+        shareButton.setOnClickListener(getMapsLearningElementPostListener(title, addressInfo));
+    }
+
+    protected boolean isEReadable(){
+        return  getIntent().hasExtra(KALDOR_BOOK) && getIntent().hasExtra(KALDOR_URI);
+    }
+
+    private void renderShareEReader() {
+        String bookTitle = getBookInfo(KALDOR_BOOK);
+        Uri fileUri = (Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        String bookUri = getBookInfo(KALDOR_URI);
+
+        if (StringUtils.isNotEmpty(getBookInfo(KALDOR_SECTION))) {
+            title = getBookInfo(KALDOR_SECTION);
+        } else if (StringUtils.isNotEmpty(getBookInfo(KALDOR_CHAPTER))) {
+            title = getBookInfo(KALDOR_CHAPTER);
+        } else if (StringUtils.isNotEmpty(bookTitle)) {
+            title = bookTitle;
+        } else {
+            title = getBookInfo(Intent.EXTRA_TEXT);
+            bookTitle = getBookInfo(Intent.EXTRA_SUBJECT);
+        }
+
+        shareButton.setOnClickListener(getEReaderLearningElementPostListener(bookTitle, title, fileUri, bookUri));
+    }
+
+    private String getBookInfo(String key) {
+        return getIntent().getStringExtra(key);
+    }
+
+    private void prepareGoogleDriveLayout(final String fileId) {
+        backgroundTaskFactory.createVerifyGDriveDocPermissionTask(this, fileId).execute();
+
+        progressBarViewGroup.getProgressBar().setVisibility(View.VISIBLE);
+        fileLoader.load(fileId, new LoadAction() {
+            @Override
+            public void onSuccess(File file) {
+                progressBarViewGroup.getProgressBar().setVisibility(View.INVISIBLE);
+                title = file.getTitle();
+                int icon = MimeResource.getMimeResource(file.getMimeType()).getDrawable();
+
+                shareButton.setOnClickListener(getGoogleDriveLearningElementPostListener(title, fileId, icon));
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                progressBarViewGroup.getProgressBar().setVisibility(View.INVISIBLE);
+                LOG.error(t.getMessage());
+            }
+        });
+    }
+
+    private SharePostForNoteBookListener getWebpageLearningElementPostListener() {
+        title = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
+        setShareableElementFactory(new ShareableElementFactory() {
+            @Override
+            public LearningElement create() {
+                LearningElement webPageLearningElement = new WebPageLearningElement(title, StringUtils.EMPTY, Uri.parse(sharedUrl), thumbnailUri);
+
+                long longId = getIntent().getLongExtra(PlaylistActivity.EXTRA_ID, 0);
+                if (longId != 0) {
+                    webPageLearningElement.setId(longId);
+                }
+
+                webPageLearningElement.setPlayOrder(FIRST_PLAY_ORDER);
+                return webPageLearningElement;
+            }
+        });
+        return new SharePostForNoteBookListener(title);
+    }
+
+    private SharePostForNoteBookListener getEReaderLearningElementPostListener(final String bookTitle, final String streamTitle, final Uri imageUri, final String bookUri) {
+        setShareableElementFactory(new ShareableElementFactory() {
+            @Override
+            public LearningElement create() {
+                LearningElement eReaderLearningElement = new EReaderLearningElement(streamTitle, StringUtils.EMPTY, bookTitle, imageUri, bookUri);
+
+                long longId = getIntent().getLongExtra(PlaylistActivity.EXTRA_ID, 0);
+                if (longId != 0) {
+                    eReaderLearningElement.setId(longId);
+                }
+
+                eReaderLearningElement.setPlayOrder(FIRST_PLAY_ORDER);
+                return eReaderLearningElement;
+            }
+        });
+        return new SharePostForNoteBookListener(streamTitle);
+    }
+
+    private SharePostForNoteBookListener getGoogleDriveLearningElementPostListener(final String title, final String fileId, final int icon) {
+        setShareableElementFactory(new ShareableElementFactory() {
+            @Override
+            public LearningElement create() {
+                GoogleDriveLearningElement googleDriveLearningElement = new GoogleDriveLearningElement(title, StringUtils.EMPTY, fileId, icon);
+
+                long longId = getIntent().getLongExtra(PlaylistActivity.EXTRA_ID, 0);
+                if (longId != 0) {
+                    googleDriveLearningElement.setId(longId);
+                }
+
+                googleDriveLearningElement.setPlayOrder(FIRST_PLAY_ORDER);
+                googleDriveLearningElement.setFileUri(sharedUrl);
+                return googleDriveLearningElement;
+            }
+        });
+
+        return new SharePostForNoteBookListener(title);
+    }
+
+    private SharePostForNoteBookListener getMapsLearningElementPostListener(final String title, final String description) {
+        setShareableElementFactory(new ShareableElementFactory() {
+            @Override
+            public LearningElement create() {
+                GoogleMapsLearningElement mapsLearningElement = new GoogleMapsLearningElement(title, description);
+
+                long longId = getIntent().getLongExtra(PlaylistActivity.EXTRA_ID, 0);
+                if (longId != 0) {
+                    mapsLearningElement.setId(longId);
+                }
+
+                mapsLearningElement.setPlayOrder(FIRST_PLAY_ORDER);
+                return mapsLearningElement;
+            }
+        });
+        return new SharePostForNoteBookListener(title);
+    }
+
+
+    @Override
+    public void onPreviewThumnailUriReturned(String uriString) {
+        this.thumbnailUri = uriString;
+    }
+
+    @Override
+    public void onPermissionsReceived(Boolean userHasWriteAccess) {
+        if (!userHasWriteAccess) {
+            AlertDialog.Builder builder = new Builder(ShareTextToNotebooksActivity.this);
+            builder.setMessage(getString(R.string.gdrive_error_user_isnt_writer))
+                    .setCancelable(false)
+                    .setTitle(R.string.gdrive_error_trouble_sharing_gdoc)
+                    .setNegativeButton(R.string.ok, new OnClickListener() {
+                        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    }).show();
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

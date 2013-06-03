@@ -1,0 +1,100 @@
+<html><head><title>GCMDeliveredTimeTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GCMDeliveredTimeTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/tasks/amplify_client/GCMDeliveredTimeTask.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.tasks;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+import roboguice.util.SafeAsyncTask;
+
+public class GCMDeliveredTimeTask extends SafeAsyncTask<Boolean> {
+
+    private final Environment environment;
+    private final String registrationId;
+    private final String messageId;
+    private final WebServices webServices;
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public GCMDeliveredTimeTask(WebServices webServices,
+                                Environment environment,
+                                @Assisted("registrationId") String registrationId,
+                                @Assisted("messageId") String messageId) {
+        this.environment = environment;
+        this.registrationId = registrationId;
+        this.messageId = messageId;
+        this.webServices = webServices;
+    }
+
+    @Override
+    public Boolean call() {
+        HttpClient.Response response = null;
+        String uri = environment.getPushMessageReceivedURI(registrationId, messageId);
+
+        if (registrationId.isEmpty()) {
+            LOG.error("Missing registration id for request: %s", uri);
+        } else {
+            try {
+                response = webServices.get(ApiRequest.createGetRequest(uri));
+            } catch (RuntimeException rex) {
+                LOG.error(String.format("Failed to update GCM received status on server for messageId: %s and registrationId: %s", messageId, registrationId), rex);
+            }
+        }
+
+        return response == null ? false : response.isSuccess();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

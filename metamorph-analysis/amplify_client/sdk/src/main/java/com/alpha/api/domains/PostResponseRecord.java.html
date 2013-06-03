@@ -1,0 +1,158 @@
+<html><head><title>PostResponseRecord.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostResponseRecord.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/PostResponseRecord.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">22</span>
+    <progress max="100" value="22"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.repository.sqlite.TableColumn;
+
+import java.util.Date;
+
+public class PostResponseRecord {
+    private final Long _id;
+    private final Long postId;
+    private final Long authorId;
+    private final String authorName;
+    private final Date createdOn;
+
+    public PostResponseRecord(Long postId, Long authorId, String authorName, Date createdOn) {
+        this._id = System.nanoTime();
+        this.postId = postId;
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.createdOn = createdOn;
+    }
+
+    public ContentValues asValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableColumn._id.name(), _id);
+        contentValues.put(TableColumn.post_id.name(), postId);
+        contentValues.put(TableColumn.author_id.name(), authorId);
+        contentValues.put(TableColumn.author_name.name(), authorName);
+        contentValues.put(TableColumn.created_on.name(), createdOn.getTime());
+        return contentValues;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getPostId() {
+        return postId;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public String getAuthorName() {
+        return authorName;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Date getCreatedOn() {
+        return createdOn;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        PostResponseRecord that = (PostResponseRecord) o;
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (authorId == null ? that.authorId != null : !authorId.equals(that.authorId)) {return false;}
+        if (postId == null ? that.postId != null : !postId.equals(that.postId)) {return false;}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (postId == null ? 0 : postId.hashCode());
+        result = 31 * result + (authorId == null ? 0 : authorId.hashCode());
+        return result;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

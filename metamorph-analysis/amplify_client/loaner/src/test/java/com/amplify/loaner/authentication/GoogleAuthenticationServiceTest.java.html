@@ -1,0 +1,216 @@
+<html><head><title>GoogleAuthenticationServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleAuthenticationServiceTest.java</h1>
+<p>Scanned path = loaner/src/test/java/com/amplify/loaner/authentication/amplify_client/GoogleAuthenticationServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.loaner.authentication;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import com.amplify.loaner.authentication.GoogleAuthenticationService.AuthenticationTask;
+import com.amplify.loaner.authentication.GoogleAuthenticationService.ConfirmCredentialsTask;
+import com.amplify.loaner.authentication.GoogleAuthenticationService.GoogleAuthenticationCallback;
+import com.amplify.loaner.runner.LoanerAppTestRunner;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(LoanerAppTestRunner.class)
+public class GoogleAuthenticationServiceTest {
+
+    private static final String EMAIL = "testaccount@google.com";
+
+    private GoogleAuthenticationService googleAuthenticationService;
+    private ConfirmCredentialsTask confirmCredentialsTask;
+    private AuthenticationTask authenticationTask;
+
+    @Mock
+    private AccountManager accountManager;
+    @Mock
+    private Activity activity;
+    @Mock
+    private GoogleAuthenticationCallback googleAuthCallback;
+
+    @Mock
+    private AccountManagerFuture<Bundle> future;
+    @Mock
+    private Bundle bundle;
+
+    @Before
+    public void setup() throws Exception {
+        initMocks(this);
+
+        given(future.getResult()).willReturn(bundle);
+
+        googleAuthenticationService = new GoogleAuthenticationService(accountManager);
+        confirmCredentialsTask = googleAuthenticationService.new ConfirmCredentialsTask(activity, googleAuthCallback, EMAIL);
+        authenticationTask = googleAuthenticationService.new AuthenticationTask(activity, googleAuthCallback);
+    }
+
+    @Test
+    public void shouldReturnAccountNamesFromGetAccountNamesMethod() {
+        Account account1 = new Account("account1", "test");
+        Account account2 = new Account("account2", "test");
+        when(accountManager.getAccountsByType("com.google")).thenReturn(new Account[] {account1, account2});
+
+        String[] names = googleAuthenticationService.getAccountNames();
+
+        assertThat(names.length, is(2));
+        assertThat(names[0], is("account1"));
+        assertThat(names[1], is("account2"));
+    }
+
+    @Test
+    public void shouldCallGetAuthTokenOnRunIfCredentialsAreValid() throws Exception {
+        when(bundle.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)).thenReturn(true);
+        when(bundle.getString(AccountManager.KEY_ACCOUNT_NAME)).thenReturn(EMAIL);
+
+        confirmCredentialsTask.run(future);
+
+        ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+
+        verify(accountManager).getAuthToken(
+                accountCaptor.capture(),
+                eq(GoogleAuthenticationService.GOOGLE_TOKEN_TYPE),
+                isNull(Bundle.class),
+                same(activity),
+                same(confirmCredentialsTask),
+                isNull(Handler.class));
+
+        Account actualAccount = accountCaptor.getValue();
+        String actualEmail = actualAccount.name;
+        String actualAccountType = actualAccount.type;
+        assertThat(actualEmail, is(EMAIL));
+        assertThat(actualAccountType, is("com.google"));
+    }
+
+
+    @Test
+    public void shouldCallOnConfirmCredentialsSuccessCredentialsAreValid() throws Exception {
+        when(bundle.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)).thenReturn(true);
+
+        confirmCredentialsTask.run(future);
+
+        verify(googleAuthCallback).onPasswordValidationSuccess(bundle);
+    }
+
+
+    @Test
+    public void shouldCallOnAuthenticationSuccessIfAuthorizationTokenIsValid()  throws Exception{
+        String authToken = "KEY_AUTHTOKEN";
+        when(bundle.getString(AccountManager.KEY_AUTHTOKEN)).thenReturn(authToken);
+
+        authenticationTask.run(future);
+
+        verify(googleAuthCallback).onAuthenticationSuccess(bundle, false);
+    }
+
+    @Test
+    public void shouldCallOnPasswordValidationSuccessIfAccountCreationSucceeded() {
+        when(bundle.getString(AccountManager.KEY_AUTHTOKEN)).thenReturn(StringUtils.EMPTY);
+
+        authenticationTask.run(future);
+
+        verify(googleAuthCallback).onPasswordValidationSuccess(bundle);
+
+    }
+
+    @Test
+    public void shouldCallOnPasswordAuthenticationFailureIfCredentialsAreInvalid() throws Exception {
+        when(bundle.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)).thenReturn(false);
+        when(bundle.getString(AccountManager.KEY_AUTHTOKEN)).thenReturn(null);
+
+        confirmCredentialsTask.run(future);
+
+        verify(googleAuthCallback).onPasswordValidationFailure(any(Exception.class));
+    }
+
+    @Test
+    public void shouldCallOnAuthentionFailureIfGetResultThrowsException() throws Exception {
+        RuntimeException ex = mock(RuntimeException.class);
+        when(future.getResult()).thenThrow(ex);
+
+        confirmCredentialsTask.run(future);
+
+        verify(googleAuthCallback).onAuthenticationFailure(ex);
+    }
+
+    @Test
+    public void shouldExcecuteConfirmCredentialsTaskOnAuthenticateEmail() {
+        googleAuthenticationService.authenticateEmail(activity, googleAuthCallback, "test@test.com");
+
+        ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+
+        verify(accountManager).confirmCredentials(accountCaptor.capture(),
+                any(Bundle.class),
+                same(activity),
+                any(AccountManagerCallback.class),
+                any(Handler.class));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

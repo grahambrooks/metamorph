@@ -1,0 +1,308 @@
+<html><head><title>ParticipantPresenceListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantPresenceListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ParticipantPresenceListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.xmpp.MultiUserChatAdapter;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.ParticipantStatusChangeEvent;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.HandRaiseStatusChangeEvent;
+import com.alpha.api.services.events.ParticipantLocationChangedEvent;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.packet.MUCUser.Item;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ParticipantPresenceListenerTest {
+
+    private static final String ROOM_NAME = "room";
+    private static final String SERVICE = "/Smack";
+    private static final String SECTION_NAME = "section";
+    private static final Long PARTICIPANT_ID = 88l;
+    private static final String PARTICIPANT_ID_STRING = "88";
+    @Mock
+    private Presence packet;
+    @Mock
+    private MUCUser packetExtension;
+
+    private PacketFilter filter;
+    private ParticipantPresenceListener listener;
+    @Mock
+    private Item item;
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Section section;
+    @Mock
+    public Participant participant;
+    @Mock
+    private ControlSettingsModel settingsModel;
+    @Mock
+    private ParticipantPresenceModel participantPresenceModel;
+    private Optional<Section> optional;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        optional = Optional.of(section);
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(settingsModel);
+        given(settingsModel.getCallOnSomeoneSettings()).willReturn(mock(CallOnSomeoneSettings.class));
+        listener = new ParticipantPresenceListener(ROOM_NAME, userService, eventBus);
+        filter = listener.filter();
+    }
+
+    @Test
+    public void shouldNotInspectMucUserIfItsNotPresentInPresencePacket() throws Exception {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(null);
+
+        //PacketExtensionFilter protects us from mucuser being null.
+        assertThat(listener.allFilters().accept(packet), is(false));
+    }
+
+
+    @Test
+    public void shouldCreateFilter() {
+        assertNotNull(filter);
+    }
+
+    @Test
+    public void shouldNotAcceptNonPresencePacket() {
+        assertThat(filter.accept(mock(Packet.class)), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptNonMUCUserExtensionNamespacePacketExtension() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(null);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldFilterAcceptPresencePacketOnlyDefinedRoomNameWithPacketExtension() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getType()).thenReturn(Type.available);
+        when(packetExtension.getItem()).thenReturn(item);
+        when(item.getRole()).thenReturn("participant");
+        assertThat(filter.accept(packet), is(true));
+    }
+
+    @Test
+    public void shouldNotAcceptNonMUCUserPacketExtension() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mock(PacketExtension.class));
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptNonAvailablePacketType() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getType()).thenReturn(Type.unavailable);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptEventWhenModeratorJoins() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(packetExtension);
+        when(packet.getType()).thenReturn(Type.available);
+        when(packetExtension.getItem()).thenReturn(item);
+        when(item.getRole()).thenReturn("moderator");
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldAddNewParticipantWhenUserJoins() {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(section.participantExistsInSession(PARTICIPANT_ID)).thenReturn(true);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getName()).thenReturn(SECTION_NAME);
+        listener.onJoinRoom(PARTICIPANT_ID_STRING);
+        verify(participant).joinSession(SECTION_NAME);
+    }
+
+    @Test
+    public void shouldNotifyUserJoinedCallbackWithParticipantOnJoinRoom() {
+        setupSectionToContainAndReturnParticipant();
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getName()).thenReturn(SECTION_NAME);
+        listener.onJoinRoom(PARTICIPANT_ID_STRING);
+        verify(eventBus).post(isA(UserSessionChangeEvent.class));
+    }
+
+    @Test
+    public void shouldNotUpdateParticipantWhenNotPartOfSection() throws Exception {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(section.participantExistsInSession(PARTICIPANT_ID)).thenReturn(false);
+
+        listener.onJoinRoom(PARTICIPANT_ID_STRING);
+        verify(participant, never()).joinSession(anyString());
+    }
+
+    @Test
+    public void shouldPostHandRaiseStatusChangeEventIfHandHasBeenRaised() {
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(participant.getParticipantPresence()).thenReturn(participantPresenceModel);
+        when(participantPresenceModel.detectChanges(participantPresenceModel)).thenReturn(newArrayList(ParticipantStatusChangeEvent.HAND_RAISED));
+        listener.userStatusChanged(PARTICIPANT_ID_STRING, participantPresenceModel);
+        verify(eventBus).post(isA(HandRaiseStatusChangeEvent.class));
+    }
+
+    @Test
+    public void shouldPostHandRaiseStatusChangeEventIfHandHasBeenLowered() {
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(participant.getParticipantPresence()).thenReturn(participantPresenceModel);
+        when(participantPresenceModel.detectChanges(participantPresenceModel)).thenReturn(newArrayList(ParticipantStatusChangeEvent.HAND_LOWERED));
+        listener.userStatusChanged(PARTICIPANT_ID_STRING, participantPresenceModel);
+        verify(eventBus).post(isA(HandRaiseStatusChangeEvent.class));
+
+    }
+
+    @Test
+    public void shouldPostStudentLocationChangeEventIfParticipantHasChangedSection() {
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(participant.getParticipantPresence()).thenReturn(participantPresenceModel);
+        when(participantPresenceModel.detectChanges(participantPresenceModel)).thenReturn(newArrayList(ParticipantStatusChangeEvent.LOCATION_CHANGED));
+        listener.userStatusChanged(PARTICIPANT_ID_STRING, participantPresenceModel);
+        verify(eventBus).post(isA(ParticipantLocationChangedEvent.class));
+    }
+
+    @Test
+    public void shouldSetTheNewPresenceModelOnTheParticipantOnlyAfterDetectingChanges() {
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(section);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(participant.getParticipantPresence()).thenReturn(participantPresenceModel);
+        ParticipantPresenceModel newModel = mock(ParticipantPresenceModel.class);
+        when(participantPresenceModel.detectChanges(newModel)).thenReturn(newArrayList(ParticipantStatusChangeEvent.LOCATION_CHANGED));
+        listener.userStatusChanged(PARTICIPANT_ID_STRING, newModel);
+        InOrder inOrder = inOrder(participantPresenceModel, participant);
+        inOrder.verify(participantPresenceModel).detectChanges(newModel);
+        inOrder.verify(participant).setParticipantPresence(newModel);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void setupSectionToContainAndReturnParticipant() {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(section.participantExistsInSession(PARTICIPANT_ID)).thenReturn(true);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldNotGetLiveSectionIfItHasBeenDestroyed() {
+        //BETA-752 Dahlia/Dhivhya - Not reproducible consistently, this listener seems to still be active even after the section is destroyed
+        //The sequence of events when a session is ended is 1. destroy MultiuserChat, 2. remove listeners, 3. set section to null
+        //so technically the section cannot be null if the listeners haven't been removed
+        when(user.hasLiveSection()).thenReturn(false);
+
+        listener.userStatusChanged(PARTICIPANT_ID_STRING, participantPresenceModel);
+
+        verify(user, never()).getLiveSection();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

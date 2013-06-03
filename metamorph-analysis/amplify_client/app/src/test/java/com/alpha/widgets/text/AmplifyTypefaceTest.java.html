@@ -1,0 +1,134 @@
+<html><head><title>AmplifyTypefaceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AmplifyTypefaceTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/widgets/text/amplify_client/AmplifyTypefaceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.text;
+
+import android.widget.TextView;
+import com.google.common.base.Optional;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+
+import static com.alpha.widgets.text.AmplifyTypeface.DEFAULT_FONT;
+import static com.alpha.widgets.text.AmplifyTypeface.Font;
+import static com.alpha.widgets.text.AmplifyTypeface.createTypeface;
+import static com.alpha.widgets.text.AmplifyTypeface.getAssetPath;
+import static com.alpha.widgets.text.AmplifyTypeface.getFont;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public class AmplifyTypefaceTest {
+
+    @Test
+    public void shouldReturnKnownFontForIndex() {
+        assertThat(getFont(Font.bold.ordinal()), equalTo(Optional.of(Font.bold)));
+    }
+
+    @Test
+    public void shouldReturnDefaultFontForUnknownIndex() {
+        assertThat(getFont(Font.values().length), equalTo(DEFAULT_FONT));
+        assertThat(getFont(-1), equalTo(DEFAULT_FONT));
+    }
+
+    @Test
+    public void shouldHaveMatchingEnumsBetweenTypefaceAndAttrsXML() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        Document document = builder.parse(new File("res/values/attrs.xml"));
+        XPath xpath = XPathFactory.newInstance().newXPath();
+
+        NodeList nodes = (NodeList) xpath.evaluate("/resources/attr[@name='font']/enum", document, XPathConstants.NODESET);
+        assertThat("Should have the same number of enums", nodes.getLength(), equalTo(Font.values().length));
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            String name = (String) xpath.evaluate("string(@name)", node, XPathConstants.STRING);
+            String value = (String) xpath.evaluate("string(@value)", node, XPathConstants.STRING);
+            assertThat(Integer.parseInt(value), equalTo(Font.valueOf(name).ordinal()));
+        }
+    }
+
+    @Test
+    public void shouldHaveAssetsToMatchTheFonts() {
+        for (Font font : Font.values()) {
+            String assetPath = getAssetPath(font);
+            assertTrue(assetPath, new File("assets", assetPath).isFile());
+        }
+    }
+
+    @Test
+    @Ignore("Roboelectric cannot load typefaces")
+    public void shouldCreateDefaultTypeface() {
+        TextView textView = new TextView(Robolectric.application);
+        assertNotNull("Default", createTypeface(textView, DEFAULT_FONT));
+    }
+
+    @Test
+    @Ignore("Roboelectric cannot load typefaces")
+    public void shouldCreateTypefaceForEveryAmplifyFont() {
+        TextView textView = new TextView(Robolectric.application);
+        for (Font font : Font.values()) {
+            assertNotNull(font.name(), createTypeface(textView, Optional.of(font)));
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

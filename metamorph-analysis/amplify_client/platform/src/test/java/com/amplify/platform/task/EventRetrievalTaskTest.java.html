@@ -1,0 +1,174 @@
+<html><head><title>EventRetrievalTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EventRetrievalTaskTest.java</h1>
+<p>Scanned path = platform/src/test/java/com/amplify/platform/task/amplify_client/EventRetrievalTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.platform.task;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.amplify.platform.domain.AmplifyEvent;
+import com.amplify.platform.processor.EventProcessor;
+import com.amplify.platform.repository.EventDataStore;
+import com.amplify.runner.SundaeRobolectricTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class EventRetrievalTaskTest {
+
+    private EventRetrievalTask task;
+
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Environment environment;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private Response response;
+    @Mock
+    private EventDataStore eventDataStore;
+    @Mock
+    private EventProcessor eventProcessor;
+
+    private final static String authToken = "Token";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        task = new EventRetrievalTask(analyticsAgent, webServices, environment, eventDataStore, eventProcessor, authToken);
+        given(webServices.get(any(ApiRequest.class), eq(authToken))).willReturn(response);
+    }
+
+    @Test
+    public void shouldCallOnExecute() throws Exception {
+        task.call();
+
+        verify(webServices).get(any(ApiRequest.class), eq(authToken));
+    }
+
+    @Test
+    public void shouldCallWebServicesWithCorrectApiRequest() throws Exception {
+        String URI = "whatever://events";
+        when(environment.getEventsURI()).thenReturn(URI);
+
+        task.call();
+
+        ArgumentCaptor<ApiRequest> argumentCaptor = ArgumentCaptor.forClass(ApiRequest.class);
+        verify(webServices).get( argumentCaptor.capture(), eq(authToken));
+
+        ApiRequest apiRequest = argumentCaptor.getValue();
+        assertThat(apiRequest.isGet(), is(true));
+        assertThat(apiRequest.url(), is(URI));
+    }
+
+    @Test
+    public void shouldSaveReturnedEventsIfResponseIsSuccessful() throws Exception {
+        List<AmplifyEvent> events = getEvents();
+        when(response.getBodyAs(AmplifyEvent.LIST_TYPE)).thenReturn(events);
+        when(response.isSuccess()).thenReturn(true);
+
+        task.call();
+
+        verify(eventDataStore).saveAll(events);
+    }
+
+    private List<AmplifyEvent> getEvents() {
+        return newArrayList(new AmplifyEvent(null, "Type", "Title"), new AmplifyEvent(null, "Type", "Title"));
+    }
+
+    @Test
+    public void shouldNotSaveifResonseNotSuccessful()  throws Exception {
+        when(response.isSuccess()).thenReturn(false);
+
+        task.call();
+
+        verifyZeroInteractions(eventDataStore);
+    }
+
+    @Test
+    public void shouldNotProcessEventifResonseNotSuccessful()  throws Exception {
+        when(response.isSuccess()).thenReturn(false);
+
+        task.call();
+
+        verifyZeroInteractions(eventProcessor);
+    }
+
+    @Test
+    public void shouldCallEventProcessorIfResponseIsSuccessful() throws Exception {
+        List<AmplifyEvent> events = getEvents();
+        when(response.getBodyAs(AmplifyEvent.LIST_TYPE)).thenReturn(events);
+        when(response.isSuccess()).thenReturn(true);
+
+        task.call();
+
+        verify(eventProcessor).process(events);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

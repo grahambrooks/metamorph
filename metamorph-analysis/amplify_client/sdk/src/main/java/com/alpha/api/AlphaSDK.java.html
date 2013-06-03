@@ -1,0 +1,330 @@
+<html><head><title>AlphaSDK.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AlphaSDK.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/amplify_client/AlphaSDK.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
+import android.app.Application;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
+import com.alpha.api.authentication.AccountHelper;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.configuration.AlphaAPIModule;
+import com.alpha.api.configuration.ProviderManagerConfigurer;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.messaging.notifications.gcm.PushNotificationsFacade;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.properties.FeatureManager;
+import com.alpha.api.properties.PropertyFactory;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.inject.Module;
+import com.google.inject.Stage;
+import org.apache.commons.lang3.StringUtils;
+import org.jivesoftware.smack.SmackAndroid;
+import org.slf4j.Logger;
+import roboguice.RoboGuice;
+import roboguice.config.DefaultRoboModule;
+
+import java.io.*;
+import java.util.*;
+
+public class AlphaSDK {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String ENVIRONMENT_PACKAGE = "com.amplify.environment";
+    public static final String GCM_SHARED_PREFS_FILE_NAME = "com.google.android.gcm.xml";
+    public static final String SHARED_PREFS_FOLDER_NAME = "shared_prefs";
+
+    private PropertyFactory propertyFactory;
+
+    private final Application application;
+    private Environment environment;
+    private FeatureManager featureManager;
+
+    public enum SDKResetSteps {
+        DELETE_GCM_REGISTRATION_ID,
+        SHUTTING_DOWN_NETWORK_CONNECTION,
+        DELETING_DATA,
+        REMOVING_ACCOUNTS;
+    }
+
+    public AlphaSDK(Application application) {
+        this(application, new PropertyFactoryImpl());
+
+    }
+
+    protected AlphaSDK(Application application, PropertyFactory propertyFactory){
+        this.application = application;
+        this.propertyFactory = propertyFactory;
+
+        initEnvironment();
+        initFeatures();
+    }
+
+    public void initialise(Module module) {
+        DefaultRoboModule defaultRoboModule = RoboGuice.newDefaultRoboModule(application);
+        initialiseGuiceInjector(defaultRoboModule, module, getGuiceModule());
+        initXmpp();
+    }
+
+    private void initialiseGuiceInjector(Module... modules) {
+
+        RoboGuice.setBaseApplicationInjector(application, Stage.PRODUCTION, modules);
+    }
+
+    private <T> T getInjectedInstance(Class<T> clazz) {
+        return RoboGuice.getInjector(application).getInstance(clazz);
+    }
+
+    private void initXmpp() {
+        SmackAndroid.init(application);
+        ProviderManagerConfigurer.configure();
+    }
+
+    private void initEnvironment() {
+        try {
+            String environmentFileContents = readRawEnvironmentResource("environment");
+            ResourceBundle properties = new PropertyResourceBundle(new StringReader(environmentFileContents));
+            environment = propertyFactory.createEnvironment(properties);
+            LOG.info("Configuration loaded for environment " + environment.getName());
+        } catch(IOException ex) {
+            LOG.info("Error parsing configuration file for " + environment.getName());
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void initFeatures() {
+        String featureContents = readRawEnvironmentResource("features");
+        featureManager = propertyFactory.createFeatureManager(environment, featureContents);
+        LOG.info("Features loaded for environment " + environment.getName());
+    }
+
+    private String readRawEnvironmentResource(String resourceName) {
+        InputStream stream = null;
+        try {
+            PackageManager packageManager = application.getPackageManager();
+            Resources environmentResources = packageManager.getResourcesForApplication(ENVIRONMENT_PACKAGE);
+
+            int identifier = environmentResources.getIdentifier(resourceName, "raw", ENVIRONMENT_PACKAGE);
+            stream = environmentResources.openRawResource(identifier);
+
+            StringWriter writer = new StringWriter();
+            org.apache.commons.io.IOUtils.copy(stream, writer, "UTF-8");
+            return writer.toString();
+        } catch (PackageManager.NameNotFoundException e) {
+            LOG.error("Environment package not present", e);
+            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            LOG.error("Error reading " + resourceName + " from environment", ex);
+            throw new RuntimeException(ex);
+        } finally {
+            IOUtils.closeSafely(stream);
+        }
+    }
+
+    public FeatureManager getFeatureManager() {
+        return featureManager;
+    }
+
+    public Module getGuiceModule() {
+        return new AlphaAPIModule(environment, featureManager);
+    }
+
+    public Collection<SDKResetSteps> reset() {
+        Set<SDKResetSteps> SDKResetFailures = EnumSet.noneOf(SDKResetSteps.class);
+        if (!removePushNotificationRegistrationId()) {
+            SDKResetFailures.add(SDKResetSteps.DELETE_GCM_REGISTRATION_ID);
+        }
+
+        if (!shutdownTeacherXmppConnection()) {
+            SDKResetFailures.add(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION);
+        }
+
+        if (!shutdownStudentXmppConnection()) {
+            SDKResetFailures.add(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION);
+        }
+
+        if (!unregisterFromPushNotifications()) {
+            SDKResetFailures.add(SDKResetSteps.SHUTTING_DOWN_NETWORK_CONNECTION);
+        }
+
+        if (!deleteApplicationDataDirectory(application)) {
+            SDKResetFailures.add(SDKResetSteps.DELETING_DATA);
+        }
+
+        if (!removeAllAccounts(application)) {
+            SDKResetFailures.add(SDKResetSteps.REMOVING_ACCOUNTS);
+        }
+        return SDKResetFailures;
+    }
+
+    private boolean unregisterFromPushNotifications() {
+        try {
+            getInjectedInstance(PushNotificationsFacade.class).unregister();
+        } catch (Exception e) {
+            LOG.error("Problem when unregistering from GCM", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean deleteApplicationDataDirectory(Context applicationContext) {
+        String dataDirectoryPath = applicationContext.getApplicationInfo().dataDir;
+        File dataDirectory = new File(dataDirectoryPath);
+        boolean result = true;
+
+        try {
+            for (File subDir : dataDirectory.listFiles()) {
+                result = recursiveDelete(subDir) && result;
+            }
+        } catch (Exception e) {
+            LOG.error("Could not delete application data directory", e);
+            return false;
+        }
+
+        return result;
+    }
+
+    private boolean recursiveDelete(File file) {
+        boolean result = true;
+        if (file.isDirectory()) {
+            for (File subDir : file.listFiles()) {
+                recursiveDelete(subDir);
+            }
+        }
+        if (!(file.getName().contains(GCM_SHARED_PREFS_FILE_NAME) || file.getName().contains(SHARED_PREFS_FOLDER_NAME))) {
+            result = file.delete() && result;
+        }
+        return result;
+    }
+
+    private boolean removeAllAccounts(Context context) {
+        boolean success = true;
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] accountList = accountManager.getAccounts();
+        LOG.debug("Removing {} user account(s).", accountList.length);
+        for (Account account : accountList) {
+            AccountManagerFuture<Boolean> result = accountManager.removeAccount(account, null,
+                    new Handler(Looper.getMainLooper()));
+            try {
+                if (!result.getResult()) {
+                    LOG.error("Account removal failed");
+                    success = false;
+                }
+            } catch (Exception e) {
+                LOG.error("Account removal failed");
+                success = false;
+            }
+        }
+
+        return success;
+    }
+
+    private boolean shutdownTeacherXmppConnection() {
+        TeacherSession teacherSession = getInjectedInstance(TeacherSession.class);
+        try {
+            teacherSession.shutdown();
+        } catch (Exception e) {
+            LOG.error("Error when shutting down teacher connection", e);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean shutdownStudentXmppConnection() {
+        StudentSession studentSession = getInjectedInstance(StudentSession.class);
+        try {
+            studentSession.shutdown();
+        } catch (Exception e) {
+            LOG.error("Error when shutting down student connection", e);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean removePushNotificationRegistrationId() {
+        String registrationId = getInjectedInstance(PushNotificationsFacade.class).getCurrentRegistrationId();
+        boolean isAccountRegistered = getInjectedInstance(AccountHelper.class).isAccountRegistered();
+        if (!StringUtils.isEmpty(registrationId) && isAccountRegistered) {
+            try {
+                LOG.info("Removing GCM registration id from the server");
+                ApiRequest request = ApiRequest.createDeleteRequest(environment.getDeleteRegistrationIdURI(registrationId));
+
+                HttpClient.Response response = getInjectedInstance(WebServices.class).delete(request);
+                return response.isSuccess();
+            } catch (Exception ex) {
+                LOG.error("Exception while deleting GCM registration id from the server: " + ex);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static class PropertyFactoryImpl implements PropertyFactory {
+        @Override
+        public Environment createEnvironment(ResourceBundle properties) {
+            return new Environment(properties);
+        }
+
+        @Override
+        public FeatureManager createFeatureManager(Environment environment, String featureSource) {
+            return new FeatureManager(environment, featureSource);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<html><head><title>SharePostActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SharePostActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/SharePostActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">63</span>
+    <progress max="100" value="63"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.TextView;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.activities.viewmodels.PostViewModel;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostSection;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import roboguice.inject.InjectView;
+
+import java.util.Collections;
+import java.util.List;
+
+import static android.app.AlertDialog.Builder;
+import static android.content.DialogInterface.OnCancelListener;
+import static android.content.DialogInterface.OnClickListener;
+import static com.google.common.collect.Lists.newArrayList;
+
+public class SharePostActivity extends SundaeTimedActivity implements PostResponseCallback {
+
+    public static final String INITIAL_TEXT = "INITIAL_TEXT";
+    public static final int REQUEST_CODE = 37;
+
+    @InjectView(R.id.cancel_button)
+    private Button cancelButton;
+
+    @InjectView(R.id.number_students_button)
+    private Button numberOfStudentsButton;
+
+    @InjectView(R.id.share_button)
+    private Button shareButton;
+
+    @InjectView(R.id.post_text)
+    private EditText postEditText;
+
+    @Inject
+    private Toaster toaster;
+
+    @Inject
+    private PostService postService;
+
+    private final PostViewModel viewModel = new PostViewModel();
+    protected Section userSelectedSection;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.share_post);
+        if(wasStartedWithInitialText()){
+            populateTextField(getIntent().getStringExtra(INITIAL_TEXT));
+        }
+        setupCancelButton();
+        setupShareButton();
+        if(needToSelectNotebook()){
+            showNotebookSelector();
+        }
+    }
+
+    private boolean needToSelectNotebook() {
+        return userService.isTeacher() && wasStartedWithInitialText() && userSelectedSection == null;
+    }
+
+    private void showNotebookSelector(){
+        final Section[] sections = new Section[userService.getUser().getSections().size()];
+        userService.getUser().getSections().toArray(sections);
+        if(sections.length > 0){
+            Builder builder = new Builder(this);
+            builder.setTitle(R.string.select_section_now);
+            builder.setOnCancelListener(new OnCancelListener() {
+                @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                public void onCancel(DialogInterface dialog) {
+                    onSelectSectionFail();
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            });
+
+            builder.setAdapter(new SectionAdapter(sections),  getOnUserSelectedSectionListener(sections));
+            builder.show();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            onSelectSectionFail();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void onSelectSectionFail() {
+        finish();
+        toaster.makeToast(R.string.select_section_before_discussing);
+    }
+
+    protected OnClickListener getOnUserSelectedSectionListener(final Section[] sections){
+        return new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                userSelectedSection = sections[which];
+                initializeControls();
+            }
+        };
+    }
+
+
+
+    private void populateTextField(String text) {
+        if(text != null && text.length() > 0){
+            postEditText.setText(text);
+            postEditText.setSelection(postEditText.getText().length());
+        }
+    }
+
+    private void initializeControls(){
+        if (userService.isTeacher()) {
+            setUpShareWithGroupButton();
+        } else {
+            numberOfStudentsButton.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(needToSelectNotebook()){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        initializeControls();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        closeKeyboardIfOpen();
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void closeKeyboardIfOpen() {
+        InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(postEditText.getWindowToken(), 0);
+    }
+
+    private void setupCancelButton() {
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postEditText.setText(StringUtils.EMPTY);
+                finish();
+            }
+        });
+    }
+
+    private void setupShareButton() {
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModel.setText(postEditText.getText().toString());
+                if (viewModel.isValid()) {
+                    share();
+                } else {
+                    shareButton.setEnabled(true);
+                }
+            }
+        });
+    }
+
+    protected Section getSectionToShareTo(){
+         return wasStartedWithInitialText() ? userSelectedSection : userService.getCurrentUserSection();
+    }
+
+    private PostSection getPostSectionToShareTo() {
+        Section section = getSectionToShareTo();
+        return new PostSection(section.getName(), section.getId());
+    }
+
+    private boolean wasStartedWithInitialText() {
+        return getIntent().hasExtra(INITIAL_TEXT);
+    }
+
+    private void share() {
+        User user = userService.getUser();
+        List<LearningElement> learningElements = Collections.emptyList();
+        Post post = new Post(learningElements,
+                PostType.DISCUSSION,
+                user.asAuthor(),
+                null,
+                getPostSectionToShareTo(),
+                getResources().getString(R.string.discussion),
+                viewModel.getModel(),
+                populatedParticipantsList());
+        postService.addPost(post, this);
+    }
+
+    protected List<Participant> populatedParticipantsList() {
+        List<Participant> participants = viewModel.studentsSharedWith();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (getSectionToShareTo().areAllStudentsSelected(participants)) {
+            return newArrayList();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return participants;
+    }
+
+    private String numberOfSelectedStudents() {
+        int count = populatedParticipantsList().size();
+        return (count > 0) ? String.valueOf(count) : getString(R.string.all);
+    }
+
+    private void setUpShareWithGroupButton() {
+        numberOfStudentsButton.setVisibility(View.VISIBLE);
+        numberOfStudentsButton.setText(numberOfSelectedStudents());
+        numberOfStudentsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SharePostActivity.this, StudentSelectorActivity.class);
+                intent.putExtra(StudentSelectorActivity.PARTICIPANTS, newArrayList(viewModel.studentsSharedWith()));
+                if(wasStartedWithInitialText()) {
+                    intent.putExtra(StudentSelectorActivity.CURRENT_SECTION, getSectionToShareTo());
+                }
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            List<Participant> participants = (List) data.getExtras().getSerializable(StudentSelectorActivity.PARTICIPANTS);
+            viewModel.setStudentsSharedWith(participants);
+        }
+    }
+
+    @Override
+    public void onFailure(ApiErrorReason reason) {
+        toaster.errorToast(reason, R.string.sharing_post_failure);
+        shareButton.setEnabled(true);
+    }
+
+    @Override
+    public void onSuccess(Post post) {
+        postEditText.setText(StringUtils.EMPTY);
+        toaster.makeToast(R.string.post_shared);
+        finish();
+    }
+
+    private class SectionAdapter implements ListAdapter {
+
+        private final Section[] sections;
+        private final NotebooksCoverMappings coverMapping;
+
+        public  SectionAdapter(Section[] sections){
+            this.sections = sections;
+            coverMapping = new NotebooksCoverMappings();
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public boolean areAllItemsEnabled() {
+            return true;  //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public boolean isEnabled(int position) {
+            return true;  //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void registerDataSetObserver(DataSetObserver observer) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void unregisterDataSetObserver(DataSetObserver observer) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public int getCount() {
+            return sections == null?0:sections.length;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return sections == null?null:sections[position];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return sections == null?0:sections[position].getId();  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public boolean hasStableIds() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+
+            if(row==null){
+                LayoutInflater inflater=getLayoutInflater();
+                row=inflater.inflate(R.layout.share_to_notebook_list_selection_item, parent, false);
+            }
+            TextView textView = (TextView) row.findViewById(R.id.notebook_title);
+            textView.setText(sections[position].getName());
+            ImageView icon = (ImageView) row.findViewById(R.id.notebook_icon);
+            icon.setImageResource(coverMapping.getHomeCoverImage(sections[position].getName()));
+            textView = (TextView) row.findViewById(R.id.notebook_in_session_indicator);
+            textView.setVisibility(userService.isSessionOngoingFor(sections[position])?View.VISIBLE:View.GONE);
+            return row;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public int getItemViewType(int position) {
+            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public int getViewTypeCount() {
+            return 1;  //To change body of implemented methods use File | Settings | File Templates.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public boolean isEmpty() {
+            return sections == null || sections.length == 0;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    };
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

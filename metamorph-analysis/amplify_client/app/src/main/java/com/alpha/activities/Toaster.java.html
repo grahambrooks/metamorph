@@ -1,0 +1,110 @@
+<html><head><title>Toaster.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Toaster.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/Toaster.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.widget.Toast;
+import com.amplify.R;
+import com.alpha.api.services.ApiErrorReason;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import java.util.Map;
+
+@Singleton
+public class Toaster {
+
+    private final Context context;
+    private Map<ApiErrorReason, Integer> errorsMap;
+
+    @Inject
+    public Toaster(Context ctx) {
+        context = ctx;
+        initialiseErrorStringsMap();
+    }
+
+    private void initialiseErrorStringsMap() {
+        errorsMap = Maps.newHashMap();
+        errorsMap.put(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE, R.string.network_not_connected);
+        errorsMap.put(ApiErrorReason.NETWORK_COMMUNICATION_ERROR, R.string.network_communication_failure);
+        errorsMap.put(ApiErrorReason.SESSION_DOES_NOT_EXIST, R.string.no_session_to_join);
+        errorsMap.put(ApiErrorReason.INVALID_POST_ATTEMPT, R.string.sharing_post_failure);
+        errorsMap.put(ApiErrorReason.INVALID_RESPONSE_ATTEMPT, R.string.submit_response_failure);
+        errorsMap.put(ApiErrorReason.SESSION_JOIN_FAILED, R.string.session_join_failure);
+        errorsMap.put(ApiErrorReason.SESSION_END_FAILED, R.string.end_session_failure);
+        errorsMap.put(ApiErrorReason.START_SESSION_FAILED, R.string.session_start_failure);
+        errorsMap.put(ApiErrorReason.RAISE_LOWER_HAND_FAILED, R.string.internal_error);
+        errorsMap.put(ApiErrorReason.INTERNAL_ERROR, R.string.internal_error);
+        errorsMap.put(ApiErrorReason.NO_GOOGLE_CREDENTIALS, R.string.google_authentication_failure);
+        errorsMap.put(ApiErrorReason.OPEN_PEAK_ASSOCIATION_FAILED, R.string.open_peak_registration_failed);
+        errorsMap.put(ApiErrorReason.PUSH_REGISTRATION_FAILED, R.string.push_notification_registration_failed);
+
+    }
+
+
+    public void makeToast(int messageId) {
+        Toast.makeText(context, context.getString(messageId), Toast.LENGTH_SHORT).show();
+    }
+
+    public void makeToast(String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void errorToast(ApiErrorReason reason, int defaultMessage) {
+        makeToast(errorsMap.containsKey(reason) ? errorsMap.get(reason) : defaultMessage);
+    }
+
+    public void errorToast(ApiErrorReason reason) {
+        makeToast(errorsMap.get(reason));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

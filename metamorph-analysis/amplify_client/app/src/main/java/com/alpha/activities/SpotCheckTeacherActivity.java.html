@@ -1,0 +1,145 @@
+<html><head><title>SpotCheckTeacherActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SpotCheckTeacherActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/SpotCheckTeacherActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import com.alpha.activities.adapters.SpotCheckResponseCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.amplify.R;
+import com.google.inject.Inject;
+
+import java.util.Date;
+
+import static com.alpha.activities.adapters.SpotCheckResponseCursorAdapter.NUMBER_OF_OPTIONS;
+
+public class SpotCheckTeacherActivity extends BaseQuickActivity<SpotCheckSettings> {
+
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+    @Inject
+    private CursorLoaderFactory cursorLoaderFactory;
+    @Inject
+    private SpotCheckResponseCursorAdapter spotCheckResponseCursorAdapter;
+    private ViewGroup graphContainer;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.spot_check_teacher_graph);
+    }
+
+    @Override
+    protected void updateUI(Long postId) {
+        graphContainer = (ViewGroup) findViewById(R.id.graph_container);
+        int activeParticipantsCount = getAllActiveParticipants().size();
+        spotCheckResponseCursorAdapter.init(graphContainer, activeParticipantsCount);
+        registerLoaderManager(postId);
+        updateGraphBasedOnActiveParticipants(activeParticipantsCount);
+    }
+
+    @Override
+    protected Post getNewPost() {
+        User user = userService.getUser();
+        return new Post(PostType.SPOT_CHECK, user.asAuthor(), new Date(),
+            user.createPostSectionFromCurrentSection(),
+            getString(R.string.spot_check),
+            getString(R.string.spot_check_post_description));
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected SpotCheckSettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getSpotCheckSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void sessionParticipantAdded(Participant participant) {
+        updateGraphBasedOnActiveParticipants(getAllActiveParticipants().size());
+    }
+
+    @Override
+    public void startQuickActivityTask(Post post) {
+        sessionTaskFactory.createSpotCheckTask().execute();
+    }
+
+    private void updateGraphBasedOnActiveParticipants(int totalNumberOfParticipants) {
+        for (int i = 0; i < NUMBER_OF_OPTIONS; i++) {
+            ViewGroup progressBarParent = (ViewGroup) graphContainer.getChildAt(i);
+            progressBarParent.setVisibility(View.VISIBLE);
+            ProgressBar bar = (ProgressBar) progressBarParent.getChildAt(0);
+            bar.setMax(totalNumberOfParticipants);
+        }
+        spotCheckResponseCursorAdapter.updateResponseStatsText(totalNumberOfParticipants);
+    }
+
+    private void registerLoaderManager(Long postId) {
+        SpotCheckResponseLoaderInitializer loaderInitializer = cursorLoaderFactory.createSpotCheckResponseLoaderInitializer(postId, spotCheckResponseCursorAdapter);
+        loaderInitializer.register(getLoaderManager());
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

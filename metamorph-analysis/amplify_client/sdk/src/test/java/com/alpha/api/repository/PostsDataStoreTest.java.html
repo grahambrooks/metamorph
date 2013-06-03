@@ -1,0 +1,303 @@
+<html><head><title>PostsDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostsDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/PostsDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.alpha.api.domains.*;
+import com.alpha.api.repository.contentprovider.SundaeContentProvider;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowContentResolver;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+@RunWith(AmplifySDKTestRunner.class)
+public class PostsDataStoreTest {
+
+    public static final String AND = " and ";
+    private PostsDataStore dataStore;
+
+    @Mock
+    private Section section;
+    @Mock
+    private SundaeDatabase dbHelper;
+    @Mock
+    private SQLiteDatabase db;
+    @Mock
+    private Post post;
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private UserService userService;
+    @Mock
+    private PostChildElementDataStore postChildElementDataStore;
+    private ContentValues postValues;
+    private static final Long SECTION_ID = 1L;
+    private static final Long POST_ID = 2L;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        postValues = new ContentValues();
+        postValues.put(TableColumn._id.name(), POST_ID);
+        SundaeContentProvider provider = new SundaeContentProvider();
+        provider.onCreate();
+        provider.dbHelper = dbHelper;
+        ShadowContentResolver.registerProvider("com.alpha.api.Sundae", provider);
+        dataStore = new PostsDataStore(Robolectric.application, postChildElementDataStore, userService);
+        given(dbHelper.getWritableDatabase()).willReturn(db);
+        given(dbHelper.getReadableDatabase()).willReturn(db);
+
+        when(post.getId()).thenReturn(POST_ID);
+        when(post.asValues()).thenReturn(postValues);
+        when(post.getPostType()).thenReturn(PostType.COUNT_OFF);
+    }
+
+    @Test
+    public void shouldReturnNullIfCursorHasNoRows() {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(db.query(anyString(), any(String[].class), anyString(), any(String[].class), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(cursor);
+        when(cursor.moveToFirst()).thenReturn(false);
+
+        Date timestamp = dataStore.timestampOfMostRecentlyModifiedPost();
+
+        assertThat(timestamp, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnTimestampOfMostRecentPostIfItExists() {
+        Date expectedTimestamp = new Date(212121L);
+        when(userService.getLastModifiedPostTime()).thenReturn(expectedTimestamp);
+
+        Date timestamp = dataStore.timestampOfMostRecentlyModifiedPost();
+        assertThat(timestamp, is(expectedTimestamp));
+    }
+
+    @Test
+    public void shouldSaveAUserCreatedTextPost() {
+        when(post.asValues()).thenReturn(postValues);
+        dataStore.insert(post);
+        verify(db).insertOrThrow(Table.POSTS.name(), null, postValues);
+    }
+
+    @Test
+    public void shouldNotifyChangeForPostType() {
+        Context context = mock(Context.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        dataStore = new PostsDataStore(context, postChildElementDataStore, userService);
+        when(post.getPostType()).thenReturn(PostType.COUNT_OFF);
+        when(context.getContentResolver()).thenReturn(contentResolver);
+
+        dataStore.insert(post);
+        verify(contentResolver).notifyChange(Table.POSTS.uri(PostType.COUNT_OFF), null);
+    }
+
+    @Test
+    public void shouldReturnFalseIfNoPostsCurrentlyExist() {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(db.query(Table.POSTS.name(), new String[]{TableColumn._id.name()},
+                null, new String[]{},
+                null, null, null, "1")).thenReturn(cursor);
+        when(cursor.getCount()).thenReturn(0);
+        assertThat(dataStore.hasPosts(), is(false));
+    }
+
+    @Test
+    public void shouldReturnTrueIfPostExists() {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(db.query(Table.POSTS.name(), new String[]{TableColumn._id.name()},
+                null, new String[]{},
+                null, null, null, "1")).thenReturn(cursor);
+        when(cursor.getCount()).thenReturn(1);
+        assertThat(dataStore.hasPosts(), is(true));
+    }
+
+    @Test
+    public void shouldCloseCursorAfterCheckingCountOfPosts() {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(db.query(any(String.class), any(String[].class), any(String.class), any(String[].class), any(String.class),
+                any(String.class), any(String.class), any(String.class))).thenReturn(cursor);
+        dataStore.hasPosts();
+        verify(cursor).close();
+    }
+
+    @Test
+    public void shouldUpdatePostIfPresentLocally() {
+        PostsDataStore spiedDataStore = spy(dataStore);
+        doReturn(true).when(spiedDataStore).isPresentLocally(post);
+
+        when(post.asValues()).thenReturn(postValues);
+        when(post.getId()).thenReturn(POST_ID);
+
+        spiedDataStore.insertOrUpdate(post);
+
+        verify(db).update(Table.POSTS.name(), postValues, TableColumn._id.equalTo(), new String[]{POST_ID.toString()});
+    }
+
+    @Test
+    public void shouldInsertNewPostIfNotPresentLocally() {
+        PostsDataStore spiedDataStore = spy(dataStore);
+        doReturn(false).when(spiedDataStore).isPresentLocally(post);
+
+        when(post.asValues()).thenReturn(postValues);
+        when(post.getId()).thenReturn(POST_ID);
+
+        spiedDataStore.insertOrUpdate(post);
+
+        verify(db).insertOrThrow(Table.POSTS.name(), null, postValues);
+    }
+
+    @Test
+    public void shouldInsertAllResponsesOfAPost() {
+
+        PostsDataStore spiedDataStore = spy(dataStore);
+        doReturn(true).when(spiedDataStore).isPresentLocally(post);
+
+        List<QuickShortAnswerResponse> shortAnswerResponses = newArrayList(mock(QuickShortAnswerResponse.class));
+        List<QuickPollResponse> quickPollResponses = newArrayList(mock(QuickPollResponse.class));
+        List<SpotCheckResponse> spotCheckResponses = newArrayList(mock(SpotCheckResponse.class));
+        when(post.getQuickShortAnswerResponses()).thenReturn(shortAnswerResponses);
+        when(post.getQuickPollResponses()).thenReturn(quickPollResponses);
+        when(post.getSpotCheckResponses()).thenReturn(spotCheckResponses);
+
+        spiedDataStore.insertOrUpdate(post);
+
+        verify(postChildElementDataStore).saveNewResponses(POST_ID, shortAnswerResponses);
+        verify(postChildElementDataStore).saveNewResponses(POST_ID, quickPollResponses);
+        verify(postChildElementDataStore).saveNewResponses(POST_ID, spotCheckResponses);
+    }
+
+    @Test
+    public void shouldInsertCommentsOfAPost() {
+        PostsDataStore spiedDataStore = spy(dataStore);
+        doReturn(true).when(spiedDataStore).isPresentLocally(post);
+
+        List<Comment> comments = newArrayList(mock(Comment.class), mock(Comment.class));
+        when(post.getComments()).thenReturn(comments);
+        when(post.getId()).thenReturn(POST_ID);
+        when(post.asValues()).thenReturn(postValues);
+
+        spiedDataStore.insertOrUpdate(post);
+
+        verify(postChildElementDataStore).saveNewComments(POST_ID, comments);
+    }
+
+    @Test
+    public void shouldDeleteThePostIfAlreadyPresentInDB() {
+        when(post.asValues()).thenReturn(postValues);
+        when(post.getId()).thenReturn(POST_ID);
+
+        PostsDataStore postsDataStore = spy(dataStore);
+        doReturn(true).when(postsDataStore).isPresentLocally(post);
+
+        postsDataStore.delete(post);
+
+        verify(db).delete(Table.POSTS.name(), TableColumn._id.equalTo(), new String[]{POST_ID.toString()});
+    }
+
+    @Test
+    public void shouldFetchPostById() {
+        when(cursor.moveToFirst()).thenReturn(true);
+        when(db.query(Table.POSTS.name(), new String[]{TableColumn.content.name()}, TableColumn._id.equalTo(), new String[]{POST_ID.toString()}, null, null, null, null)).thenReturn(cursor);
+        dataStore.fetch(POST_ID);
+
+        verify(cursor).close();
+    }
+
+    @Test
+    public void shouldReturnNullIfThereIsNoPostWithThisId() {
+        when(cursor.moveToFirst()).thenReturn(false);
+        when(db.query(Table.POSTS.name(), new String[] {TableColumn.content.name()}, TableColumn._id.equalTo(), new String[] {POST_ID.toString()}, null, null, null, null)).thenReturn(cursor);
+        assertNull(dataStore.fetch(POST_ID));
+
+        verify(cursor).close();
+    }
+
+    @Test
+    public void shouldSetModifiedDateInUserService() {
+        long date = 123456L;
+        Date modifiedOn = new Date(date);
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(db.query(anyString(), any(String[].class), anyString(), any(String[].class), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(cursor);
+        when(cursor.moveToFirst()).thenReturn(true);
+
+        when(cursor.getLong(anyInt())).thenReturn(date);
+        dataStore.timestampOfMostRecentlyModifiedPost();
+
+        verify(userService).updateMostRecentPostTime(eq(modifiedOn));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

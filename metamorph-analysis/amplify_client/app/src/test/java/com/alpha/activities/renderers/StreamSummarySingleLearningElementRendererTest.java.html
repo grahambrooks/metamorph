@@ -1,0 +1,220 @@
+<html><head><title>StreamSummarySingleLearningElementRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummarySingleLearningElementRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummarySingleLearningElementRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(RobolectricTestRunner.class)
+public class StreamSummarySingleLearningElementRendererTest {
+
+    public static final String IMAGE_URI = "image.jpg";
+    public static final String URL_STRING = "http://google.com";
+    public static final String TITLE = "title";
+    public static final String DESCRIPTION = "description";
+    public static final String BOOK = "book";
+    private static final Bitmap VIDEO_THUMBNAIL_BITMAP = mock(Bitmap.class);
+
+    private StreamSummarySingleLearningElementRenderer rendererSingle;
+
+    @Mock
+    private VideoLearningElement videoLearningElement;
+    @Mock
+    private GoogleDriveLearningElement googleDriveLearningElement;
+    @Mock
+    private RendererFactory rendererFactory;
+    @Mock
+    private GoogleDriveRenderer googleDriveRenderer;
+    @Mock
+    private Post post;
+    @Mock
+    private PostAuthor postAuthor;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        when(rendererFactory.createGoogleDriveRenderer()).thenReturn(googleDriveRenderer);
+        when(post.getAuthor()).thenReturn(postAuthor);
+        rendererSingle = new StreamSummarySingleLearningElementRenderer(Robolectric.application, post, rendererFactory);
+    }
+
+    @Test
+    public void shouldRenderVideoLearningElementForStreamLayout() {
+        when(videoLearningElement.getThumbnailBitmap()).thenReturn(VIDEO_THUMBNAIL_BITMAP);
+
+        View container = rendererSingle.visit(videoLearningElement, null);
+
+        assertThat(container.getId(), is(R.id.video_thumbnail_image));
+    }
+
+    @Test
+    public void shouldRenderWebPageLearningElementForStreamLayout() throws Exception {
+        WebPageLearningElement webpageLearningElement = new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(URL_STRING));
+        View view = rendererSingle.visit(webpageLearningElement, null);
+        TextView webpageView = (TextView) view.findViewById(R.id.webpage_view);
+        assertThat(webpageView.getText().toString(), is(URL_STRING));
+    }
+
+    @Test
+    public void shouldCallBrowserIntentWhenClickingALinkWithUrlData() throws Exception {
+        WebPageLearningElement webpageLearningElement = new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(URL_STRING));
+        View view = rendererSingle.visit(webpageLearningElement, null);
+        TextView webpageView = (TextView) view.findViewById(R.id.webpage_view);
+
+        webpageView.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getData(), is(Uri.parse(URL_STRING)));
+    }
+
+    @Test
+    public void shouldCallBrowserIntentWhenClickingALinkWithActionView() throws Exception {
+        WebPageLearningElement webpageLearningElement = new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(URL_STRING));
+        View view = rendererSingle.visit(webpageLearningElement, null);
+        TextView webpageView = (TextView) view.findViewById(R.id.webpage_view);
+
+        webpageView.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getAction(), is(Intent.ACTION_VIEW));
+    }
+
+    @Test
+    public void shouldAddNoteFromPostToSummary() {
+        String note = "Note on the post";
+        when(post.getNote()).thenReturn(note);
+        WebPageLearningElement webpageLearningElement = new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(URL_STRING));
+        View webpageView = rendererSingle.visit(webpageLearningElement, null);
+        TextView noteView = (TextView) webpageView.findViewById(R.id.post_note);
+        assertThat(noteView.getText().toString(), is(note));
+    }
+
+    @Test
+    public void shouldMakeTheTextBlankInNoteIfNoNoteIsPresentForAPost() {
+        when(post.getNote()).thenReturn(null);
+        WebPageLearningElement webpageLearningElement = new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(URL_STRING));
+        View webpageView = rendererSingle.visit(webpageLearningElement, null);
+        TextView noteView = (TextView) webpageView.findViewById(R.id.post_note);
+        assertThat(noteView.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldRenderEReaderLearningElementForStreamLayout() throws Exception {
+        EReaderLearningElement eReaderLearningElement = new EReaderLearningElement(TITLE, DESCRIPTION, BOOK, null, null);
+        View view = rendererSingle.visit(eReaderLearningElement, null);
+        TextView textView = (TextView) view.findViewById(R.id.ereader_view);
+        assertThat(textView.getText().toString(), is(TITLE));
+    }
+
+    @Test
+    public void shouldRenderGoogleMapLearningElementForStreamLayout() {
+        GoogleMapsLearningElement mapsLearningElement = new GoogleMapsLearningElement(TITLE, "Name\nAddress\nPhone Number\nhttp://m.google.com/");
+        View view = rendererSingle.visit(mapsLearningElement, null);
+        TextView textView = (TextView) view.findViewById(R.id.maps_view);
+        assertThat(textView.getText().toString(), is(TITLE));
+    }
+
+    @Test
+    public void shouldAddNoteFromGoogleDriveLearningElementPostToSummary() {
+        String note = "A note for a post";
+        View mockGDriveSummaryView = mock(View.class);
+        TextView postNoteView = mock(TextView.class);
+        when(mockGDriveSummaryView.findViewById(R.id.post_note)).thenReturn(postNoteView);
+        when(googleDriveRenderer.renderWithoutTitleAndDescription(R.layout.google_drive_learning_element_stream_summary, googleDriveLearningElement, null))
+                .thenReturn(mockGDriveSummaryView);
+        when(post.getNote()).thenReturn(note);
+
+        rendererSingle.visit(googleDriveLearningElement, null);
+
+        verify(postNoteView).setText(note);
+    }
+
+    @Test
+    public void shouldMakeTheTextBlankInNoteIfNoNoteIsPresentForAGoogleDriveLearningElementPost() {
+        View mockGDriveSummaryView = mock(View.class);
+        TextView postNoteView = mock(TextView.class);
+        when(mockGDriveSummaryView.findViewById(R.id.post_note)).thenReturn(postNoteView);
+        when(googleDriveRenderer.renderWithoutTitleAndDescription(R.layout.google_drive_learning_element_stream_summary, googleDriveLearningElement, null))
+                .thenReturn(mockGDriveSummaryView);
+        when(post.getNote()).thenReturn(null);
+
+        rendererSingle.visit(googleDriveLearningElement, null);
+
+        verifyZeroInteractions(postNoteView);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

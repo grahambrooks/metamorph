@@ -1,0 +1,572 @@
+<html><head><title>NotebookStreamFragmentTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebookStreamFragmentTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/NotebookStreamFragmentTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">34</span>
+    <progress max="100" value="34"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.CursorAdapterFactory;
+import com.alpha.activities.adapters.StreamPostCursorAdapter;
+import com.alpha.activities.renderers.StreamPostSummaryRenderer;
+import com.alpha.api.adapters.PostsByDateCursorLoader;
+import com.alpha.api.adapters.PostsCursorLoader;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.DeletePostEvent;
+import com.alpha.api.services.events.DeletePostFailureEvent;
+import com.alpha.builders.PostBuilder;
+import com.alpha.launchers.LearningElementLauncher;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.ShadowLoaderManager;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.xtremelabs.robolectric.Robolectric.getShadowApplication;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings({"PMD.TooManyMethods", "ClassWithTooManyMethods", "PMD.TooManyFields"})
+public class NotebookStreamFragmentTest {
+
+    public static final String DESC = "desc";
+    private static final String GOORU_PACKAGE = "org.ednovo";
+
+    private NotebookStreamFragment fragment;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private Section section;
+    @Mock
+    private Post post;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private CursorAdapterFactory cursorAdapterFactory;
+    @Mock
+    private StreamPostCursorAdapter streamPostCursorAdapter;
+    @Mock
+    private Menu menu;
+    @Mock
+    private MenuInflater menuInflater;
+    @Mock
+    private ApplicationUtils applicationUtils;
+    @Mock
+    private LearningElementLauncher learningElementLauncher;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private CountOffSettings countOffSettings;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+
+    private ListView postsList;
+
+    private TextView emptyView;
+    public static final String TITLE = "title";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        ActivityTestInjector<NotebookStreamFragment> testInjector = newInjector(this, NotebookStreamFragment.class)
+                .bindInstance(Toaster.class, toaster)
+                .bindInstance(CursorAdapterFactory.class, cursorAdapterFactory)
+                .bindInstance(ApplicationUtils.class, applicationUtils)
+                .bindInstance(LearningElementLauncher.class, learningElementLauncher)
+                .bindInstance(UserService.class, userService);
+
+        given(cursorAdapterFactory.createStreamPostCursorAdapter(any(Activity.class), any(StreamPostSummaryRenderer.class)))
+                .willReturn(streamPostCursorAdapter);
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.getCountOffSettings()).willReturn(countOffSettings);
+        given(controlSettingsModel.getCallOnSomeoneSettings()).willReturn(callOnSomeoneSettings);
+
+        fragment = testInjector.configureFragment();
+        postsList = ((ListView) fragment.getView().findViewById(R.id.post_stream_list));
+        emptyView = (TextView) fragment.getView().findViewById(R.id.stream_empty_view);
+    }
+
+    @Test
+    public void shouldToastOnDeletionOfPost() {
+        when(post.getTitle()).thenReturn("post title");
+        DeletePostEvent deletePostEvent = new DeletePostEvent(post);
+        fragment.listeners.onPostDelete(deletePostEvent);
+        Context context = getShadowApplication().getApplicationContext();
+        verify(toaster).makeToast(String.format(context.getString(R.string.post_deleted_success), "\"post title\""));
+    }
+
+    @Test
+    public void shouldToastOnFailureDuringPostDeletion() {
+        fragment.listeners.onPostDeleteFailure(new DeletePostFailureEvent(ApiErrorReason.INTERNAL_ERROR));
+        verify(toaster).errorToast(ApiErrorReason.INTERNAL_ERROR, R.string.delete_post_failure);
+    }
+
+    @Test
+    public void shouldReturnStreamViewOnCreate() {
+        View view = fragment.onCreateView(LayoutInflater.from(Robolectric.application), null, null);
+        assertThat(view.findViewById(R.id.post_stream_list), is(notNullValue()));
+    }
+
+    @Test
+    public void shouldSetThePostAdapterAfterViewHasBeenCreated() {
+        ListView listView = (ListView) fragment.getView().findViewById(R.id.post_stream_list);
+        assertThat(listView.getAdapter(), is(StreamPostCursorAdapter.class));
+    }
+
+    @Test
+    public void shouldRegisterItselfWithTheLoaderManagerAfterViewHasBeenCreated() {
+        ShadowLoaderManager loaderManager = (ShadowLoaderManager) fragment.getLoaderManager();
+        assertThat(loaderManager.loaderCallbackRegistered(fragment), is(true));
+    }
+
+    @Test
+    public void shouldSetItemClickListenerOnGallery() throws Exception {
+        assertThat(postsList.getOnItemClickListener(), notNullValue());
+    }
+
+    @Test
+    public void shouldRegisterForContextMenuOnlyForTeacher() {
+        View view = fragment.onCreateView(LayoutInflater.from(Robolectric.application), null, null);
+        when(userService.isTeacher()).thenReturn(true);
+        NotebookStreamFragment fragmentSpy = spy(fragment);
+        fragmentSpy.onViewCreated(view, null);
+        verify(fragmentSpy).registerForContextMenu(postsList);
+    }
+
+    @Test
+    public void shouldNotRegisterForContextMenuForStudent() {
+        View view = fragment.onCreateView(LayoutInflater.from(Robolectric.application), null, null);
+        when(userService.isTeacher()).thenReturn(false);
+        NotebookStreamFragment fragmentSpy = spy(fragment);
+        fragmentSpy.onViewCreated(view, null);
+        verify(fragmentSpy, never()).registerForContextMenu(postsList);
+    }
+
+    @Test
+    public void shouldLaunchQuickPollWhenQuickPollPostTypeIsClicked() throws Exception {
+
+        when(userService.isTeacher()).thenReturn(true);
+        final long postId = 1976L;
+        final int setNumberOfQuickPollAnswers = 4;
+        Post realPost = new PostBuilder().withPostType(PostType.QUICKPOLL).withTitle("MoJoJo").build();
+        realPost.setId(postId);
+        realPost.setNumberOfQuickPollAnswers(setNumberOfQuickPollAnswers);
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        ComponentName componentName = new ComponentName(Robolectric.application, QuickPollGraphActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getExtras().getLong(QuickPollGraphActivity.POST_ID_KEY), is(postId));
+        assertThat(intent.getExtras().getInt(QuickPollGraphActivity.ANSWER_COUNT_KEY), is(setNumberOfQuickPollAnswers));
+    }
+
+    @Test
+    public void shouldOpenDiscussionDetailPageWhenDiscussionItemIsClicked() throws Exception {
+        Post realPost = new PostBuilder().withTitle("joMomma").withPostType(PostType.DISCUSSION).build();
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        Intent nextStartedActivity = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(((Long) nextStartedActivity.getExtras().get(DiscussionDetailActivity.POST_ID_EXTRA)), is(post.getId()));
+        assertThat(nextStartedActivity.getComponent().getClassName(), is(DiscussionDetailActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchShortAnswerActivityWhenTeacherClicksShortAnswerPost() {
+        Post realPost = new PostBuilder().withTitle("Short Answer").withPostType(PostType.SHORT_ANSWER).build();
+        when(userService.isTeacher()).thenReturn(true);
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        Intent nextStartedActivity = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(nextStartedActivity.getComponent().getClassName(), is(QuickShortAnswerTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldCallLearningElementLauncherWhenSharedPostIsClicked() {
+        Post realPost = new PostBuilder().withTitle("LearningElementTitle")
+                .withPostType(PostType.SHARE)
+                .withLearningElements(mock(LearningElement.class))
+                .build();
+
+        when(userService.isStudent()).thenReturn(true);
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        verify(learningElementLauncher).launchIntentForLearningElement(any(Context.class), eq(realPost.getFirstLearningElement()));
+    }
+
+    @Test
+    public void shouldDoNothingWhenStudentClicksShortAnswerPost() {
+        Post realPost = new PostBuilder().withTitle("Short Answer").withPostType(PostType.SHORT_ANSWER).build();
+        when(userService.isStudent()).thenReturn(true);
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+
+    @Test
+    public void shouldLaunchCallOnSomeoneActivityWhenTeacherClicksOnLiveCallOnSomeonePost() {
+        Post callOnSomeonePost = new PostBuilder().withTitle("Call On Someone").withPostType(PostType.CALL_ON_SOMEONE).build();
+        when(userService.isTeacher()).thenReturn(true);
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(true);
+        when(callOnSomeoneSettings.getPostId()).thenReturn(callOnSomeonePost.getId());
+
+        View view = new View(Robolectric.application);
+        view.setTag(callOnSomeonePost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        Intent nextStartedActivity = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(nextStartedActivity.getComponent().getClassName(), is(CallOnSomeoneActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldNotLaunchCallOnSomeoneActivityWhenTeacherClicksOnCompletedCallOnSomeonePost() {
+        Post callOnSomeonePost = new PostBuilder().withTitle("Call On Someone").withPostType(PostType.CALL_ON_SOMEONE).build();
+        when(userService.isTeacher()).thenReturn(true);
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(true);
+        when(callOnSomeoneSettings.getPostId()).thenReturn(callOnSomeonePost.getId() + 1);
+
+        View view = new View(Robolectric.application);
+        view.setTag(callOnSomeonePost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+
+    @Test
+    public void shouldNotLaunchCallOnSomeoneActivityWheneverStudentClicksOnCallOnSomeonePost() {
+        Post callOnSomeonePost = new PostBuilder().withTitle("Call On Someone").withPostType(PostType.CALL_ON_SOMEONE).build();
+        when(userService.isTeacher()).thenReturn(false);
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(true);
+        when(callOnSomeoneSettings.getPostId()).thenReturn(callOnSomeonePost.getId());
+
+        View view = new View(Robolectric.application);
+        view.setTag(callOnSomeonePost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+    @Test
+    public void shouldLaunchGoResearchWhenEitherTeacherOrStudentClicksOnPost() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GOORU_PACKAGE))).thenReturn(true);
+
+
+        Post research = new PostBuilder().withTitle("Research").withPostType(PostType.GO_RESEARCH).build();
+        View view = new View(Robolectric.application);
+        view.setTag(research);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        Assert.assertThat(intent.getComponent().getPackageName(), is(GOORU_PACKAGE));
+    }
+
+    @Test
+    public void shouldLaunchCountOffActivityWhenTeacherClicksOnPost() {
+        when(userService.isTeacher()).thenReturn(true);
+        Post countOffPost = new PostBuilder().withTitle("CountOff").withPostType(PostType.COUNT_OFF).build();
+
+
+        View view = new View(Robolectric.application);
+        view.setTag(countOffPost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(CountedOffTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldNotLaunchCountOffActivityWhenCountOffIsNotLive() {
+        when(userService.isTeacher()).thenReturn(true);
+        Post countOffPost = new PostBuilder().withTitle("CountOff").withPostType(PostType.COUNT_OFF).build();
+        when(countOffSettings.getPostId()).thenReturn(null);
+
+        View view = new View(Robolectric.application);
+        view.setTag(countOffPost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+
+    @Test
+    public void shouldMakeErrorToastWhenEitherTeacherOrStudentClicksOnPostAndGooruIsNotInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GOORU_PACKAGE))).thenReturn(false);
+
+
+        Post research = new PostBuilder().withTitle("Research").withPostType(PostType.GO_RESEARCH).build();
+        View view = new View(Robolectric.application);
+        view.setTag(research);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        verify(toaster).makeToast(R.string.gooru_not_installed);
+    }
+
+    @Test
+    public void shouldDoNothingWhenStudentClicksSpotCheckPost() {
+        Post spotCheckPost = new PostBuilder().withTitle("Spot Check").withPostType(PostType.SPOT_CHECK).build();
+        when(userService.isStudent()).thenReturn(true);
+        View view = new View(Robolectric.application);
+        view.setTag(spotCheckPost);
+
+        fragment.onViewCreated(null, null);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+
+    @Test
+    public void shouldNotOpenPostDetailPageWhenActionPostIsClicked() throws Exception {
+        Post realPost = new PostBuilder().withPostType(PostType.QUICKPOLL).withTitle("joMomma").build();
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        assertNull(Robolectric.getShadowApplication().getNextStartedActivity());
+    }
+
+    @Test
+    public void shouldOpenDiscussionDetailPageWhenSharePostOfDiscussionTypeIsClicked() throws Exception {
+        final long postId = 1976L;
+        Post realPost = new PostBuilder().withPostType(PostType.DISCUSSION).withTitle("MoJoJo").build();
+        realPost.setId(postId);
+        fragment.onViewCreated(null, null);
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+
+        ComponentName componentName = new ComponentName(Robolectric.application, DiscussionDetailActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getExtras().getLong(DiscussionDetailActivity.POST_ID_EXTRA), is(postId));
+    }
+
+    @Test
+    @Ignore("setDataAndType Not supported yet.")
+    public void shouldOpenGalleryWhenSharePostOfVideoTypeIsClicked() {
+        String pathToVideo = "/mnt/sdcard/Movies/Khan/algebra.mp4";
+        VideoLearningElement videoLearningElement = new VideoLearningElement(TITLE, DESC, pathToVideo);
+        List<LearningElement> elements = Arrays.<LearningElement>asList(videoLearningElement);
+
+        Post realPost = new Post(elements, PostType.SHARE, user.asAuthor(), null, null, TITLE, DESC, new ArrayList<Participant>());
+
+        fragment.onViewCreated(null, null);
+
+        View view = new View(Robolectric.application);
+        view.setTag(realPost);
+
+        postsList.getOnItemClickListener().onItemClick(null, view, 0, 0);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertTrue(intent.getData().getPath().contains(pathToVideo));
+        assertThat(intent.getAction(), is(Intent.ACTION_VIEW));
+    }
+
+    @Test
+    public void shouldSetPostCursorToNoFilter() {
+        when(userService.getUser()).thenReturn(user);
+        when(user.getCurrentSection()).thenReturn(section);
+        fragment.resetPostFilter();
+
+        CursorLoader loader = (CursorLoader) fragment.onCreateLoader(-1, null);
+
+        assertThat(loader, is(PostsCursorLoader.class));
+    }
+
+    @Test
+    public void shouldSetPostCursorByDate() {
+        when(userService.getUser()).thenReturn(user);
+        when(user.getCurrentSection()).thenReturn(section);
+        fragment.setPostFilterDate(0);
+
+        CursorLoader loader = (CursorLoader) fragment.onCreateLoader(-1, null);
+
+        assertThat(loader, is(PostsByDateCursorLoader.class));
+    }
+
+    @Test
+    public void shouldSurroundTitleWithQuotes() {
+        when(post.getTitle()).thenReturn("Title");
+
+        String actual = fragment.withQuotedTitle(post, R.string.alert_post_delete_confirm);
+
+        String expected = String.format(fragment.getActivity().getString(R.string.alert_post_delete_confirm), "\"Title\"");
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void shouldNotSurroundTitleWithQuotesWhenItIsNotAvailable() {
+        when(post.getTitle()).thenReturn(null, "");
+        String expected = String.format(fragment.getActivity().getString(R.string.alert_post_delete_confirm), "");
+
+        String actual = fragment.withQuotedTitle(post, R.string.alert_post_delete_confirm);
+        assertThat(actual, is(expected));
+
+        actual = fragment.withQuotedTitle(post, R.string.alert_post_delete_confirm);
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void shouldInflateStudentMenu() {
+        when(userService.isStudent()).thenReturn(true);
+
+        fragment.onCreateOptionsMenu(menu, menuInflater);
+
+        verify(menuInflater).inflate(R.menu.student_notebook_menu, menu);
+    }
+
+    @Test
+    public void shouldInflateTeacherMenu() {
+        when(userService.isStudent()).thenReturn(false);
+
+        fragment.onCreateOptionsMenu(menu, menuInflater);
+
+        verify(menuInflater).inflate(R.menu.teacher_notebook_stream_menu, menu);
+    }
+
+    @Test
+    public void shouldSetEmptyView() {
+        assertThat((TextView) postsList.getEmptyView(), is(emptyView));
+    }
+
+    @Test
+    public void shouldSetEmptyViewForClass() {
+        fragment.resetPostFilter();
+        fragment.onLoadFinished(null, null);
+
+        assertThat(emptyView.getText().toString(), is("There are no posts\\n for this class."));
+    }
+
+    @Test
+    public void shouldSetEmptyViewForDate() {
+        fragment.setPostFilterDate(0);
+        fragment.onLoadFinished(null, null);
+
+        assertThat(emptyView.getText().toString(), is("There are no posts\\n on this date."));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

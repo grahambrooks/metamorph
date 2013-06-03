@@ -1,0 +1,211 @@
+<html><head><title>ModeratorSessionService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ModeratorSessionService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ModeratorSessionService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.services.events.*;
+import com.alpha.api.services.events.DeviceLockingRequestFailureEvent.LockType;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.service.RoboService;
+
+import java.util.Set;
+
+import static com.alpha.api.services.ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE;
+import static com.google.common.base.Preconditions.checkState;
+
+public class ModeratorSessionService extends RoboService {
+
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private UserService userService;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    public ModeratorSessionService() {
+        // required by Android to bind to a service
+    }
+
+    protected ModeratorSessionService(SessionTaskFactory sessionTaskFactory, NetworkConnectivity networkConnectivity, EventBus eventBus, UserService userService) {
+        this.sessionTaskFactory = sessionTaskFactory;
+        this.networkConnectivity = networkConnectivity;
+        this.eventBus = eventBus;
+        this.userService = userService;
+    }
+
+    public void startSession(Teacher teacher,
+                             ProgressBar progressBar) {
+
+        checkState(!teacher.getSession().isOngoing(), "A session is already in progress for this session.");
+
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to started session when no network connection available");
+            eventBus.post(SessionStartEvent.failure(NO_NETWORK_CONNECTION_AVAILABLE));
+            return;
+        } else {
+            checkXMPPUserNameAndJoinSession(teacher, progressBar);
+        }
+    }
+
+    private void checkXMPPUserNameAndJoinSession(final Teacher teacher, final ProgressBar progressBar) {
+        if (teacher.getXmppUsername().startsWith("amp_" + teacher.getId())) {
+            sessionTaskFactory.createStartSessionTask(teacher, progressBar).execute();
+        } else {
+            LOG.info("Teacher name is not updated to current format. Updating...");
+            userService.getUser().resetXmppUsername();
+            userService.registerUser(teacher, new XMPPUpdateUserNameRegistrationCallback(teacher, progressBar));
+        }
+    }
+
+    public void endSession(Teacher teacher, ProgressBar progressBar) {
+        checkState(teacher.getSession().isOngoing(), "No session is in progress for this section.");
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to end session when no network connection available");
+            eventBus.post(new EndSessionFailureEvent(NO_NETWORK_CONNECTION_AVAILABLE));
+            return;
+        }
+        sessionTaskFactory.createEndSessionTask(teacher, progressBar).execute();
+    }
+
+    public void sendLockMessage(Teacher teacher) {
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to send Lock message when no network connection available");
+            eventBus.post(new DeviceLockingRequestFailureEvent(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE, LockType.LOCK));
+            return;
+        }
+        sessionTaskFactory.createLockDeviceTask(teacher).execute();
+    }
+
+    public void sendUnlockMessage(Teacher teacher) {
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to send unLock message when no network connection available");
+            eventBus.post(new DeviceLockingRequestFailureEvent(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE, LockType.UNLOCK));
+            return;
+        }
+        sessionTaskFactory.createUnlockDevicesTask(teacher).execute();
+    }
+
+    public void engageForceField(Set<SundaeAppInfo> whiteListApps, Teacher teacher, Section section, ProgressBar progressBar) {
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to send forcefield engage message when no network connection available");
+            eventBus.post(new ForceFieldEvent.EngageFailed(NO_NETWORK_CONNECTION_AVAILABLE));
+            return;
+        }
+        sessionTaskFactory.createForceFieldEngagedTask(whiteListApps, teacher, section, progressBar).execute();
+    }
+
+    public void disengageForceField(Teacher teacher, ProgressBar progressBar) {
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to send forcefield disengage message when no network connection available");
+            eventBus.post(new ForceFieldEvent.DisengageFailed(NO_NETWORK_CONNECTION_AVAILABLE));
+            return;
+        }
+        sessionTaskFactory.createForceFieldDisengagedTask(teacher, progressBar).execute();
+    }
+
+    public class ModeratorSessionServiceBinder extends Binder {
+        public ModeratorSessionService getService() {
+            return ModeratorSessionService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new ModeratorSessionServiceBinder();
+    }
+
+    protected class XMPPUpdateUserNameRegistrationCallback implements ControlServerRegistrationCallback {
+
+        private final Teacher teacher;
+        private final ProgressBar progressBar;
+
+        public XMPPUpdateUserNameRegistrationCallback(Teacher teacher, ProgressBar progressBar) {
+            this.teacher = teacher;
+            this.progressBar = progressBar;
+        }
+
+        @Override
+        public void onControlServerRegistrationSuccess() {
+            LOG.trace("Successfully updated XMPP username, creating session...");
+            userService.syncAllStudentsForAllSections(teacher);
+            sessionTaskFactory.createStartSessionTask(teacher, progressBar).execute();
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onControlServerRegistrationFailure(ControlServerRegistrationResult registrationResult) {
+            LOG.error("Failed updating XMPP username");
+            eventBus.post(new JoinSessionFailureEvent(ApiErrorReason.UPDATE_XMPP_NAME_FAILURE));
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

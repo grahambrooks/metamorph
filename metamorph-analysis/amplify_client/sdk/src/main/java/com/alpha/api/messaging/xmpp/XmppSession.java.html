@@ -1,0 +1,225 @@
+<html><head><title>XmppSession.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppSession.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/amplify_client/XmppSession.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+
+import android.net.wifi.WifiInfo;
+import com.alpha.api.messaging.xmpp.listeners.BasePacketListener;
+import com.alpha.api.messaging.xmpp.listeners.ConnectionCloseListener;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+import static com.alpha.api.messaging.xmpp.MultiUserChatAdapter.MUC_ROOMCONFIG_MAXUSERS;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.jivesoftware.smack.SmackConfiguration.getPacketReplyTimeout;
+
+public abstract class XmppSession implements SessionHolder {
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final int NO_HISTORY = 0;
+    public static final String ENDING_SESSION_MSG = "Ending session.";
+    private ConnectionCloseListener connectionListener;
+    protected final AmplifyXmppConnection xmppConnection;
+    protected final MultiUserChatAdapter chatAdapter;
+    protected final List<BasePacketListener> packetListeners;
+    protected final UserService userService;
+    protected final EventBus eventBus;
+    private final NetworkConnectivity networkConnectivity;
+    protected MultiUserChat multiUserChat;
+
+    public static enum Status {
+        NOT_STARTED,
+        ENDED,
+        IN_PROGRESS
+    }
+
+    public XmppSession(AmplifyXmppConnection xmppConnection, MultiUserChatAdapter chatAdapter, UserService userService, EventBus eventBus, NetworkConnectivity networkConnectivity) {
+        this.xmppConnection = xmppConnection;
+        this.chatAdapter = chatAdapter;
+        this.userService = userService;
+        this.eventBus = eventBus;
+        this.networkConnectivity = networkConnectivity;
+        packetListeners = newArrayList();
+    }
+
+    protected void addSessionListeners(BasePacketListener... listeners) {
+        for (BasePacketListener listener : listeners) {
+            packetListeners.add(listener);
+            xmppConnection.addPacketListener(listener, listener.allFilters());
+        }
+    }
+
+    @Override
+    public void removeSessionListeners() {
+        for (BasePacketListener packetListener : packetListeners) {
+            xmppConnection.removePacketListener(packetListener);
+        }
+        packetListeners.clear();
+    }
+
+    protected void addConnectionListenerIfNecessary() {
+        if (connectionListener == null) {
+            connectionListener = new ConnectionCloseListener(this, userService, eventBus);
+            xmppConnection.addConnectionListener(connectionListener);
+        }
+    }
+
+    protected void joinRoom(User user, boolean unlockRoom) throws XMPPException {
+        WifiInfo wifiInfo = networkConnectivity.getWifiConnectionInfo();
+        LOGGER.trace(String.format("Wifi statistics: BSSID=%s, Signal Strength=%d, Speed(Mbps)=%d for joining session", wifiInfo.getBSSID(), wifiInfo.getRssi(), wifiInfo.getLinkSpeed()));
+        multiUserChat.join(user.getId().toString(), null, XmppUtils.noHistory(), getPacketReplyTimeout());
+        if (unlockRoom) {
+            multiUserChat.sendConfigurationForm(configurationForm());
+        }
+        networkConnectivity.lockWifi();
+    }
+
+    private Form configurationForm() throws XMPPException {
+        Form form = multiUserChat.getConfigurationForm();
+        Form answerForm = form.createAnswerForm();
+        List<String> maxUsers = newArrayList(MultiUserChatAdapter.UNLIMITED_USERS);
+        answerForm.setAnswer(MUC_ROOMCONFIG_MAXUSERS, maxUsers);
+        return answerForm;
+    }
+
+    @Override
+    public void endSession() {
+        if (!chatStarted()) {
+            LOGGER.warn("Illegal attempt to end a session that is not started.");
+            return;
+        }
+        try {
+            if (XmppUtils.roomExists(userService.session().id(), chatAdapter)) {
+                onEndSession();
+            }
+            removeSessionListeners();
+            XmppUtils.disconnectIfNecessary(xmppConnection);
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred trying to end session", e);
+            XmppUtils.cleanUpAndRethrow(xmppConnection, e);
+        } finally {
+            cleanUpSession();
+        }
+    }
+
+    protected void cleanUpSession() {
+        multiUserChat = null; //NOPMD
+        userService.session().end();
+        networkConnectivity.unlockWifi();
+    }
+
+    @Override
+    public final Status rejoin(User user) {
+        if (!chatStarted()) {
+            LOGGER.warn("Trying to rejoin with no chat room created yet!");
+            return Status.NOT_STARTED;
+        }
+        boolean recreateSession = isSessionToBeRecreated();
+        ClassSession classSession = user.getSession();
+        try {
+            String sessionName = classSession.id();
+            LOGGER.info("Trying to rejoin " + sessionName);
+            if (!recreateSession && !XmppUtils.roomExists(sessionName, chatAdapter)) {
+                LOGGER.info("Session has already ended");
+                XmppUtils.disconnectIfNecessary(xmppConnection);
+                classSession.end();
+                return Status.ENDED;
+            }
+            addListeners(sessionName);
+            joinRoom(user, recreateSession);
+            classSession.rejoin();
+            LOGGER.info("Joined session '{}' successfully!", sessionName);
+            return Status.IN_PROGRESS;
+        } catch (XMPPException e) {
+            classSession.end();
+            LOGGER.error("Session rejoin failed!", e);
+            throw new AmplifyException(e);
+        }
+    }
+
+    public void shutdown() {
+        if (xmppConnection.isConnected()) {
+            destroyRoom();
+            xmppConnection.disconnect();
+        }
+    }
+
+    protected void destroyRoom() {
+        if (chatStarted() && multiUserChat.isJoined()) {
+            try {
+                removeSessionListeners();
+                multiUserChat.destroy(ENDING_SESSION_MSG, null);
+            } catch (XMPPException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected abstract void onEndSession() throws XMPPException;
+
+    protected abstract boolean isSessionToBeRecreated();
+
+    protected abstract void addListeners(String roomName);
+
+    public boolean chatStarted() {
+        return multiUserChat != null;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

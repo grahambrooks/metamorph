@@ -1,0 +1,183 @@
+<html><head><title>LockedActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LockedActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/LockedActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.CONNECTION_LOST;
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.TEACHER_INITIATED;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class LockedActivityTest {
+
+    @Inject
+    private TestLockedActivity activity;
+
+    @Inject
+    private DeviceLockingService deviceLockingService;
+
+    @Inject
+    private EventBus eventBus;
+
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private static NetworkStatusFragment networkStatusFragment;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        ActivityTestInjector<TestLockedActivity> activityTestInjector =
+                new ActivityTestInjector<TestLockedActivity>(this, TestLockedActivity.class);
+
+        activityTestInjector
+                .bindInstance(Toaster.class, toaster)
+                .bindInstance(UserService.class, userService)
+                .configureActivity();
+    }
+
+    @Test
+    public void shouldBlockUserAndToastFromMovingBackToThePreviousActivity() {
+        activity.onBackPressed();
+
+        verify(toaster).makeToast("Back Button is disabled");
+    }
+
+    @Test
+    public void shouldLockDeviceOnResume() {
+        when(userService.session()).thenReturn(classSession);
+        when(classSession.isStarted()).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        verify(deviceLockingService).lock(eq(activity)) ;
+    }
+
+    @Test
+    public void shouldFinishActivityWhenSessionEndInitiatedByTeacher(){
+        activity.lockListeners.onSessionEnded(new StudentSessionEndedEvent(TEACHER_INITIATED));
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldNotFinishActivityWhenSessionEndBecauseOfConnectionLoss(){
+        activity.lockListeners.onSessionEnded(new StudentSessionEndedEvent(CONNECTION_LOST));
+
+        assertFalse(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldUnregisterOnDestroy() {
+        activity.onCreate(null);
+        activity.onDestroy();
+
+        verify(eventBus).unregister(activity.lockListeners);
+    }
+
+    @Test
+    public void shouldUnlockActivityOnFinish() {
+        activity.finish();
+        verify(activity.deviceLockingService).unlock(activity);
+    }
+
+    public static class TestLockedActivity extends LockedActivity {
+        @Override
+        protected Optional<NetworkStatusFragment> getNetworkStatus() {
+            return Optional.of(networkStatusFragment);
+        }
+    }
+
+    @Test
+    public void shouldDisplayUnlockWhenResumeToDisconnectState() {
+        when(userService.session()).thenReturn(classSession);
+        when(classSession.isNotStarted()).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        verify(networkStatusFragment).enableUnlock();
+    }
+
+    @Test
+    public void shouldNotDisplayUnlockWhenResumeToOtherState() {
+        when(userService.session()).thenReturn(classSession);
+        when(classSession.isRestarting()).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        verifyZeroInteractions(networkStatusFragment);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

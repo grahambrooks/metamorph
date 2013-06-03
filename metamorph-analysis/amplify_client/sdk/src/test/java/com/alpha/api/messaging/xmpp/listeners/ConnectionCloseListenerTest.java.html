@@ -1,0 +1,229 @@
+<html><head><title>ConnectionCloseListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ConnectionCloseListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ConnectionCloseListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.xmpp.SessionHolder;
+import com.alpha.api.messaging.xmpp.XmppSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.*;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import static com.alpha.api.messaging.xmpp.XmppSession.Status.IN_PROGRESS;
+import static java.lang.Thread.sleep;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ConnectionCloseListenerTest {
+
+    @Mock
+    private SessionHolder session;
+    private ConnectionCloseListener connectionCloseListener;
+    @Mock
+    private UserService userService;
+    @Mock
+    private EventBus eventBus;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private User user;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        given(userService.getUser()).willReturn(user);
+        given(userService.session()).willReturn(classSession);
+        connectionCloseListener = new ConnectionCloseListener(session, userService, eventBus);
+    }
+
+    @Test
+    public void shouldNotPostEventWhenConnectionIsClosedNormally() {
+        connectionCloseListener.connectionClosed();
+
+        verify(session).removeSessionListeners();
+        verifyZeroInteractions(eventBus);
+    }
+
+    @Test
+    public void shouldLeaveSessionIfConnectonIsDropped() {
+        connectionCloseListener.connectionClosedOnError(new Exception("Connection dropped"));
+
+        verify(session).removeSessionListeners();
+        verifyDisassociatedUserFromSessionAndPostConnectionCloseEvent();
+    }
+
+    private void verifyDisassociatedUserFromSessionAndPostConnectionCloseEvent() {
+        verify(eventBus).post(isA(ConnectionClosedEvent.class));
+    }
+
+    @Test
+    public void shouldPostSessionStartEventIfRejoinSessionIsSuccessfulForTeacher() throws Exception {
+        when(userService.isTeacher()).thenReturn(true);
+        when(classSession.isRestarting()).thenReturn(true);
+        when(session.rejoin(user)).thenReturn(IN_PROGRESS);
+
+        connectionCloseListener.reconnectionSuccessful();
+
+        verify(eventBus).post(SessionStartEvent.success());
+    }
+
+    @Test
+    public void shouldPostJoinSessionEventIfRejoinedSuccessfullyForStudent() throws Exception {
+        when(userService.isTeacher()).thenReturn(false);
+        when(classSession.isRestarting()).thenReturn(true);
+        when(session.rejoin(user)).thenReturn(IN_PROGRESS);
+
+        connectionCloseListener.reconnectionSuccessful();
+
+        verify(eventBus).post(isA(JoinSessionEvent.class));
+        verify(eventBus, never()).post(isA(SessionStartEvent.class));
+    }
+
+    @Test
+    public void shouldNotPostEventWhenRejoinFailed() {
+        when(session.rejoin(user)).thenReturn(XmppSession.Status.NOT_STARTED);
+
+        connectionCloseListener.reconnectionSuccessful();
+
+        verifyZeroInteractions(eventBus);
+    }
+
+    @Test
+    public void shouldPostSessionRejoinTimeOutEventWhenTimingOutOnReconnectionFailedForTeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        connectionCloseListener.timedOut.set(true);
+
+        connectionCloseListener.reconnectionFailed(null);
+
+        verify(eventBus).post(eq(new TeacherSessionEndedEvent(SessionEndedEvent.Reason.CONNECTION_LOST)));
+
+    }
+
+    @Test
+    public void shouldPostSessionRejoinTimeOutEventAndDisengageForceFieldWhenTimingOutOnReconnectionFailedForStudent() {
+        when(userService.isTeacher()).thenReturn(false);
+        when(user.isForceFieldEngaged()).thenReturn(true);
+        connectionCloseListener.timedOut.set(true);
+
+        connectionCloseListener.reconnectionFailed(null);
+
+        verify(eventBus).post(eq(new StudentSessionEndedEvent(SessionEndedEvent.Reason.CONNECTION_LOST)));
+        verify(user).disengageForceField();
+    }
+
+    @Test
+    public void shouldPostSessionRejoinTimeOutEventWhenTimingOutOnReconnectionSuccessfulForTeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        connectionCloseListener.timedOut.set(true);
+
+        connectionCloseListener.reconnectionSuccessful();
+
+        verify(eventBus).post(eq(new TeacherSessionEndedEvent(SessionEndedEvent.Reason.CONNECTION_LOST)));
+    }
+
+    @Test
+    public void shouldPostSessionRejoinTimeOutEventWhenTimingOutOnReconnectionSuccessfulForStudent() {
+        when(userService.isTeacher()).thenReturn(false);
+        connectionCloseListener.timedOut.set(true);
+
+        connectionCloseListener.reconnectionSuccessful();
+
+        verify(eventBus).post(eq(new StudentSessionEndedEvent(SessionEndedEvent.Reason.CONNECTION_LOST)));
+    }
+
+    @Test
+    public void shouldPostReconnectStatusWhenInStartingMode() throws Exception {
+        when(classSession.isRestarting()).thenReturn(true);
+        connectionCloseListener.reconnectingIn(1);
+
+        verify(eventBus).post(SessionReconnectEvent.IN_PROGRESS);
+    }
+
+    @Test
+    public void shouldNotPostReconnectStatusWhenNotInRestartingMode() throws Exception {
+        when(classSession.isStarted()).thenReturn(true);
+        connectionCloseListener.reconnectingIn(1);
+
+        verifyZeroInteractions(eventBus);
+    }
+
+    @Test
+    @Ignore("It is taking too long time to test")
+    public void shouldGetTimeoutAfter2Minutes() throws InterruptedException {
+        connectionCloseListener.timedOut.set(false);
+        connectionCloseListener.connectionClosedOnError(null);
+
+        sleep(((2 * 60)+1) * 1000);
+
+        assertThat(connectionCloseListener.timedOut.get(), is(true));
+    }
+
+    @Test
+    public void shouldNotGetTimeoutBefore2Minutes() throws InterruptedException {
+        connectionCloseListener.timedOut.set(false);
+        connectionCloseListener.connectionClosedOnError(null);
+
+        assertThat(connectionCloseListener.timedOut.get(), is(false));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

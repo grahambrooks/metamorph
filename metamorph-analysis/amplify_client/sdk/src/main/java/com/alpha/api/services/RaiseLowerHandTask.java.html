@@ -1,0 +1,120 @@
+<html><head><title>RaiseLowerHandTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RaiseLowerHandTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/RaiseLowerHandTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+public class RaiseLowerHandTask extends SafeProgressAsyncTask<Boolean> {
+    private final StudentSession studentSession;
+    private final WebServices webServices;
+    private final Student student;
+    private final SendRaiseLowerHandCallbacks callbacks;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public RaiseLowerHandTask(StudentSession studentSession, WebServices webServices,
+                              AnalyticsAgent analyticsAgent,
+                              @Assisted Student student,
+                              @Assisted SendRaiseLowerHandCallbacks callbacks,
+                              @Assisted Optional<ProgressBar> progressBar) {
+        super(progressBar.orNull(), analyticsAgent);
+        this.studentSession = studentSession;
+        this.webServices = webServices;
+        this.student = student;
+        this.callbacks = callbacks;
+    }
+
+    @Override
+    public Boolean call() {
+
+        ParticipantPresenceModel currentModel = student.getPresenceModel();
+
+        currentModel.setHandRaisedStatus(currentModel.isHandRaised() ? HandRaiseStatus.HAND_LOWER : HandRaiseStatus.HAND_RAISE);
+        student.setPresenceModel(currentModel);
+        studentSession.updateStudentPresenceStatus(currentModel);
+        webServices.send(student.buildHandEvent());
+        return true;
+    }
+
+    @Override
+    protected void onSuccess(Boolean success) {
+
+        if (student.hasHandRaised()) {
+            callbacks.onRaiseHandSuccess();
+        } else {
+            callbacks.onLowerHandSuccess();
+        }
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Failed to toggle hand raise status", e);
+        callbacks.onFailure(e.getApiErrorReason());
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Failed to toggle hand raise status", e);
+        callbacks.onFailure(ApiErrorReason.RAISE_LOWER_HAND_FAILED);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

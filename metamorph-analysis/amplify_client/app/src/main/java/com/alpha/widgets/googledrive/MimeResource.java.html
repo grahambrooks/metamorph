@@ -1,0 +1,97 @@
+<html><head><title>MimeResource.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MimeResource.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/googledrive/amplify_client/MimeResource.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.googledrive;
+
+import com.amplify.R;
+
+public enum MimeResource {
+    GOOGLE_DOC(R.drawable.gdrive_doc_icon, "application/vnd.google-apps.document"),
+    MS_DOC(R.drawable.gdrive_doc_icon, "application/msword"),
+    MS_DOCX(R.drawable.gdrive_doc_icon, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    GOOGLE_PPT(R.drawable.gdrive_ppt_icon, "application/vnd.google-apps.presentation"),
+    MS_PPT(R.drawable.gdrive_ppt_icon, "application/vnd.ms-powerpoint"),
+    MS_PPTX(R.drawable.gdrive_ppt_icon, "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+    GOOGLE_XLS(R.drawable.gdrive_xls_icon, "application/vnd.google-apps.spreadsheet"),
+    MS_XLS(R.drawable.gdrive_xls_icon, "application/vnd.ms-excel"),
+    MS_XLSX(R.drawable.gdrive_xls_icon, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    ZIP(R.drawable.gdrive_zip_icon, "application/zip"),
+    PDF(R.drawable.gdrive_pdf_icon, "application/pdf"),
+    GIF(R.drawable.gdrive_gif_icon, "image/gif"),
+    JPG(R.drawable.gdrive_jpg_icon, "image/jpeg"),
+    PNG(R.drawable.gdrive_png_icon, "image/png"),
+    TXT(R.drawable.gdrive_txt_icon, "text/plain"),
+    UNKNOWN(R.drawable.gdrive_file_icon, "");
+
+    private final int drawable;
+    private final String mimeType;
+
+    private String getMimeType() {
+        return mimeType;
+    }
+
+    private MimeResource(int resourceId, String mimeType) {
+        this.drawable = resourceId;
+        this.mimeType = mimeType;
+    }
+
+    public static MimeResource getMimeResource(String mimeType) {
+        for (MimeResource resource : MimeResource.values()) {
+            if (resource.getMimeType().equalsIgnoreCase(mimeType)) {
+                return resource;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public int getDrawable() {
+        return drawable;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

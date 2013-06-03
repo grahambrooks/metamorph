@@ -1,0 +1,176 @@
+<html><head><title>APIRequestBuilder.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>APIRequestBuilder.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/authentication/amplify_client/APIRequestBuilder.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import com.alpha.api.http.QueryParameters;
+import com.alpha.api.services.Event;
+import com.alpha.api.utilities.URLEncoders;
+import com.google.gson.Gson;
+
+import java.util.Collections;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Maps.newHashMap;
+
+public class APIRequestBuilder {
+    private final Map<String, String> eventProperties;
+    private final Map<String, String> queryParameters;
+    private String url;
+    private HttpRequest httpRequest;
+    private Event event;
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public APIRequestBuilder withBody() {
+
+        return this;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public enum HttpRequest {
+        GET,
+        POST
+    }
+
+    public APIRequestBuilder() {
+        eventProperties = newHashMap();
+        queryParameters = newHashMap();
+    }
+
+    public APIRequestBuilder withEvent(Event event) {
+        this.event = event;
+        return this;
+    }
+
+    public ApiRequest build() {
+        checkState(event == null || eventProperties.isEmpty(), "When building a request, can only provide a map or event as the json body");
+
+        ApiRequest request;
+        switch (httpRequest){
+            case GET:
+                request = ApiRequest.createGetRequest(url);
+                break;
+            case POST:
+                String body = eventProperties.isEmpty() ? event.asJson() : new Gson().toJson(eventProperties);
+                request = ApiRequest.createPostRequest(url, body);
+                break;
+            default:
+                throw new IllegalArgumentException("No valid http request type provided");
+        }
+
+        addParameters(request);
+        resetState();
+        return request;
+    }
+
+    private void addParameters(ApiRequest request) {
+        for (Map.Entry<String, String> parameter : queryParameters.entrySet()) {
+            request.addParameter(parameter.getKey(), parameter.getValue());
+        }
+    }
+
+    @SuppressWarnings("PMD.NullAssignment")
+    private void resetState() {
+        event = null;
+        url = null;
+        httpRequest = null;
+        eventProperties.clear();
+    }
+
+    public APIRequestBuilder getRequest(String url) {
+        return withUrl(url, HttpRequest.GET);
+    }
+
+    public APIRequestBuilder postRequest(String url) {
+        return withUrl(url, HttpRequest.POST);
+    }
+
+    public APIRequestBuilder withUrl(String url, HttpRequest httpRequest) {
+        this.url = url;
+        this.httpRequest = httpRequest;
+        return this;
+    }
+
+    public APIRequestBuilder withEvent(Map<String, String> eventMap) {
+        eventProperties.putAll(eventMap);
+        return this;
+    }
+
+    public Map<String, String> getEventProperties() {
+        return Collections.unmodifiableMap(eventProperties);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public HttpRequest getHttpRequest() {
+        return httpRequest;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public APIRequestBuilder withQueryParameter(QueryParameters parameter, String value) {
+        queryParameters.put(parameter.getParameterText(), URLEncoders.encode(value));
+        return this;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

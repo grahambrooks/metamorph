@@ -1,0 +1,228 @@
+<html><head><title>WebServicesTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>WebServicesTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/WebServicesTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.APIRequestBuilder.HttpRequest;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.services.web.WebServicesException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+
+public class WebServicesTest {
+    public static final String BODY = "post_body";
+    private WebServices webServices;
+    @Mock
+    private Event event;
+    @Mock
+    private HttpClient httpClient;
+    @Mock
+    private Response httpResponse;
+    @Mock
+    private Environment environment;
+    @Mock
+    private APIRequestBuilder apiRequestBuilder;
+    @Mock
+    private ApiRequest request;
+    @Mock
+    private GoogleAuthenticationService googleAuthService;
+
+    private static final String EVENT_JSON = "json";
+    private static final String URL = "url";
+    private static final Map<String, String> HEADERS = new HashMap<String, String>();
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        when(apiRequestBuilder.build()).thenReturn(request);
+        when(apiRequestBuilder.withEvent(any(Event.class))).thenReturn(apiRequestBuilder);
+        when(apiRequestBuilder.withUrl(anyString(), any(HttpRequest.class))).thenReturn(apiRequestBuilder);
+        
+        when(environment.getEventLogsURI()).thenReturn(URL);
+        when(event.asJson()).thenReturn(EVENT_JSON);
+
+        when(request.headers()).thenReturn(HEADERS);
+        when(request.url()).thenReturn(URL);
+        when(request.postBody()).thenReturn(BODY);
+
+        webServices = new WebServices(httpClient, environment, googleAuthService);
+    }
+
+    @Test
+    public void shouldReturnSuccessIfHttpRequestSucceeds() throws Exception {
+        when(httpClient.post(anyString(), anyString())).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(true);
+        assertThat(webServices.send(mock(Event.class)), is(true));
+    }
+
+    @Test
+    public void shouldReturnFailureIfHttpClientResponseIsFailure() throws Exception {
+        when(httpClient.post(anyString(), anyString())).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(false);
+        assertThat(webServices.send(mock(Event.class)), is(false));
+    }
+
+    @Test
+    public void shouldReturnSuccessResultIfLoggingLeaveSessionSucceeds() throws IOException, URISyntaxException {
+        when(httpClient.post(anyString(), anyString())).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(true);
+        assertThat(webServices.send(event), is(true));
+    }
+
+    @Test
+    public void shouldReturnResponse() throws Exception {
+        when(httpClient.post(anyString(), anyString())).thenReturn(httpResponse);
+        assertThat(webServices.post(event), is(httpResponse));
+    }
+
+    @Test
+    public void shouldGetWithRequestProvided() throws Exception {
+        when(httpClient.get(anyString(),anyMap())).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(true);
+        webServices.get(request);
+        verify(httpClient).get(URL, HEADERS);
+    }
+
+    @Test
+    public void shouldDeletePost() throws URISyntaxException {
+        when(httpClient.delete(URL)).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(true);
+        webServices.delete(request);
+        verify(httpClient).delete(URL);
+    }
+
+    @Test
+    public void shouldCallHttpClientWithCorrectUrlAndBody() throws Exception {
+        when(httpClient.post(URL, BODY)).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(true);
+        assertThat(webServices.post(request), is(httpResponse));
+    }
+
+    @Test
+    public void shouldInvalidateAuthTokenOn401Response() throws IOException, URISyntaxException {
+        when(httpClient.post(URL, BODY)).thenReturn(httpResponse);
+        when(httpResponse.getStatusCode()).thenReturn(401);
+        when(httpResponse.isSuccess()).thenReturn(false, true);
+        webServices.post(request);
+        verify(googleAuthService).invalidateAuthToken();
+    }
+
+    @Test
+    public void shouldRetryRequestIfFirstFail() throws IOException, URISyntaxException {
+        when(httpClient.post(URL, BODY)).thenReturn(httpResponse);
+        when(httpResponse.getStatusCode()).thenReturn(401);
+        when(httpResponse.isSuccess()).thenReturn(false, true);
+        webServices.post(request);
+        verify(httpClient, times(2)).post(URL, BODY);
+    }
+
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowExceptionIfBothRequestsFail()  throws Exception {
+        when(httpClient.post(URL, BODY)).thenReturn(httpResponse);
+        when(httpResponse.getStatusCode()).thenReturn(401);
+        when(httpResponse.isSuccess()).thenReturn(false);
+        webServices.post(request);
+        verify(googleAuthService).invalidateAuthToken();
+    }
+
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowExceptionIfHttpCommunicationFailed() throws Exception {
+        when(httpClient.post(URL, BODY)).thenThrow(new IOException());
+        webServices.post(request);
+    }
+
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowExceptionIfUrlIsMalformed() throws Exception {
+        when(httpClient.post(URL, BODY)).thenThrow(new URISyntaxException("", ""));
+        webServices.post(request);
+
+    }
+
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowWebServicesExceptionWhenWhenResponseIsNotSuccess() throws Exception {
+        when(httpClient.post(URL, BODY)).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(false);
+        webServices.post(request);
+
+    }
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowExceptionIfGetResponseIsNotSuccess() throws IOException, URISyntaxException {
+        when(httpClient.get(anyString(), anyMap())).thenReturn(httpResponse);
+        when(httpResponse.isSuccess()).thenReturn(false);
+        webServices.get(request);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

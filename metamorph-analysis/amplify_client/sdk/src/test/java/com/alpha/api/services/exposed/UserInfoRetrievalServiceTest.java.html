@@ -1,0 +1,235 @@
+<html><head><title>UserInfoRetrievalServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserInfoRetrievalServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/exposed/amplify_client/UserInfoRetrievalServiceTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.exposed;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.ActivityTestInjector;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.MessageHelper;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserRole;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.shadow.SundaeShadowMessenger.MessengerImpl;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class UserInfoRetrievalServiceTest {
+
+    private static final int GET_ROLE = 1;
+
+    public static final String GOOGLE_AUTH_TOKEN_KEY = "google_access_token";
+    public static final String GOOGLE_AUTH_TOKEN = "abcdefghijklmnopqrstuvwxyz";
+    public static final String AUTH_TOKEN_HEADER_NAME = "X-Auth-Token";
+    public static final String USER_ROLE_KEY = "user_role";
+
+    @Inject
+    private UserInfoRetrievalServiceTestClass userInfoRetrievalService;
+
+    @Mock
+    private Message message;
+    @Mock
+    private Bundle bundle;
+    @Mock
+    private Response response;
+    @Mock
+    private Environment environment;
+    @Mock
+    private MessageHelper messageHelper;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private User user;
+    @Mock
+    private Messenger replyTo;
+    @Mock
+    private ApiRequest apiRequest;
+
+    @Before
+    public void setUp(){
+        initMocks(this);
+
+        given(response.getBodyAs(User.class)).willReturn(user);
+
+        ActivityTestInjector<UserInfoRetrievalService> injector = new ActivityTestInjector<UserInfoRetrievalService>(this, UserInfoRetrievalService.class);
+        injector.bindInstance(Environment.class, environment)
+                .bindInstance(WebServices.class, webServices)
+                .bindInstance(MessageHelper.class, messageHelper)
+                .configureTestSubject();
+
+        userInfoRetrievalService.setMockApiRequest(apiRequest);
+    }
+
+    @Test
+    public void shouldNotWriteStupidThingsInTestNames() {
+        assertThat(true, is(true));
+    }
+
+    @Test
+    public void shouldAttemptToRetrieveUserWhenReceivingGetRoleMessage() {
+        when(message.getData()).thenReturn(bundle);
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        when(user.getRole()).thenReturn(UserRole.TEACHER);
+        when(environment.getCurrentUserURI()).thenReturn("/get/current");
+        message.replyTo = replyTo;
+        message.what = GET_ROLE;
+
+        ArgumentCaptor<ApiRequest> argumentCaptor = ArgumentCaptor.forClass(ApiRequest.class);
+        MessengerImpl binder = (MessengerImpl) userInfoRetrievalService.onBind(null);
+        Handler handler = binder.getHandler();
+        handler.handleMessage(message);
+
+        verify(webServices).get(argumentCaptor.capture());
+        ApiRequest actualRequest = argumentCaptor.getValue();
+
+        assertThat(actualRequest, sameInstance(apiRequest));
+        assertThat(userInfoRetrievalService.getRequestUrl(), is("/get/current"));
+    }
+
+    @Test
+    public void shouldAddAuthTokenHeaderForUserRetrievalOnGetRoleMessage() {
+        when(message.getData()).thenReturn(bundle);
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        when(user.getRole()).thenReturn(UserRole.TEACHER);
+        when(bundle.getString(GOOGLE_AUTH_TOKEN_KEY)).thenReturn(GOOGLE_AUTH_TOKEN);
+        message.replyTo = replyTo;
+        message.what = GET_ROLE;
+
+        MessengerImpl binder = (MessengerImpl) userInfoRetrievalService.onBind(null);
+        Handler handler = binder.getHandler();
+        handler.handleMessage(message);
+
+        verify(apiRequest).addHeader(AUTH_TOKEN_HEADER_NAME, GOOGLE_AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldReplyWithUserRoleIfUserWasRetrievedOnGetRoleMessage() {
+        when(message.getData()).thenReturn(bundle);
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        when(user.getRole()).thenReturn(UserRole.TEACHER);
+        when(bundle.getString(GOOGLE_AUTH_TOKEN_KEY)).thenReturn(GOOGLE_AUTH_TOKEN);
+        message.replyTo = replyTo;
+        message.what = GET_ROLE;
+
+        ArgumentCaptor<Message> messageArgumentCaptor = ArgumentCaptor.forClass(Message.class);
+        ArgumentCaptor<Bundle> bundleArgumentCaptor = ArgumentCaptor.forClass(Bundle.class);
+        MessengerImpl binder = (MessengerImpl) userInfoRetrievalService.onBind(null);
+        Handler handler = binder.getHandler();
+        handler.handleMessage(message);
+
+        verify(messageHelper).sendReply(messageArgumentCaptor.capture(), bundleArgumentCaptor.capture());
+        Message actualMessage = messageArgumentCaptor.getValue();
+        Bundle actualBundle = bundleArgumentCaptor.getValue();
+
+        final int actualRepliedWhat = actualMessage.what;
+        final Messenger actualRepliedMessenger = actualMessage.replyTo;
+        final String actualRepliedRole = actualBundle.getString(USER_ROLE_KEY);
+        assertThat(actualRepliedWhat, is(GET_ROLE));
+        assertThat(actualRepliedMessenger, sameInstance(replyTo));
+        assertThat(actualRepliedRole, is("TEACHER"));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldReplyWithErrorMessageIfFailedToRetrieveUserOnGetRoleMessage() {
+//        fail("Implement this test");
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private static class UserInfoRetrievalServiceTestClass extends  UserInfoRetrievalService {
+        private ApiRequest apiRequest;
+        private String requestUrl;
+
+        public void setMockApiRequest(ApiRequest apiRequest) {
+            this.apiRequest = apiRequest;
+        }
+
+        public String getRequestUrl() {
+            return requestUrl;
+        }
+
+        @Override
+        ApiRequest makeRequest(String url) {
+            if( requestUrl != null ) {
+                throw new IllegalArgumentException("makeRequest() should not be called twice");
+            }
+            requestUrl = url;
+            return apiRequest;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<html><head><title>TeacherConsoleActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/TeacherConsoleActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.view.View;
+import android.widget.ViewFlipper;
+import com.alpha.api.repository.ParticipantDataStore;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.ModeratorSessionService;
+import com.alpha.api.services.ModeratorSessionServiceConnection;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.SessionEndedEvent.Reason;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.featureToggle.MyLibraryFeature;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.CalendarWidget;
+import com.amplify.R;
+import com.amplify.R.id;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.Timer;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings({"PMD.TooManyMethods", "ClassWithTooManyMethods"})
+public class TeacherConsoleActivityTest {
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private ModeratorSessionServiceConnection moderatorServiceConnection;
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private TimerProvider timerProvider;
+    @Mock
+    private List<Participant> participants;
+    @Mock
+    private Timer timer;
+    @Mock
+    private ParticipantDataStore participantDataStore;
+    @Mock
+    private Section section;
+    @Mock
+    private TeacherConsoleAction teacherConsoleAction;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private MyLibraryFeature myLibraryFeature;
+
+    private TeacherConsoleActivity activity;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        activity = new TeacherConsoleActivity();
+
+        newInjector(this, TeacherConsoleActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(ModeratorSessionServiceConnection.class, moderatorServiceConnection)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(TimerProvider.class, timerProvider)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(ParticipantDataStore.class, participantDataStore)
+                .bindInstance(MyLibraryFeature.class, myLibraryFeature)
+                .configureActivity(activity);
+
+        given(timerProvider.get()).willReturn(timer);
+        given(userService.getUser()).willReturn(teacher);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(userService.session()).willReturn(classSession);
+        given(teacher.getCurrentSection()).willReturn(section);
+        given(section.getAllParticipants()).willReturn(participants);
+        given(section.getAllParticipantsCount()).willReturn(1);
+        given(participants.isEmpty()).willReturn(false);
+        given(moderatorServiceConnection.getService()).willReturn(moderatorSessionService);
+
+        Intent intent = new Intent();
+        intent.putExtra(BaseNotebookActivity.SECTION_ID_KEY, 1L);
+        activity.setIntent(intent);
+    }
+
+    @Test
+    public void shouldCompleteConsoleActionOnEndClass() {
+        setUpActivityThroughLifecycle();
+        activity.listeners.onSessionEnded(new TeacherSessionEndedEvent(Reason.TEACHER_INITIATED));
+        verify(teacherConsoleAction).finishInClassActivity(true);
+    }
+
+    @Test
+    public void shouldCompleteConsoleActionOnEndClassWhenTeacherDisconnected() {
+        setUpActivityThroughLifecycle();
+        activity.listeners.onSessionEnded(new TeacherSessionEndedEvent(Reason.CONNECTION_LOST));
+        verify(teacherConsoleAction).finishInClassActivity(true);
+    }
+
+    @Test
+    public void shouldRegisterWithEventBusOnResume() throws Exception {
+        setUpActivityThroughLifecycle();
+        verify(eventBus).register(activity.listeners);
+    }
+
+    @Test
+    public void shouldUnregisterFromEventBusOnPause() throws Exception {
+        setUpActivityThroughLifecycle();
+        activity.onPause();
+        verify(eventBus).unregister(activity.listeners);
+    }
+
+    @Test
+    public void shouldFlipToCalendarWhenCalendarButtonPressedAndCalendarNotInFocus() {
+        setUpActivityThroughLifecycle();
+
+        View calendarButton = activity.findViewById(R.id.calendar_button);
+        ViewFlipper viewFlipper = (ViewFlipper) activity.findViewById(R.id.teacher_console_view_flipper);
+
+        calendarButton.performClick();
+        View currentView = viewFlipper.getCurrentView();
+        assertThat(currentView.getId(), is(R.id.calendar_container));
+    }
+
+    @Test
+    public void shouldFlipToConsoleControlsViewWhenCalendarButtonPressedAndCalendarInFocus() {
+        setUpActivityThroughLifecycle();
+
+        View calendarButton = activity.findViewById(R.id.calendar_button);
+        ViewFlipper viewFlipper = (ViewFlipper) activity.findViewById(R.id.teacher_console_view_flipper);
+        viewFlipper.setDisplayedChild(1);
+        calendarButton.performClick();
+        View currentView = viewFlipper.getCurrentView();
+        assertThat(currentView.getId(), is(R.id.teacher_console_controls_and_activities_container));
+    }
+
+    @Test
+    public void shouldResetTheDatesBackToTodayWhenDisplayingCalendar() {
+        setUpActivityThroughLifecycle();
+
+        CalendarWidget calendarWidget = activity.getCalendarWidget();
+        calendarWidget.showPreviousMonth();
+
+        Calendar currentDate = calendarWidget.getCurrentMonth();
+
+        Calendar lastMonth = Calendar.getInstance();
+        lastMonth.add(Calendar.MONTH, -1);
+
+        assertThat(currentDate.get(Calendar.MONTH), is(lastMonth.get(Calendar.MONTH)));
+        // Intentionally ignoring year since we don't need to care what is when the user goes a month back
+        // assertThat(currentDate.get(Calendar.YEAR), is(today.get(Calendar.YEAR)));
+
+        View calendarButton = activity.findViewById(R.id.calendar_button);
+        calendarButton.performClick();
+
+        Calendar today = Calendar.getInstance();
+        currentDate = calendarWidget.getCurrentMonth();
+        assertThat(currentDate.get(Calendar.MONTH), is(today.get(Calendar.MONTH)));
+        assertThat(currentDate.get(Calendar.YEAR), is(today.get(Calendar.YEAR)));
+    }
+
+    private void setUpActivityThroughLifecycle() {
+        activity.onCreate(null);
+        activity.onResume();
+    }
+
+    @Test
+    public void shouldLaunchShareAppActivityToShareButton() {
+        setUpActivityThroughLifecycle();
+
+        View shareAppButton = activity.findViewById(R.id.my_library_button);
+        shareAppButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(MyLibraryActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchSharePostActivityWhenClickingDiscussionButton() {
+        setUpActivityThroughLifecycle();
+
+        View discussionButton = activity.findViewById(R.id.discussion_button);
+        discussionButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(SharePostActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLoadSectionParticipantsIfNoneExist() {
+        when(section.hasNoParticipants()).thenReturn(true);
+        when(participantDataStore.getAllParticipantsFor(section)).thenReturn(participants);
+        activity.onCreate(null);
+        verify(section).loadParticipantsFromStudents(participants);
+    }
+
+    @Test
+    public void shouldNotLoadSectionParticipantsIfTheyExist() {
+        when(section.hasNoParticipants()).thenReturn(false);
+        activity.onCreate(null);
+        verify(section, never()).loadParticipantsFromStudents(any(List.class));
+    }
+
+    @Test
+    public void shouldCallMyLibraryFeatureToggleOnCreate() {
+        activity.onCreate(null);
+        View myLibraryButton = activity.findViewById(id.my_library_button);
+
+        verify(myLibraryFeature).setMyLibraryButtonEnabled(myLibraryButton);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

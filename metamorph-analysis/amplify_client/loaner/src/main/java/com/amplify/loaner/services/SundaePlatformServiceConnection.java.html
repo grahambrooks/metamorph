@@ -1,0 +1,124 @@
+<html><head><title>SundaePlatformServiceConnection.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaePlatformServiceConnection.java</h1>
+<p>Scanned path = loaner/src/main/java/com/amplify/loaner/services/amplify_client/SundaePlatformServiceConnection.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.loaner.services;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.*;
+import com.amplify.loaner.log.LogUtils;
+import org.slf4j.Logger;
+
+public class SundaePlatformServiceConnection implements ServiceConnection {
+    private static Logger LOG = LogUtils.getLogger();
+
+    private boolean isBound;
+    private Messenger serviceMessenger;
+    private final Context context;
+    private final ServiceConnectionCallback callback;
+
+    public SundaePlatformServiceConnection(Context context, ServiceConnectionCallback callback) {
+        this.context = context;
+        this.callback = callback;
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName className,
+                                   IBinder service) {
+        // This is called when the connection with the service has been
+        // established, giving us the service object we can use to
+        // interact with the service.  We are communicating with our
+        // service through an IDL interface, so get a client-side
+        // representation of that from the raw service object.
+        isBound = true;
+        serviceMessenger = new Messenger(service);
+        callback.onServiceBound();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        // This is called when the connection with the service has been
+        // unexpectedly disconnected -- that is, its process crashed
+        isBound = false;
+        serviceMessenger = null; // NOPMD
+    }
+
+    public void bind(String serviceName) {
+        context.bindService(new Intent(serviceName), SundaePlatformServiceConnection.this, Context.BIND_AUTO_CREATE);
+    }
+
+    public void unbind() {
+        isBound = false;
+        context.unbindService(this);
+        serviceMessenger = null; // NOPMD
+    }
+
+    public void send(Message message){
+        if (!isBound || serviceMessenger == null) {
+            throw new IllegalStateException("Service is not bound");
+        }
+        try {
+            serviceMessenger.send(message);
+        } catch (RemoteException e) {
+            LOG.error("Failed to send message to the service: ", e);
+        }
+    }
+
+    public boolean isServiceBound() {
+        return isBound;
+    }
+
+    public interface ServiceConnectionCallback {
+        void onServiceBound();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

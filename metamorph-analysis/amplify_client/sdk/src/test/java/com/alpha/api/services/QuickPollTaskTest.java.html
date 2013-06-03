@@ -1,0 +1,133 @@
+<html><head><title>QuickPollTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/QuickPollTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.QuickPollStartFailedEvent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class QuickPollTaskTest {
+
+    private static final int NUMBER_OF_RESPONSES = 2;
+
+    private QuickPollTask quickPollTask;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private TeacherSession teacherSession;
+
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+
+    @Mock
+    private QuickPollSettings quickPollSettings;
+
+    @Mock
+    private EventBus eventBus;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        User user = mock(User.class);
+
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.getQuickPollSettings()).willReturn(quickPollSettings);
+
+        quickPollTask = new QuickPollTask(NUMBER_OF_RESPONSES, userService, teacherSession, eventBus);
+    }
+
+    @Test
+    public void shouldSetNumberOfResponses() throws Exception {
+        quickPollTask.call();
+
+        verify(quickPollSettings).setNumberOfOptions(eq(NUMBER_OF_RESPONSES));
+    }
+
+    @Test
+    public void shouldCallSendStudentControlSettingsOnTeacherSession() throws Exception {
+        quickPollTask.call();
+
+        verify(teacherSession).sendStudentControlSettings(eq(controlSettingsModel));
+    }
+
+    @Test
+    public void shouldPostQuickPollFailedEventToEventBusOnException() {
+        quickPollTask.onException(new Exception());
+
+        verify(eventBus).post(isA(QuickPollStartFailedEvent.class));
+    }
+
+    @Test
+    public void shouldSendUnlockSettingsOnActivityStart() throws Exception {
+        quickPollTask.call();
+
+        verify(controlSettingsModel).setAsUnlocked();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

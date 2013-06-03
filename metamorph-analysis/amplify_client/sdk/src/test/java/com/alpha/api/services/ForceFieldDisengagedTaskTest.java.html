@@ -1,0 +1,177 @@
+<html><head><title>ForceFieldDisengagedTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldDisengagedTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ForceFieldDisengagedTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.ForceFieldEvent;
+import com.alpha.api.services.events.ForceFieldEvent.ForceFieldChangeSuccessEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ForceFieldDisengagedTaskTest {
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private Event event;
+    @Mock
+    private Section section;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    private ControlSettingsModel controlSettingsModel;
+
+    private ForceFieldDisengagedTask task;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        // to many mocks
+        given(teacher.disengageForceFieldEvent()).willReturn(event);
+        given(teacher.getCurrentSection()).willReturn(section);
+        controlSettingsModel = new ControlSettingsModel();
+        given(teacher.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        task = new ForceFieldDisengagedTask(teacherSession, webServices, eventBus, analyticsAgent, teacher, progressBar);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldSendForceFieldDisengagedEvent() throws Exception {
+        task.call();
+
+        verify(webServices).send(event);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldSendForceFieldDisengagedToSession() throws Exception {
+        task.call();
+
+        verify(teacherSession).sendStudentControlSettings(controlSettingsModel);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+
+    @Test
+    public void shouldSetForceFieldDisengagedOnControlSettings() throws Exception {
+        controlSettingsModel.setForceFieldEngaged(true);
+        task.call();
+        assertThat(controlSettingsModel.isForceFieldEngaged(), is(false));
+    }
+
+    @Test
+    public void shouldNotifyOnException() {
+        ArgumentCaptor<ForceFieldEvent.DisengageFailed> argument = ArgumentCaptor.forClass(ForceFieldEvent.DisengageFailed.class);
+
+        task.onException(new Exception());
+
+        verify(eventBus).post(argument.capture());
+        assertThat(argument.getValue(), is(ForceFieldEvent.DisengageFailed.class));
+        assertThat(argument.getValue().reason, is(ApiErrorReason.INTERNAL_ERROR));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldFireAChangeSuccessEventOnSuccess(){
+        task.onSuccess(null);
+        verify(eventBus).post(isA(ForceFieldChangeSuccessEvent.class));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<html><head><title>ApiRequest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ApiRequest.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/authentication/amplify_client/ApiRequest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
+import com.google.common.net.HttpHeaders;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.Collections;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
+public class ApiRequest {
+    private static final String JSON_MEDIA_TYPE = "application/json; charset=utf-8";
+    private final String body;
+    private final String baseUrl;
+    private final Map<String, String> headers = newHashMap();
+
+    private final Map<String, String> parameters = newLinkedHashMap();
+
+    private ApiRequest(String baseUrl, String body) {
+        this.baseUrl = baseUrl;
+        this.body = body;
+        addHeader(HttpHeaders.CONTENT_TYPE, JSON_MEDIA_TYPE);
+    }
+
+    private ApiRequest(String baseUrl) {
+        this(baseUrl, null);
+    }
+
+    public String url() {
+        return parameters.isEmpty() ? baseUrl : urlWithParams(baseUrl, parameters);
+    }
+
+    private String urlWithParams(String url, Map<String, String> params) {
+        StringBuilder out = new StringBuilder(url).append('?');
+        return Joiner.on("&").withKeyValueSeparator("=").appendTo(out, params).toString();
+    }
+
+    public Map<String, String> headers() {
+        return headers;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String postBody() {
+        return body;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public boolean isGet() {
+        return StringUtils.isBlank(body);
+    }
+
+    public boolean hasPostBody() {
+        return StringUtils.isNotBlank(body);
+    }
+
+    public static ApiRequest createPostRequest(String url, String body) {
+        checkArgument(StringUtils.isNotBlank(body), "Request body needs to be non-blank for post requests!");
+        return new ApiRequest(url, body);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public static ApiRequest createDeleteRequest(String url) {
+        return new ApiRequest(url);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public static ApiRequest createPutRequest(String url, String putData) {
+        return createPostRequest(url, putData);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public static ApiRequest createGetRequest(String url) {
+        return new ApiRequest(url);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void addHeader(String name, String value) {
+        headers.put(name, value);
+    }
+
+    public void addParameter(String name, String value) {
+        parameters.put(name, value);
+    }
+
+    public Map<String, String> getParameters() {
+        return Collections.unmodifiableMap(parameters);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).omitNullValues()
+                .add("url", url())
+                .add("headers", Joiner.on(';').withKeyValueSeparator("=").join(headers()))
+                .add("body", body).toString();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

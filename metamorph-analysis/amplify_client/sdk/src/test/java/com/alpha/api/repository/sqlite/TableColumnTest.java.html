@@ -1,0 +1,106 @@
+<html><head><title>TableColumnTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TableColumnTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/sqlite/amplify_client/TableColumnTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.sqlite;
+
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+public class TableColumnTest {
+
+    @Test
+    public void shouldHavePrimaryKeyColumnNamedIdWithAnUnderscore() throws Exception {
+        assertThat(TableColumn._id.name(), is("_id"));
+        assertThat(TableColumn._id.key, is(true));
+    }
+
+    @Test
+    public void shouldHaveLowerCaseNamesBecauseColumnNamesAreCaseSensitive() throws Exception {
+        for (TableColumn column : TableColumn.values()) {
+            assertThat(column.name(), hasLowerCaseLettersOrUnderscoresOnly());
+        }
+    }
+
+    private Matcher<String> hasLowerCaseLettersOrUnderscoresOnly() {
+        return new BaseMatcher<String>() {
+            private String equalArg;
+
+            @Override
+            public boolean matches(Object o) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (!(o instanceof String)) {
+                    return false;
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                equalArg = (String) o;
+                return equalArg.matches("[a-z_]+");
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(equalArg.toLowerCase()); //NOPMD
+            }
+        };
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<html><head><title>DateFormats.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DateFormats.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/date/amplify_client/DateFormats.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.date;
+
+import org.ocpsoft.pretty.time.PrettyTime;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class DateFormats {
+
+    private static final String MONTH_YEAR_FORMAT = "%s %s";
+
+    private DateFormats() {
+    }
+
+    public static String formatPastDateToDefaultStyle(Date date) {
+        Date now = new Date();
+        PrettyTime prettyTime = new PrettyTime(now);
+        if ((date != null) && date.before(now)) {
+            return prettyTime.format(date);
+        } else {
+            // force the date to be 'moments ago' rather than 'moments from now'
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(now);
+            cal.add(Calendar.SECOND, -5);
+            return prettyTime.format(cal.getTime());
+        }
+    }
+
+    public static String getCalendarMonthAndYear(Calendar calendar) {
+        return String.format(MONTH_YEAR_FORMAT,
+                calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()),
+                calendar.get(Calendar.YEAR));
+    }
+
+    public static String getDayOfWeekLetter(Calendar calendar) {
+        return calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()).substring(0, 1);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<html><head><title>DiscussionDetailActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DiscussionDetailActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/DiscussionDetailActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">23</span>
+    <progress max="100" value="23"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import com.alpha.activities.adapters.DiscussionCommentsCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserRole;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.CommentAddedEvent;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.builders.PostBuilder;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.shadows.ShadowAlertDialog;
+import com.xtremelabs.robolectric.shadows.ShadowDialog;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import java.util.Calendar;
+import java.util.Timer;
+
+import static com.alpha.api.services.events.CommentAddedEvent.failure;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings("PMD")
+public class DiscussionDetailActivityTest {
+
+    @Mock
+    private PostAuthor postAuthor;
+    @Mock
+    private User user;
+    @Mock
+    private Section section;
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    private UserService userService;
+    @Mock
+    private RendererFactory rendererFactory;
+    @Mock
+    private DiscussionCommentsCursorAdapter cursorAdapter;
+    @Inject
+    private PostService postService;
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private DiscussionDetailActivity activity;
+    @Inject
+    private PostsDataStore postDataStore;
+    @Mock
+    CursorLoaderFactory cursorLoaderFactory;
+    @Mock
+    private TimerProvider timerProvider;
+    @Mock
+    private Timer timer;
+    @Mock
+    private PostCursorLoaderInitializer postCursorLoader;
+    @Mock
+    private ClassSession classSession;
+
+    private Button commentButton;
+
+    private Post post;
+    private static final String AUTHOR = "bob";
+    private static final CommentAddedEvent COMMENT_EVENT = CommentAddedEvent.success();
+    private static final Long POST_ID = 2L;
+    private static final String DESCRIPTION = "Why are volcanoes bad?";
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -1);
+        post = new PostBuilder()
+                .withPostType(PostType.DISCUSSION)
+                .withPostAuthorName(AUTHOR)
+                .withDescription(DESCRIPTION)
+                .withCreatedDate(cal.getTime())
+                .build();
+
+        given(postAuthor.getName()).willReturn(AUTHOR);
+        given(timerProvider.get()).willReturn(timer);
+        given(userService.getUser()).willReturn(user);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(user.getRole()).willReturn(UserRole.STUDENT);
+        given(userService.session()).willReturn(classSession);
+
+        createFragment();
+
+        setPostOnActivityIntent();
+
+        activity.onCreate(null);
+
+        commentButton = (Button) activity.findViewById(R.id.open_comment_dialog);
+    }
+
+    private void setPostOnActivityIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(DiscussionDetailActivity.POST_ID_EXTRA, POST_ID);
+        activity.setIntent(intent);
+        when(postDataStore.fetch(POST_ID)).thenReturn(post);
+        when(cursorLoaderFactory.createPostCursorLoaderInitializer(activity, post)).thenReturn(postCursorLoader);
+    }
+
+    @Test
+    public void shouldSetAuthorTextFromPost() {
+        TextView authorView = (TextView) activity.findViewById(R.id.discussion_author);
+
+        assertThat(authorView.getText().toString(), is(AUTHOR));
+    }
+
+    @Test
+    public void shouldSetDiscussionTopicText() {
+        TextView topicView = (TextView) activity.findViewById(R.id.discussion_topic);
+
+        assertThat(topicView.getText().toString(), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldShowSharedWithViewWhenUserIsTeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        activity.onCreate(null);
+
+        TextView sharedWith = (TextView) activity.findViewById(R.id.discussion_sharedwith);
+
+        assertThat(sharedWith.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHideSharedWithViewWhenUserIsNotTeacher() {
+        when(userService.isTeacher()).thenReturn(false);
+        activity.onCreate(null);
+
+        TextView sharedWith = (TextView) activity.findViewById(R.id.discussion_sharedwith);
+
+        assertThat(sharedWith.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldSetSharedWithTextWhenUserIsTeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        activity.onCreate(null);
+
+        TextView sharedWith = (TextView) activity.findViewById(R.id.discussion_sharedwith);
+
+        assertThat(sharedWith.getText().toString(), is("Shared with all students"));
+    }
+
+    @Test
+    @Ignore("Ignore for leap year")
+    public void shouldSetPostCreatedDateText() {
+        TextView createdDate = (TextView) activity.findViewById(R.id.discussion_timestamp);
+        final String expected = "1 year ago";
+        assertThat(createdDate.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldLaunchAddCommentDialogWhenAddCommentButtonIsClicked() {
+        commentButton.performClick();
+        assertNotNull(ShadowDialog.getLatestDialog());
+    }
+
+    @Test
+    @Ignore("Implementation uses OnShowListener, but Robolectric doesn't call it.") //NOPMD
+    public void shouldSubmitCommentToService() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        commentInput().setText("Hi");
+
+        verify(postService).addComment(any(Long.class), any(Comment.class));
+    }
+
+    @Test
+    public void shouldNotSubmitEmptyCommentToService() {
+        commentButton.performClick();
+        commentInput().setText("     \n      \n");
+
+        verifyZeroInteractions(postService);
+    }
+
+    @Test
+    @Ignore("Implementation uses OnShowListener, but Robolectric doesn't call it.") //NOPMD
+    public void shouldDismissCommentDialogAfterCommentIsSubmitted() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        AlertDialog latestAlertDialog = ShadowAlertDialog.getLatestAlertDialog();
+        commentInput().setText("a comment");
+
+        latestAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+
+        assertThat("EditText should be disabled", commentInput().isEnabled(), is(false));
+        assertThat(latestAlertDialog.isShowing(), is(false));
+    }
+
+    @Test
+    @Ignore("Implementation uses OnShowListener, but Robolectric doesn't call it.") //NOPMD
+    public void shouldNotDismissCommentDialogWhenSubmittedWithEmptyComment() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        AlertDialog latestAlertDialog = ShadowAlertDialog.getLatestAlertDialog();
+        commentInput().setText("");
+
+        latestAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+
+        assertThat("EditText should be enabled", commentInput().isEnabled(), is(true));
+        assertThat("Alert Dialog should be visible", latestAlertDialog.isShowing(), is(true));
+    }
+
+    @Test
+    public void shouldDisplayErrorToastMessageOnFailure() {
+        activity.listeners.onAddComment(failure(ApiErrorReason.INTERNAL_ERROR));
+
+        verify(toaster).errorToast(ApiErrorReason.INTERNAL_ERROR, R.string.sharing_comment_failure);
+    }
+
+    @Test
+    public void shouldDisplayConfirmationToastMessageOnSuccess() {
+        activity.listeners.onAddComment(COMMENT_EVENT);
+
+        verify(toaster).makeToast(R.string.comment_shared);
+    }
+
+    @Test
+    public void shouldClearCommentDialogEditTextFieldOnSuccess() {
+        commentButton.performClick();
+        EditText commentInput = commentInput();
+        commentInput.setText("Hello");
+
+        activity.listeners.onAddComment(COMMENT_EVENT);
+
+        assertThat(commentInput.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldReEnableSubmitButtonAndClearEditTextOnCommentSuccess() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        commentInput().setText("Hi");
+
+        activity.listeners.onAddComment(COMMENT_EVENT);
+
+        commentButton.performClick();
+
+        assertThat(commentInput().getText().toString(), is(""));
+        assertThat(commentInput().isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldNotClearCommentEditTextOnCommentFailure() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        commentInput().setText("Hi");
+
+        activity.listeners.onAddComment(failure(ApiErrorReason.INTERNAL_ERROR));
+
+        assertThat(commentInput().getText().toString(), is("Hi"));
+    }
+
+    @Test
+    public void shouldEnableCommentTextEditWhenCommentButtonIsClicked() {
+        setupUserAndAuthor();
+        commentButton.performClick();
+        commentInput().setEnabled(false);
+
+        commentButton.performClick();
+
+        assertThat(commentInput().isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldShareText() {
+        activity.shareText("text");
+
+        ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
+        verify(postService).addComment(eq(post.getId()), commentCaptor.capture());
+        Comment comment = commentCaptor.getValue();
+
+        assertThat(comment.getText(), is("text"));
+    }
+
+    private void setupUserAndAuthor() {
+        when(userService.getUser()).thenReturn(user);
+        when(user.asAuthor()).thenReturn(postAuthor);
+    }
+
+    private EditText commentInput() {
+        AlertDialog commentDialog = ShadowAlertDialog.getLatestAlertDialog();
+        return (EditText) commentDialog.findViewById(R.id.post_text);
+    }
+
+    private void createFragment() {
+        ActivityTestInjector<DiscussionDetailActivity> testInjector = new ActivityTestInjector<DiscussionDetailActivity>(this, DiscussionDetailActivity.class);
+        testInjector.bindInstance(RendererFactory.class, rendererFactory);
+        testInjector.bindInstance(UserService.class, userService);
+        testInjector.bindInstance(DiscussionCommentsCursorAdapter.class, cursorAdapter);
+        testInjector.bindInstance(CursorLoaderFactory.class, cursorLoaderFactory);
+        testInjector.bindInstance(TimerProvider.class, timerProvider);
+        testInjector.configureActivity();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

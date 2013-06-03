@@ -1,0 +1,508 @@
+<html><head><title>NotebookStreamFragment.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebookStreamFragment.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/NotebookStreamFragment.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">51</span>
+    <progress max="100" value="51"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.LoaderManager;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.StreamPostCursorAdapter;
+import com.alpha.activities.renderers.StreamPostSummaryRenderer;
+import com.alpha.api.adapters.PostsByDateCursorLoader;
+import com.alpha.api.adapters.PostsCursorLoader;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.DeletePostEvent;
+import com.alpha.api.services.events.DeletePostFailureEvent;
+import com.alpha.launchers.LearningElementLauncher;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.util.Collections;
+import java.util.List;
+
+import static android.widget.AdapterView.OnItemClickListener;
+import static com.alpha.activities.QuickShortAnswerTeacherActivity.POST_ID_KEY;
+import static com.alpha.api.domains.PostType.CALL_ON_SOMEONE;
+import static com.alpha.api.domains.PostType.COUNT_OFF;
+import static com.alpha.api.domains.PostType.DISCUSSION;
+import static com.alpha.api.domains.PostType.GO_RESEARCH;
+import static com.alpha.api.domains.PostType.QUICKPOLL;
+import static com.alpha.api.domains.PostType.SHARE;
+import static com.alpha.api.domains.PostType.SHORT_ANSWER;
+import static com.alpha.api.domains.PostType.SPOT_CHECK;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
+
+@SuppressWarnings("PMD.TooManyMethods")
+public class NotebookStreamFragment extends SundaeTimedFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int LOADER_ID = 1;
+
+    public static final String TAG = "STREAM";
+    private static final String GOORU_PACKAGE = "org.ednovo";
+
+    @InjectView(R.id.post_stream_list)
+    private ListView postsList;
+
+    @InjectView(R.id.stream_empty_view)
+    private TextView streamEmptyViewForClass;
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private Toaster toaster;
+
+    @Inject
+    private PostService postService;
+
+    @Inject
+    private StreamPostSummaryRenderer streamPostSummaryRenderer;
+
+    @Inject
+    private ApplicationUtils applicationUtils;
+
+    @Inject
+    private LearningElementLauncher learningElementLauncher;
+
+    @VisibleForTesting
+    protected final Listeners listeners = new Listeners();
+
+    private StreamPostCursorAdapter postsCursorAdapter;
+    private LoaderManager loaderManager;
+    private long postFilterDateInMills;
+    private boolean dateFilter = false;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        return inflater.inflate(R.layout.stream_view, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstance) {
+        super.onViewCreated(view, savedInstance);
+
+        postsCursorAdapter = new StreamPostCursorAdapter(getActivity(), streamPostSummaryRenderer);
+        postsList.setAdapter(postsCursorAdapter);
+        postsList.setEmptyView(null);
+
+        loaderManager = getLoaderManager();
+        loaderManager.initLoader(LOADER_ID, null, this);
+
+        postsList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Post post = (Post) view.getTag();
+                LaunchCommand launchCommand = getLauncherFor(post.getPostType());
+                if (launchCommand != null) {
+                    launchCommand.launch(post);
+                }
+            }
+        });
+
+        postsList.setLongClickable(true);
+        postsList.setEmptyView(streamEmptyViewForClass);
+
+        if (userService.isTeacher()) {
+            registerForContextMenu(postsList);
+        }
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle(R.string.post_options);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.post_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Post post = postsCursorAdapter.getItem(info.position);
+
+        switch (item.getItemId()) {
+            case R.id.delete_post:
+                Activity activity = getActivity();
+                String title = activity.getString(R.string.alert_post_delete_confirm,
+                        Strings.isNullOrEmpty(post.getTitle()) ? "this post" : "- " + post.getTitle());
+                new AlertDialog.Builder(activity)
+                        .setTitle(title)
+                        .setPositiveButton(activity.getString(R.string.yes), onPostDeleteConfirm(post))
+                        .setNegativeButton(activity.getString(R.string.cancel), onPostDeleteDismiss())
+                        .create()
+                        .show();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (userService.isStudent()) {
+            inflater.inflate(R.menu.student_notebook_menu, menu);
+        } else {
+            inflater.inflate(R.menu.teacher_notebook_stream_menu, menu);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        Section currentSection = userService.getUser().getCurrentSection();
+        if (dateFilter) {
+            return new PostsByDateCursorLoader(getActivity(), currentSection, postFilterDateInMills);
+        } else {
+            return new PostsCursorLoader(getActivity(), currentSection);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        if (dateFilter) {
+            streamEmptyViewForClass.setText(R.string.no_posts_for_date);
+        } else {
+            streamEmptyViewForClass.setText(R.string.no_posts_for_class);
+        }
+        postsCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        postsCursorAdapter.swapCursor(null);
+    }
+
+    private void launchCountOffActivity(Post post) {
+        CountOffSettings countOffSettings = userService.getUser().getCurrentControlSettingsModel().getCountOffSettings();
+        if (userService.isTeacher() && post.getId().equals(countOffSettings.getPostId())) {
+            Intent countOffIntent = new Intent(getActivity(), CountedOffTeacherActivity.class);
+            countOffIntent.putExtra(BaseQuickActivity.POST_ID_KEY, post.getId());
+            startActivity(countOffIntent);
+        }
+    }
+
+    private void launchGoResearch() {
+        if (applicationUtils.isAppInstalled(getActivity(), GOORU_PACKAGE)) {
+            Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(GOORU_PACKAGE);
+            getActivity().startActivity(launchIntent);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            toaster.makeToast(R.string.gooru_not_installed);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void launchQuickPollActivity(Post post) {
+        if (userService.isTeacher()) {
+            Intent quickPollIntent = new Intent(getActivity(), QuickPollGraphActivity.class);
+            quickPollIntent.putExtra(QuickPollGraphActivity.POST_ID_KEY, post.getId());
+            quickPollIntent.putExtra(QuickPollGraphActivity.ANSWER_COUNT_KEY, post.getNumberOfQuickPollAnswers());
+            startActivity(quickPollIntent);
+        }
+    }
+
+    private void launchSpotCheckActivity(Post post) {
+        if (userService.isTeacher()) {
+            Intent spotCheckIntent = new Intent(getActivity(), SpotCheckTeacherActivity.class);
+            spotCheckIntent.putExtra(POST_ID_KEY, post.getId());
+            startActivity(spotCheckIntent);
+        }
+    }
+
+    private void launchShortAnswerActivity(Post post) {
+        if (userService.isTeacher()) {
+            Intent shortAnswerIntent = new Intent(getActivity(), QuickShortAnswerTeacherActivity.class);
+            shortAnswerIntent.putExtra(POST_ID_KEY, post.getId());
+            startActivity(shortAnswerIntent);
+        }
+    }
+
+    private void launchCallOnSomeoneActivity(Post post) {
+        CallOnSomeoneSettings settings = userService.getUser().getCurrentControlSettingsModel().getCallOnSomeoneSettings();
+        if (userService.isTeacher() && settings.isCallOnSomeoneEnabled() && post.getId().equals(settings.getPostId())) {
+            Intent callOnSomeoneIntent = new Intent(getActivity(), CallOnSomeoneActivity.class);
+            callOnSomeoneIntent.putExtra(POST_ID_KEY, post.getId());
+            startActivity(callOnSomeoneIntent);
+        }
+    }
+
+    private void launchURIIntentFromSharedPost(Post post) {
+        if (post.getPostType() == PostType.SHARE) {
+            learningElementLauncher.launchIntentForLearningElement(getActivity(), post.getFirstLearningElement());
+        }
+    }
+
+    private DialogInterface.OnClickListener onPostDeleteConfirm(final Post post) {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                postService.delete(post);
+            }
+        };
+    }
+
+    private DialogInterface.OnClickListener onPostDeleteDismiss() {
+        return new DialogInterface.OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //NOOP
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+    }
+
+    String withQuotedTitle(Post post, int stringKey) {
+        String title = post.getTitle();
+        title = Strings.isNullOrEmpty(title) ? "" : Joiner.on("").join(asList("\"", title, "\""));
+        return String.format(getActivity().getString(stringKey), title);
+    }
+
+    public void setPostFilterDate(long timeInMillis) {
+        postFilterDateInMills = timeInMillis;
+        dateFilter = true;
+        loaderManager.restartLoader(LOADER_ID, null, this);
+    }
+
+    public void resetPostFilter() {
+        dateFilter = false;
+        loaderManager.restartLoader(LOADER_ID, null, this);
+    }
+
+    private LaunchCommand getLauncherFor(PostType postType) {
+        for (LaunchCommand launchCommand : launcherCommands()) {
+            if (launchCommand.getPostType().equals(postType)) {
+                return launchCommand;
+            }
+        }
+        return null;
+    }
+
+    private List<LaunchCommand> launcherCommands() {
+        List<LaunchCommand> launcherCommands = newArrayList();
+        launcherCommands.add(new SharePostLaunchCommand());
+        launcherCommands.add(new DiscussionPostLaunchCommand());
+        launcherCommands.add(new SpotCheckLaunchCommand());
+        launcherCommands.add(new CountOffLaunchCommand());
+        launcherCommands.add(new ShortAnswerLaunchCommand());
+        launcherCommands.add(new QuickPollLaunchCommand());
+        launcherCommands.add(new GoResearchLaunchCommand());
+        launcherCommands.add(new CallOnSomeoneLaunchCommand());
+        return Collections.unmodifiableList(launcherCommands);
+    }
+
+    private interface LaunchCommand {
+        PostType getPostType();
+
+        void launch(Post post);
+    }
+
+    private class SharePostLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return SHARE;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchURIIntentFromSharedPost(post);
+        }
+    }
+
+    private class DiscussionPostLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return DISCUSSION;
+        }
+
+        @Override
+        public void launch(Post post) {
+            Intent discussionIntent = new Intent(getActivity(), DiscussionDetailActivity.class);
+            discussionIntent.putExtra(DiscussionDetailActivity.POST_ID_EXTRA, post.getId());
+            startActivity(discussionIntent);
+        }
+    }
+
+    private class SpotCheckLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return SPOT_CHECK;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchSpotCheckActivity(post);
+        }
+    }
+
+    private class CountOffLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return COUNT_OFF;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchCountOffActivity(post);
+        }
+    }
+
+    private class ShortAnswerLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return SHORT_ANSWER;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchShortAnswerActivity(post);
+        }
+    }
+
+    private class QuickPollLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return QUICKPOLL;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchQuickPollActivity(post);
+        }
+    }
+
+    private class GoResearchLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return GO_RESEARCH;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchGoResearch();
+        }
+    }
+
+    private class CallOnSomeoneLaunchCommand implements LaunchCommand {
+        @Override
+        public PostType getPostType() {
+            return CALL_ON_SOMEONE;
+        }
+
+        @Override
+        public void launch(Post post) {
+            launchCallOnSomeoneActivity(post);
+        }
+    }
+
+    public class Listeners {
+        @Subscribe
+        public void onPostDelete(DeletePostEvent deletePostEvent) {
+            Post post = deletePostEvent.getPost();
+            toaster.makeToast(withQuotedTitle(post, R.string.post_deleted_success));
+        }
+
+        @Subscribe
+        public void onPostDeleteFailure(DeletePostFailureEvent deletePostFailureEvent) {
+            toaster.errorToast(deletePostFailureEvent.getApiErrorReason(), R.string.delete_post_failure);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

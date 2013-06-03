@@ -1,0 +1,210 @@
+<html><head><title>GoogleAuthenticationServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleAuthenticationServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/authentication/amplify_client/GoogleAuthenticationServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.UserService;
+import com.alpha.utils.FileUtils;
+import com.alpha.utils.ProcessUtils;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class GoogleAuthenticationServiceTest {
+    public static final String TEST_EMAIL = "test@test.com";
+    public static final String TEST_AUTH_TOKEN = "authToken";
+
+    @Mock
+    private AccountManager accountManager;
+    @Mock
+    private UserService userService;
+    @Mock
+    private GoogleAuthenticationService service;
+    @Mock
+    private ProcessUtils processUtils;
+    @Mock
+    private AuthTokenCache authTokenCache;
+    @Mock
+    private AccountHelper accountHelper;
+    @Mock
+    private FileUtils fileUtils;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        service = new NonDeletingUserDataAuthenticator(Robolectric.application, accountManager, userService, processUtils, authTokenCache, accountHelper, fileUtils);
+    }
+
+    @Test
+    @Ignore("BETA-520 Why we are handling this?")
+    public void shouldReturnNullIfTheAreNoMoreAccountThatWeRegisteredWith() {
+        when(accountManager.getAccountsByType(AccountHelper.GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{});
+
+        String authToken = service.getAuthToken();
+        assertThat(authToken, is(nullValue()));
+    }
+
+    @Test
+    @Ignore("BETA-520 Why we are handling this?")
+    public void shouldKillCurrentProcessIfAuthTokenIsNull() {
+        when(accountManager.getAccountsByType(AccountHelper.GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{});
+
+        service.getAuthToken();
+        verify(processUtils).commitSuicide();
+    }
+
+    @Test
+    public void shouldGetAuthTokenFromCacheIfItExists() throws Exception {
+        when(userService.getAccountName()).thenReturn(TEST_EMAIL);
+        Account account = new Account(TEST_EMAIL, AccountHelper.GOOGLE_ACCOUNT_TYPE);
+        when(accountHelper.getAccountByName(TEST_EMAIL)).thenReturn(account);
+
+        when(authTokenCache.get()).thenReturn(TEST_AUTH_TOKEN);
+        String actualAuthToken = service.getAuthToken();
+
+        assertThat(actualAuthToken, is(TEST_AUTH_TOKEN));
+        verify(accountManager, never()).blockingGetAuthToken(account, AccountHelper.GOOGLE_ACCOUNT_TYPE, true);
+    }
+
+    @Test
+    public void shouldGetAuthTokenFromAccountManagerIfNotFoundInCache() throws Exception {
+        Account account = new Account(TEST_EMAIL, AccountHelper.GOOGLE_ACCOUNT_TYPE);
+        when(userService.getAccountName()).thenReturn(TEST_EMAIL);
+        when(accountHelper.getAccountByName(TEST_EMAIL)).thenReturn(account);
+        when(authTokenCache.get()).thenReturn(null);
+        when(accountManager.blockingGetAuthToken(account, AccountHelper.GOOGLE_TOKEN_TYPE, true)).thenReturn(TEST_AUTH_TOKEN);
+
+        String actualAuthToken = service.getAuthToken();
+
+        assertThat(actualAuthToken, is(TEST_AUTH_TOKEN));
+    }
+
+    @Test
+    public void shouldPutAuthTokenFromAccountManagerIntoCache() throws Exception {
+        Account account = new Account(TEST_EMAIL, AccountHelper.GOOGLE_ACCOUNT_TYPE);
+        when(userService.getAccountName()).thenReturn(TEST_EMAIL);
+        when(accountHelper.getAccountByName(TEST_EMAIL)).thenReturn(account);
+        when(authTokenCache.get()).thenReturn(null);
+        when(accountManager.blockingGetAuthToken(account, AccountHelper.GOOGLE_TOKEN_TYPE, true)).thenReturn(TEST_AUTH_TOKEN);
+
+        service.getAuthToken();
+
+        verify(authTokenCache).put(TEST_AUTH_TOKEN);
+
+    }
+
+    @Test
+    public void shouldNotPutAuthTokenFromAccountManagerIntoCacheIfItIsNull() throws Exception {
+        Account account = new Account(TEST_EMAIL, AccountHelper.GOOGLE_ACCOUNT_TYPE);
+        when(userService.getAccountName()).thenReturn(TEST_EMAIL);
+        when(accountHelper.getAccountByName(TEST_EMAIL)).thenReturn(account);
+        when(authTokenCache.get()).thenReturn(null);
+        when(accountManager.blockingGetAuthToken(account, AccountHelper.GOOGLE_ACCOUNT_TYPE, true)).thenReturn(null);
+
+        try {
+            service.getAuthToken();
+            fail("Worked despite a null token?");
+        } catch (AuthenticationException e) {
+            verify(authTokenCache, never()).put(TEST_AUTH_TOKEN);
+        }
+
+    }
+
+    @Test
+    public void shouldCallAccountHelperToSeeIfAccountIsPresent(){
+        service.isAccountRegistered();
+        verify(accountHelper).isAccountRegistered();
+    }
+
+    @Test
+    public void shouldInvalidateAuthTokenFromAllCaches() {
+        service.invalidateAuthToken();
+        verify(accountManager).invalidateAuthToken(GoogleAuthenticationService.GOOGLE_AUTH_TYPE, null);
+        verify(authTokenCache).invalidateGoogleAuthToken();
+    }
+
+    private class NonDeletingUserDataAuthenticator extends GoogleAuthenticationService{
+        public NonDeletingUserDataAuthenticator(Context context, AccountManager accountManager, UserService userService, ProcessUtils processUtils, AuthTokenCache authTokenCache, AccountHelper accountHelper, FileUtils fileUtils) {
+            super(context, accountManager, authTokenCache, userService, processUtils, accountHelper, fileUtils);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        protected void deleteUserData() {
+            //do nothing
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

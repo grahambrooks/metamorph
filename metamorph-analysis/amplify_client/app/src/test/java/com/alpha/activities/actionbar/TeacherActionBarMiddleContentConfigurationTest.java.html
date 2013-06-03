@@ -1,0 +1,242 @@
+<html><head><title>TeacherActionBarMiddleContentConfigurationTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherActionBarMiddleContentConfigurationTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/actionbar/amplify_client/TeacherActionBarMiddleContentConfigurationTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionbar;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.TeacherConsoleAction;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.SundaeShadowActionBar;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static android.view.View.VISIBLE;
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.TEACHER_INITIATED;
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings("PMD.TooManyMethods")
+public class TeacherActionBarMiddleContentConfigurationTest {
+
+    private static final String SECTION_NAME = "Chess 101";
+
+    @Inject
+    TeacherActionBarMiddleContentConfiguration actionBarConfiguration;
+    @Mock
+    UserService userService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Section section;
+    @Mock
+    private TeacherConsoleAction teacherConsoleAction;
+
+    private Activity activity;
+    private TextView sectionNameView;
+    private TextView notificationView;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        when(userService.getUser()).thenReturn(teacher);
+
+        ActivityTestInjector<TeacherActionBarMiddleContentConfiguration> testInjector
+                = newInjector(this, TeacherActionBarMiddleContentConfiguration.class);
+
+        testInjector.bindInstance(TeacherConsoleAction.class, teacherConsoleAction);
+        testInjector.bindInstance(UserService.class, userService);
+        testInjector.bindInstance(EventBus.class, eventBus);
+
+        testInjector.configureTestSubject();
+
+        activity = testInjector.getCurrentActivityContext();
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldEnableDisplayShowCustomProperty() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_CUSTOM, is(ActionBar.DISPLAY_SHOW_CUSTOM));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableDisplayShowHomeProperty() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_HOME, not(ActionBar.DISPLAY_SHOW_HOME));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableDisplayShowTitleProperty() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_TITLE, not(ActionBar.DISPLAY_SHOW_TITLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldUpdateSectionNameOnResume() {
+        configureActionBar();
+        configureSection();
+
+        actionBarConfiguration.onResume();
+
+        assertThat(sectionNameView.getText().toString(), is(SECTION_NAME));
+    }
+
+    @Test
+    public void shouldUpdatesectionNameWhenUSerInfoRefreshed() {
+        configureActionBar();
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.getName()).thenReturn("lolol");
+        actionBarConfiguration.userInformationRefreshed(new UserInformationRefreshedEvent(false));
+        assertThat(sectionNameView.getText().toString(), is("lolol"));
+    }
+
+    @Test
+    public void shouldUpdateActivityNotificationOnResume() {
+        configureActionBar();
+        configureSection();
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.getName()).thenReturn("Poll Class");
+        actionBarConfiguration.onResume();
+
+        assertThat(notificationView.getVisibility(), is(VISIBLE));
+        assertThat(notificationView.getText().toString(), is("Poll Class is Active"));
+    }
+
+    private void configureSection() {
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(userService.isTeacher()).thenReturn(true);
+        when(section.getName()).thenReturn(SECTION_NAME);
+    }
+
+    @Test
+    public void shouldResetNotificationTextOnEndSession() throws Exception {
+        configureActionBar();
+        configureSection();
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.getName()).thenReturn("Poll Class");
+
+        actionBarConfiguration.onEndSession(new TeacherSessionEndedEvent(TEACHER_INITIATED));
+        assertThat(notificationView.getText().toString(), is(StringUtils.EMPTY));
+        assertThat(notificationView.getVisibility(), is(View.INVISIBLE));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private SundaeShadowActionBar getActionBar() {
+        return (SundaeShadowActionBar) activity.getActionBar();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void configureActionBar() {
+        actionBarConfiguration.configure();
+
+        sectionNameView = (TextView) getActionBar().getCustomView().findViewById(R.id.teacher_section_name);
+        notificationView = (TextView) getActionBar().getCustomView().findViewById(R.id.teacher_console_activity_notification);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

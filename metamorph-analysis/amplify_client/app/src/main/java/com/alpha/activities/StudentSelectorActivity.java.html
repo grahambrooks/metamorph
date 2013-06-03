@@ -1,0 +1,191 @@
+<html><head><title>StudentSelectorActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentSelectorActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/StudentSelectorActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.StudentSelectorAdapter;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import roboguice.inject.InjectView;
+
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+public class StudentSelectorActivity extends SundaeTimedActivity {
+
+    public static final String PARTICIPANTS = StudentSelectorActivity.class.getName() + ".PARTICIPANTS";
+
+    @InjectView(R.id.total_students_selected)
+    private TextView totalNumStudents;
+
+    @InjectView(R.id.select_all_students_button)
+    private Button selectAllButton;
+
+    @InjectView(R.id.deselect_all_students_button)
+    private Button deselectAllButton;
+
+    @InjectView(R.id.done_button)
+    private Button doneButton;
+
+    @InjectView(R.id.student_selector_grid)
+    private GridView studentSelectorGrid;
+
+    private StudentSelectorAdapter adapter;
+    public static final String CURRENT_SECTION = "CURRENT_SECTION";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.select_student_group);
+
+        setupSelectorAdapter();
+        setupSelectAllButton();
+        setupDeselectAllButton();
+        setupDoneButton();
+
+        retrieveStudentsForSection();
+    }
+
+    private void setupSelectorAdapter() {
+        adapter = new StudentSelectorAdapter(this);
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                totalNumStudents.setText(adapter.getSelectedStudentText());
+                doneButton.setEnabled(adapter.studentsSelected());
+            }
+        });
+        studentSelectorGrid.setAdapter(adapter);
+    }
+
+    private void setupSelectAllButton() {
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                adapter.selectAllStudents();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+
+    private void setupDeselectAllButton() {
+        deselectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.deselectAllStudents();
+            }
+        });
+    }
+
+    private void setupDoneButton() {
+        doneButton.setEnabled(adapter.studentsSelected());
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent result = new Intent();
+                result.putExtra(PARTICIPANTS, newArrayList(adapter.selectedStudents()));
+                setResult(Activity.RESULT_OK, result);
+                finish();
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void retrieveStudentsForSection() {
+        List<Participant> sharedWithStudents = (List) getIntent().getExtras().getSerializable(PARTICIPANTS);
+        Section currentSection = getCurrentSection();
+        for (Participant student : currentSection.getAllParticipants()) {
+            adapter.add(new Participant(student.getId(), student.getName(), sharedWithStudents.contains(student)));
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (adapter.numberOfSelectedStudents() == 0) {
+            adapter.selectAllStudents();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    protected Section getCurrentSection() {
+        Intent intent = getIntent();
+        return intent.hasExtra(CURRENT_SECTION)?((Section)intent.getSerializableExtra(CURRENT_SECTION)):userService.getCurrentUserSection();
+    }
+
+    @VisibleForTesting
+    protected StudentSelectorAdapter getAdapter() {
+        return adapter;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

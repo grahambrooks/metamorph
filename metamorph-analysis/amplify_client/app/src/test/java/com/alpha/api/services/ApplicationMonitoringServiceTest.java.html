@@ -1,0 +1,188 @@
+<html><head><title>ApplicationMonitoringServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ApplicationMonitoringServiceTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/api/services/amplify_client/ApplicationMonitoringServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.services.ApplicationMonitoringService.ApplicationMonitoringServiceBinder;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.Timer;
+
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ApplicationMonitoringServiceTest {
+
+    public static final String PACKAGE_NAME = "package.name";
+    @Inject
+    private ApplicationMonitoringService applicationMonitoringService;
+
+    @Inject
+    private ParticipantSessionService participantSessionService;
+    @Inject
+    private TimerProvider timerProvider;
+    @Inject
+    private UserService userService;
+    @Mock
+    private Timer timer;
+    @Mock
+    private Student student;
+    @Mock
+    private ParticipantPresenceModel presenceModel;
+
+
+    @Before
+    public void setup() {
+        ActivityTestInjector<ApplicationMonitoringService> testInjector = new ActivityTestInjector<ApplicationMonitoringService>(this, ApplicationMonitoringService.class);
+        testInjector.configureTestSubject();
+
+        initMocks(this);
+        given(timerProvider.get()).willReturn(timer);
+        given(userService.getUser()).willReturn(student);
+        given(student.getPresenceModel()).willReturn(presenceModel);
+
+        applicationMonitoringService.onCreate();
+    }
+
+    @Test
+    public void shouldSendHomeScreenLocationToParticipantSessionService() {
+        when(student.hasLiveSection()).thenReturn(true);
+        applicationMonitoringService.updateLocation(StudentLocation.HOME_SCREEN);
+
+        verify(participantSessionService).updateStudentWhereabouts(student);
+    }
+
+    @Test
+    public void shouldStartTimerIfLocationIsOutsideApplication() {
+        applicationMonitoringService.updateLocation(StudentLocation.ANOTHER_APPLICATION);
+
+        verify(timer).schedule(
+                any(ApplicationMonitoringService.ApplicationMonitoringTask.class),
+                eq(ApplicationMonitoringService.DELAY),
+                eq(ApplicationMonitoringService.PERIOD));
+    }
+
+
+    @Test
+    public void shouldResetTimerIfLocationIsHomeScreen(){
+
+        applicationMonitoringService.updateLocation(StudentLocation.HOME_SCREEN);
+
+        verify(timer).cancel();
+        verify(timerProvider, times(2)).get();
+    }
+
+    @Test
+    public void shouldNotBlockAppWhenForceFieldNotEngaged() {
+        when(student.isForceFieldEngaged()).thenReturn(false);
+        assertThat(applicationMonitoringService.appIsCurrentlyBlocked(PACKAGE_NAME), is(false));
+    }
+
+    @Test
+    public void shouldNotBlockAppWhenForceFieldEngagedAndAppIsSameAsService() {
+        when(student.isForceFieldEngaged()).thenReturn(true);
+        assertThat(applicationMonitoringService.appIsCurrentlyBlocked("com.amplify"),
+                is(false));
+    }
+
+    @Test
+    public void shouldNotBlockAppWhenForceFieldEngagedAndAppInWhitelist() {
+        when(student.isForceFieldEngaged()).thenReturn(true);
+        Set<String> appList = newHashSet(PACKAGE_NAME);
+        when(student.getAllowedApps()).thenReturn(appList);
+        assertThat(applicationMonitoringService.appIsCurrentlyBlocked(PACKAGE_NAME),
+                is(false));
+    }
+
+    @Test
+    public void shouldBlockAppWhenForceFieldEngagedAndAppNotInWhitelist() {
+        when(student.isForceFieldEngaged()).thenReturn(true);
+        when(student.getAllowedApps()).thenReturn(Collections.<String>emptySet());
+        assertThat(applicationMonitoringService.appIsCurrentlyBlocked(PACKAGE_NAME),
+                is(true));
+    }
+
+    @Test
+    public void shouldReturnApplicationMonitoringServiceBinderOnBind() {
+        Object obj = applicationMonitoringService.onBind(null);
+        assertThat(obj, instanceOf(ApplicationMonitoringServiceBinder.class));
+    }
+
+    @Test
+    public void shouldNotUpdateStudentLocationIfNoSessionIsLive(){
+        when(student.hasLiveSection()).thenReturn(false);
+        applicationMonitoringService.updateLocation(StudentLocation.HOME_SCREEN);
+        verifyZeroInteractions(participantSessionService);
+        verify(student, only()).hasLiveSection();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

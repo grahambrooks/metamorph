@@ -1,0 +1,287 @@
+<html><head><title>JoinSessionActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>JoinSessionActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/JoinSessionActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostSection;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.ParticipantSessionService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.activities.JoinSessionActivity.INVALID_SECTION_ID;
+import static com.alpha.activities.JoinSessionActivity.SECTION_ID;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class JoinSessionActivityTest {
+    @Inject
+    private JoinSessionActivity activity;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Post post;
+    @Inject
+    private UserService userService;
+    @Mock
+    private Section section;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Mock
+    private Student student;
+    private Button joinButton;
+    @Inject
+    private ParticipantSessionService participantSessionService;
+    @Mock
+    private PostSection postSection;
+    @Mock
+    private Intent intent;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        ActivityTestInjector<JoinSessionActivity> activityTestInjector = new ActivityTestInjector<JoinSessionActivity>(this, JoinSessionActivity.class);
+        activityTestInjector.bindInstance(EventBus.class, eventBus);
+        activityTestInjector.configureActivity();
+
+        given(student.getLiveSection()).willReturn(section);
+        given(userService.getUser()).willReturn(student);
+        given(post.getPostSection()).willReturn(postSection);
+        given(student.getSectionWithId(anyLong())).willReturn(section);
+
+        activity.setIntent(intent);
+        activity.onCreate(null);
+
+        joinButton = (Button) activity.findViewById(R.id.full_screen_join_session_button);
+
+    }
+
+    @Test
+    public void shouldPickSectionIdfromSavedBundleIfAvailable() {
+        Bundle outState = mock(Bundle.class);
+        long sectionIdSavedInBundle = 22l;
+        when(outState.getLong(SECTION_ID, INVALID_SECTION_ID)).thenReturn(sectionIdSavedInBundle);
+        activity.onCreate(outState);
+
+        verify(student).getSectionWithId(sectionIdSavedInBundle);
+    }
+
+    @Test
+    public void shouldPickSectionIdFromIntentIfSavedStateIsNotAvaialble() {
+        long sectionId= 23l;
+
+        when(intent.getLongExtra(SECTION_ID, INVALID_SECTION_ID)).thenReturn(sectionId);
+        activity.onCreate(null);
+
+        verify(student).getSectionWithId(sectionId);
+    }
+
+    @Test
+    public void shouldSaveSectionIdToBundleOnSaveState() {
+        Bundle outState = mock(Bundle.class);
+        activity.onSaveInstanceState(outState);
+
+        verify(outState).putLong(eq(SECTION_ID), anyLong());
+    }
+
+    @Test
+    public void shouldRegisterOnEventBusOnResume() {
+        activity.onResume();
+        verify(eventBus).register(activity.listeners);
+    }
+
+    @Test
+    public void shouldUnregisterFromEventBusOnPause() {
+        activity.onPause();
+        verify(eventBus).unregister(activity.listeners);
+    }
+
+    @Test
+    public void shouldLockActivityOnResume() {
+        activity.onResume();
+        verify(deviceLockingService).lock(activity, true);
+    }
+
+    @Test
+    public void shouldFinishActivityIfSectionIsLiveOnPause() {
+        when(userService.isSessionOngoingFor(section)).thenReturn(true);
+
+        activity.onPause();
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+    
+    @Test
+    public void shouldDisableJoinButtonWhenClicked() {
+        joinButton.performClick();
+
+        assertThat(joinButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldUnlockAndFinishOnJoinClick() {
+        joinButton.performClick();
+        verify(deviceLockingService).unlock(activity);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldStartNotebookActivityOnJoinClick() {
+        when(section.getId()).thenReturn(11L);
+        joinButton.performClick();
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(StudentNotebookActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldUnlockAndFinishIfSessionIsCurrentlyLive() {
+        when(student.hasLiveSection()).thenReturn(true);
+        joinButton.performClick();
+        verify(deviceLockingService).unlock(activity);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotFinishActivityOnBack() {
+        activity.onBackPressed();
+        assertThat(shadowOf(activity).isFinishing(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldJoinSessionIfSessionNotLive() {
+        when(student.hasLiveSection()).thenReturn(false);
+        joinButton.performClick();
+        verify(participantSessionService).joinSession(eq(student), eq(section), any(ProgressBar.class));
+    }
+
+    @Test
+    public void shouldStartSessionForSectionSpecifiedIntent() {
+        when(intent.getStringExtra(JoinSessionActivity.TEACHER_NAME)).thenReturn("Mrs wtf");
+        when(intent.getLongExtra(eq(SECTION_ID), anyLong())).thenReturn(22L);
+
+        when(student.getSectionWithId(22L)).thenReturn(section);
+        when(student.hasLiveSection()).thenReturn(false);
+        joinButton.performClick();
+        verify(participantSessionService).joinSession(eq(student), eq(section), any(ProgressBar.class));
+
+    }
+
+    @Test
+    public void shouldUnlockAndGotoStudentNotebookIfConnectedToSessionOnResume() {
+        when(intent.getLongExtra(eq(SECTION_ID), anyLong())).thenReturn(21L);
+        when(userService.getUser()).thenReturn(student);
+        when(student.getSectionWithId(21L)).thenReturn(section);
+        when(userService.isSessionOngoingFor(section)).thenReturn(true);
+        when(section.getId()).thenReturn(21L);
+        activity.onCreate(null);
+        activity.onResume();
+        verify(deviceLockingService).unlock(activity);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(StudentNotebookActivity.class.getName()));
+        assertThat(intent.getLongExtra(BaseNotebookActivity.SECTION_ID_KEY, -1), is(21L));
+    }
+
+    @Test
+    public void shouldPutSectionIdIntoIntentWhenStartingStudentNotebookActivity() {
+        when(intent.getLongExtra(eq(SECTION_ID), anyLong())).thenReturn(22L);
+        when(userService.getUser()).thenReturn(student);
+        when(student.getSectionWithId(22L)).thenReturn(section);
+        when(section.getId()).thenReturn(22L);
+        activity.onCreate(null);
+        joinButton.performClick();
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(StudentNotebookActivity.class.getName()));
+        assertThat(intent.getLongExtra(BaseNotebookActivity.SECTION_ID_KEY, -1), is(22L));
+    }
+
+    @Test
+    public void shouldFinishActivityWhenThereIsNothingInTheIntent() {
+        Intent intentWithNoSectionId = new Intent();
+        activity.setIntent(intentWithNoSectionId);
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

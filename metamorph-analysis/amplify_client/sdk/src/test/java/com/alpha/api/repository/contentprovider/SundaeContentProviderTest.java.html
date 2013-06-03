@@ -1,0 +1,356 @@
+<html><head><title>SundaeContentProviderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaeContentProviderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/contentprovider/amplify_client/SundaeContentProviderTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">28</span>
+    <progress max="100" value="28"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.contentprovider;
+
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import com.alpha.api.domains.Post;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.ActivityTestInjector;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.AmplifyCallable;
+import com.alpha.lock.GlobalInformationLock;
+import com.google.common.base.Function;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowContentResolver;
+import com.xtremelabs.robolectric.shadows.ShadowContentResolver.NotifiedUri;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import javax.annotation.Nullable;
+import java.util.Date;
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.COMMENTS;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.google.common.collect.Lists.transform;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+@SuppressWarnings("PMD.TooManyMethods")
+public class SundaeContentProviderTest {
+
+    private static final String POSTS_PROVIDER_URI = "content://com.alpha.api.Sundae";
+    private static final String POSTS = "/posts";
+    public static final int COMMENT_ID = 1;
+    public static final Function<NotifiedUri, Uri> TO_URI = new Function<NotifiedUri, Uri>() {
+        @Nullable
+        @Override
+        public Uri apply(NotifiedUri input) {
+            return input.uri;
+        }
+    };
+    private SundaeContentProvider contentProvider;
+    @Mock
+    private Post post;
+    @Mock
+    private SundaeDatabase dbHelper;
+    @Mock
+    private SQLiteDatabase db;
+    @Mock
+    private Cursor cursor;
+
+    private GlobalInformationLock globalInformationLock;
+
+    private ContentValues postValues;
+    private static final Long POST_ID = 5L;
+
+    private static final String[] PROJECTION = {"a", "b"};
+    private static final String WHERE_CLAUSE = "d = 3 AND b = 5";
+    private static final String[] WHERE_CLAUSE_ARGS = {"1"};
+    private static final String SORT_ORDER = "asc";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        globalInformationLock = spy(new GlobalInformationLock());
+        ActivityTestInjector<SundaeContentProvider> activityTestInjector = ActivityTestInjector.create(this, SundaeContentProvider.class);
+        activityTestInjector.bindInstance(SundaeDatabase.class, dbHelper)
+                .bindInstance(GlobalInformationLock.class, globalInformationLock)
+        .bindMocksToContext();
+
+
+        contentProvider = new SundaeContentProvider();
+        contentProvider.onCreate();
+
+        contentProvider.dbHelper = dbHelper;
+        ShadowContentResolver.registerProvider("com.alpha.api.Sundae", contentProvider);
+        postValues = new ContentValues();
+        postValues.put(_id.name(), POST_ID);
+        given(dbHelper.getWritableDatabase()).willReturn(db);
+        given(dbHelper.getReadableDatabase()).willReturn(db);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowErrorIfUriToInsertIsNotValid() {
+        Uri uri = Uri.parse("content://hello.world");
+        contentProvider.insert(uri, postValues);
+    }
+
+    @Test
+    public void shouldAcceptUriMatchingAllPostsByNotThrowingAnError() {
+        contentProvider.insert(Uri.parse(POSTS_PROVIDER_URI + POSTS), postValues);
+    }
+
+    @Test
+    public void shouldSaveContentValuesProvidedAsPost() {
+        contentProvider.insert(Table.POSTS.uri(), postValues);
+        verify(db).insertOrThrow(Table.POSTS.name(), null, postValues);
+    }
+
+    @Test
+    public void shouldReturnUriPointingToNewlySavedPost() {
+        when(post.asValues()).thenReturn(postValues);
+        when(db.insertOrThrow(Table.POSTS.name(), null, postValues)).thenReturn(POST_ID);
+        Uri actualUri = contentProvider.insert(Table.POSTS.uri(), postValues);
+        Uri expectedUri = ContentUris.withAppendedId(Table.POSTS.uri(), POST_ID);
+        assertThat(actualUri, is(expectedUri));
+    }
+
+    @Test
+    public void shouldNotifyOfNewlyAddedPost() {
+        when(post.asValues()).thenReturn(postValues);
+        when(db.insertOrThrow(Table.POSTS.name(), null, postValues)).thenReturn(POST_ID);
+        contentProvider.insert(Table.POSTS.uri(), postValues);
+        List<NotifiedUri> notifiedUris = shadowOf(Robolectric.application.getContentResolver()).getNotifiedUris();
+        assertThat(notifiedUris.size(), is(1));
+        assertThat(notifiedUris.get(0).uri, is(Table.POSTS.uri().buildUpon().appendPath(POST_ID.toString()).build()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotSupportUpdatingOfAllPostsByThrowingError() {
+        Uri postUri = Table.POSTS.uri();
+        contentProvider.update(postUri, postValues, null, null);
+    }
+
+    @Test
+    public void shouldAcceptAllPostsUriWithoutQueryParameterWhenQueryingByNotThrowingError() {
+        stubDbQueryToReturnCursor();
+        contentProvider.query(Uri.parse(POSTS_PROVIDER_URI + POSTS), null, null, null, null);
+    }
+
+    @Test
+    public void shouldAcceptAllPostsUriWithQueryParameterWhenQueryingByNotThrowingError() {
+        stubDbQueryToReturnCursor();
+        contentProvider.query(Uri.parse(POSTS_PROVIDER_URI + "/posts?limitBy=1"), null, null, null, null);
+    }
+
+    @Test
+    public void shouldNotLimitResultsIfParameterNotProvided() {
+        stubDbQueryToReturnCursor();
+        contentProvider.query(Uri.parse(POSTS_PROVIDER_URI + POSTS), null, null, null, null);
+        verify(db).query(Table.POSTS.name(), null, null, null, null, null, null, null);
+    }
+
+    @Test
+    public void shouldLimitResultIfParameterProvided() {
+        stubDbQueryToReturnCursor();
+        contentProvider.query(Uri.parse(POSTS_PROVIDER_URI + "/posts?limitBy=33"), null, null, null, null);
+        verify(db).query(Table.POSTS.name(), null, null, null, null, null, null, "33");
+    }
+
+    @Test
+    public void shouldApplyArgumentsAsProvidedWhenQuerying() {
+        stubDbQueryToReturnCursor();
+        contentProvider.query(Uri.parse(POSTS_PROVIDER_URI + POSTS), PROJECTION, WHERE_CLAUSE, WHERE_CLAUSE_ARGS, SORT_ORDER);
+        verify(db).query(eq(Table.POSTS.name()), eq(PROJECTION), eq(WHERE_CLAUSE), eq(WHERE_CLAUSE_ARGS),
+                isNull(String.class), isNull(String.class), eq(SORT_ORDER), anyString());
+    }
+
+    @Test
+    public void shouldSetNotificationUriOnResultWhenQuerying() {
+        stubDbQueryToReturnCursor();
+        Uri postsUri = Uri.parse(POSTS_PROVIDER_URI + POSTS);
+        contentProvider.query(postsUri, null, null, null, null);
+        verify(cursor).setNotificationUri(any(ContentResolver.class), eq(postsUri));
+    }
+
+    @Test
+    public void shouldReturnCursorForResponsesBelongingToAPost() {
+        stubDbQueryToReturnCursor();
+        Uri responsesUri = Table.RESPONSES.uri(POST_ID);
+        contentProvider.query(responsesUri, null, null, null, "created_on ASC");
+        verify(cursor).setNotificationUri(any(ContentResolver.class), eq(responsesUri));
+    }
+
+    @Test
+    public void shouldReturnCursorForCommentsBelongingToAPost() {
+        stubDbQueryToReturnCursor();
+        Uri uri = Table.COMMENTS.uri(POST_ID);
+        contentProvider.query(uri, null, null, null, "created_on ASC");
+        verify(cursor).setNotificationUri(any(ContentResolver.class), eq(uri));
+    }
+
+    @Test
+    public void shouldInsertCommentsToAPost() {
+        ContentValues values = createCommentContentValues();
+        contentProvider.insert(Table.COMMENTS.uri(POST_ID), values);
+        verify(db).insertOrThrow(COMMENTS.name(), null, values);
+    }
+
+    @Test
+    public void shouldNotifyOfNewlyAddedComment() {
+        Uri uri = Table.COMMENTS.uri(POST_ID);
+        ContentValues values = createCommentContentValues();
+        when(db.insertOrThrow(Table.COMMENTS.name(), null, values)).thenReturn((long) COMMENT_ID);
+        contentProvider.insert(uri, values);
+        List<NotifiedUri> notifiedUris = shadowOf(Robolectric.application.getContentResolver()).getNotifiedUris();
+        assertThat(notifiedUris.size(), is(1));
+        assertThat(notifiedUris.get(0).uri, is(ContentUris.withAppendedId(uri, COMMENT_ID)));
+    }
+
+    private ContentValues createCommentContentValues() {
+        ContentValues values = new ContentValues();
+        values.put(_id.name(), COMMENT_ID);
+        values.put(TableColumn.post_id.name(), POST_ID);
+        values.put(TableColumn.content.name(), "{}");
+        values.put(TableColumn.created_on.name(), new Date().getTime());
+        return values;
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotUpdateIfNoWhereClauseIsProvided() throws Exception {
+        Uri uri = Table.POSTS.uri();
+        ContentValues values = new ContentValues();
+        contentProvider.update(uri, values, null, null);
+    }
+
+    @Test
+    public void shouldUpdatePost() throws Exception {
+        Uri uri = Table.POSTS.uri();
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), "1");
+        String where = _id.equalTo();
+        String[] whereArgs = {POST_ID.toString()};
+        contentProvider.update(uri, values, where, whereArgs);
+        verify(db).update(Table.POSTS.name(), values, where, whereArgs);
+    }
+
+    @Test
+    public void shouldDeletePost() throws Exception {
+        Uri uri = Table.POSTS.uri();
+        String where = _id.equalTo();
+        String[] whereArgs = {POST_ID.toString()};
+        List<NotifiedUri> notifiedUris = shadowOf(Robolectric.application.getContentResolver()).getNotifiedUris();
+
+        contentProvider.delete(uri, where, whereArgs);
+
+        verify(db).delete(Table.POSTS.name(), where, whereArgs);
+        assertThat(notifiedUris.size(), is(1));
+        assertThat(notifiedUris.get(0).uri, is(uri));
+    }
+
+    @Test
+    public void shouldNotifyWhenUpdatingPost() throws Exception {
+        long postId = 1L;
+        Uri uri = Table.POSTS.uri();
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), postId);
+        contentProvider.update(uri, values, TableColumn._id.equalTo(), new String[]{POST_ID.toString()});
+        List<NotifiedUri> notifiedUris = shadowOf(Robolectric.application.getContentResolver()).getNotifiedUris();
+        assertThat(transform(notifiedUris, TO_URI), hasItem(Table.POSTS.uriForSingleRow(postId)));
+    }
+
+    @Test
+    public void shouldCallWithReadLockWhenQuerying(){
+        when(db.query(anyString(),any(String[].class),anyString(),any(String[].class),anyString(),anyString(),anyString(),anyString())).thenReturn(cursor);
+        contentProvider.query(Table.POSTS.uri(),null,null,null,null);
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test
+    public void shouldCallWithReadLockWhenInserting(){
+        when(db.insert(anyString(), anyString(), any(ContentValues.class))).thenReturn(1L);
+        contentProvider.insert(Table.POSTS.uri(), new ContentValues());
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test
+    public void shouldCallWithReadLockWhenAccessWhenDeleting(){
+        when(db.delete(anyString(),anyString(), any(String[].class))).thenReturn(1);
+        contentProvider.delete(Table.POSTS.uri(), "1=1", null);
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test
+    public void shouldCallWithReadLockAccessWhenUpdating(){
+        when(db.delete(anyString(),anyString(), any(String[].class))).thenReturn(1);
+        contentProvider.update(Table.COMMENTS.uri(1), createCommentContentValues(), "1=1", null);
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+
+    private void stubDbQueryToReturnCursor() {
+        given(db.query(anyString(), any(String[].class), anyString(), any(String[].class), anyString(), anyString(), anyString(), anyString())).willReturn(cursor);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

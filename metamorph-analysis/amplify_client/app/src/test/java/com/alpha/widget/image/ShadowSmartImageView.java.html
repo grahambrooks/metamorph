@@ -1,0 +1,173 @@
+<html><head><title>ShadowSmartImageView.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShadowSmartImageView.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/widget/image/amplify_client/ShadowSmartImageView.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widget.image;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import com.alpha.widgets.image.SmartImage;
+import com.alpha.widgets.image.SmartImageView;
+import com.alpha.widgets.image.WebImage;
+import com.xtremelabs.robolectric.internal.Implementation;
+import com.xtremelabs.robolectric.internal.Implements;
+import com.xtremelabs.robolectric.shadows.ShadowImageView;
+
+@Implements(SmartImageView.class)
+public class ShadowSmartImageView extends ShadowImageView {
+
+    private SmartImage image;
+    private Integer fallbackResource;
+    private Integer loadingResource;
+    private String imageUrl;
+    private Uri uri;
+
+
+    @Implementation
+    public void setImageUrl(String url) {
+        setImageUrl(url, null);
+    }
+
+    @Implementation
+    public void setImageUrl(String url, final Integer fallbackResource) {
+        setImageUrl(url, fallbackResource, null);
+    }
+
+    @Implementation
+    public void setImageUrl(String url, final Integer fallbackResource, final Integer loadingResource) {
+        imageUrl = url;
+        setImage(new WebImage(url), fallbackResource, loadingResource);
+    }
+
+    @Implementation</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setImage(final SmartImage image) {
+        setImage(image, null, null);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Implementation</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setImage(final SmartImage image, final Integer fallbackResource) {
+        setImage(image, fallbackResource, fallbackResource);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Implementation
+    public void setImage(final SmartImage image, final Integer fallbackResource, final Integer loadingResource) {
+        this.image = image;
+        this.fallbackResource = fallbackResource;
+        this.loadingResource = loadingResource;
+    }
+
+    @Implementation
+    public void setImageBitmap(final Bitmap imageBitmap, final Integer fallbackResource) {
+        this.image = new SmartImage() {
+            @Override
+            public Bitmap getBitmap(Context context) {
+                return imageBitmap;
+            }
+        };
+
+        this.fallbackResource = fallbackResource;
+    }
+
+    @Implementation
+    public void setFileImageUri(Uri uri, final Integer fallbackResource){
+        this.uri = uri;
+        this.fallbackResource = fallbackResource;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getImageUrl() {
+        return imageUrl;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public SmartImage getImage() {
+        return image;
+    }
+
+    public int getFallbackResource() {
+        return fallbackResource;
+    }
+
+    public int getLoadingResource() {
+        return loadingResource;
+    }
+
+    public Uri getUri() {
+        return uri;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

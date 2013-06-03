@@ -1,0 +1,159 @@
+<html><head><title>ControlServerRegistrationTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlServerRegistrationTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ControlServerRegistrationTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.messaging.ControlServerRegistrar;
+import com.alpha.api.repository.CoursesDataStore;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import static com.alpha.api.services.User.Keys.ID;
+import static com.alpha.api.services.User.Keys.LOGIN_ID;
+import static com.alpha.api.services.User.Keys.NAME;
+import static com.alpha.api.services.User.Keys.PASSWORD;
+import static com.alpha.api.services.User.Keys.ROLE;
+import static com.alpha.api.services.User.Keys.SCHOOL;
+
+public class ControlServerRegistrationTask extends SafeAuthenticatedAsyncTask<ControlServerRegistrationResult> {
+    private static final Logger LOG = LogUtils.getLogger();
+    private final CoursesDataStore coursesDataStore;
+    private final ControlServerRegistrar controlServerRegistrar;
+    private final User user;
+    private final ControlServerRegistrationCallback callback;
+    private final SharedPreferences preferences;
+    private final NetworkConnectivity networkConnectivity;
+    private final SectionsDataStore sectionsDataStore;
+
+    @Inject
+    public ControlServerRegistrationTask(@Assisted User user,
+                                         @Assisted ControlServerRegistrationCallback callback,
+                                         @Assisted SharedPreferences preferences,
+                                         SectionsDataStore sectionsDataStore,
+                                         CoursesDataStore coursesDataStore,
+                                         ControlServerRegistrar controlServerRegistrar,
+                                         NetworkConnectivity networkConnectivity,
+                                         AnalyticsAgent analytics) {
+        super(analytics);
+        this.sectionsDataStore = sectionsDataStore;
+        this.coursesDataStore = coursesDataStore;
+        this.controlServerRegistrar = controlServerRegistrar;
+        this.user = user;
+        this.callback = callback;
+        this.preferences = preferences;
+        this.networkConnectivity = networkConnectivity;
+    }
+
+    @Override
+    public ControlServerRegistrationResult call() {
+        if (networkConnectivity.isNotConnected()) {
+            return ControlServerRegistrationResult.NETWORK_NOT_CONNECTED;
+        }
+        if (StringUtils.isBlank(user.getName())) {
+            return ControlServerRegistrationResult.NO_NAME_PROVIDED;
+        }
+        controlServerRegistrar.registerUser(user);
+        saveUserAndSections();
+
+        return ControlServerRegistrationResult.SUCCESS;
+    }
+
+    private void saveUserAndSections() {
+        saveUser(user);
+        coursesDataStore.deleteAll();
+        sectionsDataStore.deleteAll();
+        sectionsDataStore.saveAll(user.getSections());
+        coursesDataStore.saveAll(user.createCoursesFromSections());
+    }
+
+    // TODO: Feature envy. Belongs elsewhere?
+    private void saveUser(User userToSave) {
+        Editor editor = preferences.edit();
+        editor.putString(NAME.name(), userToSave.getName());
+        editor.putString(ROLE.name(), userToSave.getRole().name());
+        editor.putString(LOGIN_ID.name(), userToSave.getXmppUsername());
+        editor.putString(SCHOOL.name(), userToSave.getSchoolName());
+        editor.putString(PASSWORD.name(), userToSave.getXmppPassword());
+        editor.putLong(ID.name(), userToSave.getId());
+        editor.putBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, true);
+        editor.commit();
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Error when registering user", e);
+        callback.onControlServerRegistrationFailure(ControlServerRegistrationResult.NAME_NOT_VALID);
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Error when registering user", e);
+        callback.onControlServerRegistrationFailure(ControlServerRegistrationResult.REGISTRATION_FAILED);
+    }
+
+    @Override
+    protected void onSuccess(ControlServerRegistrationResult value) {
+        if (ControlServerRegistrationResult.SUCCESS == value) {
+            callback.onControlServerRegistrationSuccess();
+            return;
+        }
+        callback.onControlServerRegistrationFailure(value);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

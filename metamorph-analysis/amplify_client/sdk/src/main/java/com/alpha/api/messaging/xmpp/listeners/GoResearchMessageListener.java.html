@@ -1,0 +1,99 @@
+<html><head><title>GoResearchMessageListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoResearchMessageListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/GoResearchMessageListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.services.events.GoResearchStartEvent;
+import com.alpha.api.utilities.UIUtils;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.MessageTypeFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+
+import java.util.concurrent.Callable;
+
+import static com.alpha.api.services.StartGoResearchTask.MESSAGE;
+
+public class GoResearchMessageListener extends BasePacketListener<Message> {
+
+    private final EventBus eventBus;
+
+    public GoResearchMessageListener(String roomName, EventBus eventBus) {
+        super(roomName);
+        this.eventBus = eventBus;
+    }
+
+    @Override
+    protected void process(Message packet) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                eventBus.post(GoResearchStartEvent.success());
+                return null;
+            }
+        });
+    }
+
+    @Override
+    protected PacketFilter filter() {
+        return new AndFilter(new MessageTypeFilter(Message.Type.groupchat),
+                new PacketFilter() {
+                    @Override
+                    public boolean accept(Packet packet) {
+                        Message msg = (Message) packet;
+                        String body = msg.getBody();
+                        return body != null && MESSAGE.equals(msg.getBody());
+                    }
+                });
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<html><head><title>NotebookPreviewAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebookPreviewAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/NotebookPreviewAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.activities.view.AmplifyCheckableView;
+import com.alpha.api.services.Section;
+import com.amplify.R;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+public class NotebookPreviewAdapter extends BaseAdapter {
+    private final List<Section> sections;
+    private final NotebooksCoverMappings coverMappings;
+    private final Context context;
+    private final SparseBooleanArray selectedState;
+
+    public NotebookPreviewAdapter(List<Section> sections, NotebooksCoverMappings coverMappings, Context context) {
+        this.sections = sections;
+        this.coverMappings = coverMappings;
+        this.context = context;
+        this.selectedState = new SparseBooleanArray(sections.size());
+    }
+
+    @Override
+    public int getCount() {
+        return sections.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return sections.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return sections.get(position).getId();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+
+        if (view == null) {
+            view = LayoutInflater.from(context).inflate(R.layout.notebook_share_preview, null);
+        }
+
+        Section section = sections.get(position);
+        TextView notebook_preview_section = (TextView) view.findViewById(R.id.notebook_preview_section);
+        notebook_preview_section.setText(section.getName());
+
+        ImageView notebookCover = (ImageView) view.findViewById(R.id.notebook_preview_cover);
+        notebookCover.setImageDrawable(context.getResources().getDrawable(coverMappings.getShareCoverImage(section.getName())));
+
+        AmplifyCheckableView amplifyCheckableView = (AmplifyCheckableView) view;
+        amplifyCheckableView.setChecked(selectedState.get(position, true));
+
+        ToggleButton toggleButton = (ToggleButton) view.findViewById(R.id.selector);
+        toggleButton.setTag(position);
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                selectedState.put((Integer) compoundButton.getTag(), b);
+            }
+        });
+
+        view.setTag(section);
+        return view;
+    }
+
+    public List<Long> getSelectedSectionsIds() {
+        List<Long> selectedSections = newArrayList();
+        for (int i = 0; i < sections.size(); i++) {
+            if (selectedState.get(i, true)) {
+                selectedSections.add(sections.get(i).getId());
+            }
+        }
+
+        return selectedSections;
+    }
+
+    public int getSelectedSectionsCount() {
+        return getSelectedSectionsIds().size();
+    }
+
+    public List<Section> getSelectedSections() {
+        final List<Long> selectedSectionsIds = getSelectedSectionsIds();
+
+        return newArrayList(Iterables.filter(sections, new Predicate<Section>() {
+            @Override
+            public boolean apply(Section section) {
+                return selectedSectionsIds.contains(section.getId());
+            }
+        }));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

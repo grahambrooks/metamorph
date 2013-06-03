@@ -1,0 +1,248 @@
+<html><head><title>DeviceLockingService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DeviceLockingService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/DeviceLockingService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.services.android.DeviceLockingBackgroundService;
+import com.alpha.api.services.web.WebServices;
+import com.google.inject.Inject;
+
+public class DeviceLockingService {
+    private final TeacherSession teacherSession;
+
+    private final WebServices webServices;
+    private boolean isRunning;
+
+    private Intent intent;
+    private Class<? extends Activity> lockedActivity;
+    private Class<? extends Activity> prevLockedActivity;
+    private Class<? extends Activity> activityInForeground;
+    private final Context context;
+    private static final Class NO_ACTIVITY = null;
+
+    @Inject
+    public DeviceLockingService(Context context, TeacherSession teacherSession, WebServices webServices) {
+        this.teacherSession = teacherSession;
+        this.webServices = webServices;
+        this.context = context;
+    }
+
+    public void resetLocks() {
+        stopLockingBackgroundService();
+        lockedActivity = NO_ACTIVITY;
+        prevLockedActivity = NO_ACTIVITY;
+        activityInForeground = NO_ACTIVITY;
+    }
+
+    private void stopLockingBackgroundService() {
+        if (isRunning) {
+            context.stopService(intent);
+        }
+        isRunning = false;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isLocked() {
+        return isRunning;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void lock(Activity activityToLock) {
+        lock(activityToLock.getClass(), false);
+    }
+
+    public void lock(Activity activityToLock, boolean keepInForeground) {
+        lock(activityToLock.getClass(), keepInForeground);
+    }
+
+    public void lock(Class<? extends Activity> activityToLock) {
+        lock(activityToLock, false);
+    }
+
+    public void unlock(Activity activityToUnlock) {
+        unlock(activityToUnlock.getClass());
+    }
+
+    public void lock(Class<? extends Activity> activityToLock, boolean keepInForeground) {
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(activityToLock.equals(lockedActivity) || activityToLock.equals(prevLockedActivity)){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        if (keepInForeground) {
+            prevLockedActivity = lockedActivity;
+            activityInForeground = activityToLock;
+            lockedActivity = activityToLock;
+        } else {
+            if (activityInForeground == NO_ACTIVITY) { //NOPMD
+                prevLockedActivity = lockedActivity;
+                this.lockedActivity = activityToLock;
+            } else {
+                prevLockedActivity = activityToLock;
+            }
+        }
+
+        bringLockedActivityToFront();
+        startBackgroundLockingService();
+    }
+
+    public void unlock(Class<? extends Activity> classToUnlock) {
+        if (classToUnlock.equals(lockedActivity)) {
+            if (classToUnlock.equals(activityInForeground)) {
+                activityInForeground = NO_ACTIVITY;
+            }
+
+            if (prevLockedActivity == NO_ACTIVITY) { //NOPMD
+                stopLockingBackgroundService();
+            }
+
+            lockedActivity = prevLockedActivity;
+            prevLockedActivity = NO_ACTIVITY;
+        } else if (classToUnlock.equals(prevLockedActivity)) { //NOPMD
+            prevLockedActivity = NO_ACTIVITY;
+        }
+
+        bringLockedActivityToFront();
+    }
+
+    public Class<? extends Activity> getLockedActivity() {
+        return lockedActivity;
+    }
+
+    protected Class<? extends Activity> getPrevLockedActivity() {
+        return this.prevLockedActivity;
+    }
+
+    protected Class<? extends Activity> getActivityInForeground() {
+        return this.activityInForeground;
+    }
+
+    private void bringLockedActivityToFront() {
+        if(lockedActivity != NO_ACTIVITY){ //NOPMD
+            Intent foregroundActivityIntent = new Intent(context, lockedActivity);
+            foregroundActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(foregroundActivityIntent);
+        }
+    }
+
+    private void startBackgroundLockingService() {
+        intent = new Intent(context, DeviceLockingBackgroundService.class);
+        context.startService(intent);
+        isRunning = true;
+    }
+
+    public Boolean sendLockDevicesMessage(Teacher teacher) {
+        ControlSettingsModel controlSetting = teacher.getCurrentControlSettingsModel();
+        controlSetting.setAsLocked();
+        teacherSession.sendStudentControlSettings(controlSetting);
+        try {
+            webServices.send(teacher.lockDevicesEvent());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (Exception ignored) {
+            // #383 Purposefully ignore exceptions while logging events.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return true;
+    }
+
+    public Boolean sendUnlockDevicesMessage(Teacher teacher) {
+        ControlSettingsModel controlSetting = teacher.getCurrentControlSettingsModel();
+        controlSetting.setAsUnlocked();
+        teacherSession.sendStudentControlSettings(controlSetting);
+        try {
+            webServices.send(teacher.unlockDevicesEvent());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (Exception ignored) {
+            // #383 Purposefully ignore exceptions while logging events.
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return true;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

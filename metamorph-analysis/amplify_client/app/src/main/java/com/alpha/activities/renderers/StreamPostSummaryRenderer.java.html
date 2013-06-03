@@ -1,0 +1,256 @@
+<html><head><title>StreamPostSummaryRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamPostSummaryRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamPostSummaryRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">23</span>
+    <progress max="100" value="23"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.app.Activity;
+import android.text.format.DateFormat;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.api.domains.LearningElementVisitor;
+import com.alpha.api.domains.Post;
+import com.alpha.date.DateFormats;
+import com.amplify.R;
+import com.google.inject.Inject;
+import roboguice.inject.ContextSingleton;
+
+import java.util.Calendar;
+import java.util.Date;
+
+@SuppressWarnings("PMD.CyclomaticComplexity")
+@ContextSingleton
+public class StreamPostSummaryRenderer {
+
+    private final RendererFactory rendererFactory;
+    private final CollapsibleViewStateHolder stateHolder;
+    private Activity activity;
+
+    @Inject
+    public StreamPostSummaryRenderer(RendererFactory rendererFactory, CollapsibleViewStateHolder stateHolder) {
+        this.stateHolder = stateHolder;
+        this.rendererFactory = rendererFactory;
+    }
+
+    public void populateView(View view, final Post post, boolean showDateDivider, Activity activity) {
+        this.activity = activity;
+        // This blocks click listeners in children, and allow onItemClickListener() to work in the parent ListView
+        ((ViewGroup) view).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+        if (showDateDivider) {
+            showDateDivider(view, post.getCreatedOn());
+        } else {
+            hideDateDivider(view);
+        }
+
+        resetView(view);
+
+        updatePostTimestamp(view, post);
+
+        renderPost(view, post);
+    }
+
+    private void renderPost (View view, Post post) {
+        ViewGroup parent = (ViewGroup) view;
+        switch (post.getPostType()) {
+            case SHORT_ANSWER:
+                renderAsShortAnswerPost(parent, post);
+                break;
+            case SPOT_CHECK:
+                renderAsSpotCheckPost(parent, post);
+                break;
+            case QUICKPOLL:
+                renderAsQuickPollPost(parent, post);
+                break;
+            case CALL_ON_SOMEONE:
+                renderAsCallOnPost(parent, post);
+                break;
+            case COUNT_OFF:
+                renderAsCountOffActionPost(parent, post);
+                break;
+            case SHARE:
+                renderAsSharePost(parent, post);
+                addOnResizeListener(view);
+                break;
+            case DISCUSSION:
+                renderAsDiscussionPost(parent, post);
+                addOnResizeListener(view);
+                break;
+            case TIMER:
+                renderAsTimerPost(parent, post);
+                break;
+            case GO_RESEARCH:
+                renderAsGoResearchPost(parent, post);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized post type: " + post.getPostType().name());
+        }
+    }
+
+    private void renderAsQuickPollPost(ViewGroup parent, Post post) {
+        StreamSummaryQuickPollPostRenderer renderer = rendererFactory.createStreamSummaryQuickPollPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void renderAsTimerPost(ViewGroup parent, Post post) {
+        StreamSummaryTimerPostRenderer renderer = rendererFactory.createStreamSummaryTimerPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void renderAsGoResearchPost(ViewGroup parent, Post post) {
+        StreamSummaryGoResearchPostRenderer renderer = rendererFactory.createStreamSummaryGoResearchPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void addOnResizeListener(View view) {
+        view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (top == oldTop && bottom < oldBottom) {
+                    ListView listView = ((ListView) view.getParent());
+                    listView.smoothScrollToPosition(listView.getPositionForView(view));
+                }
+            }
+        });
+    }
+
+    private void updatePostTimestamp(View view, Post post) {
+        String dateString = DateFormats.formatPastDateToDefaultStyle(post.getCreatedOn());
+        ((TextView) view.findViewById(R.id.notebook_post_timestamp)).setText(dateString);
+    }
+
+    protected void resetView(View view) {
+        // Reset the Post Title
+        TextView title = (TextView) view.findViewById(R.id.notebook_post_title);
+        title.setText(null);
+        title.setCompoundDrawables(null, null, null, null);
+        title.setMovementMethod(null);
+
+        view.setBackgroundDrawable(null);
+
+        // Reset/Hide Post Content view
+        ViewGroup postContent = (ViewGroup) view.findViewById(R.id.notebook_post_content);
+        postContent.removeAllViews();
+        postContent.setVisibility(View.VISIBLE);
+
+        //Reset Icon
+        ImageView iconView = (ImageView) view.findViewById(R.id.notebook_post_icon);
+        iconView.setImageDrawable(null);
+    }
+
+    private void renderAsSpotCheckPost(ViewGroup parent, Post post) {
+        StreamSummarySpotCheckPostRenderer renderer = rendererFactory.createStreamSummarySpotCheckPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void renderAsShortAnswerPost(ViewGroup parent, Post post) {
+        StreamSummaryShortAnswerPostRenderer shortAnswerPostRenderer = rendererFactory.createStreamSummaryShortAnswerPostRenderer(post);
+        shortAnswerPostRenderer.renderView(parent);
+    }
+
+    private void renderAsCallOnPost(ViewGroup parent, Post post) {
+        StreamSummaryCallOnPostRenderer renderer = rendererFactory.createStreamSummaryCallOnPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void renderAsCountOffActionPost(ViewGroup parent, Post post) {
+        StreamSummaryCountOffActionPostRenderer renderer = rendererFactory.createStreamSummaryCountOffPostRenderer(post);
+        renderer.renderView(parent);
+    }
+
+    private void renderAsSharePost(ViewGroup parent, Post post) {
+        LearningElementVisitor<View> renderer = rendererFactory.createStreamSummarySharedLearningElementRenderer(post);
+        renderer.get(post.getFirstLearningElement(), parent);
+    }
+
+    private void renderAsDiscussionPost(ViewGroup parent, Post post) {
+        StreamSummaryDiscussionPostRenderer renderer = rendererFactory.createStreamSummaryDiscussionPostRenderer(post, stateHolder, activity);
+        renderer.renderView(parent);
+    }
+
+    private void showDateDivider(View view, Date postDate) {
+        TextView postDivider = (TextView) view.findViewById(R.id.post_divider);
+
+        if(postCreatedToday(postDate)) {
+            postDivider.setText(R.string.today);
+        } else {
+            postDivider.setText(DateFormat.format("MMMM dd, yyyy", postDate));
+        }
+
+        postDivider.setVisibility(View.VISIBLE);
+    }
+
+    private void hideDateDivider(View view) {
+        View postDivider = view.findViewById(R.id.post_divider);
+        postDivider.setVisibility(View.GONE);
+    }
+
+    private boolean postCreatedToday(Date postDate) {
+        Calendar calendar = Calendar.getInstance();
+
+        Date today = stripTimeFromDate(calendar).getTime();
+
+        calendar.setTime(postDate);
+
+        return today.compareTo(stripTimeFromDate(calendar).getTime()) == 0;
+    }
+
+    private Calendar stripTimeFromDate(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

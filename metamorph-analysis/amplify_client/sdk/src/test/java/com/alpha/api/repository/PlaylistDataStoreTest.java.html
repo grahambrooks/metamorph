@@ -1,0 +1,164 @@
+<html><head><title>PlaylistDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/PlaylistDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserRole;
+import com.alpha.lock.GlobalInformationLock;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.PLAYLISTS;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.content;
+import static com.alpha.api.repository.sqlite.TableColumn.user_id;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class PlaylistDataStoreTest {
+
+    private static final Long USER_ID = 1L;
+    private static final int PLAYLIST_CONTENT_INDEX = 1;
+    private static final Long PLAYLIST_ID = 1L;
+    private static final String PLAYLIST_NAME = "Playlist";
+
+    @Mock
+    private Context context;
+
+    @Mock
+    private ContentResolver contentResolver;
+
+    @Mock
+    private Cursor cursor;
+
+    @Mock
+    private LearningElementsDataStore learningElementsDataStore;
+
+    private PlaylistDataStore playlistDataStore;
+    private Playlist playlist;
+    private User user;
+    @Mock
+    private GlobalInformationLock globalInformationLock;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        playlistDataStore = new PlaylistDataStore(context, learningElementsDataStore);
+
+        user = new User(USER_ID, "Bob", UserRole.TEACHER, globalInformationLock);
+        playlist = new Playlist(PLAYLIST_ID, PLAYLIST_NAME, user, null);
+
+        given(context.getContentResolver()).willReturn(contentResolver);
+
+        given(contentResolver.query(PLAYLISTS.uri(), PLAYLISTS.allColumnNames(),
+                user_id.equalTo(), new String[]{USER_ID.toString()}, null)).willReturn(cursor);
+
+        given(cursor.getColumnIndex(content.name())).willReturn(PLAYLIST_CONTENT_INDEX);
+        given(cursor.getString(PLAYLIST_CONTENT_INDEX)).willReturn(playlist.asJson());
+        given(cursor.moveToNext()).willReturn(true).willReturn(false);
+    }
+
+    @Test
+    public void shouldReturnPlaylistsForUser() {
+        List<Playlist> playlists = playlistDataStore.getPlaylistFor(user);
+
+        assertThat(playlists.size(), is(1));
+
+        Playlist actualPlaylist = playlists.get(0);
+
+        assertThat(playlist.getId(), is(actualPlaylist.getId()));
+    }
+
+    @Test
+    public void shouldCloseCursor() {
+        playlistDataStore.getPlaylistFor(user);
+
+        verify(cursor).close();
+    }
+
+    @Test
+    public void shouldUpdatePlaylistIfItExists() {
+        Playlist playlist = new Playlist(PLAYLIST_ID, PLAYLIST_NAME, user, null);
+
+        playlistDataStore.save(newArrayList(playlist), user);
+
+        verify(contentResolver).update(eq(Table.PLAYLISTS.uri()), (ContentValues) anyObject(),
+                eq(_id.equalTo()), eq(new String[]{PLAYLIST_ID.toString()}));
+    }
+
+    @Test
+    public void shouldInsertPlaylistIfItDoesntExists() {
+        Playlist playlist = new Playlist(2L, "Another Playlist", user, null);
+
+        playlistDataStore.save(newArrayList(playlist), user);
+
+        verify(contentResolver).insert(eq(Table.PLAYLISTS.uri()), (ContentValues) anyObject());
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

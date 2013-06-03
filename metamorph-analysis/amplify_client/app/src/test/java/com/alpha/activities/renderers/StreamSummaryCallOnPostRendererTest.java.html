@@ -1,0 +1,127 @@
+<html><head><title>StreamSummaryCallOnPostRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryCallOnPostRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummaryCallOnPostRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamSummaryCallOnPostRendererTest {
+    private static final String AUTHOR_NAME = "Author";
+    private static final String DESCRIPTION = "called on a student";
+
+    @Mock
+    private Post actionPost;
+    @Mock
+    private PostAuthor author;
+    @Mock
+    private UserService userService;
+
+    private StreamSummaryCallOnPostRenderer callOnPostRenderer;
+    private ViewGroup parentView;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        given(author.getName()).willReturn(AUTHOR_NAME);
+        given(actionPost.getAuthor()).willReturn(author);
+        given(actionPost.getPostType()).willReturn(PostType.QUICKPOLL);
+        given(actionPost.getDescription()).willReturn(DESCRIPTION);
+
+        callOnPostRenderer = new StreamSummaryCallOnPostRenderer(userService, actionPost);
+        parentView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionInConstructorIfPostTypeNotAction() {
+        when(actionPost.getPostType()).thenReturn(PostType.SHARE);
+
+        new StreamSummaryCallOnPostRenderer(userService, actionPost);
+    }
+
+    @Test
+    public void shouldSetContentToActionPostAuthorNameAndDescription() {
+        View view = callOnPostRenderer.renderView(parentView);
+
+        final String expected = AUTHOR_NAME + " " + DESCRIPTION;
+        TextView actionText = (TextView) view.findViewById(R.id.notebook_post_title);
+        assertThat(actionText.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldAlwaysHideThePostContentView() {
+        View postContent = parentView.findViewById(R.id.notebook_post_content);
+        postContent.setVisibility(View.VISIBLE);
+
+        callOnPostRenderer.renderView(parentView);
+
+        assertThat(postContent.getVisibility(), is(View.GONE));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

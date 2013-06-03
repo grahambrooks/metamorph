@@ -1,0 +1,110 @@
+<html><head><title>AppInfoAdapterTestBase.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AppInfoAdapterTestBase.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/AppInfoAdapterTestBase.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.res.RobolectricPackageManager;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import roboguice.activity.RoboActivity;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+public abstract class AppInfoAdapterTestBase {
+    protected SundaeAppInfo sundaeAppInfo;
+    @Mock
+    protected ResolveInfo resolveInfo;
+    @Mock
+    protected Drawable icon;
+    protected RoboActivity context;
+
+    protected AppInfoResolvingAdapter appDrawerAdapter;
+
+    public void setUpMocks() {
+        MockitoAnnotations.initMocks(this);
+        context = new RoboActivity();
+        sundaeAppInfo = new SundaeAppInfo("name", "package", false, "My eReader", icon);
+
+        RobolectricPackageManager packageManager = (RobolectricPackageManager) context.getPackageManager();
+        Intent i = packageManager.getLaunchIntentForPackage(sundaeAppInfo.getAppPackage());
+        packageManager.addResolveInfoForIntent(i, resolveInfo);
+    }
+
+    @Test
+    public void shouldCreateNewViewIfNoneProvided() {
+        appDrawerAdapter.add(sundaeAppInfo);
+        View view = appDrawerAdapter.getView(0, null, null);
+        assertThat(view, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldReuseViewIfProvided() {
+        int app_drawer_icon = getAppInfoViewId();
+        View existingView = LayoutInflater.from(Robolectric.application).inflate(app_drawer_icon, null);
+        appDrawerAdapter.add(sundaeAppInfo);
+        View view = appDrawerAdapter.getView(0, existingView, null);
+        assertThat(view, is(existingView));
+    }
+
+    protected abstract int getAppInfoViewId();
+
+    protected abstract int getTextViewId();
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

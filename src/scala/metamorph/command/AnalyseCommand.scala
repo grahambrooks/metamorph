@@ -24,6 +24,8 @@ class AnalyseCommand extends MorphCommand {
 
     writeReports(config, analysedSource, config.outputPath)
 
+
+
   }
 
   def sourceProvider(config: MorphConfig, console: ConsoleWriter): SourceProvider = {

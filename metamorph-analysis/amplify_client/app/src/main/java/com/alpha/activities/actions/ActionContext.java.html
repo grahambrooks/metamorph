@@ -1,0 +1,145 @@
+<html><head><title>ActionContext.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ActionContext.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/actions/amplify_client/ActionContext.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actions;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import roboguice.util.SafeAsyncTask;
+
+public abstract class ActionContext {
+
+    public static final ActionContext NO_ACTION_CONTEXT = new ActionContext(null, null, null, null) {
+        @Override
+        public String getActionName() {
+            return "";
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public SafeAsyncTask getTaskToCompleteAction() {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void relaunch() {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public Class<? extends Activity> activityType() {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+
+    };
+    protected final Context context;
+    protected final SessionTaskFactory sessionTaskFactory;
+    protected final SectionTaskFactory sectionTaskFactory;
+    protected final UserService userService;
+
+    protected ActionContext(Context context,
+                            SessionTaskFactory sessionTaskFactory,
+                            SectionTaskFactory sectionTaskFactory,
+                            UserService userService) {
+        this.context = context;
+        this.sessionTaskFactory = sessionTaskFactory;
+        this.sectionTaskFactory = sectionTaskFactory;
+        this.userService = userService;
+    }
+
+    public abstract String getActionName();
+
+    public abstract SafeAsyncTask getTaskToCompleteAction();
+
+    public void relaunch() {
+        Intent intent = new Intent(context, activityType());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public final boolean isOfType(Class<? extends ActionContext> type) {
+        return this.getClass().equals(type);
+    }
+
+    public abstract Class<? extends Activity> activityType();
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

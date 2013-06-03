@@ -1,0 +1,159 @@
+<html><head><title>SectionsDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionsDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/SectionsDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import com.alpha.api.services.Section;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.common.base.Function;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.SECTIONS;
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+import static com.google.common.collect.Collections2.transform;
+import static com.google.common.collect.Lists.newArrayList;
+
+@Singleton
+public class SectionsDataStore {
+
+    public static final Function<Section, ContentValues> AS_CONTENT_VALUES = new Function<Section, ContentValues>() {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public ContentValues apply(Section input) {
+            return input.asValues();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    };
+    private final CoursesDataStore coursesDataStore;
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final Context context;
+
+    @Inject
+    public SectionsDataStore(Context context, CoursesDataStore coursesDataStore) {
+        this.context = context;
+        this.coursesDataStore = coursesDataStore;
+    }
+
+    public void saveAll(Collection<Section> sections) {
+        LOGGER.debug("Saving sections " + sections);
+        Uri uri = SECTIONS.uri();
+        context.getContentResolver().bulkInsert(uri, asContentValues(sections));
+    }
+
+    public int deleteAll() {
+        int rowsDeleted = context.getContentResolver().delete(SECTIONS.uri(), "1=1", null);
+        LOGGER.debug("Number of sections deleted : " + rowsDeleted);
+        return rowsDeleted;
+    }
+
+    private ContentValues[] asContentValues(Collection<Section> sections) {
+        Collection<ContentValues> allContentValues = transform(sections, AS_CONTENT_VALUES);
+        return allContentValues.toArray(new ContentValues[allContentValues.size()]);
+    }
+
+    public List<Section> getSections() {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(SECTIONS.uri(), SECTIONS.allColumnNames(), null, null, null);
+            return asSections(cursor);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            IOUtils.closeSafely(cursor);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+    private List<Section> asSections(Cursor cursor) {
+        //can we use the enum ordinal?
+        int courseIdColumn = cursor.getColumnIndex(course_id.name());
+        int idColumn = cursor.getColumnIndex(_id.name());
+        int nameColumn = cursor.getColumnIndex(name.name());
+        int groupEmailColumn = cursor.getColumnIndex(group_email.name());
+
+        List<Section> sections = newArrayList();
+        while (cursor.moveToNext()) {
+            final Section section = new Section(
+                    coursesDataStore.getCourse(cursor.getLong(courseIdColumn)),
+                    cursor.getLong(idColumn),
+                    cursor.getString(nameColumn),
+                    cursor.getString(groupEmailColumn));
+            sections.add(section);
+        }
+        return sections;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<html><head><title>HandRaisingTeacherActionProviderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HandRaisingTeacherActionProviderTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/actionproviders/amplify_client/HandRaisingTeacherActionProviderTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">19</span>
+    <progress max="100" value="19"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionproviders;
+
+import android.content.Intent;
+import android.view.View;
+import com.alpha.activities.MonitoringActivity;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.SessionStartEvent;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class HandRaisingTeacherActionProviderTest {
+
+    private HandRaisingTeacherActionProvider handRaisingTeacherActionProvider;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private UserService userService;
+    @Mock
+    private Section section;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        ActivityTestInjector<HandRaisingTeacherActionProvider> testInjector = new ActivityTestInjector<HandRaisingTeacherActionProvider>(this, HandRaisingTeacherActionProvider.class);
+        testInjector.configureTestSubject();
+
+        given(userService.getCurrentUserSection()).willReturn(section);
+
+        handRaisingTeacherActionProvider = new HandRaisingTeacherActionProvider(Robolectric.application);
+
+    }
+
+    private View createViewWithSectionHandsRaised(int count) {
+        when(section.countRaisedHands()).thenReturn(count);
+        return handRaisingTeacherActionProvider.onCreateActionView();
+    }
+
+    private View getHandIcon(View view) {
+        return view.findViewById(R.id.hand_raised_notifier);
+    }
+
+
+
+    @Test
+    public void shouldStartMonitoringActivityOnClick() {
+        getHandIcon(createViewWithSectionHandsRaised(1)).performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(MonitoringActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldRegisterEventBusWhenCreatingObject() {
+        handRaisingTeacherActionProvider = new HandRaisingTeacherActionProvider(Robolectric.application);
+
+        verify(eventBus).register(handRaisingTeacherActionProvider);
+    }
+
+    @Test
+    public void shouldRegisterEventBusOnResume() {
+        getHandIcon(createViewWithSectionHandsRaised(1)).performClick();
+
+        handRaisingTeacherActionProvider.onResume();
+
+        verify(eventBus, times(2)).register(handRaisingTeacherActionProvider);
+    }
+
+    @Test
+    public void shouldUnregisterEventBusOnPause() {
+        getHandIcon(createViewWithSectionHandsRaised(1)).performClick();
+
+        handRaisingTeacherActionProvider.onPause();
+
+        verify(eventBus).unregister(handRaisingTeacherActionProvider);
+    }
+
+    @Test
+    public void shouldCreateHandView() {
+        assertThat(getHandIcon(createViewWithSectionHandsRaised(1)) != null, is(true));
+    }
+
+    @Test
+    public void shouldShowIconWhenStudentRaisesHand() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(1));
+
+        handRaisingTeacherActionProvider.onHandRaiseStatusChanged(null);
+
+        assertThat(handIcon.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHideIconWhenAllStudentLowerTheirHands() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+
+        handRaisingTeacherActionProvider.onHandRaiseStatusChanged(null);
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldHideIconAsDefault() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldHideHandWhenLastStudentWithRaisedHandLeavesRoom() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+
+        handRaisingTeacherActionProvider.onParticipantChange(null);
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldStillShowHandWhenStudentWithRaisedHandLeavesButAnotherHandIsStillRaised() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(1));
+        handRaisingTeacherActionProvider.onParticipantChange(null);
+
+        assertThat(handIcon.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHideHandWhenSessionIsEnded() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+        handIcon.setVisibility(View.VISIBLE);
+
+        handRaisingTeacherActionProvider.onSessionEnded(null);
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldShowHandWhenRejoiningSessionWithSomeoneAlreadyRaisedHand() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(1));
+        handIcon.setVisibility(View.GONE);
+
+        handRaisingTeacherActionProvider.onSessionStarted(SessionStartEvent.success());
+
+        assertThat(handIcon.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldShowHandWhenRejoiningSessionWithNoHandRaised() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+        handIcon.setVisibility(View.GONE);
+
+        handRaisingTeacherActionProvider.onSessionStarted(SessionStartEvent.success());
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldHideHandWhenConnectionDropped() {
+        View handIcon = getHandIcon(createViewWithSectionHandsRaised(0));
+        handIcon.setVisibility(View.VISIBLE);
+
+        handRaisingTeacherActionProvider.onSessionConnectionDropped(null);
+
+        assertThat(handIcon.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldUpdateTheHandRaiseStatusWhenUserInformationIsRefreshed(){
+        getHandIcon(createViewWithSectionHandsRaised(0));
+        reset(section);
+        handRaisingTeacherActionProvider.onUserInformationRefreshed(new UserInformationRefreshedEvent(false));
+        verify(section).countRaisedHands();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

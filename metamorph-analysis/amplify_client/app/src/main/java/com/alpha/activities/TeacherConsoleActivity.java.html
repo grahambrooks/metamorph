@@ -1,0 +1,319 @@
+<html><head><title>TeacherConsoleActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/TeacherConsoleActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">28</span>
+    <progress max="100" value="28"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import com.alpha.activities.actionbar.TeacherActionBarMiddleContentConfiguration;
+import com.alpha.api.repository.ParticipantDataStore;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.events.DeleteCommentEvent;
+import com.alpha.api.services.events.DeleteCommentFailureEvent;
+import com.alpha.api.services.events.EndSessionFailureEvent;
+import com.alpha.api.services.events.SessionStartEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.featureToggle.MyLibraryFeature;
+import com.alpha.logging.LogUtils;
+import com.alpha.widgets.CalendarWidget;
+import com.alpha.widgets.CalendarWidget.CalendarViewListener;
+import com.alpha.widgets.GestureViewFlipper;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectFragment;
+import roboguice.inject.InjectView;
+
+import static java.lang.String.format;
+
+public class TeacherConsoleActivity extends BaseNotebookActivity<Teacher> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    public static final String LAUNCH_EVENT_KEY = "launch teacher notebook";
+
+    @InjectView(R.id.teacher_console_view_flipper)
+    private GestureViewFlipper viewFlipper;
+
+    @InjectView(R.id.calendar_container)
+    private View calendarContainer;
+
+    @InjectView(R.id.my_library_button)
+    private View myLibraryButton;
+
+    @InjectView(R.id.discussion_button)
+    private View discussionButton;
+
+    @InjectFragment(R.id.new_stream_fragment)
+    private NotebookStreamFragment streamFragment;
+
+    @Inject
+    private ParticipantDataStore participantDataStore;
+
+    @Inject
+    private TeacherConsoleAction teacherConsoleAction;
+
+    @Inject
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private TeacherActionBarMiddleContentConfiguration configuration;
+
+    @Inject
+    private MyLibraryFeature myLibraryFeature;
+
+
+
+    @VisibleForTesting
+    protected final Listeners listeners = new Listeners();
+
+    private CalendarWidget calendarWidget;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.teacher_console_layout);
+        initCalendarViewsAndListeners();
+        loadParticipantsIntoSection();
+        setUpDiscussionButton();
+        setUpMyLibraryAppButton();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analyticsAgent.endTimedEvent(LAUNCH_EVENT_KEY);
+        eventBus.register(listeners);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        eventBus.unregister(listeners);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @VisibleForTesting
+    protected CalendarWidget getCalendarWidget() {
+        return calendarWidget;
+    }
+
+    private void initCalendarViewsAndListeners() {
+        calendarWidget = new CalendarWidget(this, calendarContainer, new TeacherCalendarViewListener());
+
+        View calendarButton = findViewById(R.id.calendar_button);
+        calendarButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleViewInViewFlipper();
+            }
+        });
+    }
+
+    private void setViewFlipperById(int viewId) {
+        final int oldDisplayedChild = viewFlipper.getDisplayedChild();
+        int newDisplayedChild = oldDisplayedChild;
+
+        // Determine the index of the Calendar and set that as the displayed child
+        for (int i = 0; i < viewFlipper.getChildCount(); i++) {
+            if (viewFlipper.getChildAt(i).getId() == viewId) {
+                newDisplayedChild = i;
+                break;
+            }
+        }
+
+        // Don't update view flipper if we're already displaying the appropriate view</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (newDisplayedChild == viewFlipper.getDisplayedChild()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        if (newDisplayedChild < oldDisplayedChild) {
+            viewFlipper.setInAnimation(TeacherConsoleActivity.this, R.anim.in_from_left);
+            viewFlipper.setOutAnimation(TeacherConsoleActivity.this, R.anim.out_to_right);
+        } else {
+            viewFlipper.setInAnimation(TeacherConsoleActivity.this, R.anim.in_from_right);
+            viewFlipper.setOutAnimation(TeacherConsoleActivity.this, R.anim.out_to_left);
+        }
+        viewFlipper.setDisplayedChild(newDisplayedChild);
+    }
+
+    private void toggleViewInViewFlipper() {
+        int currentViewId = viewFlipper.getCurrentView().getId();
+
+        int viewToDisplay = currentViewId == R.id.calendar_container
+                ? R.id.teacher_console_controls_and_activities_container
+                : R.id.calendar_container;
+
+        if (viewToDisplay == R.id.calendar_container) {
+            calendarWidget.resetDatesToNow();
+        } else {
+            streamFragment.resetPostFilter();
+        }
+        setViewFlipperById(viewToDisplay);
+    }
+
+    private void loadParticipantsIntoSection() {
+        Section section = userService.getUser().getCurrentSection();
+        LOG.info("Current User Section participants loading from local db ..");
+        if (section.hasNoParticipants()) {
+            section.loadParticipantsFromStudents(participantDataStore.getAllParticipantsFor(section));
+        }
+    }
+
+    private void setUpDiscussionButton() {
+        discussionButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(TeacherConsoleActivity.this, SharePostActivity.class));
+            }
+        });
+    }
+
+    private void setUpMyLibraryAppButton() {
+        myLibraryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(TeacherConsoleActivity.this, MyLibraryActivity.class));
+            }
+        });
+        myLibraryFeature.setMyLibraryButtonEnabled(myLibraryButton);
+    }
+
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+    public class Listeners {
+
+        @Subscribe
+        public void onSessionEnded(TeacherSessionEndedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if(event.isTeacherInitiated() || event.isConnectionLost()) {
+                teacherConsoleAction.finishInClassActivity(true);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+
+        @Subscribe
+        public void onSessionEndFailed(EndSessionFailureEvent event) {
+            toaster.errorToast(event.getReasonForFailure(), R.string.end_session_failure);
+        }
+
+        @Subscribe
+        public void sessionStarted(SessionStartEvent event) {
+            LOG.info("Received Session start event");
+            if (!event.succeeded()) {
+                toaster.errorToast(event.reason);
+                LOG.info("Not succeded with reason {}", event.reason);
+            }
+        }
+
+        @Subscribe
+        public void onDeleteCommentEvent(DeleteCommentEvent event) {
+            toaster.makeToast(format(getString(R.string.comment_deleted), event.getCommentAuthor()));
+        }
+
+        @Subscribe
+        public void onDeleteCommentFailureEvent(DeleteCommentFailureEvent event) {
+            toaster.errorToast(event.getReason(), R.string.delete_comment_failure);
+        }
+    }
+
+    private class TeacherCalendarViewListener implements CalendarViewListener {
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onDateChange(long newSelectedTime, long oldSelectedTime) {
+            streamFragment.setPostFilterDate(newSelectedTime);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public void onClosePressed() {
+            streamFragment.resetPostFilter();
+            setViewFlipperById(R.id.teacher_console_controls_and_activities_container);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

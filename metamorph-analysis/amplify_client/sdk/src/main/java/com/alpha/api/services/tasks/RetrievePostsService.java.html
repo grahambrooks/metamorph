@@ -1,0 +1,183 @@
+<html><head><title>RetrievePostsService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RetrievePostsService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/tasks/amplify_client/RetrievePostsService.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.tasks;
+
+import android.content.Intent;
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.utilities.DateTimeFormatter;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.service.RoboIntentService;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.alpha.api.authentication.APIRequestBuilder.HttpRequest.GET;
+import static com.alpha.api.http.QueryParameters.LIMIT;
+import static com.alpha.api.http.QueryParameters.SINCE;
+import static com.alpha.api.http.QueryParameters.USER_ID;
+
+public class RetrievePostsService extends RoboIntentService {
+
+    private static final String POST_REQUEST_LIMIT = "100";
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final TimestampChangeDetector changeDetector = new TimestampChangeDetector();
+    @Inject
+    private UserService userService;
+    @Inject
+    private APIRequestBuilder apiRequestBuilder;
+    @Inject
+    private DateTimeFormatter dateTimeFormatter;
+    @Inject
+    private Environment environment;
+    @Inject
+    private WebServices webServices;
+    @Inject
+    private PostsDataStore postsDataStore;
+
+    public RetrievePostsService() {
+        super("RetrievePostsService");
+    }
+
+    protected RetrievePostsService(UserService userService, APIRequestBuilder requestBuilder,
+                                   DateTimeFormatter dateTimeFormatter, Environment environment,
+                                   WebServices webServices, PostsDataStore dataStore) {
+        this();
+        this.userService = userService;
+        this.apiRequestBuilder = requestBuilder;
+        this.dateTimeFormatter = dateTimeFormatter;
+        this.environment = environment;
+        this.webServices = webServices;
+        this.postsDataStore = dataStore;
+    }
+
+    protected void retrievePosts() {
+        if (!userService.hasUserRegistered()) {
+            LOG.trace("RetrievePostsTasks called without registered user");
+            return;
+        }
+
+        boolean makingProgress = true;
+        changeDetector.reset();
+        while (makingProgress) {
+            Date timestamp = getMostRecentTimestampAndBuildRequest();
+
+            ApiRequest apiRequest = apiRequestBuilder.withUrl(environment.getPostsForUserURI(getCurrentUserId()), GET).build();
+
+            boolean hasPosts;
+            try {
+                hasPosts = makeRequestAndSaveResponse(apiRequest);
+            } catch (Exception e) {
+                LOG.error("Unexpected exception occurred in getPosts task ", e);
+                break;
+            }
+
+            makingProgress = hasPosts && changeDetector.isChanging(timestamp);
+            if (!makingProgress && hasPosts) {
+                LOG.error("Received posts, but still not making progress with timestamp {}", timestamp);
+            }
+        }
+    }
+
+    private boolean makeRequestAndSaveResponse(ApiRequest apiRequest) {
+        HttpClient.Response response = webServices.get(apiRequest);
+        List<Post> posts = response.getBodyAs(Post.LIST_TYPE);
+        LOG.info("Received {} posts from server", posts.size());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (posts.isEmpty()) {
+            return false;
+        } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            postsDataStore.saveAll(posts);
+            return true;
+        }
+    }
+
+    private Date getMostRecentTimestampAndBuildRequest() {
+        Date timestamp = postsDataStore.timestampOfMostRecentlyModifiedPost();
+        if(timestamp != null) {
+            String formattedTimestamp = dateTimeFormatter.formatDateInUtcWithMilliseconds(timestamp);
+            apiRequestBuilder.withQueryParameter(SINCE, formattedTimestamp);
+            LOG.trace("Retrieving posts since {}", formattedTimestamp);
+        }
+        apiRequestBuilder.withQueryParameter(LIMIT, POST_REQUEST_LIMIT);
+        apiRequestBuilder.withQueryParameter(USER_ID, getCurrentUserId().toString());
+
+        return timestamp;
+    }
+
+    private Long getCurrentUserId() {
+        return userService.getUser().getId();
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        LOG.info("Processing request to retrieve posts.");
+        retrievePosts();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

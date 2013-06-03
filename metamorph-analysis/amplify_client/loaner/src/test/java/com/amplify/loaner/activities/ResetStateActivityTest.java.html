@@ -1,0 +1,333 @@
+<html><head><title>ResetStateActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ResetStateActivityTest.java</h1>
+<p>Scanned path = loaner/src/test/java/com/amplify/loaner/activities/amplify_client/ResetStateActivityTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">23</span>
+    <progress max="100" value="23"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.loaner.activities;
+
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.amplify.loaner.R;
+import com.amplify.loaner.R.id;
+import com.amplify.loaner.activities.ResetStateActivity.ResetRequestResponse;
+import com.amplify.loaner.activities.failure.ResetFailure;
+import com.amplify.loaner.runner.ActivityTestInjector;
+import com.amplify.loaner.runner.LoanerAppTestRunner;
+import com.amplify.loaner.runner.shadow.LoanerShadowActivity;
+import com.amplify.loaner.services.RetrieveConfigurationTask;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowAlertDialog;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.text.StringContains.containsString;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(LoanerAppTestRunner.class)
+public class ResetStateActivityTest {
+
+    private Button resetButton;
+    private TextView descriptionText;
+    private TextView failuresText;
+    private LinearLayout elementsWrapper;
+    @Inject
+    private ResetStateActivity resetStateActivity;
+    @Mock
+    private LoanerTaskFactory loanerTaskFactory;
+    @Mock
+    private Intent intent;
+    @Mock
+    private Bundle bundle;
+    @Mock
+    private RetrieveConfigurationTask retrieveConfigTask;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        ActivityTestInjector<ResetStateActivity> activityTestInjector = ActivityTestInjector.newInjector(this, ResetStateActivity.class);
+        activityTestInjector.bindInstance(LoanerTaskFactory.class, loanerTaskFactory).
+                configureActivity();
+
+        given(loanerTaskFactory.createRetrieveConfigurationTask(resetStateActivity, resetStateActivity)).willReturn(retrieveConfigTask);
+
+        resetStateActivity.onCreate(null);
+
+        resetButton = (Button) resetStateActivity.findViewById(R.id.reset_button);
+        descriptionText = (TextView) resetStateActivity.findViewById(R.id.reset_description_text);
+        failuresText = (TextView) resetStateActivity.findViewById(id.reset_failures_text);
+        elementsWrapper = (LinearLayout) resetStateActivity.findViewById(id.elements_wrapper);
+
+    }
+
+    @Test
+    public void shouldShowConfirmationDialogWhenResetButtonIsClicked() {
+        resetButton.performClick();
+        ShadowAlertDialog confirmationDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+
+        assertThat(confirmationDialog.isShowing(), is(true));
+        assertThat(confirmationDialog.getView().getId(), is(R.id.reset_confirmation_layout));
+    }
+
+    @Test
+    public void shouldDismissConfirmationDialogWithoutSendingIntentWhenCancelClicked() {
+        resetButton.performClick();
+        ShadowAlertDialog confirmationDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        confirmationDialog.clickOn(R.id.cancel_dialog_button);
+        assertThat(confirmationDialog.hasBeenDismissed(), is(true));
+        List<Intent> broadcastIntents = getShadowActivity().getBroadcastIntents();
+        assertThat(broadcastIntents.size(), is(0));
+    }
+
+    @Test
+    public void shouldDismissConfirmationDialogAfterConfirmingReset() {
+        resetButton.performClick();
+        ShadowAlertDialog confirmationDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        confirmationDialog.clickOn(id.reset_dialog_button);
+        assertThat(confirmationDialog.isShowing(), is(false));
+    }
+
+    @Test
+    public void shouldStartAnimationWithListenerAfterPressingResetButton() {
+        resetButton.performClick();
+        ShadowAlertDialog confirmationDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        confirmationDialog.clickOn(id.reset_dialog_button);
+        assertThat(shadowOf(elementsWrapper.getAnimation()).getAnimationListener(), is(ResetStateActivity.class));
+    }
+
+    @Test
+    public void shouldShowProgressDialogWhenAnimationEnds() {
+        resetStateActivity.onAnimationEnd(null);
+        ShadowAlertDialog progressDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        assertThat(progressDialog.isShowing(), is(true));
+        assertThat(progressDialog.getView().getId(), is(R.id.reset_in_progress_layout));
+    }
+
+    private Intent buildAdamDisassociationIntent() {
+        return new Intent().setAction(ResetStateActivity.MDM_ACTION).setComponent(ResetStateActivity.MDM_COMPONENT);
+    }
+
+
+    @Test
+    public void shouldSendNotebookResetBroadcastWhenButtonAnimationEnds() {
+        resetStateActivity.onAnimationEnd(null);
+
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+
+        List<Intent> broadcastIntents = getShadowActivity().getBroadcastIntents();
+
+        assertThat(broadcastIntents.size(), is(1));
+        assertThat(broadcastIntents.get(0).getAction(), is(ResetStateActivity.RESET_STATE_INTENT));
+    }
+
+    @Test
+    public void shouldSetTheInitialResultCodeToInitialResultWhenSendingBroadcast() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+        assertThat(getShadowActivity().getInitalCode(), is(ResetStateActivity.INITIAL_RESULT));
+    }
+
+    @Test
+    public void shouldSetSpecifyAResponseReceiverToProcessResponseWhenSendingBroadcast() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+        assertThat(getResponseReceiver(), is(ResetRequestResponse.class));
+    }
+
+    @Test
+    public void shouldDismissProgressDialogAfterReceivingResponse() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+
+        ShadowAlertDialog progressDialog = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        assertThat(progressDialog.isShowing(), is(false));
+    }
+
+    @Test
+    public void shouldDisplayErrorMessageIfBundleIsNullInResponseFromNotebooksReset() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        assertThat(descriptionText.getText(), is(Robolectric.application.getText(R.string.unknown_reset_error)));
+    }
+
+    @Test
+    public void shouldNotLaunchAmplifyAppIfBundleIsNullInResponseFromNotebooksReset() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        shadowOf(resetStateActivity).getNextStartedActivity();
+        Intent intent = shadowOf(resetStateActivity).getNextStartedActivity();
+        assertNull(intent);
+    }
+
+    @Test
+    public void shouldNotLaunchAmplifyIfFailuresSpecifiedInResponseFromNotebooksReset() {
+        when(bundle.getBoolean(ResetStateActivity.RESULT_KEY)).thenReturn(true);
+        when(bundle.getStringArrayList(ResetStateActivity.FAILURES_KEY)).thenReturn(Lists.newArrayList(ResetFailure.DELETING_DATA.name(),
+                ResetFailure.SHUTTING_DOWN_NETWORK_CONNECTION.name()));
+
+        resetStateActivity.onAnimationEnd(null);
+        resetStateActivity.onActivityResult(ResetStateActivity.ADAM_ACTIVITY_REQUEST_CODE, Activity.RESULT_OK, null);
+
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        shadowOf(resetStateActivity).getNextStartedActivity();
+        Intent intent = shadowOf(resetStateActivity).getNextStartedActivity();
+        assertThat(intent, is((Intent) null));
+    }
+
+    @Test
+    public void shouldLaunchAmplifyAppIfAdamDisassociationAndNotebooksResetIsSuccessful() {
+        when(bundle.getBoolean(ResetStateActivity.RESULT_KEY)).thenReturn(true);
+
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+
+        getResponseReceiver().setResultExtras(bundle);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+
+        shadowOf(resetStateActivity).getNextStartedActivity();
+        Intent intent = shadowOf(resetStateActivity).getNextStartedActivity();
+        assertThat(intent.getAction(), is(Intent.ACTION_MAIN));
+        assertThat(intent.getCategories().contains(Intent.CATEGORY_LAUNCHER), is(true));
+        assertThat(intent.getComponent().getPackageName(), is(ResetStateActivity.AMPLIFY_PACKAGE));
+        assertThat(intent.getComponent().getClassName(), is(ResetStateActivity.AMPLIFY_LAUNCHER_ACTIVITY));
+    }
+
+    @Test
+    public void shouldFinishOffItselfAfterSuccessOfReset() {
+        when(bundle.getBoolean(ResetStateActivity.RESULT_KEY)).thenReturn(true);
+
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_OK, null);
+
+        getResponseReceiver().setResultExtras(bundle);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+
+        assertThat(shadowOf(resetStateActivity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldNotLaunchAmplifyAppIfAdamDisassociationFailed() {
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_CANCELED, null);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        shadowOf(resetStateActivity).getNextStartedActivity();
+        Intent intent = shadowOf(resetStateActivity).getNextStartedActivity();
+        assertNull(intent);
+    }
+
+    @Test
+    public void shouldDisplayErrorMessageIfAdamDisassociationFailedAndAdamIsRequired() {
+        Bundle properties = new Bundle();
+        properties.putString(ResetStateActivity.REQUIRE_ADAM_PROPERTY, "true");
+        resetStateActivity.onPropertiesRetrieved(properties);
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_CANCELED, null);
+        getResponseReceiver().setResultExtras(bundle);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        assertThat(failuresText.getText().toString(), containsString(Robolectric.application.getText(R.string.failed_to_disassociate_with_adam).toString()));
+    }
+
+    @Test
+    public void shouldNotDisplayErrorMessageIfAdamDisassociationFailedAndAdamIsNotRequired() {
+        Bundle properties = new Bundle();
+        properties.putString(ResetStateActivity.REQUIRE_ADAM_PROPERTY, "false");
+        resetStateActivity.onPropertiesRetrieved(properties);
+        resetStateActivity.onAnimationEnd(null);
+        getShadowActivity().receiveResult(buildAdamDisassociationIntent(), Activity.RESULT_CANCELED, null);
+        getResponseReceiver().setResultExtras(bundle);
+        getResponseReceiver().onReceive(Robolectric.application, intent);
+        assertThat(failuresText.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldPreventDoubleClickingOnResetButton() {
+        resetStateActivity.resetClicked(null);
+        resetStateActivity.resetClicked(null);
+        assertThat(ShadowAlertDialog.getShownDialogs().size(), is(1));
+    }
+
+    @Test
+    public void shouldSaveAndRestoreAdamDisassociationStatusIfActivityIsGoingToBeKilled() {
+        resetStateActivity.adamDisassociationResult = true;
+        Bundle bundle = new Bundle();
+        resetStateActivity.onSaveInstanceState(bundle);
+        resetStateActivity.adamDisassociationResult = false;
+        resetStateActivity.onRestoreInstanceState(bundle);
+
+        assertThat(resetStateActivity.adamDisassociationResult, is(true));
+    }
+
+
+    private BroadcastReceiver getResponseReceiver() {
+        return getShadowActivity().getResponseReceiver();
+    }
+
+    private LoanerShadowActivity getShadowActivity() {
+        return (LoanerShadowActivity) shadowOf(resetStateActivity);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

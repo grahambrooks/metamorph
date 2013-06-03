@@ -1,0 +1,476 @@
+<html><head><title>XmppStudentSessionTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppStudentSessionTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/amplify_client/XmppStudentSessionTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">35</span>
+    <progress max="100" value="35"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import android.net.wifi.WifiInfo;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.SessionDoesNotExistException;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.messaging.xmpp.listeners.BasePacketListener;
+import com.alpha.api.messaging.xmpp.listeners.ConnectionCloseListener;
+import com.alpha.api.messaging.xmpp.listeners.ControlMessageListener;
+import com.alpha.api.messaging.xmpp.listeners.GoResearchMessageListener;
+import com.alpha.api.messaging.xmpp.listeners.ModeratorPresenceListener;
+import com.alpha.api.messaging.xmpp.listeners.RoomDestroyedListener;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.utilities.AmplifyException;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.RoomInfo;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.messaging.xmpp.XmppSession.Status.IN_PROGRESS;
+import static com.alpha.api.messaging.xmpp.XmppSession.Status.NOT_STARTED;
+import static org.hamcrest.Matchers.is;
+import static org.jivesoftware.smack.SmackConfiguration.getPacketReplyTimeout;
+import static org.jivesoftware.smack.packet.Presence.Mode;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+@SuppressWarnings("PMD.TooManyMethods")
+public class XmppStudentSessionTest {
+
+    public static final long SECTION_ID = 20L;
+    private XmppStudentSession studentSession;
+    @Mock
+    private Student student;
+    @Mock
+    private AmplifyXmppConnection xmppConnection;
+    @Mock
+    private MultiUserChat chat;
+    @Mock
+    private MultiUserChatAdapter chatAdapter;
+    @Mock
+    private RoomInfo roomInfo;
+    @Mock
+    private Section section;
+
+    private static final Long USER_ID = 99l;
+    private static final String LOGIN_ID = "login";
+    private static final String PASSWORD = "pass";
+    private static final String SESSION_NAME = "session";
+    @Mock
+    private UserService userService;
+    @Mock
+    private EventBus eventBus;
+
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+
+    @Before
+    public void setUp() throws XMPPException {
+        initMocks(this);
+
+        when(networkConnectivity.getWifiConnectionInfo()).thenReturn(mock(WifiInfo.class));
+
+        studentSession = new XmppStudentSession(xmppConnection, chatAdapter, userService, eventBus, networkConnectivity);
+        createRoom();
+        given(userService.session()).willReturn(classSession);
+        given(xmppConnection.isConnected()).willReturn(true);
+        given(chat.getModerators()).willThrow(new XMPPException());
+        createRoom();
+    }
+
+    @Test
+    public void shouldConnectToXmppServerWhenJoiningSession() throws Exception {
+        when(xmppConnection.isConnected()).thenReturn(false, true);
+        studentSession.joinSession(student, section);
+        verify(xmppConnection).connect();
+    }
+
+    @Test
+    public void shouldJoinRoomIfStudentIsNotModeratorOfRoom() {
+        when(xmppConnection.isConnected()).thenReturn(false, true);
+        studentSession.joinSession(student, section);
+        verify(xmppConnection, never()).disconnect();
+    }
+
+    @Test(expected = SessionDoesNotExistException.class)
+    public void shouldDisconnectAndThrowExceptionIfStudentBecameModerator() throws XMPPException {
+        when(xmppConnection.isConnected()).thenReturn(false, true);
+        reset(chat);
+        when(chat.getModerators()).thenReturn(null);
+
+        studentSession.joinSession(student, section);
+
+        verify(xmppConnection).disconnect();
+    }
+
+    @Test
+    public void shouldSendAvailabilityStatusWhenJoiningSession() throws Exception {
+        when(xmppConnection.isConnected()).thenReturn(false, true);
+        studentSession.joinSession(student, section);
+        verify(chat).changeAvailabilityStatus(any(String.class), same(Mode.available));
+    }
+
+    @Test
+    public void shouldNotConnectToXmppServerWhenJoiningSessionIfAlreadyConnected() throws Exception {
+        studentSession.joinSession(student, section);
+        verify(xmppConnection, never()).connect();
+    }
+
+    @Test
+    public void shouldNotAuthenticateWhenJoiningSessionIfAlreadyAuthenticated() throws Exception {
+        when(xmppConnection.isAuthenticated()).thenReturn(true);
+        studentSession.joinSession(student, section);
+        verify(xmppConnection, never()).login(LOGIN_ID, PASSWORD);
+    }
+
+    @Test
+    public void shouldAuthenticateWhenJoiningSession() throws Exception {
+        when(student.getXmppUsername()).thenReturn(LOGIN_ID);
+        when(student.getXmppPassword()).thenReturn(PASSWORD);
+        when(xmppConnection.isAuthenticated()).thenReturn(false);
+        studentSession.joinSession(student, section);
+        verify(xmppConnection).login(LOGIN_ID, PASSWORD);
+    }
+
+    @Test
+    public void shouldJoinTheSpecifiedSession() throws Exception {
+        stubChatAndJoinSession();
+        verify(chat).join(eq(USER_ID.toString()), anyString(), refEq(XmppUtils.noHistory()), eq((long) getPacketReplyTimeout()));
+    }
+
+    @Test(expected = AmplifyException.class)
+    public void shouldThrowMessagingBusExceptionIfConnectionFailsWhenJoiningSession() throws Exception {
+        when(xmppConnection.isConnected()).thenReturn(false);
+        doThrow(XMPPException.class).when(xmppConnection).connect();
+        studentSession.joinSession(student, section);
+    }
+
+    @Test(expected = AmplifyException.class)
+    public void shouldThrowMessagingBusExceptionIfAuthenticationFailsWhenJoiningSession() throws Exception {
+        doThrow(XMPPException.class).when(xmppConnection).login(anyString(), anyString());
+        studentSession.joinSession(student, section);
+    }
+
+    @Test
+    public void shouldCloseTheConnectionWhenJoiningSessionIfAuthenticationRaisesException() throws Exception {
+        doThrow(XMPPException.class).when(xmppConnection).login(anyString(), anyString());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        try {
+            studentSession.joinSession(student, section);
+        } catch (AmplifyException e) {
+            //Expected Exception
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(xmppConnection).disconnect();
+    }
+
+    @Test
+    public void shouldAddConnectionListenerAfterJoiningSession() throws XMPPException {
+        when(chatAdapter.getRoomInfo(anyString())).thenReturn(roomInfo);
+        when(chatAdapter.create(anyString())).thenReturn(chat);
+
+        studentSession.joinSession(student, section);
+
+        verify(xmppConnection).addConnectionListener(refEq(new ConnectionCloseListener(studentSession, userService, eventBus), "timer", "timedOut"));
+        verifyRegistrationOfAllListeners(xmppConnection);
+    }
+
+    @Test
+    public void shouldCloseConnectionIfExceptionIsThrownWhenJoiningSession() throws Exception {
+        when(chatAdapter.getRoomInfo(anyString())).thenReturn(roomInfo);
+        when(chatAdapter.create(anyString())).thenReturn(chat);
+        doThrow(XMPPException.class).when(chat).join(anyString(), anyString(), any(DiscussionHistory.class), anyLong());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        try {
+            studentSession.joinSession(student, section);
+        } catch (AmplifyException e) {
+            //Expected Exception
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(xmppConnection).disconnect();
+    }
+
+    @Test(expected = SessionDoesNotExistException.class)
+    public void shouldThrowExceptionIfTryingToJoinRoomWhichDoesNotExist() throws Exception {
+        when(chatAdapter.getRoomInfo(SESSION_NAME)).thenReturn(null);
+        studentSession.joinSession(student, section);
+    }
+
+    @Test
+    public void shouldLeaveTheXMPPChatSession() throws Exception {
+        studentSession.joinSession(student, section);
+        studentSession.onEndSession();
+        verify(chat).leave();
+    }
+
+    @Test(expected = AmplifyException.class)
+    public void shouldRaiseExceptionIfErrorOccursWhenLeavingSession() throws Exception {
+        studentSession.joinSession(student, section);
+        doThrow(Exception.class).when(chat).leave();
+        studentSession.endSession();
+    }
+
+    @Test
+    public void shouldAddListenersWhenJoiningSession() throws XMPPException {
+        when(chat.getRoom()).thenReturn(SESSION_NAME);
+        studentSession.joinSession(student, section);
+        verifyRegistrationOfAllListeners(xmppConnection);
+    }
+
+    @Test
+    public void shouldRemoveListenersWhenCleaningUp() throws XMPPException {
+        stubChatAndJoinSession();
+
+        studentSession.removeSessionListeners();
+        verifyCleanUpOfAllListeners(xmppConnection);
+    }
+
+    @Test
+    public void shouldUpdateStatusOfUser() throws XMPPException {
+        ParticipantPresenceModel presenceModel = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER, StudentLocation.SECTION, SESSION_NAME, null);
+        stubChatAndJoinSession();
+
+        studentSession.updateStudentPresenceStatus(presenceModel);
+
+        String newStatus = AmplifyJsonHelper.toJson(presenceModel);
+        verify(chat).changeAvailabilityStatus(newStatus, Mode.available);
+    }
+
+    @Test
+    public void shouldNotUpdateStatusOfUserIfNotConnected() throws XMPPException {
+        ParticipantPresenceModel presenceModel =
+                new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER, StudentLocation.SECTION, SESSION_NAME, null);
+        stubChatAndJoinSession();
+        when(xmppConnection.isConnected()).thenReturn(false);
+
+        studentSession.updateStudentPresenceStatus(presenceModel);
+
+        String newStatus = AmplifyJsonHelper.toJson(presenceModel);
+        verify(chat, never()).changeAvailabilityStatus(newStatus, Mode.available);
+    }
+
+    @Test
+    public void shouldEndSessionIfNotConnectedOnUpdateStatus() throws XMPPException {
+        ParticipantPresenceModel presenceModel =
+                new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER, StudentLocation.SECTION, SESSION_NAME, null);
+        stubChatAndJoinSession();
+        when(xmppConnection.isConnected()).thenReturn(false);
+
+        studentSession.updateStudentPresenceStatus(presenceModel);
+
+        verify(classSession).end();
+        verifyCleanUpOfAllListeners(xmppConnection);
+        assertThat(studentSession.chatStarted(), is(false));
+    }
+
+    @Test
+    public void shouldCloseXmppConnectionIfItIsConnected() {
+        studentSession.shutdown();
+        verify(xmppConnection).disconnect();
+    }
+
+    @Test
+    public void shouldNotCloseXmppConnectionIfItIsNotConnected() {
+        when(xmppConnection.isConnected()).thenReturn(false);
+        studentSession.shutdown();
+        verify(xmppConnection, never()).disconnect();
+    }
+
+
+    @Test
+    public void shouldRejoinIfConnectedPreviously() throws Exception {
+        stubChatAndJoinSession();
+
+        when(student.getSession()).thenReturn(classSession);
+        when(classSession.id()).thenReturn(SESSION_NAME);
+        when(student.getId()).thenReturn(2L);
+        studentSession.joinSession(student, section);
+
+        XmppSession.Status rejoined = studentSession.rejoin(student);
+
+        assertThat(rejoined, is(IN_PROGRESS));
+        verify(classSession).rejoin();
+        verify(chat, times(2)).join(eq("2"), anyString(), any(DiscussionHistory.class), anyLong());
+        verify(chat, never()).sendConfigurationForm(any(Form.class));
+    }
+
+    @Test
+    public void shouldTryToStartSessionInProvidedSection() {
+        studentSession.joinSession(student, section);
+
+        verify(classSession).tryStart(section);
+    }
+
+    @Test
+    public void shouldNotRejoinIfNotConnected() throws Exception {
+        XmppSession.Status rejoined = studentSession.rejoin(student);
+
+        assertThat(rejoined, is(NOT_STARTED));
+    }
+
+
+    @Test
+    public void shouldDisconnectXMPPWhenRejoinFailed() throws XMPPException {
+        stubChatAndJoinSession();
+
+        when(student.getSession()).thenReturn(classSession);
+        when(classSession.id()).thenReturn(SESSION_NAME);
+        when(chatAdapter.getRoomInfo(SESSION_NAME)).thenReturn(null);
+
+        XmppSession.Status status = studentSession.rejoin(student);
+        assertThat(status, is(XmppSession.Status.ENDED));
+        verify(xmppConnection).disconnect();
+        verify(classSession).end();
+    }
+
+    @Test
+    public void shouldDisconnectXMPPWhenJoiningAnNonExistingRoom() throws Exception {
+        when(chatAdapter.getRoomInfo(SESSION_NAME)).thenReturn(null);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        try {
+            studentSession.joinSession(student, section);
+        } catch (SessionDoesNotExistException ignored) {
+            // NOPMD
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        verify(xmppConnection).disconnect();
+        verify(classSession).end();
+    }
+
+    @Test
+    public void shouldReturnTrueIfStudentIsModerator() throws XMPPException {
+        reset(chat);
+        when(chat.getModerators()).thenReturn(null);
+        studentSession.multiUserChat = chat;
+        assertThat(studentSession.isStudentModerator(), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfUserIsNotModerator() {
+        studentSession.multiUserChat = chat;
+
+        assertThat(studentSession.isStudentModerator(), is(false));
+    }
+
+    private void stubChatAndJoinSession() throws XMPPException {
+        when(chatAdapter.getRoomInfo(anyString())).thenReturn(roomInfo);
+        when(student.getId()).thenReturn(USER_ID);
+        when(chatAdapter.create(SESSION_NAME)).thenReturn(chat);
+        studentSession.joinSession(student, section);
+        verify(chat).join(eq(USER_ID.toString()), anyString(), refEq(XmppUtils.noHistory()), eq((long) getPacketReplyTimeout()));
+    }
+
+    private void createRoom() throws XMPPException {
+        when(chatAdapter.getRoomInfo(anyString())).thenReturn(roomInfo);
+        when(student.getId()).thenReturn(USER_ID);
+        when(chatAdapter.create(SESSION_NAME)).thenReturn(chat);
+        when(student.getSession()).thenReturn(classSession);
+        when(classSession.id()).thenReturn(SESSION_NAME);
+        when(chat.getRoom()).thenReturn(SESSION_NAME);
+    }
+
+    private void verifyCleanUpOfAllListeners(Connection xmppConnection) {
+        verify(xmppConnection, atLeastOnce()).removePacketListener(isA(RoomDestroyedListener.class));
+        verify(xmppConnection, atLeastOnce()).removePacketListener(isA(ControlMessageListener.class));
+        verify(xmppConnection, atLeastOnce()).removePacketListener(isA(GoResearchMessageListener.class));
+        verify(xmppConnection, atLeastOnce()).removePacketListener(isA(ModeratorPresenceListener.class));
+        verify(xmppConnection, times(4)).removePacketListener(any(BasePacketListener.class));
+    }
+
+    private void verifyRegistrationOfAllListeners(Connection xmppConnection) {
+        verify(xmppConnection).addConnectionListener(isA(ConnectionCloseListener.class));
+        verify(xmppConnection).addPacketListener(isA(RoomDestroyedListener.class), any(PacketFilter.class));
+        verify(xmppConnection).addPacketListener(isA(ControlMessageListener.class), any(PacketFilter.class));
+        verify(xmppConnection).addPacketListener(isA(GoResearchMessageListener.class), any(PacketFilter.class));
+        verify(xmppConnection).addPacketListener(isA(ModeratorPresenceListener.class), any(PacketFilter.class));
+        verify(xmppConnection, times(4)).addPacketListener(any(BasePacketListener.class), any(PacketFilter.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<html><head><title>ApplicationRestartActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ApplicationRestartActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ApplicationRestartActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.utils.TimeTickerProvider;
+import com.amplify.R;
+import com.google.inject.Inject;
+import roboguice.activity.RoboActivity;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class ApplicationRestartActivity extends RoboActivity {
+    @Inject
+    private TimerProvider timerProvider;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Inject
+    private TeacherConsoleAction teacherConsoleAction;
+    @Inject
+    private TimeTickerProvider timeTickerProvider;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.app_restart_view);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resetState();
+        Timer timer = timerProvider.get();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finishAndLaunchMainIntent();
+            }
+        }, 5000);
+    }
+
+    private void resetState() {
+        //Need to find a way to reset the guice bindings instead of manually resetting singleton states
+        deviceLockingService.resetLocks();
+        teacherConsoleAction.resetState();
+        cancelCountDownTimer();
+
+    }
+
+    private void cancelCountDownTimer() {
+        CountdownFloatingWindow.close(this);
+        timeTickerProvider.cancel();
+    }
+
+    private void finishAndLaunchMainIntent() {
+        Intent launchIntent = new Intent(this, MainLauncherActivity.class);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(launchIntent);
+        finish();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+        // do nothing.
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

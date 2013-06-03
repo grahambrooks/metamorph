@@ -1,0 +1,179 @@
+<html><head><title>SundaeContentProvider.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaeContentProvider.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/contentprovider/amplify_client/SundaeContentProvider.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.contentprovider;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.services.AmplifyCallable;
+import com.alpha.lock.GlobalInformationLock;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.content.RoboContentProvider;
+
+public class SundaeContentProvider extends RoboContentProvider {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    public static final String AUTHORITY = "com.alpha.api.Sundae";
+    public static final String CONTENT = "content://";
+
+    @Inject
+    public SundaeDatabase dbHelper;
+    @Inject
+    private GlobalInformationLock globalInformationLock;
+
+    private final UriMatcher uriMatcher;
+
+    public SundaeContentProvider() {
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        Table.registerAll(uriMatcher);
+    }
+
+    @Override
+    public boolean onCreate() {
+        super.onCreate();
+        return true;
+    }
+
+    @Override
+    public Cursor query(final Uri uri, final String[] projection, final String selection, final String[] selectionArgs, final String sortOrder) {
+        LOG.debug("Received query for uri " + uri);
+        final Table table = tableForUri(uri);
+        final ContentResolver resolver = getContext().getContentResolver();
+        final SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        return globalInformationLock.callWithReadLock(new AmplifyCallable<Cursor>() {
+            @Override
+            public Cursor call() {
+                return table.query(resolver, db, uri, projection, selection, selectionArgs, sortOrder);
+            }
+        });
+    }
+
+    @Override
+    public String getType(Uri uri) {
+        throw new UnsupportedOperationException("getType is not currently supported");
+    }
+
+    @Override
+    public Uri insert(final Uri uri, final ContentValues values) {
+        LOG.debug("Received insert request for uri {}", uri);
+        final Table table = tableForUri(uri);
+        final ContentResolver resolver = getContext().getContentResolver();
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        return globalInformationLock.callWithReadLock(new AmplifyCallable<Uri>() {
+
+            @Override
+            public Uri call() {
+                return table.insert(resolver, db, uri, values);
+            }
+        });
+    }
+
+    @Override
+    public int update(final Uri uri, final ContentValues values, final String where, final String[] whereArgs) {
+        final Table table = tableForUri(uri);
+        final ContentResolver resolver = getContext().getContentResolver();
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        return globalInformationLock.callWithReadLock(new AmplifyCallable<Integer>() {
+            @Override
+            public Integer call() {
+                return table.update(resolver, db, uri, values, where, whereArgs);
+            }
+        });
+
+    }
+
+    @Override
+    public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+        final Table table = tableForUri(uri);
+        final ContentResolver resolver = getContext().getContentResolver();
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        return globalInformationLock.callWithReadLock(new AmplifyCallable<Integer>() {
+            @Override
+            public Integer call() {
+                return table.delete(resolver, db, uri, selection, selectionArgs);
+            }
+        });
+    }
+
+    private Table tableForUri(Uri uri) {
+        int match = uriMatcher.match(uri);
+        if (match < 0) {
+            throw new UnsupportedOperationException("This DML operation is not supported for uri: " + uri);
+        }
+        return Table.values()[match];
+    }
+
+    /**
+     * This method does not need to request the global access lock as it calls through
+     * to the insert method of the content provider
+     */
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            int rowsInserted = super.bulkInsert(uri, values);
+            db.setTransactionSuccessful();
+            return rowsInserted;
+
+        } finally {
+            db.endTransaction();
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

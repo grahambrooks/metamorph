@@ -1,0 +1,179 @@
+<html><head><title>QuickPollTeacherActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollTeacherActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/QuickPollTeacherActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import com.alpha.activities.actions.QuickPollActionContext;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.amplify.R;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+public class QuickPollTeacherActivity extends SundaeTimedActivity {
+
+    @InjectView(R.id.two_responses_btn)
+    private View twoResponsesButton;
+
+    @InjectView(R.id.three_responses_btn)
+    private View threeResponsesButton;
+
+    @InjectView(R.id.four_responses_btn)
+    private View fourResponsesButton;
+
+    @InjectView(R.id.submit_button)
+    private View submitButton;
+
+    @Inject
+    private Toaster toaster;
+
+    @Inject
+    private TeacherConsoleAction teacherConsoleAction;
+
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.quick_poll_teacher);
+
+        twoResponsesButton.setOnClickListener(new AnswerOnClickListener(2));
+        threeResponsesButton.setOnClickListener(new AnswerOnClickListener(3));
+        fourResponsesButton.setOnClickListener(new AnswerOnClickListener(4));
+        submitButton.setOnClickListener(new SubmitOnClickListener());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.grow);
+        animation.setStartOffset(100);
+
+        twoResponsesButton.startAnimation(animation);
+        threeResponsesButton.startAnimation(animation);
+        fourResponsesButton.startAnimation(animation);
+    }
+
+    private void disableButtons() {
+        twoResponsesButton.setEnabled(false);
+        threeResponsesButton.setEnabled(false);
+        fourResponsesButton.setEnabled(false);
+        submitButton.setEnabled(false);
+    }
+
+    private void deactivateButtons() {
+        twoResponsesButton.setActivated(false);
+        threeResponsesButton.setActivated(false);
+        fourResponsesButton.setActivated(false);
+    }
+
+    private void launchGraphActivity(int numberOfAnswers) {
+        teacherConsoleAction.start(QuickPollActionContext.class);
+        Intent intent = new Intent(QuickPollTeacherActivity.this, QuickPollGraphActivity.class);
+        intent.putExtra(QuickPollGraphActivity.ANSWER_COUNT_KEY, numberOfAnswers);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private class AnswerOnClickListener implements OnClickListener {
+        private final int numberOfAnswers;
+
+        public AnswerOnClickListener(int numberOfAnswers) {
+            this.numberOfAnswers = numberOfAnswers;
+        }
+
+        @Override
+        public void onClick(View button) {
+            deactivateButtons();
+            button.setActivated(true);
+            submitButton.setTag(numberOfAnswers);
+            submitButton.setEnabled(true);
+        }
+    }
+
+    private class SubmitOnClickListener implements OnClickListener {
+        @Override
+        public void onClick(View button) {
+            if (networkConnectivity.isConnected()) {
+                disableButtons();
+
+                Integer numberOfAnswers = (Integer) button.getTag();
+                teacherConsoleAction.start(QuickPollActionContext.class);
+                launchGraphActivity(numberOfAnswers);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (userService.getUser().getCurrentControlSettingsModel().isLocked()) {
+                    toaster.makeToast(R.string.student_tablets_unlocked);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } else {
+                toaster.makeToast(R.string.network_not_connected);
+                button.setEnabled(true);
+            }
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

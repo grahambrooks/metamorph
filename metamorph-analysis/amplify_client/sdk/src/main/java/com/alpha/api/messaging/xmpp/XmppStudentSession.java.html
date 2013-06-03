@@ -1,0 +1,192 @@
+<html><head><title>XmppStudentSession.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppStudentSession.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/amplify_client/XmppStudentSession.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.SessionDoesNotExistException;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.xmpp.listeners.ControlMessageListener;
+import com.alpha.api.messaging.xmpp.listeners.GoResearchMessageListener;
+import com.alpha.api.messaging.xmpp.listeners.ModeratorPresenceListener;
+import com.alpha.api.messaging.xmpp.listeners.RoomDestroyedListener;
+import com.alpha.api.services.*;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence.Mode;
+import org.slf4j.Logger;
+
+public class XmppStudentSession extends XmppSession implements StudentSession {
+    private static final Logger LOG = LogUtils.getLogger();
+    
+    @Inject
+    public XmppStudentSession(AmplifyXmppConnection xmppConnection, MultiUserChatAdapter chatAdapter,
+                              UserService userService, EventBus eventBus, NetworkConnectivity networkConnectivity) {
+        super(xmppConnection, chatAdapter, userService, eventBus, networkConnectivity);
+    }
+
+    @Override
+    public void joinSession(User user, Section sectionToJoin) {
+        ClassSession classSession = user.getSession();
+        try {
+            XmppUtils.connectAndAuthenticateIfNecessary(xmppConnection, user.getXmppUsername(), user.getXmppPassword());
+
+            classSession.tryStart(sectionToJoin);
+            String roomName = classSession.id();
+            if (!XmppUtils.roomExists(roomName, chatAdapter)) {
+                XmppUtils.disconnectIfNecessary(xmppConnection);
+                classSession.end();
+                throw new SessionDoesNotExistException("Room does not exist, cannot join");
+            }
+
+            multiUserChat = chatAdapter.create(roomName);
+            addListeners(roomName);
+            joinRoom(user, false);
+            if(isStudentModerator()) {
+                XmppUtils.disconnectIfNecessary(xmppConnection);
+                classSession.end();
+                throw new SessionDoesNotExistException("No teacher present in room, leaving");
+            } else {
+                classSession.start();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            classSession.end();
+            XmppUtils.cleanUpAndRethrow(xmppConnection, e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    protected boolean isStudentModerator() {
+        try {
+            multiUserChat.getModerators();
+            // if this call doesn't throw an exception, then user has moderator privileges
+            return true;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            return false;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override
+    protected void joinRoom(User user, boolean unlockRoom) throws XMPPException {
+        super.joinRoom(user, unlockRoom);
+        updateStudentPresenceStatus(((Student) user).getPresenceModel());
+    }
+
+    @Override
+    protected void addListeners(String roomName) {
+        addConnectionListenerIfNecessary();
+        addSessionListeners(
+                new RoomDestroyedListener(roomName, this, userService, eventBus),
+                new ControlMessageListener(roomName, userService, eventBus),
+                new GoResearchMessageListener(roomName, eventBus),
+                new ModeratorPresenceListener(roomName, this, eventBus));
+    }
+
+    @Override
+    protected void onEndSession() {
+        multiUserChat.leave();
+    }
+
+    @Override
+    public void shutdown() {
+        LOG.info("Shutting down XMPP Connection");
+        XmppUtils.disconnectIfNecessary(xmppConnection);
+    }
+
+    @Override
+    public void updateStudentPresenceStatus(ParticipantPresenceModel presenceModel) {
+        if (!xmppConnection.isConnected()) {
+            LOG.warn("Cannot update student presence status when not connected");
+            removeSessionListeners();
+            cleanUpSession();
+            return;
+        }
+        multiUserChat.changeAvailabilityStatus(AmplifyJsonHelper.toJson(presenceModel), Mode.available);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected boolean isSessionToBeRecreated() {
+        return false;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

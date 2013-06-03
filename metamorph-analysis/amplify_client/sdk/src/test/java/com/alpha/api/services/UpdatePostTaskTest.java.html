@@ -1,0 +1,114 @@
+<html><head><title>UpdatePostTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UpdatePostTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/UpdatePostTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class UpdatePostTaskTest {
+
+    @Mock
+    private Environment environment;
+    @Mock
+    private WebServices webservices;
+    @Mock
+    private Post post;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private HttpClient.Response response;
+    private static final String POSTS_URL = "url";
+    private static final String POST_JSON = "{}";
+    private ApiRequest request;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        long postId = 1l;
+        given(environment.getPostURI(postId)).willReturn(POSTS_URL);
+        given(post.asRequestJson()).willReturn(POST_JSON);
+        given(post.getId()).willReturn(postId);
+
+        request = ApiRequest.createPostRequest(POSTS_URL, POST_JSON);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldUpdatePost() {
+        when(webservices.put(request)).thenReturn(response);
+        new UpdatePostTask(webservices, environment, analyticsAgent, post).call();
+        verify(webservices).put(request);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

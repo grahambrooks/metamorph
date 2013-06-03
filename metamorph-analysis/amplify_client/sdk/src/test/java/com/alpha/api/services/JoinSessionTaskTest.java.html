@@ -1,0 +1,171 @@
+<html><head><title>JoinSessionTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>JoinSessionTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/JoinSessionTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.messaging.SessionDoesNotExistException;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.JoinSessionEvent;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.XMPPException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static com.alpha.api.services.ApiErrorReason.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class JoinSessionTaskTest {
+
+    public static final String SECTION_NAME = "Section";
+    public static final long SECTION_ID = 1l;
+    private JoinSessionTask task;
+    @Mock
+    private StudentSession studentSession;
+    @Mock
+    private Student student;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Section section;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private Event event;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        task = new JoinSessionTask(studentSession, webServices, eventBus, analyticsAgent, student, section, progressBar);
+        given(student.getSession()).willReturn(classSession);
+    }
+
+    @Test
+    public void shouldAttemptToJoinSession() throws Exception {
+        when(webServices.send(student.joinSessionEvent(section))).thenReturn(true);
+        when(student.getSession()).thenReturn(classSession);
+        when(classSession.id()).thenReturn(SECTION_NAME);
+        task.call();
+        verify(studentSession).joinSession(student, section);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfMessagingServiceThrowsException() throws Exception {
+        task.call();
+        task.onException(new AmplifyException(new XMPPException()));
+        ArgumentCaptor<JoinSessionFailureEvent> eventCaptor = ArgumentCaptor.forClass(JoinSessionFailureEvent.class);
+        verify(eventBus).post(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getReasonForFailure(), is(SESSION_JOIN_FAILED));
+    }
+
+    @Test
+    public void shouldCallFailureCallbackWithTheRightReasonWhenSessionDoesNotExist() throws Exception {
+        task.call();
+        task.onException(new SessionDoesNotExistException("Session does not exist"));
+        ArgumentCaptor<JoinSessionFailureEvent> eventCaptor = ArgumentCaptor.forClass(JoinSessionFailureEvent.class);
+        verify(eventBus).post(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getReasonForFailure(), is(SESSION_DOES_NOT_EXIST));
+    }
+
+    @Test
+    public void shouldNotifyServiceOfJoinSessionEvent() throws Exception {
+        when(student.joinSessionEvent(any(Section.class))).thenReturn(event);
+        when(webServices.send(event)).thenReturn(true);
+        task.call();
+        verify(webServices).send(event);
+    }
+
+    @Test
+    public void shouldReturnFailureIfWebserviceCallFails() throws Exception {
+        when(student.joinSessionEvent(any(Section.class))).thenReturn(event);
+        when(webServices.send(event)).thenReturn(false);
+        assertThat(task.call(), is(SessionTaskResult.REQUEST_FAILED));
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfJoinSessionFailed() throws Exception {
+        task.onSuccess(SessionTaskResult.REQUEST_FAILED);
+        ArgumentCaptor<JoinSessionFailureEvent> eventCaptor = ArgumentCaptor.forClass(JoinSessionFailureEvent.class);
+        verify(eventBus).post(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getReasonForFailure(), is(NETWORK_COMMUNICATION_ERROR));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionIfUnexpectedResultProvided() throws Exception {
+        task.onSuccess(SessionTaskResult.SESSION_ENDED_SUCCESSFULLY);
+    }
+
+    @Test
+    public void shouldCallSuccessCallbackIfJoinSessionSucceeded() throws Exception {
+        task.onSuccess(SessionTaskResult.SESSION_JOINED);
+        verify(eventBus).post(any(JoinSessionEvent.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

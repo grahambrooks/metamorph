@@ -1,0 +1,176 @@
+<html><head><title>EventProcessorTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EventProcessorTest.java</h1>
+<p>Scanned path = platform/src/test/java/com/amplify/platform/processor/amplify_client/EventProcessorTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.platform.processor;
+
+import com.amplify.platform.domain.AmplifyEvent;
+import com.amplify.platform.domain.LinkLessonComponent;
+import com.amplify.platform.repository.LessonComponentDataStore;
+import com.amplify.runner.SundaeRobolectricTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class EventProcessorTest {
+
+
+    private EventProcessor eventProcessor;
+
+    @Mock
+    private LessonComponentDataStore lessonComponentDataStore;
+
+    private static final String LINK_TYPE = "LINK";
+    public static final long ID = 1L;
+    private static final String TITLE = "title";
+    private static final String URL = "url";
+    private static final String IMAGE_URL = "image_url";
+
+    public static final long ID2 = 2L;
+    private static final String URL2 = "url2";
+    private static final String TITLE2 = "title2";
+    private static final String IMAGE_URL2 = "image_url2";
+
+    private static final String PAYLOAD = "{\"id\":1,\"url\":\"url\",\"title\":\"title\",\"imageUrl\":\"image_url\"}";
+    private static final String PAYLOAD2 = "{\"id\":2,\"url\":\"url2\",\"title\":\"title2\",\"imageUrl\":\"image_url2\"}";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        eventProcessor = new EventProcessor(lessonComponentDataStore);
+    }
+
+    @Test
+    public void shouldSaveAnEventInTheList() {
+
+        List<AmplifyEvent> events = new ArrayList<AmplifyEvent>();
+        AmplifyEvent event = new AmplifyEvent(null, LINK_TYPE, PAYLOAD);
+        events.add(event);
+
+        eventProcessor.process(events);
+        ArgumentCaptor<LinkLessonComponent> captor = ArgumentCaptor.forClass(LinkLessonComponent.class);
+
+        verify(lessonComponentDataStore).save(captor.capture());
+        assertLinkLessonComponent(captor.getValue(), ID, TITLE, URL, IMAGE_URL);
+    }
+
+    @Test
+    public void shouldSaveAllEventsInTheList() {
+
+        AmplifyEvent event1 = new AmplifyEvent(null, LINK_TYPE, PAYLOAD);
+        AmplifyEvent event2 = new AmplifyEvent(null, LINK_TYPE, PAYLOAD2);
+        List<AmplifyEvent> events = newArrayList(event1, event2);
+
+        eventProcessor.process(events);
+
+        ArgumentCaptor<LinkLessonComponent> captor = ArgumentCaptor.forClass(LinkLessonComponent.class);
+        verify(lessonComponentDataStore, times(2)).save(captor.capture());
+
+        assertLinkLessonComponent(captor.getAllValues().get(0), ID, TITLE, URL, IMAGE_URL);
+        assertLinkLessonComponent(captor.getAllValues().get(1), ID2, TITLE2, URL2, IMAGE_URL2);
+    }
+
+    private void assertLinkLessonComponent(LinkLessonComponent component, Long id, String title, String url, String image_url) {
+        assertThat(component.id(), is(id));
+        assertThat(component.title(), is(title));
+        assertThat(component.url(), is(url));
+        assertThat(component.imageUrl(), is(image_url));
+    }
+
+    @Test
+    public void shouldCreateLinkLessonComponentForLinkType() {
+
+        AmplifyEvent event = new AmplifyEvent(null, LINK_TYPE, PAYLOAD);
+        List<AmplifyEvent> events = newArrayList(event);
+
+        eventProcessor.process(events);
+
+        verify(lessonComponentDataStore).save(isA(LinkLessonComponent.class));
+    }
+
+    @Test
+    public void shouldNotCreateLinkLessonComponentForNonLinkType() {
+
+        AmplifyEvent event = new AmplifyEvent(null, null, null);
+        List<AmplifyEvent> events = newArrayList(event);
+
+        eventProcessor.process(events);
+
+        verify(lessonComponentDataStore, never()).save(any(LinkLessonComponent.class));
+    }
+
+    @Test
+    public void shouldDeleteAllRecordsFromTHeEventTableBeforeAttemptingInserting() {
+
+        AmplifyEvent event = new AmplifyEvent(null, null, null);
+        List<AmplifyEvent> events = newArrayList(event);
+
+        eventProcessor.process(events);
+
+        verify(lessonComponentDataStore).deleteAll();
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

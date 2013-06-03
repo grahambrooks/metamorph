@@ -1,0 +1,147 @@
+<html><head><title>AddCommentTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AddCommentTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/AddCommentTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.domains.Comment;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.CommentAddedEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.services.web.WebServicesException;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static com.alpha.api.services.ApiErrorReason.INTERNAL_ERROR;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class AddCommentTaskTest {
+
+    private static final String JSON = "{}";
+    private static final String URL = "url";
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Environment environment;
+    @Mock
+    private Comment comment;
+    @Mock
+    private Response response;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+
+    private AddCommentTask task;
+    private ApiRequest request;
+    private static final Long POST_ID = 3L;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        given(environment.getCommentsURI(POST_ID)).willReturn(URL);
+        given(comment.asRequestJson()).willReturn(JSON);
+        request = ApiRequest.createPostRequest(URL, JSON);
+
+        task = new AddCommentTask(webServices, environment, eventBus, POST_ID, analyticsAgent, comment);
+    }
+
+    @Test
+    public void shouldPostToWebServiceEndpointAndReturnTheNewlyCreatedCommentIfRequestSucceeds() throws Exception {
+        when(webServices.post(request)).thenReturn(response);
+        when(response.getBodyAs(Comment.class)).thenReturn(comment);
+
+        Comment commentFromServer = task.call();
+
+        assertThat(commentFromServer, is(comment));
+    }
+
+    @Test(expected = WebServicesException.class)</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldThrowExceptionWhenHttpPostFails() throws Exception {
+        given(webServices.post(request)).willThrow(WebServicesException.class);
+
+        task.call();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldInvokeFailureCallbackWhenExceptionIsThrown() throws Exception {
+        task.onException(new Exception());
+        verify(eventBus).post(CommentAddedEvent.failure(INTERNAL_ERROR));
+    }
+
+    @Test
+    public void shouldInvokeSuccessCallbackWhenResponseIsSuccess() throws Exception {
+        task.onSuccess(comment);
+        verify(eventBus).post(isA(CommentAddedEvent.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

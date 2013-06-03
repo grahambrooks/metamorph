@@ -1,0 +1,209 @@
+<html><head><title>PushNotificationsReceiverServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PushNotificationsReceiverServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/notifications/gcm/amplify_client/PushNotificationsReceiverServiceTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.notifications.gcm;
+
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.messaging.notifications.events.GCMRegisteredEvent;
+import com.alpha.api.messaging.notifications.events.GCMRegistrationErrorEvent;
+import com.alpha.api.messaging.notifications.events.GCMUnregisteredEvent;
+import com.alpha.api.messaging.notifications.events.SessionStartMessageEvent;
+import com.alpha.api.runner.ActivityTestInjector;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.UserRefreshTask;
+import com.alpha.api.services.factory.GCMStatsTaskFactory;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.api.services.tasks.GCMDeliveredTimeTask;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.messaging.notifications.gcm.PushNotificationsReceiverService.*;
+import static com.alpha.api.runner.ActivityTestInjector.create;
+import static com.xtremelabs.robolectric.Robolectric.getShadowApplication;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+
+@RunWith(AmplifySDKTestRunner.class)
+public class PushNotificationsReceiverServiceTest {
+
+    public static final String TEST_REGISTRATION_ID = "registration id";
+    public static final String ERROR_MESSAGE = "error_message";
+    @Inject
+    private PushNotificationsReceiverService service;
+
+    @Mock
+    private GoogleAuthenticationService googleAuthenticationService;
+    @Mock
+    private UserTaskFactory userTaskFactory;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Bundle bundle;
+    @Mock
+    private Intent intent;
+    @Mock
+    private UserRefreshTask userRefreshTask;
+    @Mock
+    private GCMStatsTaskFactory gcmStatsTaskFactory;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        ActivityTestInjector<PushNotificationsReceiverService> injector = create(this, PushNotificationsReceiverService.class);
+        injector.bindInstance(UserTaskFactory.class, userTaskFactory)
+                .bindInstance(GoogleAuthenticationService.class, googleAuthenticationService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(GCMStatsTaskFactory.class, gcmStatsTaskFactory)
+                .bindMocksToContext();
+        injector.configureTestSubject();
+        service.onCreate();
+
+        given(bundle.getString(AMPLIFY_MESSAGE_ID)).willReturn(AMPLIFY_MESSAGE_ID);
+        given(gcmStatsTaskFactory.updateDeliveredTimeTask(anyString(), anyString())).willReturn(mock(GCMDeliveredTimeTask.class));
+    }
+
+    @Test
+    public void shouldFireEventWhenSuccessfullyRegistered()
+            throws Exception {
+        service.onRegistered(Robolectric.application, TEST_REGISTRATION_ID);
+
+        verify(eventBus).post(new GCMRegisteredEvent(TEST_REGISTRATION_ID));
+    }
+
+    @Test
+    public void shouldFireEventWhenARegistrationErrorOccurs()
+            throws Exception {
+        service.onError(Robolectric.application, ERROR_MESSAGE);
+
+        verify(eventBus).post(new GCMRegistrationErrorEvent(ERROR_MESSAGE));
+    }
+
+    @Test
+    public void shouldExecuteGetPostTasksWhenPostsRefreshNotificationReceived()
+            throws Exception {
+        when(intent.getExtras()).thenReturn(bundle);
+        when(bundle.getString(PushNotificationsReceiverService.COLLAPSE_KEY)).thenReturn(PushNotificationsReceiverService.COLLAPSE_KEY_POSTS_REFRESH);
+        service.onMessage(Robolectric.application, intent);
+
+        Class<?> serviceClass = shadowOf(getShadowApplication().getNextStartedService()).getIntentClass();
+        assertSame(serviceClass, RetrievePostsService.class);
+    }
+
+    @Test
+    public void shouldExecuteTaskToUpdateUserInformation() {
+        when(intent.getExtras()).thenReturn(bundle);
+        when(bundle.getString(PushNotificationsReceiverService.COLLAPSE_KEY)).thenReturn(PushNotificationsReceiverService.COLLAPSE_KEY_ROSTER_REFRESH);
+        when(userTaskFactory.createUserRefreshTask()).thenReturn(userRefreshTask);
+        service.onMessage(Robolectric.application, intent);
+
+        verify(userRefreshTask).execute();
+    }
+
+    @Test
+    public void shouldFireOffSessionStartMessageEventWhenSessionNotificationReceived() {
+        when(intent.getExtras()).thenReturn(bundle);
+        when(bundle.getString(PushNotificationsReceiverService.COLLAPSE_KEY)).thenReturn(PushNotificationsReceiverService.COLLAPSE_KEY_SESSION_STARTED);
+        when(bundle.getString(DATA_KEY_SECTION_ID)).thenReturn("12345");
+        when(bundle.getString(DATA_KEY_TEACHER_NAME)).thenReturn("Yobbo Jonno");
+        when(bundle.containsKey(DATA_KEY_SECTION_ID)).thenReturn(true);
+        when(bundle.containsKey(DATA_KEY_TEACHER_NAME)).thenReturn(true);
+
+        service.onMessage(Robolectric.application, intent);
+
+        verify(eventBus).post(new SessionStartMessageEvent(12345L, "Yobbo Jonno"));
+    }
+
+    @Test
+    public void shouldNotFireOffSessionStartMessageEventWhenSessionNotificationReceivedAndContainsNoSectionId() {
+        when(intent.getExtras()).thenReturn(bundle);
+        when(bundle.getString(PushNotificationsReceiverService.COLLAPSE_KEY)).thenReturn(PushNotificationsReceiverService.COLLAPSE_KEY_SESSION_STARTED);
+        when(bundle.containsKey(DATA_KEY_SECTION_ID)).thenReturn(false);
+        when(bundle.containsKey(DATA_KEY_TEACHER_NAME)).thenReturn(true);
+
+        service.onMessage(Robolectric.application, intent);
+
+        verify(bundle, never()).getLong(anyString());
+        verifyZeroInteractions(eventBus);
+    }
+
+    @Test
+    public void shouldNotFireOffSessionStartMessageEventWhenSessionNotificationReceivedAndContainsNoTeacherName() {
+        when(intent.getExtras()).thenReturn(bundle);
+        when(bundle.getString(PushNotificationsReceiverService.COLLAPSE_KEY)).thenReturn(PushNotificationsReceiverService.COLLAPSE_KEY_SESSION_STARTED);
+        when(bundle.containsKey("section_id")).thenReturn(true);
+        when(bundle.containsKey("teacher_name")).thenReturn(false);
+
+        service.onMessage(Robolectric.application, intent);
+
+        verify(bundle, never()).getLong(anyString());
+        verifyZeroInteractions(eventBus);
+    }
+
+    @Test
+    public void shouldFireEventWhenUnregistredSuccessfully() {
+        service.onUnregistered(Robolectric.application, TEST_REGISTRATION_ID);
+
+        verify(eventBus).post(new GCMUnregisteredEvent(TEST_REGISTRATION_ID));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

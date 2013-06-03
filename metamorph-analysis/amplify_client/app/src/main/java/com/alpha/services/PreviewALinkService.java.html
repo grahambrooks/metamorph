@@ -1,0 +1,113 @@
+<html><head><title>PreviewALinkService.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PreviewALinkService.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/services/amplify_client/PreviewALinkService.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.services;
+
+import com.alpha.http.AppHttpClientFactory;
+import com.alpha.utils.IOUtils;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+
+@Singleton
+public class PreviewALinkService {
+    private final HttpClient httpClient;
+
+    @Inject
+    public PreviewALinkService(AppHttpClientFactory httpClientFactory) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        this.httpClient = httpClientFactory.createClient();
+    }
+
+    public String previewImageUriFor(String link) throws IOException {
+        Document htmlDocument = document(link);
+
+        String openGraphImage = openGraphImage(htmlDocument);
+        return openGraphImage.isEmpty() ? filter(link, firstImageFromHtmlBody(htmlDocument)) : openGraphImage;
+    }
+
+    private Document document(String link) throws IOException {
+        InputStream htmlResponse = null;
+        try {
+            htmlResponse = httpClient.execute(new HttpGet(link)).getEntity().getContent();
+            return Jsoup.parse(htmlResponse, null, link);
+        } finally {
+            IOUtils.closeSafely(htmlResponse);
+        }
+    }
+
+    private String openGraphImage(Document htmlDocument) {
+        return htmlDocument.head().select("meta[property=og:image]").attr("content");
+    }
+
+    private String firstImageFromHtmlBody(Document htmlDocument) {
+        return htmlDocument.body().select("img").attr("src");
+    }
+
+    private String filter(String baseUrl, String url) {
+        return isNullOrEmpty(url) || url.contains("blank")  ? "" : relativize(baseUrl, url);
+    }
+
+    private String relativize(String baseUrl, String linkOnThePage) {
+        return URI.create(baseUrl).resolve(linkOnThePage).toString();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<html><head><title>ForceFieldEditActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldEditActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ForceFieldEditActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.widget.GridView;
+import android.widget.TextView;
+import com.alpha.activities.actionbar.TeacherActionBarMiddleContentConfiguration;
+import com.alpha.activities.adapters.ForceFieldEditAdapter;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.domains.SundaePriorityAppInfoComparator;
+import com.alpha.api.repository.ForceFieldDataStore;
+import com.alpha.api.services.ModeratorSessionService;
+import com.alpha.api.services.ModeratorSessionServiceConnection;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.ForceFieldEvent.ForceFieldChangeSuccessEvent;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
+
+public class ForceFieldEditActivity extends SundaeTimedActivity implements ForceFieldAdapterChangeListener {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    protected static final String OPEN_PEAK_APP_WHITELIST_INTENT = "com.openpeak.adam.UPDATE_WHITELIST_APPS";
+    private static final IntentFilter OPEN_PEAK_APP_WHITELIST_INTENT_FILTER = new IntentFilter(OPEN_PEAK_APP_WHITELIST_INTENT);
+    private final BroadcastReceiver OPENPEAK_INTENT_RECEIVER = new AppDrawerBroadcastReceiver();
+
+    public static final String STUDENT_INSTALLED_APPS_NAME = "StudentInstalledApps";
+    public static final String STUDENT_INSTALLED_APPS_PACKAGE = "com.amplify.appcontrol.student_installed_apps";
+    public static final String STUDENT_INSTALLED_APPS_LABEL = "All other apps";
+
+    @Inject
+    private ForceFieldDataStore forceFieldDataStore;
+    @Inject
+    private ForceFieldEditAdapter forceFieldAppsAdapter;
+    @Inject
+    private UserService userService;
+    @Inject
+    private ModeratorSessionServiceConnection sessionServiceConnection;
+    @Inject
+    private EventBus eventBus;
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    @Inject
+    private TeacherActionBarMiddleContentConfiguration configuration;
+
+    @InjectView(R.id.force_field_edit_apply_button_progress_bar)
+    private ProgressBarViewGroup applyButtonProgressBar;
+
+    @InjectView(R.id.force_field_edit_apply_button)
+    private View applyButton;
+
+    @InjectView(R.id.apps_drawer_grid)
+    private GridView gridView;
+
+    Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.force_field_edit);
+
+        configureLayout();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(OPENPEAK_INTENT_RECEIVER, OPEN_PEAK_APP_WHITELIST_INTENT_FILTER);
+        sessionServiceConnection.open();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.teacher_notebook_stream_menu, menu);
+        return true;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(OPENPEAK_INTENT_RECEIVER);
+        sessionServiceConnection.close();
+        forceFieldAppsAdapter.clear();
+        super.onStop();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        eventBus.unregister(listeners);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void notifyAdapterChange() {
+        updateAppCount(forceFieldAppsAdapter.getWhitelistAppsCount());
+    }
+
+    protected void configureLayout() {
+        forceFieldAppsAdapter.setAdapterChangeListener(this);
+
+        populateAdapter();
+        setupApplyButton();
+        updateAppCount(forceFieldAppsAdapter.getWhitelistAppsCount());
+    }
+
+    private void updateAppCount(int whitelistAppsCount) {
+        TextView allowedCountView = (TextView) findViewById(R.id.force_field_allowed_apps_count);
+        String messageFormat = getString(R.string.app_control_allowed_apps_count);
+        allowedCountView.setText(MessageFormat.format(messageFormat, whitelistAppsCount));
+    }
+
+    private void setupApplyButton() {
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                applyButtonProgressBar.getProgressBar().setVisibility(View.VISIBLE);
+                applyButton.setEnabled(false);
+                Set<SundaeAppInfo> whitelistedApps = Sets.newHashSet(getCurrentWhitelist());
+                Teacher teacher = userService.<Teacher>getUser();
+                moderatorSessionService().engageForceField(whitelistedApps, teacher, userService.getCurrentUserSection(), applyButtonProgressBar.getProgressBar());
+            }
+        });
+    }
+
+    private Collection<SundaeAppInfo> getCurrentWhitelist() {
+        return Collections2.filter(forceFieldAppsAdapter.getAllItems(), SundaeAppInfo.NOT_LOCKED_PREDICATE);
+    }
+
+    private ModeratorSessionService moderatorSessionService() {
+        return sessionServiceConnection.getService();
+    }
+
+    private void populateAdapter() {
+        forceFieldAppsAdapter.clear();
+        forceFieldAppsAdapter.add(createFakeStudentInstalledAppsInfo());
+        forceFieldAppsAdapter.addAll(retrieveApplicationInformation());
+
+        gridView.setAdapter(forceFieldAppsAdapter);
+        forceFieldAppsAdapter.sort(new SundaePriorityAppInfoComparator(STUDENT_INSTALLED_APPS_PACKAGE, STUDENT_INSTALLED_APPS_NAME));
+    }
+
+    private SundaeAppInfo createFakeStudentInstalledAppsInfo() {
+        return new SundaeAppInfo(STUDENT_INSTALLED_APPS_NAME, STUDENT_INSTALLED_APPS_PACKAGE, true, STUDENT_INSTALLED_APPS_LABEL);
+    }
+
+    private Set<SundaeAppInfo> retrieveApplicationInformation() {
+        final PackageManager packageManager = getPackageManager();
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentActivities(mainIntent, 0);
+        final Map<String, SundaeAppInfo> whiteListedApps = getWhitelistApps();
+        Set<SundaeAppInfo> appInfos = newHashSet();
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            final SundaeAppInfo appInfo = new SundaeAppInfo(resolveInfo.activityInfo.name, resolveInfo.activityInfo.packageName,
+                    isLocked(resolveInfo.activityInfo.name, whiteListedApps), resolveInfo.loadLabel(packageManager).toString(), resolveInfo.loadIcon(packageManager));</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (!appInfo.isAmplifyApp() && !appInfo.isSectorApp()) {
+                appInfos.add(appInfo);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+        return appInfos;
+    }
+
+    private boolean isLocked(String appName, Map<String, SundaeAppInfo> whiteListedApps) {
+        return !whiteListedApps.containsKey(appName);
+    }
+
+    private Map<String, SundaeAppInfo> getWhitelistApps() {
+        Set<SundaeAppInfo> storedPreferences = forceFieldDataStore.getWhitelistApps(userService.getCurrentUserSection());
+        return Maps.uniqueIndex(storedPreferences, SundaeAppInfo.NAME_FUNCTION);
+    }
+
+    class AppDrawerBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LOG.info("Received OpenPeak app refresh intent");
+            configureLayout();
+        }
+    }
+
+    public class Listeners {
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onForceFieldTaskFinishedEvent(ForceFieldChangeSuccessEvent event) {
+            finish();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

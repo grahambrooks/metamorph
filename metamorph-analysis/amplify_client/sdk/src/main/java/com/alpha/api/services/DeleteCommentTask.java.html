@@ -1,0 +1,121 @@
+<html><head><title>DeleteCommentTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DeleteCommentTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/DeleteCommentTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.PostChildElementDataStore;
+import com.alpha.api.services.events.DeleteCommentEvent;
+import com.alpha.api.services.events.DeleteCommentFailureEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+public class DeleteCommentTask extends SafeAuthenticatedAsyncTask<Comment> {
+
+    private final WebServices webServices;
+    private final Environment environment;
+    private final EventBus eventBus;
+    private final Long postId;
+    private final Comment comment;
+    private final PostChildElementDataStore postChildElementDataStore;
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    @Inject
+    public DeleteCommentTask(WebServices webServices,
+                             Environment environment,
+                             EventBus eventBus,
+                             PostChildElementDataStore postChildElementDataStore,
+                             AnalyticsAgent analyticsAgent,
+                             @Assisted Long postId,
+                             @Assisted Comment comment) {
+        super(analyticsAgent);
+        this.webServices = webServices;
+        this.environment = environment;
+        this.eventBus = eventBus;
+        this.postChildElementDataStore = postChildElementDataStore;
+        this.postId = postId;
+        this.comment = comment;
+    }
+
+
+    @Override
+    public Comment call() throws Exception {
+        ApiRequest deleteRequest = ApiRequest.createDeleteRequest(environment.getCommentByCommentIdURI(postId, comment.getId()));
+        webServices.delete(deleteRequest);
+        postChildElementDataStore.deleteComment(postId, comment);
+        return comment;
+    }
+
+    @Override
+    protected void onSuccess(Comment comment) throws Exception {
+        eventBus.post(new DeleteCommentEvent(comment));
+
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) throws RuntimeException {
+        LOGGER.error(getClass().getName(), e.getMessage(), e);
+        eventBus.post(new DeleteCommentFailureEvent(e.getApiErrorReason()));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) throws RuntimeException {
+        LOGGER.error(getClass().getName(), e.getMessage(), e);
+        eventBus.post(new DeleteCommentFailureEvent(ApiErrorReason.INTERNAL_ERROR));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

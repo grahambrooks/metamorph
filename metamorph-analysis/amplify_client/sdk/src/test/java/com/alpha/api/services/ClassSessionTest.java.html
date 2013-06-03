@@ -1,0 +1,241 @@
+<html><head><title>ClassSessionTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ClassSessionTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ClassSessionTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">19</span>
+    <progress max="100" value="19"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.messaging.StudentsControlSettings;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ClassSessionTest {
+
+    public static final String UNLOCKED_CODE = "123";
+    public static final long SECTION_ID = 10L;
+    private static final long PARTICIPANT_ID = 135L;
+
+    private ClassSession session;
+    @Mock
+    private Section section;
+    @Mock
+    private Section newSection;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    @Mock
+    private Participant participant;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        session = new ClassSession();
+
+        // Set the mocked callOnSomeoneSettings
+        session.saveCallOnSomeoneSettings(callOnSomeoneSettings);
+    }
+
+    @Test
+    public void shouldHaveInitialStatusAsNotStarted() {
+        assertThat(session.isNotStarted(), is(true));
+    }
+
+    @Test
+    public void shouldSetStatusToStartingAfterStarting() {
+        session.tryStart(mock(Section.class));
+
+        assertThat(session.isStarting(), is(true));
+    }
+
+    @Test
+    public void shouldSetStatusToStarted() {
+        session.tryStart(mock(Section.class));
+        session.start();
+
+        assertThat(session.isStarted(), is(true));
+    }
+
+    @Test
+    public void shouldSetStatusToNotStartedAfterEnding() {
+        session.tryStart(mock(Section.class));
+        session.end();
+
+        assertThat(session.isNotStarted(), is(true));
+    }
+
+    @Test
+    public void shouldSetSectionToNullAfterSessionHasEnded() {
+        session.tryStart(mock(Section.class));
+        session.end();
+
+        assertThat(session.section(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldSetStatusToReconncting() {
+        session.start();
+        session.tryRestart();
+
+        assertThat(session.isRestarting(), is(true));
+    }
+
+    @Test
+    public void shouldInitialSetEyesOnTeacherToInactive() {
+        assertThat(session.isEyesOnTeacherActive(), is(false));
+    }
+
+    @Test
+    public void shouldSetEyesOnTeacherFlagWhenEngaged() {
+        session.engageEyesOnTeacher();
+
+        assertThat(session.isEyesOnTeacherActive(), is(true));
+    }
+
+    @Test
+    public void shouldUnsetEyesOnTeacherFlagWhenDisengaged() {
+        session.engageEyesOnTeacher();
+        session.disengageEyesOnTeacher();
+
+        assertThat(session.isEyesOnTeacherActive(), is(false));
+    }
+
+    @Test
+    public void shouldCreateStudentsControlSettings() {
+        assertThat(session.studentsControlSettings(), notNullValue());
+        assertThat(session.studentsControlSettings(), is(StudentsControlSettings.class));
+    }
+
+    @Test
+    public void shouldSetLockFlagInStudentsControlSettings() {
+        session.engageEyesOnTeacher();
+        StudentsControlSettings controlSettings = session.studentsControlSettings();
+
+        assertThat(controlSettings.isLocked(), is(true));
+    }
+
+    @Test
+    public void shouldBeNullIfSessionIsNotStarted() throws Exception {
+        assertThat(session.id(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldIncludeSectionIdAndNameInIdentifier() throws Exception {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(section.getName()).thenReturn("test_section");
+        session.tryStart(section);
+
+        assertThat(session.id(), is("amp_10_test_section"));
+    }
+
+    @SuppressWarnings("UnnecessaryBoxing")
+    @Test
+    public void shouldUpdateOngoingSectionIfMatched() {
+        // Intentionally boxing, to drive out .equals() comparison instead of ==
+        when(section.getId()).thenReturn(new Long(SECTION_ID));
+        when(newSection.getId()).thenReturn(new Long(SECTION_ID));
+        session.tryStart(section);
+
+        session.updateSection(newSection);
+
+        assertThat(session.section(), is(newSection));
+    }
+
+    @Test
+    public void shouldNotUpdateOngoingSectionIfNotMatched() {
+        when(section.getId()).thenReturn(SECTION_ID);
+        when(newSection.getId()).thenReturn(20L);
+        session.tryStart(section);
+
+        session.updateSection(newSection);
+
+        assertThat(session.section(), is(section));
+    }
+
+    @Test
+    public void shouldNotUpdateSectionIfNoLiveSession() {
+
+        session.updateSection(newSection);
+
+        assertThat(session.section(), nullValue());
+    }
+
+    @Test
+    public void shouldSetQuickShortAnswerToRunning() throws Exception {
+        QuickShortAnswerSettings settings = new QuickShortAnswerSettings();
+        settings.setRunning(true);
+        session.saveQuickShortAnswerSettings(settings);
+
+        assertThat(session.isQuickShortAnswerRunning(), is(true));
+    }
+
+    @Test
+    public void shouldReturnStudentNameForCurrentCalledOnParticipantId() {
+        when(callOnSomeoneSettings.getCalledOnParticipantId()).thenReturn(PARTICIPANT_ID);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+        when(participant.getName()).thenReturn("Ned Stark");
+        session.tryStart(section);
+
+        String actual = session.getCalledOnStudentName();
+
+        assertThat(actual, is("Ned Stark"));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

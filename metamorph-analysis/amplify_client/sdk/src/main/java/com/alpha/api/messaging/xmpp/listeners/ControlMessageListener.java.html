@@ -1,0 +1,111 @@
+<html><head><title>ControlMessageListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlMessageListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ControlMessageListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.xmpp.filters.ControlMessagePacketFilter;
+import com.alpha.api.services.ControlEvent;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.utilities.UIUtils;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.MessageTypeFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Message.Type;
+import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+
+public class ControlMessageListener extends BasePacketListener<Message> {
+    private static final Logger LOG = LogUtils.getLogger();
+    private final UserService userService;
+    private final EventBus eventBus;
+
+    public ControlMessageListener(String roomName, UserService userService, EventBus eventBus) {
+        super(roomName);
+        this.eventBus = eventBus;
+        this.userService = userService;
+    }
+
+    @Override
+    public PacketFilter filter() {
+        return new AndFilter(
+                new MessageTypeFilter(Type.groupchat),
+                new ControlMessagePacketFilter()
+        );
+    }
+
+    @Override
+    protected void process(Message message) {
+        LOG.info("Processing Message : " + message.getSubject());
+
+        ControlSettingsModel controlSettings = AmplifyJsonHelper.fromJson(message.getSubject(), ControlSettingsModel.class);
+        onSessionControlMessage(controlSettings);
+    }
+
+    public void onSessionControlMessage(final ControlSettingsModel controlSettings) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                User user = userService.getUser();
+                List<ControlEvent> events = user.getCurrentControlSettingsModel().detectEvents(controlSettings);
+                ControlEvent.dispatchEvents(events, controlSettings, user, eventBus);
+                return null;
+            }
+        });
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

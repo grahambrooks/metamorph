@@ -1,0 +1,250 @@
+<html><head><title>StreamSummarySharedLearningElementRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummarySharedLearningElementRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamSummarySharedLearningElementRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.LearningElementVisitor;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.api.services.UserService;
+import com.alpha.widgets.image.SmartImageView;
+import com.alpha.widgets.text.AmplifyCollapsibleView;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+public class StreamSummarySharedLearningElementRenderer extends LearningElementVisitor<View> implements AmplifyCollapsibleView.CollapseStateListener {
+
+    private final Context context;
+    private final Post post;
+    private final UserService userService;
+    private final CollapsibleViewStateHolder stateHolder;
+
+    @Inject
+    public StreamSummarySharedLearningElementRenderer(@Assisted Post post,
+                                                      Context context,
+                                                      UserService userService,
+                                                      CollapsibleViewStateHolder stateHolder) {
+        this.context = context;
+        this.post = post;
+        this.userService = userService;
+        this.stateHolder = stateHolder;
+    }
+
+    @Override
+    public View visit(VideoLearningElement element, ViewGroup parent) {
+        int titleId = R.string.video_shared_by_you;
+        String[] titleArgs = null;
+
+        if (!post.isUserSameAsAuthor(userService.getUser())) {
+            titleId = R.string.video_shared;
+            titleArgs = new String[]{post.getAuthor().getName()};
+        }
+
+        return renderVideoLearningElement(element, parent, R.drawable.icn_stream_share, post.getDescription(), titleId, titleArgs);
+    }
+
+    @Override
+    public View visit(WebPageLearningElement element, ViewGroup parent) {
+        int titleId = R.string.webpage_shared_by_you;
+        String[] titleArgs = null;
+
+        if (!post.isUserSameAsAuthor(userService.getUser())) {
+            titleId = R.string.webpage_shared;
+            titleArgs = new String[]{post.getAuthor().getName()};
+        }
+
+        return renderWebPageLearningElement(element, parent, R.drawable.icn_stream_share, post.getDescription(), titleId, titleArgs);
+    }
+
+    @SuppressWarnings("PMD.NullAssignment")
+    @Override
+    public View visit(GoogleDriveLearningElement element, ViewGroup parent) {
+        int titleId = R.string.file_shared_by_you;
+        String[] titleArgs = null;
+
+        if (!post.isUserSameAsAuthor(userService.getUser())) {
+            titleId = R.string.file_shared;
+            titleArgs = new String[]{post.getAuthor().getName()};
+        }
+
+        return renderGoogleDriveLearningElement(element, parent, R.drawable.icn_stream_share, post.getDescription(), titleId, titleArgs);
+    }
+
+    @Override
+    public View visit(EReaderLearningElement element, ViewGroup parent) {
+        int titleId = R.string.textbook_shared_by_you;
+        String[] titleArgs = new String[]{element.getBook()};
+
+        if (!post.isUserSameAsAuthor(userService.getUser())) {
+            titleId = R.string.textbook_shared;
+            titleArgs = new String[]{post.getAuthor().getName(), element.getBook()};
+        }
+        return renderEReaderLearningElement(element, parent, R.drawable.icn_stream_share, post.getDescription(), titleId, titleArgs);
+    }
+
+    @Override
+    public View visit(GoogleMapsLearningElement element, ViewGroup parent) {
+        int titleId = R.string.location_shared_by_you;
+        String[] titleArgs = new String[]{element.getTitle()};
+
+        if (!post.isUserSameAsAuthor(userService.getUser())) {
+            titleId = R.string.location_shared;
+            titleArgs = new String[]{post.getAuthor().getName()};
+        }
+
+        return renderMapsLearningElement(element, parent, post.getDescription(), titleId, titleArgs);
+    }
+
+    private View renderEReaderLearningElement(EReaderLearningElement element, ViewGroup parent, int iconId, String uri, int titleId, Object... titleArgs) {
+        View sharedPostLayout = renderLearningElement(element, parent, iconId, uri, titleId, titleArgs);
+        TextView titleView = (TextView) sharedPostLayout.findViewById(R.id.shared_post_title);
+        titleView.setTextColor(context.getResources().getColor(R.color.blue));
+        SmartImageView imageView = (SmartImageView) sharedPostLayout.findViewById(R.id.shared_post_image);
+        imageView.setFileImageUri(element.getEReaderUri(), R.drawable.btn_share_ereader);
+        return sharedPostLayout;
+    }
+
+    private View renderWebPageLearningElement(WebPageLearningElement element, ViewGroup parent, int iconId, String uri, int titleId, Object... titleArgs) {
+        View sharedPostLayout = renderLearningElement(element, parent, iconId, uri, titleId, titleArgs);
+        SmartImageView imageView = (SmartImageView) sharedPostLayout.findViewById(R.id.shared_post_image);
+        imageView.setImageUrl(element.getThumbnailUri(), R.drawable.webpage_icon);
+        return sharedPostLayout;
+    }
+
+    private View renderVideoLearningElement(VideoLearningElement element, ViewGroup parent, int iconId, String uri, int titleId, Object... titleArgs) {
+        View sharedPostLayout = renderLearningElement(element, parent, iconId, uri, titleId, titleArgs);
+        SmartImageView imageView = (SmartImageView) sharedPostLayout.findViewById(R.id.shared_post_image);
+        imageView.setImageBitmap(element.getThumbnailBitmap(), R.drawable.icn_streamshare_video);
+        return sharedPostLayout;
+    }
+
+    private View renderGoogleDriveLearningElement(GoogleDriveLearningElement element, ViewGroup parent, int iconId, String uri, int titleId, Object... titleArgs) {
+        View sharedPostLayout = renderLearningElement(element, parent, iconId, uri, titleId, titleArgs);
+        SmartImageView imageView = (SmartImageView) sharedPostLayout.findViewById(R.id.shared_post_image);
+        imageView.setImageResource(element.getIcon());
+        return sharedPostLayout;
+    }
+
+    private View renderMapsLearningElement(GoogleMapsLearningElement element, ViewGroup parent, String uri, int titleId, Object... titleArgs) {
+        View sharedPostLayout = renderLearningElement(element, parent, R.drawable.icn_stream_share, uri, titleId, titleArgs);
+        SmartImageView imageView = (SmartImageView) sharedPostLayout.findViewById(R.id.shared_post_image);
+        imageView.setImageResource(R.drawable.icn_streamshare_map);
+        return sharedPostLayout;
+    }
+
+    private View renderLearningElement(LearningElement element, ViewGroup parent, int iconId, String uri, int titleId, Object... titleArgs) {
+        TextView notebookTitleView = (TextView) parent.findViewById(R.id.notebook_post_title);
+        ImageView postIcon = (ImageView) parent.findViewById(R.id.notebook_post_icon);
+
+        String message = context.getString(titleId);
+        String formattedMessage = String.format(message, titleArgs);
+        notebookTitleView.setText(formattedMessage);
+
+        postIcon.setImageDrawable(context.getResources().getDrawable(iconId));
+
+        View sharedPostLayout = LayoutInflater.from(context).inflate(R.layout.post_stream_share_layout, parent, false);
+        TextView titleView = (TextView) sharedPostLayout.findViewById(R.id.shared_post_title);
+
+        setTitleAndUri(titleView, element, uri, sharedPostLayout);
+        setDescription(element, sharedPostLayout);
+
+        ViewGroup postContent = (ViewGroup) parent.findViewById(R.id.notebook_post_content);
+        postContent.addView(sharedPostLayout);
+        return sharedPostLayout;
+    }
+
+    private void setTitleAndUri(TextView titleView, LearningElement element, String uri, View sharedPostLayout) {
+        titleView.setVisibility(TextUtils.isEmpty(element.getTitle()) ? View.GONE : View.VISIBLE);
+        titleView.setText(element.getTitle());
+        TextView uriView = (TextView) sharedPostLayout.findViewById(R.id.shared_post_uri);
+        uriView.setVisibility(TextUtils.isEmpty(uri) ? View.GONE : View.VISIBLE);
+        uriView.setText(uri);
+    }
+
+    private void setDescription(LearningElement element, View sharedPostLayout) {
+        final AmplifyCollapsibleView topic = (AmplifyCollapsibleView) sharedPostLayout.findViewById(R.id.shared_post_description);
+        topic.setElementId(element.getId());
+        topic.setExpandState(stateHolder.contains(element.getId()));
+        topic.setText(post.getNote());
+        topic.setCollapseStateListener(this);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onStateChanged(Long id, boolean isExpanding) {
+        if (isExpanding) {
+            stateHolder.add(id);
+        } else {
+            stateHolder.remove(id);
+        }
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

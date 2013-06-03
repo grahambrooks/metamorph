@@ -1,0 +1,185 @@
+<html><head><title>StreamSummaryQuickPollPostRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryQuickPollPostRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummaryQuickPollPostRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.domains.QuickPollResponse;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamSummaryQuickPollPostRendererTest {
+
+    private static final String AUTHOR_NAME = "afjq9u3adjf";
+    private static final String DESCRIPTION = "description";
+
+    @Mock
+    private Post post;
+    @Mock
+    private PostAuthor author;
+    @Mock
+    private UserService userService;
+    @Mock
+    private QuickPollResponse response;
+    @Mock
+    private User user;
+
+    private StreamSummaryQuickPollPostRenderer quickPollPostRenderer;
+    private ViewGroup parentView;
+    private Resources resources;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        given(userService.getUser()).willReturn(user);
+        given(user.asAuthor()).willReturn(author);
+        given(author.getName()).willReturn(AUTHOR_NAME);
+        given(post.getAuthor()).willReturn(author);
+        given(post.getPostType()).willReturn(PostType.QUICKPOLL);
+        given(post.getDescription()).willReturn(DESCRIPTION);
+
+        resources = Robolectric.application.getResources();
+        quickPollPostRenderer = new StreamSummaryQuickPollPostRenderer(userService, resources, post);
+        parentView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionInConstructorIfPostTypeNotAction() {
+        when(post.getPostType()).thenReturn(PostType.SHARE);
+        new StreamSummaryQuickPollPostRenderer(userService, resources, post);
+    }
+
+    @Test
+    public void shouldSetContentToQuickPollResponseIfStudentHasResponded() {
+        when(userService.isStudent()).thenReturn(true);
+        when(post.getQuickPollResponses()).thenReturn(Collections.singletonList(response));
+        when(post.wasActiveWhenShared(user)).thenReturn(true);
+        when(response.getAuthor()).thenReturn(author);
+        when(response.getQuickPollAnswer()).thenReturn("A");
+
+        View view = quickPollPostRenderer.renderView(parentView);
+        TextView actionText = (TextView) view.findViewById(R.id.notebook_post_title);
+        String expected = resources.getString(R.string.quick_poll_response, "A");
+        assertThat(actionText.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldSetContentToNoResponseIfStudentHasNotResponded() {
+        when(userService.isStudent()).thenReturn(true);
+        List<QuickPollResponse> responses = Collections.emptyList();
+        when(post.getQuickPollResponses()).thenReturn(responses);
+        when(post.wasActiveWhenShared(user)).thenReturn(true);
+
+        View view = quickPollPostRenderer.renderView(parentView);
+        TextView actionText = (TextView) view.findViewById(R.id.notebook_post_title);
+        assertThat(actionText.getText().toString(), is(resources.getString(R.string.quick_poll_no_response)));
+    }
+
+    @Test
+    public void shouldSetContentToTeacherIssuedQuickPollIfStudentNotPresent() {
+        when(userService.isStudent()).thenReturn(true);
+        when(post.getQuickPollResponses()).thenReturn(Collections.<QuickPollResponse>emptyList());
+
+        View view = quickPollPostRenderer.renderView(parentView);
+
+        String expected = resources.getString(R.string.quick_poll_issued_by_teacher, AUTHOR_NAME);
+        TextView actionText = (TextView) view.findViewById(R.id.notebook_post_title);
+        assertThat(actionText.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldSetContentToYouIssuedQuickpollIfTeacher() {
+        when(userService.isStudent()).thenReturn(false);
+        View view = quickPollPostRenderer.renderView(parentView);
+
+        verify(post, never()).getAuthor();
+
+        TextView actionText = (TextView) view.findViewById(R.id.notebook_post_title);
+        String expected = resources.getString(R.string.quick_poll_issued_by_you).replace("**", StringUtils.EMPTY);
+        assertThat(actionText.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldAlwaysHideThePostContentView() {
+        View postContent = parentView.findViewById(R.id.notebook_post_content);
+        postContent.setVisibility(View.VISIBLE);
+
+        quickPollPostRenderer.renderView(parentView);
+
+        assertThat(postContent.getVisibility(), is(View.GONE));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

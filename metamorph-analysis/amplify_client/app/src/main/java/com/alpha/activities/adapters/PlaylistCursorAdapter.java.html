@@ -1,0 +1,178 @@
+<html><head><title>PlaylistCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/PlaylistCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.text.format.DateFormat;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.alpha.activities.PlaylistActivity;
+import com.alpha.activities.ShareTextToNotebooksActivity;
+import com.alpha.activities.ShareVideoToNotebooksActivity;
+import com.alpha.api.adapters.ContentJsonCursorAdapter;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.LearningElementType;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.launchers.LearningElementLauncher;
+import com.alpha.widgets.image.SmartImageView;
+import com.amplify.R;
+import com.google.inject.Inject;
+
+import java.util.Date;
+
+public class PlaylistCursorAdapter extends ContentJsonCursorAdapter<LearningElement> {
+    private final Context context;
+    private final LearningElementLauncher learningElementLauncher;
+
+    @Inject
+    public PlaylistCursorAdapter(Context context, LearningElementLauncher learningElementLauncher) {
+        super(context, R.layout.playlist_item);
+        this.context = context;
+        this.learningElementLauncher = learningElementLauncher;
+    }
+
+    @Override
+    protected void populateView(View view, LearningElement learningElement) {
+        SmartImageView iconView = (SmartImageView) view.findViewById(R.id.playlist_thumbnail_icon);
+
+        View shareButton = view.findViewById(R.id.playlist_share_button);
+        LinearLayout playlistItem = (LinearLayout) view.findViewById(R.id.playlist_item_title_container);
+
+        if (learningElement.getType() == LearningElementType.GOOGLE_DRIVE) {
+            GoogleDriveLearningElement element = (GoogleDriveLearningElement) learningElement;
+            iconView.setBackgroundDrawable(null);
+            iconView.setImageResource(element.getIcon());
+            shareButton.setOnClickListener(new PlaylistShareOnClickListener(element.getGoogleDriveShareIntent(), element.getDescription(), element.getId()));
+            playlistItem.setOnClickListener(new PlaylistItemClickListener());
+        } else if (learningElement.getType() == LearningElementType.WEBPAGE) {
+            iconView.setImageUrl(learningElement.getThumbnailUri(), R.drawable.webpage_icon, R.drawable.no_image_available);
+            WebPageLearningElement element = (WebPageLearningElement) learningElement;
+            shareButton.setOnClickListener(new PlaylistShareOnClickListener(element.getWebPageShareIntent(), element.getDescription(), element.getId()));
+            playlistItem.setOnClickListener(new PlaylistItemClickListener());
+        } else if (learningElement.getType() == LearningElementType.EREADER) {
+            EReaderLearningElement element = (EReaderLearningElement) learningElement;
+            iconView.setFileImageUri(element.getEReaderUri(), R.drawable.btn_share_ereader);
+            shareButton.setOnClickListener(new PlaylistShareOnClickListener(element.getEReaderShareIntent(), element.getDescription(), element.getId()));
+            playlistItem.setOnClickListener(new PlaylistItemClickListener());
+        } else if (learningElement.getType() == LearningElementType.VIDEO) {
+            VideoLearningElement element = (VideoLearningElement) learningElement;
+            iconView.setImageBitmap(element.getThumbnailBitmap(), R.drawable.icn_streamshare_video);
+            shareButton.setOnClickListener(new PlaylistShareOnClickListener(element.getVideoShareIntent(), element.getDescription(), element.getId(), ShareVideoToNotebooksActivity.class));
+            playlistItem.setOnClickListener(new PlaylistItemClickListener());
+        } else if (learningElement.getType() == LearningElementType.MAPS) {
+            GoogleMapsLearningElement element = (GoogleMapsLearningElement) learningElement;
+            iconView.setImageBitmap(null, R.drawable.icn_streamshare_map);
+            shareButton.setOnClickListener(new PlaylistShareOnClickListener(element.getShareIntent(), element.getDescription(), element.getId()));
+            playlistItem.setOnClickListener(new PlaylistItemClickListener());
+        }
+
+        playlistItem.setTag(learningElement);
+
+        TextView sharedOn = (TextView) view.findViewById(R.id.playlist_item_sharedOn);
+
+        Date sharedOnDate = learningElement.getSharedOn();
+
+        if (sharedOnDate == null) {
+            sharedOn.setText("");
+        } else {
+            sharedOn.setText(DateFormat.format("MMMM dd, yyyy", sharedOnDate));
+        }
+
+        TextView itemTitle = (TextView) view.findViewById(R.id.playlist_item_title);
+        itemTitle.setText(learningElement.getTitle());
+
+        TextView itemType = (TextView) view.findViewById(R.id.playlist_item_type);
+        itemType.setText(learningElement.getName());
+    }
+
+    private class PlaylistShareOnClickListener implements View.OnClickListener {
+        private final Intent intent;
+        private final String notes;
+        private final Long elementId;
+        private final Class<? extends Activity> shareToNotebooksActivity;
+
+        public PlaylistShareOnClickListener(Intent intent, String notes, Long elementId) {
+            this(intent, notes, elementId, ShareTextToNotebooksActivity.class);
+        }
+
+        public PlaylistShareOnClickListener(Intent intent, String notes, Long elementId, Class<? extends Activity> shareToNotebooksActivity) {
+            this.elementId = elementId;
+            this.intent = intent;
+            this.notes = notes;
+            this.shareToNotebooksActivity = shareToNotebooksActivity;
+        }
+
+        @Override
+        public void onClick(View v) {
+            intent.setComponent(new ComponentName(context, shareToNotebooksActivity));
+            intent.putExtra(PlaylistActivity.EXTRA_ID, elementId);
+            intent.putExtra(PlaylistActivity.EXTRA_NOTES, notes);
+            context.startActivity(intent);
+        }
+    }
+
+    private class PlaylistItemClickListener implements OnClickListener {
+        @Override
+        public void onClick(View v) {
+            LearningElement element = (LearningElement) v.getTag();
+            learningElementLauncher.launchIntentForLearningElement(PlaylistCursorAdapter.this.context, element);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

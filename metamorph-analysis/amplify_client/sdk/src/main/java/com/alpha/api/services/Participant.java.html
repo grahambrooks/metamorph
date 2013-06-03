@@ -1,0 +1,242 @@
+<html><head><title>Participant.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Participant.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/Participant.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">26</span>
+    <progress max="100" value="26"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.ContentValues;
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.google.common.base.Predicate;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.io.Serializable;
+import java.util.Comparator;
+
+import static com.alpha.api.repository.sqlite.TableColumn.participant_id;
+import static com.alpha.api.repository.sqlite.TableColumn.section_id;
+
+public class Participant implements Serializable {
+
+    public static final Comparator<Participant> NAME_COMPARATOR = new Comparator<Participant>() {
+        @Override
+        public int compare(Participant participant, Participant participant1) {
+            return String.CASE_INSENSITIVE_ORDER.compare(participant.getName(), participant1.getName());
+        }
+    };
+
+    public static final Predicate<Participant> PRESENCE_FILTER = new Predicate<Participant>() {
+        @Override
+        public boolean apply(Participant input) {
+            return input.isPresent();
+        }
+    };
+
+    private final Long id;
+    private final String name;
+
+    private boolean isPresent;
+    private boolean selected;
+    private ParticipantPresenceModel participantPresence;
+
+    public Participant(Long id, String name) {
+        this(id, name, false);
+    }
+
+    public Participant(Long id, String name, boolean selected) {
+        this.id = id;
+        this.name = name;
+        this.selected = selected;
+    }
+
+    public Participant(Participant original) {
+        this(original.id, original.name);
+    }
+
+    public ParticipantPresenceModel getParticipantPresence() {
+        return participantPresenceExists() ? new ParticipantPresenceModel(participantPresence) : null; //NOPMD
+    }
+
+    public void setParticipantPresence(ParticipantPresenceModel participantPresence) {
+        this.participantPresence = participantPresence;
+    }
+
+    public void select() {
+        selected = true;
+    }
+
+    public void deselect() {
+        selected = false;
+    }
+
+    public void toggleSelection() {
+        selected = !selected;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void leaveSession() {
+        isPresent = false;
+        participantPresence = null; //NOPMD
+    }
+
+    public void joinSession(String liveSection) {
+        isPresent = true;
+        if (participantPresence == null) {
+            //We assume that when a student joins a session, he has to be in the live section and have a hand raise status of lowered
+            //TODO This null check is to guard against the fact that we call joinSession everytime the user status changes, we need to fix that
+            participantPresence = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER, StudentLocation.SECTION, liveSection, null);
+        }
+    }
+
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public boolean hasHandRaised() {
+        return participantPresenceExists() && participantPresence.isHandRaised();
+    }
+
+    private boolean participantPresenceExists() {
+        return participantPresence != null;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getName() {
+        return name;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public boolean equals(Object o) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (this == o) {
+            return true;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (o instanceof Participant) {
+            Participant other = (Participant) o;
+            return ObjectUtils.equals(this.id, other.id);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).hashCode();
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String toString() {
+        return name;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public ContentValues asContentValues(Long sectionId) {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn.name.name(), name);
+        values.put(participant_id.name(), id);
+        values.put(section_id.name(), sectionId);
+        return values;
+    }
+
+    public void copyParticipantSessionDetails(Participant participant) {
+        this.isPresent = participant.isPresent;
+        this.selected = participant.selected;
+        this.participantPresence = participant.participantPresence;
+    }
+
+    public boolean equals(User user) {
+        return id.equals(user.getId());
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

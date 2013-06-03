@@ -1,0 +1,275 @@
+<html><head><title>BaseQuickActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BaseQuickActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/BaseQuickActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import com.alpha.api.domains.Post;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.events.ConnectionClosedEvent;
+import com.alpha.api.services.events.SessionStartEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+import java.util.Collection;
+import java.util.List;
+
+public abstract class BaseQuickActivity<ActivitySettings extends QuickActivitySettings> extends SundaeTimedActivity implements PostResponseCallback {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String POST_ID_KEY = "postId";
+    private static final int INTENT_DEFAULT_VALUE = -1;
+
+    @InjectView(R.id.done)
+    protected Button doneButton;
+
+    @Inject
+    private TeacherConsoleAction teacherConsoleAction;
+    @Inject
+    private PostService postService;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private PostsDataStore postsDataStore;
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+
+    protected Listeners listeners = new Listeners();
+    private QuickActivityViewMode activityViewMode;
+    private Long currentActivityPostId;
+
+    public enum QuickActivityViewMode {
+        ONGOING,
+        COMPLETE
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (displayingHistoricalActivityPost()) {
+            currentActivityPostId = retrievePostIdFromIntent();
+            activityViewMode = QuickActivityViewMode.COMPLETE;
+            return;
+        } else if (getActivitySettings().activityPostCreated()) {
+            currentActivityPostId = retrievePostIdFromQuickActivitySettings();
+        } else if (!getActivitySettings().isRunning()) {
+            createNewPost();
+        }
+        activityViewMode = QuickActivityViewMode.ONGOING;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+        if (QuickActivityViewMode.COMPLETE == activityViewMode) {
+            updateUI(currentActivityPostId);
+        } else if (liveActivityPostCreated()) {
+            enableDoneButtonBasedOnNetworkConnectivity();
+            updateCurrentActivityParticipants();
+            updateUI(currentActivityPostId);
+        } else {
+            disableDoneButton();
+        }
+    }
+
+    private void disableDoneButton() {
+        doneButton.setEnabled(false);
+        doneButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(listeners);
+        super.onPause();
+    }
+
+    protected Long getCurrentActivityPostId() {
+        return currentActivityPostId;
+    }
+
+    private Long retrievePostIdFromQuickActivitySettings() {
+        return getActivitySettings().getPostId();
+    }
+
+    private boolean liveActivityPostCreated() {
+        return getActivitySettings().isRunning() && getActivitySettings().activityPostCreated();
+    }
+
+    private boolean displayingHistoricalActivityPost() {
+        if (!getIntent().hasExtra(POST_ID_KEY)) {
+            return false;
+        }
+
+        return !getActivitySettings().activityPostCreated() || !retrievePostIdFromQuickActivitySettings().equals(retrievePostIdFromIntent());
+    }
+
+    private long retrievePostIdFromIntent() {
+        return getIntent().getLongExtra(POST_ID_KEY, INTENT_DEFAULT_VALUE);
+    }
+
+    protected void createNewPost() {
+        Post newPost = getNewPost();
+        if (newPost != null) {
+            postService.addQuickActivityPost(newPost, this, getActivitySettings());
+        }
+    }
+
+    @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+    private void updateCurrentActivityParticipants() {
+        User user = userService.getUser();
+        List<Participant> activeParticipants = user.getLiveSection().getActiveParticipants();
+        getActivitySettings().addParticipants(activeParticipants);
+    }
+
+    private void enableDoneButtonBasedOnNetworkConnectivity() {
+        if (networkConnectivity.isConnected()) {
+            doneButton.setEnabled(true);
+            doneButton.setVisibility(View.VISIBLE);
+            doneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    teacherConsoleAction.finishInClassActivity(false);
+                    finish();
+                }
+            });
+        } else {
+            disableDoneButton();
+        }
+    }
+
+    protected Collection<Participant> getAllActiveParticipants() {
+        if (activityViewMode == QuickActivityViewMode.ONGOING) {
+            Section liveSection = userService.getUser().getLiveSection();
+            Collection<Long> participantIds = getActivitySettings().getActiveParticipantsIds();
+            return liveSection.getParticipantsFromIds(participantIds);
+        }
+
+        Post post = postsDataStore.fetch(getCurrentActivityPostId());
+        if (post != null) {
+            return post.getActiveParticipants();
+        }
+
+        throw new IllegalStateException("Unable to retrieve list of active participants");
+    }
+
+    protected abstract Post getNewPost();
+
+    protected abstract ActivitySettings getActivitySettings();
+
+    protected abstract void sessionParticipantAdded(Participant participant);
+
+    protected abstract void updateUI(Long postId);
+
+    protected abstract void startQuickActivityTask(Post post);
+
+    @Override
+    public void onSuccess(Post post) {
+        currentActivityPostId = post.getId();
+        enableDoneButtonBasedOnNetworkConnectivity();
+        updateCurrentActivityParticipants();
+        updateUI(currentActivityPostId);
+        startQuickActivityTask(post);
+    }
+
+    @Override
+    public void onFailure(ApiErrorReason reason) {
+        LOG.error("Error creating post: {}", reason);
+    }
+
+    protected class Listeners {
+        @Subscribe
+        public void notifyParticipantChanges(UserSessionChangeEvent event) {
+            if (activityViewMode == QuickActivityViewMode.ONGOING && event.isUserJoining()) {
+                sessionParticipantAdded(event.getParticipant());
+                updateCurrentActivityParticipants();
+            }
+        }
+
+        @Subscribe
+        public void sessionConnectionDropped(ConnectionClosedEvent event) {
+            doneButton.setEnabled(false);
+        }
+
+        @Subscribe
+        public void sessionStarted(SessionStartEvent event) {
+            doneButton.setEnabled(true);
+        }
+
+        @Subscribe
+        public void onSessionEnded(TeacherSessionEndedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (event.isConnectionLost()) {
+                teacherConsoleAction.finishInClassActivity(true);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

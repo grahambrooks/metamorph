@@ -1,0 +1,134 @@
+<html><head><title>JoinSessionTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>JoinSessionTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/JoinSessionTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.messaging.*;
+import com.alpha.api.services.events.JoinSessionEvent;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+public class JoinSessionTask extends SafeProgressAsyncTask<SessionTaskResult> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final StudentSession studentSession;
+    private final WebServices webServices;
+    private final Student student;
+    private final EventBus eventBus;
+    private final Section sectionToJoin;
+
+    @Inject
+    public JoinSessionTask(StudentSession studentSession,
+                           WebServices webServices,
+                           EventBus eventBus,
+                           AnalyticsAgent analyticsAgent,
+                           @Assisted Student student,
+                           @Assisted Section sectionToJoin,
+                           @Assisted ProgressBar progressBar) {
+        super(progressBar, analyticsAgent);
+        this.studentSession = studentSession;
+        this.webServices = webServices;
+        this.student = student;
+        this.eventBus = eventBus;
+        this.sectionToJoin = sectionToJoin;
+    }
+
+    @Override
+    public SessionTaskResult call() throws Exception {
+        student.setPresenceModel(new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER, StudentLocation.SECTION, sectionToJoin.getName(), null));
+
+        studentSession.joinSession(student, sectionToJoin);
+
+        boolean success = webServices.send(student.joinSessionEvent(sectionToJoin));
+        if (!success) {
+            studentSession.endSession();
+            return SessionTaskResult.REQUEST_FAILED;
+        }
+
+        return SessionTaskResult.SESSION_JOINED;
+    }
+
+    @Override
+    protected void onSuccess(SessionTaskResult sessionTaskResult) {
+        switch (sessionTaskResult) {
+            case SESSION_JOINED:
+                eventBus.post(new JoinSessionEvent());
+                break;
+            case REQUEST_FAILED:
+                eventBus.post(new JoinSessionFailureEvent(ApiErrorReason.NETWORK_COMMUNICATION_ERROR));
+                break;
+            default:
+                throw new IllegalArgumentException("Unexpected result for join session");
+        }
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Error when joining session", e);
+        eventBus.post(new JoinSessionFailureEvent(e.getApiErrorReason()));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Error when joining session", e);
+
+        ApiErrorReason reasonForFailure = e instanceof SessionDoesNotExistException ? ApiErrorReason.SESSION_DOES_NOT_EXIST : ApiErrorReason.SESSION_JOIN_FAILED;
+        eventBus.post(new JoinSessionFailureEvent(reasonForFailure));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

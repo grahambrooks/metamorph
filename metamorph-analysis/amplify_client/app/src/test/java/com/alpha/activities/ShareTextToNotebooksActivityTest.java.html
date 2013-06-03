@@ -1,0 +1,603 @@
+<html><head><title>ShareTextToNotebooksActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShareTextToNotebooksActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ShareTextToNotebooksActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">36</span>
+    <progress max="100" value="36"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.activities.callable.RetrieveThumbnailUriTask;
+import com.alpha.activities.callable.UpdateGDriveFilePermissionTask;
+import com.alpha.activities.callable.VerifyGDriveDocPermissionsTask;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.repository.PlaylistDataStore;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.googledrive.FileLoader;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionRole;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionType;
+import com.alpha.widgets.googledrive.StubFileLoader;
+import com.amplify.R;
+import com.google.api.services.drive.model.File;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.shadows.ShadowActivity;
+import com.xtremelabs.robolectric.shadows.ShadowAlertDialog;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import static com.alpha.activities.ShareTextToNotebooksActivity.KALDOR_BOOK;
+import static com.alpha.activities.ShareTextToNotebooksActivity.KALDOR_CHAPTER;
+import static com.alpha.activities.ShareTextToNotebooksActivity.KALDOR_SECTION;
+import static com.alpha.activities.ShareTextToNotebooksActivity.KALDOR_URI;
+import static com.alpha.activities.callable.RetrieveThumbnailUriTask.RetrieveThumbnailUriCallback;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.same;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.TooManyFields", "PMD.CouplingBetweenObjects", "PMD.TooManyStaticImports"})
+public class ShareTextToNotebooksActivityTest {
+
+    private static final String SECTION_GEOGRAPHY = "Geography";
+    private static final String SECTION_SCIENCE = "Science";
+    private static final String COURSE_NAME_GEO = "Rocks Class";
+    private static final String COURSE_NAME_SCI = "Sci Class";
+    private static final String EXAMPLE_URL = "http://www.example.com";
+    private static final String fileId = "1TdUopScvLVvtF4MvnMo-syaLCAgkbOwhnn8_LXcsvPE";
+    private static final String AMPLIFY_SUBJECT = "Amplify";
+    private static final String AMPLIFY_URL = "http://www.amplify.com";
+    private static final String EREADER_URL = "ereader url";
+    private static final String DOC_TITLE = "DocumentTitle";
+    private static final String DUMMY_IMAGE_URI = "DUMMY_IMAGE_URI";
+    private static final String PLAYLIST_NAME = "Playlist";
+    private static final String EREADER_CHAPTER = "Chapter";
+    private static final String EREADER_BOOK = "Book";
+    private static final String EREADER_SECTION = "Section";
+    private static final String EREADER_URI = "http://com.kaldorgroup.amplify/CK12AlgebraISecondEdition/1#0";
+    public static final String GOOGLE_MAPS_SUBJECT = "Subject Location";
+    private static final String SECTION_ALGEBRA = "Algebra";
+    private static final String SECTION_ENGLISH = "English";
+    private static final String SELECTED_TEXT = "Text that I selected and clicked share.";
+
+    @Inject
+    ShareTextToNotebooksActivity activity;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private PostService postService;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private Post post;
+    @Mock
+    private BackgroundTaskFactory taskFactory;
+    @Mock
+    private PlaylistDataStore playlistDataStore;
+
+    private StubFileLoader fileLoader;
+    private List<Section> sections;
+    private Button shareButton;
+    private GridView notebooksContainer;
+    private List<Long> sectionIds;
+    private Map<Long, Section> sectionsById;
+    private TextView selectedNotebooksStat;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        fileLoader = new StubFileLoader();
+
+        ActivityTestInjector.newInjector(this, ShareTextToNotebooksActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(Toaster.class, toaster)
+                .bindInstance(Post.class, post)
+                .bindInstance(FileLoader.class, fileLoader)
+                .bindInstance(BackgroundTaskFactory.class, taskFactory)
+                .bindInstance(PlaylistDataStore.class, playlistDataStore)
+                .configureActivity();
+
+        Playlist testPlaylist = new Playlist(PLAYLIST_NAME, user);
+
+        sections = new ArrayList<Section>();
+        sectionIds = new ArrayList<Long>();
+        sectionsById = newHashMap();
+
+        List<Playlist> playlists = new ArrayList<Playlist>();
+        playlists.add(testPlaylist);
+
+        given(userService.isStudent()).willReturn(false);
+        given(userService.getUser()).willReturn(user);
+        given(user.getSections()).willReturn(sections);
+        given(taskFactory.createThumbnailUrlRetriever(anyString(), isA(RetrieveThumbnailUriCallback.class), isA(ProgressBar.class))).
+                willReturn(mock(RetrieveThumbnailUriTask.class));
+        given(taskFactory.createUpdateGDriveFilePermissionTask(Matchers.eq(activity), anyString(), Matchers.eq(PermissionRole.READER),
+                Matchers.eq(PermissionType.GROUP), anyString())).willReturn(mock(UpdateGDriveFilePermissionTask.class));
+        given(taskFactory.createVerifyGDriveDocPermissionTask(Matchers.eq(activity), anyString()))
+                .willReturn(mock(VerifyGDriveDocPermissionsTask.class));
+        given(playlistDataStore.getPlaylistFor(user)).willReturn(playlists);
+
+        setupSectionFor(SECTION_GEOGRAPHY, COURSE_NAME_GEO, 100L);
+        setupSectionFor(SECTION_SCIENCE, COURSE_NAME_SCI, 101L);
+        setupSectionFor(SECTION_ALGEBRA, COURSE_NAME_SCI, 102L);
+        setupSectionFor(SECTION_ENGLISH, COURSE_NAME_SCI, 103L);
+        setupIntentOnActivity();
+    }
+
+    @Test
+    public void shouldDisplayAllSectionForAGivenUser() throws Exception {
+        activity.onCreate(null);
+        setupGetActivityViews();
+
+        Section geographySection = (Section) notebooksContainer.getChildAt(0).getTag();
+        Section scienceSection = (Section) notebooksContainer.getChildAt(1).getTag();
+
+        assertThat(geographySection.getName(), is(SECTION_GEOGRAPHY));
+        assertThat(scienceSection.getName(), is(SECTION_SCIENCE));
+    }
+
+
+    @Test
+    public void shouldDisplaySectionNameForAGivenUser() {
+        activity.onCreate(null);
+        setupGetActivityViews();
+
+        View notebookView = notebooksContainer.getChildAt(0);
+
+        TextView geographyView = (TextView) notebookView.findViewById(R.id.notebook_preview_section);
+
+        assertThat(geographyView.getText().toString(), is(SECTION_GEOGRAPHY));
+    }
+
+    @Test
+    public void shouldCreateActivityPostWithWebPageLearningElementWhenShareIsClicked() {
+        activity.onCreate(null);
+        setupGetActivityViews();
+        activity.onPreviewThumnailUriReturned(DUMMY_IMAGE_URI);
+
+        shareButton.performClick();
+
+        verify(postService).addPostForSections(any(Post.class), any(List.class), any(PostResponseCallback.class));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisplayErrorToastMessageOnPostFailure() {
+        activity.onFailure(ApiErrorReason.INTERNAL_ERROR);
+
+        verify(toaster).errorToast(ApiErrorReason.INTERNAL_ERROR, R.string.sharing_post_failure);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldDisplayConfirmationToastMessageOnPostSuccess() {
+        activity.onSuccess(post);
+
+        verify(toaster).makeToast(R.string.post_shared_with_selected_notebooks);
+    }
+
+    @Test
+    public void shouldGetFileDescriptionAndTitleOnlyForGDriveDocs() throws Exception {
+        prepareIntentForGDrive();
+
+        activity.onCreate(null);
+
+        assertThat(fileLoader.getFileId(), equalTo(fileId));
+    }
+
+    @Test
+    public void shouldNotGetFileDescriptionAndTitleForOtherURLs() throws Exception {
+        setupIntentOnActivity();
+
+        activity.onCreate(null);
+
+        assertNull("FileLoader should not have been invoked!", fileLoader.getFileId());
+    }
+
+    @Test
+    public void shouldSetChapterTitleFromEReaderOnPost() {
+        setUpEReaderShareIntentWithChapter();
+
+        activity.onCreate(null);
+
+        setupGetActivityViews();
+
+        shareButton.performClick();
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        verify(postService).addPostForSections(postCaptor.capture(), argThat(hasAllItems(sectionIds)), eq(activity));
+
+        final Post actualPost = postCaptor.getValue();
+        assertThat(actualPost.getPostType(), is(PostType.SHARE));
+        assertThat(actualPost.getTitle(), is(EREADER_CHAPTER));
+    }
+
+    private Matcher<List> hasAllItems(final List items) {
+        return new BaseMatcher<List>() {
+            @Override
+            public boolean matches(Object o) {
+                List actualObject = (List) o;
+                return actualObject.containsAll(items);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected ").appendValue(items);
+            }
+        };
+    }
+
+    @Test
+    public void shouldSetBookAndChapterTitlesFromEReaderOnElement() throws Exception {
+        setUpEReaderShareIntentWithChapter();
+
+        final EReaderLearningElement eReaderLearningElement = setUpEReaderElement();
+
+        assertThat(eReaderLearningElement.getBook(), is(EREADER_BOOK));
+        assertThat(eReaderLearningElement.getTitle(), is(EREADER_CHAPTER));
+        assertThat(eReaderLearningElement.getPlayOrder(), is(1));
+    }
+
+    @Test
+    public void shouldAddEReaderLearningElementToPostWhenTextbookSectionIsShared() throws Exception {
+        setUpEReaderShareIntentWithSection();
+
+        final EReaderLearningElement eReaderLearningElement = setUpEReaderElement();
+
+        assertThat(eReaderLearningElement.getBook(), is(EREADER_BOOK));
+        assertThat(eReaderLearningElement.getTitle(), is(EREADER_SECTION));
+        assertThat(eReaderLearningElement.getPlayOrder(), is(1));
+    }
+
+    @Test
+    public void shouldAddGoogleDriveLearningElementToPostWhenGDocIsShared() throws Exception {
+        prepareIntentForGDrive();
+
+        PostAuthor postAuthor = mock(PostAuthor.class);
+        when(user.asAuthor()).thenReturn(postAuthor);
+
+        activity.onCreate(null);
+
+        setupGetActivityViews();
+
+        shareButton.performClick();
+        activity.postPermissionUpdate(true);
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        verify(postService).addPostForSections(postCaptor.capture(), argThat(hasAllItems(sectionIds)), eq(activity));
+
+        final Post actualPost = postCaptor.getValue();
+        assertThat(actualPost.getPostType(), is(PostType.SHARE));
+        assertThat(actualPost.getAuthor(), is(postAuthor));
+        assertThat(actualPost.getTitle(), is(DOC_TITLE));
+
+        final LearningElement googleLearningElement = actualPost.elements().get(0);
+        assertThat(googleLearningElement.getTitle(), is(DOC_TITLE));
+        assertThat(googleLearningElement.getPlayOrder(), is(1));
+    }
+
+    @Test
+    public void shouldAddGoogleMapsLearningElementWhenMapIsShared() {
+        setUpGoogleMapShare();
+        activity.onCreate(null);
+        setupGetActivityViews();
+
+        shareButton.performClick();
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+
+        // default all notebooks should be selected, so all sections id should be passed over.
+        verify(postService).addPostForSections(postCaptor.capture(), argThat(hasAllItems(sectionIds)), eq(activity));
+
+        final Post actualPost = postCaptor.getValue();
+        assertThat(actualPost.getPostType(), is(PostType.SHARE));
+        assertThat(actualPost.getTitle(), is(GOOGLE_MAPS_SUBJECT));
+
+        final LearningElement googleLearningElement = actualPost.elements().get(0);
+        assertThat(googleLearningElement.getTitle(), is(GOOGLE_MAPS_SUBJECT));
+        assertThat(googleLearningElement.getPlayOrder(), is(1));
+    }
+
+    @Test
+    public void shouldToastAndFinishIfNoURLAvailableInIntent() throws ExecutionException {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_BCC, "junk");
+
+        activity.setIntent(intent);
+
+        activity.onCreate(null);
+
+        verify(toaster).makeToast(R.string.error_cant_share_with_amplify);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldToastAndFinishIfStudentIsSharing() throws ExecutionException {
+        when(userService.isStudent()).thenReturn(true);
+
+        activity.onCreate(null);
+
+        verify(toaster).makeToast(R.string.error_cant_share_if_student);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+
+    @Test
+    public void shouldRetrievePreviewLinkForAWebPage() throws Exception {
+        setUpWebShareIntent();
+        activity.onCreate(null);
+        verify(taskFactory, only()).createThumbnailUrlRetriever(eq(AMPLIFY_URL), same(activity), isA(ProgressBar.class));
+    }
+
+    @Test
+    public void shouldShowDialogIfGDriveDocumentIsNotOwnedByUser() throws IOException, ExecutionException {
+        prepareIntentForGDrive();
+        activity.onCreate(null);
+
+        activity.onPermissionsReceived(false);
+
+        AlertDialog latestAlertDialog = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(latestAlertDialog.isShowing(), is(true));
+    }
+
+    @Test
+    public void shouldToastIfGDriveDocumentCannotHavePermissionsUpdated() throws IOException, ExecutionException {
+        prepareIntentForGDrive();
+        activity.onCreate(null);
+
+        activity.postPermissionUpdate(false);
+
+        verify(toaster).makeToast(R.string.gdrive_update_error);
+    }
+
+    @Test
+    public void shouldUpdateAndFinishIfGDriveDocHasUpdatedPermissions() throws IOException, ExecutionException {
+        prepareIntentForGDrive();
+        activity.onCreate(null);
+        setupGetActivityViews();
+
+        shareButton.performClick();
+
+        activity.postPermissionUpdate(true);
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldLaunchSharedPostActivityWithSharedUrlIfSharedUrlDoesNOTMatchExistingLearningElements(){
+        setupSelectedTextShareIntent();
+        activity.onCreate(null);
+
+        ShadowActivity shadowActivity = shadowOf(activity);
+        Intent nextIntent = shadowActivity.getNextStartedActivity();
+        assertThat(shadowActivity.isFinishing(), is(true));
+        assertThat(nextIntent.getStringExtra(SharePostActivity.INITIAL_TEXT), is(SELECTED_TEXT));
+        assertThat(nextIntent.getComponent().getClassName(), is(SharePostActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldBeEReadableIfIntentHasEReaderExtras() {
+        setUpEReaderShareIntentWithChapter();
+
+        assertTrue(activity.isEReadable());
+    }
+
+    @Test
+    public void shouldToastIfSharingGDocToSectionWithNoEmail() throws IOException, ExecutionException {
+        prepareIntentForGDrive();
+
+        Section section = mock(Section.class);
+        when(section.getGroupEmail()).thenReturn(null);
+        when(user.getSections()).thenReturn(Lists.newArrayList(section));
+
+        activity.onCreate(null);
+
+        setupGetActivityViews();
+        shareButton.performClick();
+
+        verify(toaster).makeToast(R.string.shareto_error_section_missing_an_email);
+    }
+
+    @Test
+    public void shouldUpdateSelectedNotebooksStatOnNotebookSelectionDeselection() {
+        activity.onCreate(null);
+        setupGetActivityViews();
+
+        assertThat(selectedNotebooksStat.getText().toString(), is("4/4 notebooks selected"));
+
+        notebooksContainer.performItemClick(notebooksContainer.getChildAt(0), 0, 0l);
+        notebooksContainer.performItemClick(notebooksContainer.getChildAt(3), 3, 0l);
+
+        assertThat(selectedNotebooksStat.getText().toString(), is("2/4 notebooks selected"));
+
+    }
+
+    private void setupGetActivityViews() {
+        shareButton = (Button) activity.findViewById(R.id.share_to_section_button);
+        selectedNotebooksStat = (TextView) activity.findViewById(R.id.selected_notebooks_stat);
+        notebooksContainer = (GridView) activity.findViewById(R.id.notebooks_container);
+    }
+
+    private void setupSectionFor(String sectionName, String className, long id) {
+        Section section = mock(Section.class);
+        when(section.getName()).thenReturn(sectionName);
+        when(section.getCourseName()).thenReturn(className);
+        when(section.getId()).thenReturn(id);
+        when(section.getGroupEmail()).thenReturn(sectionName + "@gmail.com");
+        sections.add(section);
+        sectionIds.add(id);
+        sectionsById.put(id, section);
+    }
+
+    private void setupIntentOnActivity() {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_TEXT, EXAMPLE_URL);
+        activity.setIntent(intent);
+    }
+
+    private void prepareIntentForGDrive() throws ExecutionException, IOException {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_TEXT, "https://docs.google.com/a/amplifydev.net/document/d/" + fileId + "/edit");
+        activity.setIntent(intent);
+
+        File file = new File();
+        file.setTitle(DOC_TITLE);
+        file.setMimeType("application/msword");
+        fileLoader.setFile(file);
+    }
+
+    private void setUpWebShareIntent() {
+        Intent webIntent = new Intent();
+        webIntent.putExtra(Intent.EXTRA_SUBJECT, AMPLIFY_SUBJECT);
+        webIntent.putExtra(Intent.EXTRA_TEXT, AMPLIFY_URL);
+        activity.setIntent(webIntent);
+    }
+
+    private void setUpEReaderShareIntentWithChapter() {
+        Intent eReaderIntent = new Intent();
+        eReaderIntent.putExtra(Intent.EXTRA_TEXT, EREADER_URL);
+        eReaderIntent.putExtra(KALDOR_BOOK, EREADER_BOOK);
+        eReaderIntent.putExtra(KALDOR_CHAPTER, EREADER_CHAPTER);
+        eReaderIntent.putExtra(KALDOR_URI, EREADER_URI);
+        activity.setIntent(eReaderIntent);
+    }
+
+    private void setUpEReaderShareIntentWithSection() {
+        Intent eReaderIntent = new Intent();
+        eReaderIntent.putExtra(Intent.EXTRA_TEXT, EREADER_URL);
+        eReaderIntent.putExtra(KALDOR_BOOK, EREADER_BOOK);
+        eReaderIntent.putExtra(KALDOR_SECTION, EREADER_SECTION);
+        eReaderIntent.putExtra(KALDOR_URI, EREADER_URI);
+        activity.setIntent(eReaderIntent);
+    }
+
+    private void setUpGoogleMapShare(){
+        Intent mapIntent = new Intent();
+        mapIntent.putExtra(Intent.EXTRA_SUBJECT, GOOGLE_MAPS_SUBJECT);
+        mapIntent.putExtra(Intent.EXTRA_TEXT, "Name\nAddress\nPhone Number\nhttp://m.google.com/");
+        activity.setIntent(mapIntent);
+    }
+
+    private EReaderLearningElement setUpEReaderElement() {
+        activity.onCreate(null);
+
+        setupGetActivityViews();
+
+        shareButton.performClick();
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        verify(postService).addPostForSections(postCaptor.capture(), argThat(hasAllItems(sectionIds)), eq(activity));
+
+        final Post actualPost = postCaptor.getValue();
+        return (EReaderLearningElement) actualPost.elements().get(0);
+    }
+
+    private void setupSelectedTextShareIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_TEXT, SELECTED_TEXT);
+        activity.setIntent(intent);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

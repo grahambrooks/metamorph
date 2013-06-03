@@ -1,0 +1,165 @@
+<html><head><title>ParticipantSessionService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantSessionService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ParticipantSessionService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import static com.google.common.base.Preconditions.checkState;
+
+public class ParticipantSessionService {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final SessionTaskFactory sessionTaskFactory;
+    private final NetworkConnectivity networkConnectivity;
+    private final EventBus eventBus;
+    private final UserService userService;
+
+    @Inject
+    public ParticipantSessionService(SessionTaskFactory sessionTaskFactory,
+                                     NetworkConnectivity networkConnectivity,
+                                     EventBus eventBus,
+                                     UserService userService) {
+        this.sessionTaskFactory = sessionTaskFactory;
+        this.networkConnectivity = networkConnectivity;
+        this.eventBus = eventBus;
+        this.userService = userService;
+    }
+
+    public void joinSession(final Student student, final Section section, final ProgressBar progressBar) {
+        checkState(!student.getSession().isOngoing(), "Cannot join session if already part of one");
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to join session when no network connection available");
+            eventBus.post(new JoinSessionFailureEvent(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE));
+        } else {
+            checkXMPPUserNameAndJoinSession(student, section, progressBar);
+        }
+    }
+
+    private void checkXMPPUserNameAndJoinSession(final Student student, final Section section, final ProgressBar progressBar) {
+        if (student.getXmppUsername().startsWith("amp_" + student.getId())) {
+            userService.syncAllStudentsForAllSections(student);
+            sessionTaskFactory.createJoinSessionTask(student, section, progressBar).execute();
+        } else {
+            LOG.info("Student Name is not updated to current format. Updating...");
+            userService.getUser().resetXmppUsername();
+            userService.registerUser(student, new XMPPUpdateUserNameRegistrationCallback(student, section, progressBar));
+        }
+    }
+
+    public void toggleHand(Student student, SendRaiseLowerHandCallbacks raiseHandCallbacks, Optional<ProgressBar> progressBar) {
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to toggle hand raise status no network connection available");
+            raiseHandCallbacks.onFailure(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE);
+        } else {
+            sessionTaskFactory.createRaiseLowerHandTask(student, raiseHandCallbacks, progressBar).execute();
+        }
+    }
+
+    public void updateStudentWhereabouts(Student student) {
+        if (!student.hasLiveSection()) {
+            LOG.warn("Student is not in session. Cannot update student whereabouts.");
+            return;
+        }
+
+        if (networkConnectivity.isNotConnected()) {
+            LOG.info("Invalid attempt to change Student whereabouts when no network connection available");
+            return;
+        }
+
+        sessionTaskFactory.createUpdateStudentWhereaboutsTask(student).execute();
+    }
+
+    protected class XMPPUpdateUserNameRegistrationCallback implements ControlServerRegistrationCallback {
+
+        private final Student student;
+        private final Section section;
+        private final ProgressBar progressBar;
+
+        public XMPPUpdateUserNameRegistrationCallback(Student student, Section section, ProgressBar progressBar) {
+            this.student = student;
+            this.section = section;
+            this.progressBar = progressBar;
+        }
+
+        @Override
+        public void onControlServerRegistrationSuccess() {
+            LOG.trace("Successfully updated XMPP username, joining session...");
+            userService.syncAllStudentsForAllSections(student);
+            sessionTaskFactory.createJoinSessionTask(student, section, progressBar).execute();
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onControlServerRegistrationFailure(ControlServerRegistrationResult registrationResult) {
+            LOG.error("Failed updating XMPP username");
+            eventBus.post(new JoinSessionFailureEvent(ApiErrorReason.UPDATE_XMPP_NAME_FAILURE));
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

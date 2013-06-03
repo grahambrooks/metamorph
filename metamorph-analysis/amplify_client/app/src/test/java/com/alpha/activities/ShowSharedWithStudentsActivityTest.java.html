@@ -1,0 +1,106 @@
+<html><head><title>ShowSharedWithStudentsActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShowSharedWithStudentsActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ShowSharedWithStudentsActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.widget.TextView;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ShowSharedWithStudentsActivityTest {
+
+    private final Participant participant = new Participant(1L, "Sam", true);
+
+    @Inject ShowSharedWithStudentsActivity activity;
+
+    @Mock UserService userService;
+    @Mock Section section;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        newInjector(this, ShowSharedWithStudentsActivity.class)
+                .bindInstance(UserService.class, userService)
+                .configureActivity();
+    }
+
+    @Test
+    public void shouldDisplaySharedCount() {
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(section.getAllParticipantsCount()).willReturn(3);
+
+        Intent intent = new Intent();
+        intent.putExtra(ShowSharedWithStudentsActivity.PARTICIPANTS, newArrayList(participant));
+        activity.setIntent(intent);
+
+        activity.onCreate(null);
+
+        TextView view = (TextView) activity.findViewById(R.id.show_shared_with_students_count);
+        assertThat(view.getText().toString(), is("1/3 students"));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

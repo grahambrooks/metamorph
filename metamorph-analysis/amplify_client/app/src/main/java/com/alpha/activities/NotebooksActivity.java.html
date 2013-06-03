@@ -1,0 +1,342 @@
+<html><head><title>NotebooksActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebooksActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/NotebooksActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.alpha.activities.dialogs.AppLauncherDialog;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.api.AlphaSDK;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserRole;
+import com.alpha.api.services.events.ConnectionClosedEvent;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
+
+import static com.alpha.activities.BaseNotebookActivity.SECTION_ID_KEY;
+
+@SuppressWarnings({"PMD.TooManyFields"})
+public class NotebooksActivity extends SundaeTimedActivity {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    protected static final String APP_KILLER_PACKAGE = "net.wgen.curriculum.LOCK_UNLOCK_SERVICE";
+    protected static final String APP_KILLER_STARTUP_ACTIVITY = "net.wgen.curriculum.LOCK_UNLOCK_SERVICE.ServiceStarterActivity";
+    protected static final String APP_KILLER_ACTION = "net.wgen.curriculum.intent.action.SERVICE_STARTER";
+    protected static final String APP_KILLER_CATEGORY = "android.intent.category.DEFAULT";
+
+    @InjectView(R.id.todays_date)
+    private TextView todaysDate;
+    @InjectView(R.id.apk_version)
+    private TextView versionLabel;
+    @InjectView(R.id.user_name)
+    private TextView usernameTextView;
+    @InjectView(R.id.notebooks_container)
+    private LinearLayout notebooksContainer;
+    private UserRole role;
+    @Inject
+    private NotebooksCoverMappings coverMappings;
+    @Inject
+    private AppLauncherDialog appLauncherDialog;
+    @Inject
+    private EventBus eventBus;
+
+    final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.all_notebooks_view);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+
+        startAppKillah((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+
+        if (userService.hasUserRegistered()) {
+            User user = userService.getUser();
+            role = user.getRole();
+            createView(user);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        LOG.trace("onpause NLA " + System.identityHashCode(this));
+        eventBus.unregister(listeners);
+        super.onPause();
+    }
+
+    public void createView(User user) {
+        versionLabel.setText(getApkVersion());
+        todaysDate.setText(DateFormat.format("EEE MMM d yyyy", new Date()));
+        usernameTextView.setText(user.getName());
+
+        notebooksContainer.removeAllViews();
+        for (Section section1 : user.getSections()) {
+            notebooksContainer.addView(createNotebookForSection(section1));
+        }
+    }
+
+    private String getApkVersion() {
+        try {
+            /**
+             * Get the Environment.properties and read the environment name from there.  The version number
+             * and the build date pulled from the App.apk properties.
+             */
+            PackageManager packageManager = getPackageManager();
+            Resources environmentResources = packageManager.getResourcesForApplication(AlphaSDK.ENVIRONMENT_PACKAGE);
+            int identifier = environmentResources.getIdentifier("environment", "raw", AlphaSDK.ENVIRONMENT_PACKAGE);
+            InputStream stream = environmentResources.openRawResource(identifier);
+            Properties props = new Properties();
+            props.load(stream);
+
+            PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            Date date = new Date(packageInfo.lastUpdateTime);
+            CharSequence dateFormatted = DateFormat.format("MM/dd/yyyy k:mm:ss zzzz", date);
+
+            return packageInfo.versionCode + " " + props.getProperty("name") + " - Built on " + dateFormatted;
+        } catch (Exception e) {
+            LOG.error("Failed to retrieve version information", e);
+            return null;
+        }
+    }
+
+    protected View createNotebookForSection(Section section) {
+        View notebookView = getLayoutInflater().inflate(R.layout.notebook, notebooksContainer, false);
+        boolean inSession = userService.isSessionOngoingFor(section);
+
+        View banner = notebookView.findViewById(R.id.in_session_banner);
+        banner.setActivated(inSession);
+
+        TextView name = (TextView) notebookView.findViewById(R.id.notebook_name);
+        name.setText(section.getName());
+        name.setActivated(inSession);
+
+        ImageView cover = (ImageView) notebookView.findViewById(R.id.notebook_cover);
+        cover.setImageDrawable(getResources().getDrawable(coverMappings.getHomeCoverImage(section.getName())));
+
+        notebookView.setTag(section);
+        return notebookView;
+    }
+
+    public void openAppsDialog(@SuppressWarnings("unused") View clickedView) {
+        appLauncherDialog.show();
+    }
+
+    public void onNotebookSelection(@SuppressWarnings("unused") View clickedView) {
+        if (UserRole.TEACHER.equals(role)) {
+            analyticsAgent.startTimedEvent(TeacherConsoleActivity.LAUNCH_EVENT_KEY);
+        }
+
+        Class<? extends SundaeTimedActivity> activityClass = UserRole.TEACHER.equals(role)
+                ? TeacherConsoleActivity.class
+                : StudentNotebookActivity.class;
+
+        Section clickedSection = (Section) clickedView.getTag();
+        Intent intent = new Intent(this, activityClass);
+        intent.putExtra(SECTION_ID_KEY, clickedSection.getId());
+        startActivity(intent);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+        // Prevent user from going outside secured zone
+        // From another point of view, this IS the Launcher, so there is no where to go back to.
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void handleSessionEnd() {
+        createView(userService.getUser());
+    }
+
+    protected void startAppKillah(ActivityManager activityManager) {
+        if(!serviceIsRunning(APP_KILLER_PACKAGE, activityManager)) {
+            LOG.trace("Starting application killer");
+            Intent intent = new Intent();
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setAction(APP_KILLER_ACTION);
+            intent.addCategory(APP_KILLER_CATEGORY);
+            intent.setComponent(new ComponentName(APP_KILLER_PACKAGE, APP_KILLER_STARTUP_ACTIVITY));</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            try {
+                startActivity(intent);
+            } catch(ActivityNotFoundException e) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                LOG.error("App killing service is not on this device!");
+            }
+        }
+    }
+
+    private boolean serviceIsRunning(String packageName, ActivityManager manager) {
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (packageName.equals(service.service.getPackageName())) {
+                LOG.trace("Application killer is running");
+                return true;
+            }
+        }
+
+        LOG.trace("Application killer is not running");
+
+        return false;
+    }
+
+    public class Listeners {
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onStudentSessionEnded(StudentSessionEndedEvent sessionEndEvent) {
+            handleSessionEnd();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onTeacherSessionEnded(TeacherSessionEndedEvent event) {
+            handleSessionEnd();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onSessionConnectionDropped(ConnectionClosedEvent connectionClosedEvent) {
+            handleSessionEnd();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void userInformationRefreshed(UserInformationRefreshedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (event.requiresRestart()) {
+                return;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            createView(userService.getUser());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

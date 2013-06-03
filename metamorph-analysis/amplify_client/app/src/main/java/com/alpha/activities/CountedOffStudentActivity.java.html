@@ -1,0 +1,117 @@
+<html><head><title>CountedOffStudentActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountedOffStudentActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/CountedOffStudentActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import com.alpha.api.domains.CountOffDetails;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import roboguice.inject.InjectFragment;
+
+public class CountedOffStudentActivity extends LockedInClassActivity {
+
+    @InjectFragment(R.id.network_status_count_off)
+    NetworkStatusFragment networkStatus;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.counted_off_student_view);
+
+        Long userId = userService.getUser().getId();
+
+        TextView groupTextView = (TextView) findViewById(R.id.count_off_group);
+        groupTextView.setText(getActiveCountOffDetails().groupOf(userId));
+
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.student_counted_off);
+        relativeLayout.setBackgroundColor(Color.parseColor(getActiveCountOffDetails().getBackgroudColor(userId)));
+    }
+
+    private CountOffDetails getActiveCountOffDetails() {
+        return ((CountOffSettings) getActivitySettings()).getCountOffDetails();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected Optional<NetworkStatusFragment> getNetworkStatus() {
+        return Optional.of(networkStatus);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getCountOffSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

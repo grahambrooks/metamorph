@@ -1,0 +1,205 @@
+<html><head><title>ForceFieldEditAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldEditAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/ForceFieldEditAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.activities.ForceFieldAdapterChangeListener;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import org.hamcrest.MatcherAssert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ForceFieldEditAdapterTest extends AppInfoAdapterTestBase {
+
+
+    private static final String STUDENT_INSTALLED_APPS_NAME = "StudentInstalledApps";
+    private static final String STUDENT_INSTALLED_APPS_PACKAGE = "com.amplify.appcontrol.student_installed_apps";
+    public static final String STUDENT_INSTALLED_APPS_LABEL = "All Other Apps";
+
+    @Before
+    public void setUp() {
+        setUpMocks();
+
+        ForceFieldAdapterChangeListener mockListener = mock(ForceFieldAdapterChangeListener.class);
+        appDrawerAdapter = new ForceFieldEditAdapter(context);
+        ((ForceFieldEditAdapter)appDrawerAdapter).setAdapterChangeListener(mockListener);
+    }
+
+    @Test
+    @Ignore("Robolectric doesn't currently shadow PropertyAnimator")
+    public void shouldToggleAppLockedStateOnClick() {
+        appDrawerAdapter.add(sundaeAppInfo);
+
+        View view = appDrawerAdapter.getView(0, null, null);
+        view.performClick();
+
+        assertTrue(sundaeAppInfo.isLockedApp());
+    }
+
+    @Test
+    @Ignore("Getting a ClassCastException from android.view.View.getAlpha!")
+    public void shouldDrawLockedIconIfAppLockedState() {
+        sundaeAppInfo.setLockedApp(true);
+        appDrawerAdapter.add(sundaeAppInfo);
+
+        ImageView view = (ImageView) appDrawerAdapter.getView(0, null, null).findViewById(R.id.animateable_app_overlay);
+
+        assertThat(view.getAlpha(), is(1.0f));
+    }
+
+    @Test
+    @Ignore("Robolectric doesn't currently shadow PropertyAnimator")
+    public void shouldUpdateTheWhitelistedAppsCountAndNotify() {
+        appDrawerAdapter.add(sundaeAppInfo);
+        appDrawerAdapter.notifyDataSetChanged();
+        View view = appDrawerAdapter.getView(0, null, null);
+
+        view.performClick();
+        assertThat(((ForceFieldEditAdapter) appDrawerAdapter).getWhitelistAppsCount(), is(0));
+
+        view.performClick();
+        assertThat(((ForceFieldEditAdapter)appDrawerAdapter).getWhitelistAppsCount(), is(1));
+    }
+
+    @Test
+    public void shouldRenderAsSpecialStudentInstalledApps() {
+        SundaeAppInfo studentInstalledAppsInfo = mock(SundaeAppInfo.class);
+        when(studentInstalledAppsInfo.getAppPackage()).thenReturn(STUDENT_INSTALLED_APPS_PACKAGE);
+        when(studentInstalledAppsInfo.getAppName()).thenReturn(STUDENT_INSTALLED_APPS_NAME);
+        when(studentInstalledAppsInfo.getAppLabel()).thenReturn(STUDENT_INSTALLED_APPS_LABEL);
+
+        appDrawerAdapter.add(studentInstalledAppsInfo);
+        View layout = appDrawerAdapter.getView(0, null, null);
+
+        final Drawable backgroundDrawable = layout.getBackground();
+        final TextView topAlignedText = (TextView) layout.findViewById(R.id.animateable_app_icon_text_view_top_aligned);
+
+        assertThat(backgroundDrawable, is(BitmapDrawable.class));
+        assertThat(topAlignedText.getVisibility(), is(View.VISIBLE));
+        assertThat(topAlignedText.getText().toString(), is(STUDENT_INSTALLED_APPS_LABEL));
+    }
+
+    @Test
+    public void shouldSetCorrectCountOfInitialWhitelist() {
+        SundaeAppInfo lockedAppInfo = new SundaeAppInfo("name", "package1", false, "");
+        appDrawerAdapter.add(sundaeAppInfo);
+        appDrawerAdapter.add(sundaeAppInfo);
+        appDrawerAdapter.add(lockedAppInfo);
+        appDrawerAdapter.notifyDataSetChanged();
+
+        assertThat(((ForceFieldEditAdapter) appDrawerAdapter).getWhitelistAppsCount(), is(2));
+    }
+
+    @Test
+    public void shouldReturnAllItemsFromArrayAdapter() {
+        appDrawerAdapter.add(sundaeAppInfo);
+        SundaeAppInfo sundaeAppInfo1 = new SundaeAppInfo("newApp", "package1", false, "");
+        appDrawerAdapter.add(sundaeAppInfo1);
+        SundaeAppInfo sundaeAppInfo2 = new SundaeAppInfo("newApp", "package2", false, "");
+        appDrawerAdapter.add(sundaeAppInfo2);
+
+        assertThat(appDrawerAdapter.getAllItems().size(), is(3));
+        assertThat(appDrawerAdapter.getAllItems(),hasItem(sundaeAppInfo));
+        assertThat(appDrawerAdapter.getAllItems(),hasItem(sundaeAppInfo1));
+        assertThat(appDrawerAdapter.getAllItems(),hasItem(sundaeAppInfo2));
+    }
+
+    @Test
+    public void shouldLoadAppInfoIntoView() {
+        when(resolveInfo.loadLabel(any(PackageManager.class))).thenReturn("My eReader");
+        appDrawerAdapter.add(new SundaeAppInfo("name", "package", false, "My eReader", icon));
+        View appLayout = appDrawerAdapter.getView(0, null, null);
+
+        TextView appIcon = (TextView)appLayout.findViewById(R.id.animateable_app_icon_text_view);
+        MatcherAssert.assertThat(appIcon.getText().toString(), is("My eReader"));
+
+        ImageView imageView = (ImageView) appLayout.findViewById(R.id.animateable_app_icon);
+        MatcherAssert.assertThat(imageView.getDrawable(), is(icon));
+    }
+
+    @Test
+    public void shouldPreventTogglingAppInFirstPositionForTheSpecialBlockStudentInstalledApps() {
+        SundaeAppInfo studentInstalledAppsInfo = mock(SundaeAppInfo.class);
+        when(studentInstalledAppsInfo.getAppPackage()).thenReturn(STUDENT_INSTALLED_APPS_PACKAGE);
+        when(studentInstalledAppsInfo.getAppName()).thenReturn(STUDENT_INSTALLED_APPS_NAME);
+
+        appDrawerAdapter.add(studentInstalledAppsInfo);
+        assertThat(appDrawerAdapter.isEnabled(0), is(false));
+    }
+
+    @Override
+    protected int getTextViewId() {
+        return R.id.animateable_app_icon_text_view;
+    }
+
+    @Override
+    protected int getAppInfoViewId() {
+        return R.layout.animateable_app_drawer_icon;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

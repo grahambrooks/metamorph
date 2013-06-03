@@ -1,0 +1,278 @@
+<html><head><title>UserRefreshTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserRefreshTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/UserRefreshTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.CoursesDataStore;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.api.services.events.UserInformationRefreshedFailedEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.lock.GlobalInformationLock;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class UserRefreshTask extends SafeProgressAsyncTask<UserRefreshResult> {
+    protected static final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final APIRequestBuilder apiRequestBuilder;
+    private final UserService userService;
+    private final SectionsDataStore sectionsDataStore;
+    private final Environment environment;
+    private final WebServices webServices;
+    private final TeacherSession teacherSession;
+    private final StudentSession studentSession;
+    private final SectionRosterManager sectionRosterManager;
+    private final CoursesDataStore coursesDataStore;
+    private final EventBus eventBus;
+    private final GlobalInformationLock globalInformationLock;
+    private Section currentSection;
+    private User oldUser;
+
+    @Inject
+    public UserRefreshTask(Environment environment, //NOPMD
+                           APIRequestBuilder apiRequestBuilder,
+                           WebServices webServices,
+                           UserService userService,
+                           SectionsDataStore sectionsDataStore,
+                           TeacherSession teacherSession,
+                           StudentSession studentSession,
+                           AnalyticsAgent analytics,
+                           SectionRosterManager sectionRosterManager,
+                           CoursesDataStore coursesDataStore, EventBus eventBus,
+                           GlobalInformationLock globalInformationLock) {
+        super(null, analytics);
+        this.apiRequestBuilder = apiRequestBuilder;
+        this.userService = userService;
+        this.sectionsDataStore = sectionsDataStore;
+        this.environment = environment;
+        this.webServices = webServices;
+        this.teacherSession = teacherSession;
+        this.studentSession = studentSession;
+        this.sectionRosterManager = sectionRosterManager;
+        this.coursesDataStore = coursesDataStore;
+        this.eventBus = eventBus;
+        this.globalInformationLock = globalInformationLock;
+    }
+
+    @Override
+    public UserRefreshResult call() {
+        if (!refreshInProgress.compareAndSet(false, true)) {
+            LOGGER.info("We have a refresh in progress, ignoring");
+            return UserRefreshResult.IN_PROGRESS;
+        }
+        try {
+            if (!userService.hasUserRegistered()) {
+                LOGGER.info("User has not registered yet, ignoring");
+                return UserRefreshResult.USER_NOT_REGISTERED;
+            }
+            LOGGER.info("Updating User information");
+            oldUser = userService.getUser();
+            currentSection = oldUser.getCurrentSection();
+
+            final User newUser = retrieveNewUser();
+
+            if (newUser == null) {
+                return UserRefreshResult.UPDATE_FAILED;
+            }
+
+            globalInformationLock.callWithWriteLock(new AmplifyCallable<Void>() {
+                @Override
+                public Void call() {
+                    performRefresh(newUser);
+                    return null;
+                }
+            });
+        } finally {
+            refreshInProgress.set(false);
+        }
+        return UserRefreshResult.SUCCESS;
+    }
+
+    private void performRefresh(User newUser) {
+        saveUserSectionsAndCourses(newUser);
+        refreshUser(newUser);
+        updateSectionRosters();
+        User refreshedUser = userService.getUser();
+        boolean requireRestart = userRequiresRestart(refreshedUser);
+        LOGGER.info("App restart required=" + requireRestart);
+        updateLiveSessionInformationIfRequired(requireRestart, refreshedUser);
+    }
+
+    private void refreshUser(User newUser) {
+        userService.refreshUser(newUser);
+    }
+
+    private void updateSectionRosters() {
+        sectionRosterManager.updateUsersSectionParticipants(userService.getUser());
+    }
+
+    private User retrieveNewUser() {
+        ApiRequest request = apiRequestBuilder.getRequest(environment.getCurrentUserURI()).build();
+
+        Response response = webServices.get(request);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!response.isSuccess()) {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return response.getBodyAs(User.class);
+    }
+
+    private void saveUserSectionsAndCourses(User refreshedUser) {
+        coursesDataStore.deleteAll();
+        sectionsDataStore.deleteAll();
+        coursesDataStore.saveAll(refreshedUser.createCoursesFromSections());
+        sectionsDataStore.saveAll(refreshedUser.getSections());
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOGGER.error("Error when refreshing user:", e);
+        eventBus.post(new UserInformationRefreshedFailedEvent(UserRefreshResult.INVALID_USER_ACCOUNT));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOGGER.error("Error when refreshing user", e);
+        eventBus.post(new UserInformationRefreshedFailedEvent(UserRefreshResult.UPDATE_FAILED));
+    }
+
+    @Override
+    protected void onSuccess(UserRefreshResult value) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (UserRefreshResult.IN_PROGRESS.equals(value)) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        if (UserRefreshResult.SUCCESS == value) {
+            boolean requireRestart = userRequiresRestart(userService.getUser());
+            eventBus.post(new UserInformationRefreshedEvent(requireRestart));
+            return;
+        }
+        eventBus.post(new UserInformationRefreshedFailedEvent(value));
+    }
+
+    private void updateLiveSessionInformationIfRequired(boolean requireRestart, User refreshedUser) {
+
+        LOGGER.info("Checking to see if we need to shutdown XMPP");
+        if (userService.isStudent() && requireRestart) {
+            studentSession.shutdown();
+        } else if (userService.isTeacher() && requireRestart) {
+            teacherSession.shutdown();
+        } else if (!requireRestart) {
+            /**
+             * If the user is not being restarted, there could be a live session.
+             * We need to copy over the session related information since we recreate the sections
+             * when we refresh the user
+             */
+            refreshedUser.copySessionInformation(oldUser);
+        }
+
+    }
+
+    private boolean userRequiresRestart(User refreshedUser) {
+        Collection<Section> sections = refreshedUser.getSections();
+        return userDeletedFromCurrentSection(sections) || userDeletedFromLiveSessionsSection(sections);
+    }
+
+    private boolean userDeletedFromLiveSessionsSection(Collection<Section> sections) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!oldUser.hasLiveSection()) {
+            return false;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        Section liveSection = oldUser.getLiveSection();
+        return !sections.contains(liveSection);
+    }
+
+    private boolean userDeletedFromCurrentSection(Collection<Section> sections) {
+        return currentSection != null && !sections.contains(currentSection);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

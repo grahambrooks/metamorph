@@ -1,0 +1,370 @@
+<html><head><title>StudentNotebookActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentNotebookActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/StudentNotebookActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.ParticipantSessionService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Timer;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD")
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentNotebookActivityTest {
+
+    public static final int RANDOM_NUMBER = 500;
+    public static final int MARGIN_WITHOUT_CALENDAR_IN_PIXEL = 233;
+
+    private static final String MATH_SECTION_NAME = "Math";
+
+    @Inject
+    private StudentNotebookActivity activity;
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private TimerProvider timerProvider;
+
+    @Mock
+    private Student student;
+
+    @Mock
+    private Section section;
+
+    @Mock
+    private Timer timer;
+
+    @Mock
+    private Toaster toaster;
+
+    @Mock
+    private ParticipantSessionService participantSessionService;
+
+    private View calendar;
+    private View discussionButton;
+    private View joinSessionButton;
+    private ProgressBarViewGroup progressBarViewGroup;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        newInjector(this, StudentNotebookActivity.class)
+                .bindInstance(ParticipantSessionService.class, participantSessionService)
+                .bindInstance(Toaster.class, toaster)
+                .configureActivity();
+
+        given(userService.getUser()).willReturn(student);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(timerProvider.get()).willReturn(timer);
+
+        setSectionIntentOnActivity();
+        activity.onCreate(null);
+
+        discussionButton = activity.findViewById(R.id.discussion_button);
+        joinSessionButton = activity.findViewById(R.id.join_session_button);
+        progressBarViewGroup = (ProgressBarViewGroup) activity.findViewById(R.id.join_session_progress_group);
+    }
+
+    @Test
+    public void shouldToggleToHideCalendarOnCalendarToggleEventReceived() {
+        calendar = activity.findViewById(R.id.calendar_container);
+        calendar.setVisibility(View.VISIBLE);
+
+        activity.hideCalendar();
+
+        assertThat(calendar.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldToggleToShowCalendarOnCalendarToggleEventReceived() {
+        calendar = activity.findViewById(R.id.calendar_container);
+        calendar.setVisibility(View.GONE);
+
+        activity.findViewById(R.id.calendar_button).performClick();
+
+        assertThat(calendar.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldAddStreamMarginWhenHidingCalendar() {
+        calendar = activity.findViewById(R.id.calendar_container);
+        calendar.setVisibility(View.VISIBLE);
+
+        MarginLayoutParams layoutParams = (MarginLayoutParams) activity.findViewById(R.id.stream_layout).getLayoutParams();
+        layoutParams.setMargins(RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER);
+
+        activity.hideCalendar();
+
+        assertThat(layoutParams.leftMargin, is(MARGIN_WITHOUT_CALENDAR_IN_PIXEL));
+        assertThat(layoutParams.rightMargin, is(MARGIN_WITHOUT_CALENDAR_IN_PIXEL));
+    }
+
+    @Test
+    public void shouldRemoveStreamMarginWhenShowingCalendar() {
+        calendar = activity.findViewById(R.id.calendar_container);
+        calendar.setVisibility(View.GONE);
+
+        MarginLayoutParams layoutParams = (MarginLayoutParams) activity.findViewById(R.id.stream_layout).getLayoutParams();
+        layoutParams.setMargins(RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER, RANDOM_NUMBER);
+
+        activity.showCalendar();
+
+        assertThat(layoutParams.leftMargin, is(0));
+        assertThat(layoutParams.rightMargin, is(0));
+    }
+
+    private void setSectionIntentOnActivity() {
+        Intent intent = new Intent();
+        intent.putExtra(BaseNotebookActivity.SECTION_ID_KEY, 1L);
+        activity.setIntent(intent);
+    }
+
+    @Test
+    public void shouldCallJoinSessionWhenStudentIsNotPresentAndJoinSessionButtonIsClicked() {
+
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        joinSessionButton.performClick();
+
+        verify(participantSessionService).joinSession(eq(student), eq(section), eq(progressBarViewGroup.getProgressBar()));
+    }
+
+    @Test
+    public void shouldDisplayToastWhenStudentIsPresentAndJoinSessionButtonIsClicked() {
+
+        when(student.getLiveSection()).thenReturn(section);
+        when(section.getName()).thenReturn(MATH_SECTION_NAME);
+        when(student.hasLiveSection()).thenReturn(true);
+
+        joinSessionButton.performClick();
+
+        String expected = activity.getResources().getString(R.string.student_already_in_session, MATH_SECTION_NAME);
+
+        verify(toaster).makeToast(eq(expected));
+    }
+
+    @Test
+    public void shouldShowJoinSessionButtonWhenSessionDropped() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.listeners.onSessionConnectionDropped(null);
+
+        assertThat(joinSessionButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldShowJoinSessionButtonWhenSessionEnded() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.listeners.onSessionEnded(null);
+
+        assertThat(joinSessionButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHideJoinSessionButtonWhenSessionJoined() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+
+        activity.listeners.onSessionJoin(null);
+
+        assertThat(joinSessionButton.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test
+    public void shouldShowJoinSessionButtonWhenSessionJoinFailed() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.listeners.onSessionJoinFailed(new JoinSessionFailureEvent(ApiErrorReason.SESSION_JOIN_FAILED));
+
+        assertThat(joinSessionButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldShowJoinSessionButtonOnResumeIfUserIsStudentAndNotInSection() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.onResume();
+
+        assertThat(joinSessionButton.getVisibility(), is(View.VISIBLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldHideJoinSessionButtonOnResumeIfUserIsStudentAndInSection() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+
+        activity.onResume();
+
+        assertThat(joinSessionButton.getVisibility(), is(View.INVISIBLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldDisplaySessionJoinedToastWhenSessionJoined() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+
+        activity.listeners.onSessionJoin(null);
+
+        verify(toaster).makeToast(R.string.joined_lesson);
+    }
+
+    @Test
+    public void shouldDisplaySessionJoinedFailedToastWhenSessionJoinFailed() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.listeners.onSessionJoinFailed(new JoinSessionFailureEvent(ApiErrorReason.SESSION_JOIN_FAILED));
+
+        verify(toaster).errorToast(ApiErrorReason.SESSION_JOIN_FAILED);
+    }
+
+    @Test
+    public void shouldLaunchSharePostActivityWhenDiscussionButtonIsClicked() {
+        discussionButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), CoreMatchers.is(SharePostActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldDisableJoinSessionWhenClicked() {
+        joinSessionButton.performClick();
+
+        assertThat(joinSessionButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldNotShowJoinClassButtonByDefault() {
+        assertThat(joinSessionButton.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotShowJoinClassButtonIfSessionIsOnGoing() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+
+        activity.onResume();
+
+        assertThat(joinSessionButton.getVisibility(), is(View.INVISIBLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldShowJoinClassButtonIfSessionIsNotOngoing() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(false);
+
+        activity.onResume();
+
+        assertThat(joinSessionButton.getVisibility(), is(View.VISIBLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

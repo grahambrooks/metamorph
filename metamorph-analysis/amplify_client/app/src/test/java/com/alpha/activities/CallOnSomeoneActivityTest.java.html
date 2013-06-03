@@ -1,0 +1,287 @@
+<html><head><title>CallOnSomeoneActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CallOnSomeoneActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/CallOnSomeoneActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.services.CallOnSomeoneTask;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.DirectExecutor;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class CallOnSomeoneActivityTest extends BaseQuickActivityTest {
+
+    private static final String MARJORIE = "Marjorie";
+    private static final String JAMES = "James";
+    private static final long FIRST_CALLED_ON_PARTICIPANT_ID = 101L;
+    private static final long SECOND_CALLED_ON_PARTICIPANT_ID = 102L;
+
+    private Button selectStudentButton;
+    private TextView selectedParticipantNameText;
+
+    @Inject
+    private TestCallOnSomeoneActivity activity;
+
+    @Mock
+    private Participant firstParticipant;
+    @Mock
+    private Participant secondParticipant;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    @Mock
+    private CallOnSomeoneTask callOnSomeoneTask;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        newInjector(this, CallOnSomeoneActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .configureActivity();
+
+        // Init participant 1
+        given(firstParticipant.getName()).willReturn(MARJORIE);
+        given(firstParticipant.getId()).willReturn(FIRST_CALLED_ON_PARTICIPANT_ID);
+        given(section.getParticipant(FIRST_CALLED_ON_PARTICIPANT_ID)).willReturn(firstParticipant);
+
+        // Init participant 2
+        given(secondParticipant.getName()).willReturn(JAMES);
+        given(secondParticipant.getId()).willReturn(SECOND_CALLED_ON_PARTICIPANT_ID);
+        given(section.getParticipant(SECOND_CALLED_ON_PARTICIPANT_ID)).willReturn(secondParticipant);
+
+        given(section.selectRandomActiveParticipant(anyLong())).willReturn(Optional.of(firstParticipant));
+        given(teacher.getCurrentSection()).willReturn(section);
+        given(controlSettingsModel.getCallOnSomeoneSettings()).willReturn(callOnSomeoneSettings);
+        given(callOnSomeoneSettings.getActiveParticipantsIds()).willReturn(participantIds);
+        given(sessionTaskFactory.createCallOnSomeoneTask()).willReturn(callOnSomeoneTask);
+    }
+
+    @Test
+    public void shouldCallOnParticipantWhenStartingActivityWhenThereAreParticipants() {
+        when(callOnSomeoneSettings.isSomeoneAlreadyBeingCalledOn()).thenReturn(true);
+        when(userService.getCalledOnStudentName()).thenReturn(MARJORIE);
+
+        setUpCallOnSomeoneActivity();
+
+        assertThat(selectedParticipantNameText.getText().toString(), is(MARJORIE));
+        verify(callOnSomeoneSettings).callOnParticipant(FIRST_CALLED_ON_PARTICIPANT_ID);
+    }
+
+    @Test
+    public void shouldStartCallOnSomeoneTaskWhenStartingActivityAndThereAreParticipants() {
+        setUpCallOnSomeoneActivity();
+
+        verify(callOnSomeoneTask).execute();
+    }
+
+    @Test
+    public void shouldResetCallOnSomeoneSettingsWhenStartingActivityIfNoParticipantInSession() {
+        when(section.selectRandomActiveParticipant(anyLong())).thenReturn(Optional.<Participant>absent());
+
+        setUpCallOnSomeoneActivity();
+
+        verify(callOnSomeoneSettings).resetCallOnSomeone();
+        verifyNoMoreInteractions(callOnSomeoneTask);
+    }
+
+    @Test
+    public void shouldChooseAnotherStudentOnClick() throws Exception {
+        setUpCallOnSomeoneActivity();
+
+        activity.onSuccess(post);
+
+        setUpCallOnSecondStudent();
+
+        verify(callOnSomeoneSettings).callOnParticipant(FIRST_CALLED_ON_PARTICIPANT_ID);
+        verify(callOnSomeoneSettings).callOnParticipant(SECOND_CALLED_ON_PARTICIPANT_ID);
+        verify(section, times(2)).selectRandomActiveParticipant(anyLong());
+    }
+
+    @Test
+    public void shouldMakeCallToAddCalledOnStudentWhenSelectingParticipant() {
+        setUpCallOnSomeoneActivity();
+
+        activity.onSuccess(post);
+
+        setUpCallOnSecondStudent();
+
+        verify(postService).addCallOnSomeoneParticipant(post.getId(), FIRST_CALLED_ON_PARTICIPANT_ID);
+        verify(postService).addCallOnSomeoneParticipant(post.getId(), SECOND_CALLED_ON_PARTICIPANT_ID);
+    }
+
+    @Test
+    public void shouldNotMakeCallTOAddCalledOnStudentIfReturningParticipantIsNull() {
+        when(section.selectRandomActiveParticipant(anyLong())).thenReturn(Optional.<Participant>absent());
+
+        setUpCallOnSomeoneActivity();
+
+        activity.onSuccess(post);
+
+        verifyNoMoreInteractions(postService);
+    }
+
+    @Test
+    public void shouldPostToTheStreamWhenActivityIsStarted() {
+        setUpCallOnSomeoneActivity();
+
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+
+        verify(postService).addQuickActivityPost(postCaptor.capture(), eq(activity), eq(callOnSomeoneSettings));
+
+        Post actualPost = postCaptor.getValue();
+        assertThat(actualPost.getPostType(), is(PostType.CALL_ON_SOMEONE));
+        assertThat(actualPost.getAuthor(), is(teacher.asAuthor()));
+        assertThat(actualPost.getDescription(), is(activity.getResources().getString(R.string.call_on_post_description, MARJORIE)));
+        assertThat(actualPost.getTitle(), is(activity.getResources().getString(R.string.call_on)));
+        assertThat(actualPost.countOfStudentsSharedWith(), is(0));
+    }
+
+    @Test
+    public void shouldDisplayThePreviouslyCalledStudentsNameOnResume() {
+        when(callOnSomeoneSettings.isSomeoneAlreadyBeingCalledOn()).thenReturn(true);
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(true);
+        when(callOnSomeoneSettings.activityPostCreated()).thenReturn(true);
+        when(userService.getCalledOnStudentName()).thenReturn(JAMES);
+
+        setUpCallOnSomeoneActivity();
+
+        assertThat(selectedParticipantNameText.getText().toString(), is(JAMES));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    private void setUpCallOnSomeoneActivity() {
+        activity.setIntent(new Intent());
+        activity.onCreate(null);
+        activity.onResume();
+
+        selectStudentButton = (Button) activity.findViewById(R.id.select_participant_again);
+        selectedParticipantNameText = (TextView) activity.findViewById(R.id.random_participant_name);
+    }
+
+    private void setUpCallOnSecondStudent() {
+        when(secondParticipant.getName()).thenReturn(JAMES);
+        when(secondParticipant.getId()).thenReturn(SECOND_CALLED_ON_PARTICIPANT_ID);
+        when(section.selectRandomActiveParticipant(anyLong())).thenReturn(Optional.of(secondParticipant));
+        selectStudentButton.performClick();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getQuickActivitySettings() {
+        return callOnSomeoneSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected BaseQuickActivity getQuickActivity() {
+        return activity;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public static class TestCallOnSomeoneActivity extends CallOnSomeoneActivity {
+        public TestCallOnSomeoneActivity() {
+            super(new DirectExecutor());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

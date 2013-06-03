@@ -1,0 +1,149 @@
+<html><head><title>ProgressBarViewGroup.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ProgressBarViewGroup.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/view/amplify_client/ProgressBarViewGroup.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.view;
+
+import android.R.attr;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import com.amplify.R;
+
+public class ProgressBarViewGroup extends RelativeLayout {
+    private ProgressBar progressBar;
+    private final Context context;
+    private Position positionOfProgressBar = Position.RIGHT;
+    private int size = 30;
+
+    public ProgressBarViewGroup(Context context) {
+        super(context);
+        this.context = context;
+    }
+
+    public ProgressBarViewGroup(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.context = context;
+        positionOfProgressBar = readPositionOfProgressBar(context, attrs);
+        size = readSizeOfProgressBar(context,attrs);
+    }
+
+    public ProgressBarViewGroup(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        this.context = context;
+        positionOfProgressBar = readPositionOfProgressBar(context, attrs);
+        size = readSizeOfProgressBar(context,attrs);
+    }
+
+    private Position readPositionOfProgressBar(Context context, AttributeSet attrs) {
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressBarViewGroup);
+        Position position = Position.getTypeOf(typedArray.getInt(R.styleable.ProgressBarViewGroup_position, 0));
+        typedArray.recycle();
+        return position;
+    }
+
+    private int readSizeOfProgressBar(Context context, AttributeSet attrs) {
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressBarViewGroup);
+        int progressBarSize = typedArray.getInt(R.styleable.ProgressBarViewGroup_size, 30);
+        typedArray.recycle();
+        return progressBarSize;
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        addProgressBar(context);
+    }
+
+    private void addProgressBar(Context context) {
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(30, 30);
+        setLayoutParams(relativeParams);
+        progressBar = new ProgressBar(context, null, attr.progressBarStyleInverse);
+        progressBar.setPadding(4, 4, 4, 4);
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setContentDescription("QA_Progress_Spinner");
+        addView(progressBar, getChildCount(), relativeParams);
+    }
+
+    protected void setLayoutParams(LayoutParams layoutParams) {
+        if(Position.RIGHT.equals(positionOfProgressBar)){
+            layoutParams.addRule(RelativeLayout.RIGHT_OF, getChildAt(getChildCount() - 1).getId());
+        }
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layoutParams.width = layoutParams.height= size;
+    }
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    enum Position {
+        /**
+         * The android enum on xml attribute allows only int values,
+         * hence not much value in adding that as enum param.
+         * Instead depending ordinal, if you change the order map it back to
+         * res/values/attrs.xml
+         */
+        RIGHT, ABOVE;
+
+        static Position getTypeOf(int value) {
+            for (Position position : values()) {
+                if (position.ordinal() == value) {
+                    return position;
+                }
+            }
+            return RIGHT;
+        }
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

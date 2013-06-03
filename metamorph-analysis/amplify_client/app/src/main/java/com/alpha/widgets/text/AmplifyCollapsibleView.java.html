@@ -1,0 +1,233 @@
+<html><head><title>AmplifyCollapsibleView.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AmplifyCollapsibleView.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/text/amplify_client/AmplifyCollapsibleView.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">23</span>
+    <progress max="100" value="23"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.text;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.text.TextUtils.TruncateAt;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.amplify.R;
+import com.google.common.base.Optional;
+
+public class AmplifyCollapsibleView extends LinearLayout {
+
+    private int maxLines = Integer.MAX_VALUE;
+    private int toggleLayout = R.layout.collapsible_toggle;
+    private int contentLayout = R.layout.collapsible_description_text;
+
+    private Optional<CollapseStateListener> listener = Optional.absent();
+    private Optional<Long> elementId = Optional.absent();
+
+    private LayoutInflater inflater;
+    private TextView textView;
+    private TextView toggle;
+
+    private boolean isExpanding;
+
+    public AmplifyCollapsibleView(Context context) {
+        super(context);
+        init(context, null);
+    }
+
+    public AmplifyCollapsibleView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
+
+    public AmplifyCollapsibleView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context, attrs);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        inflater = LayoutInflater.from(context);
+        if (attrs != null) {
+            TypedArray config = context.obtainStyledAttributes(attrs, R.styleable.AmplifyCollapsibleView);
+            contentLayout = getLayout(config, R.styleable.AmplifyCollapsibleView_contentLayout, contentLayout);
+            toggleLayout = getLayout(config, R.styleable.AmplifyCollapsibleView_toggleLayout, toggleLayout);
+            maxLines = config.getInt(R.styleable.AmplifyCollapsibleView_maxLines, maxLines);
+            config.recycle();
+        }
+    }
+
+    private int getLayout(TypedArray config, int index, int defaultValue) {
+        int resourceId = config.getResourceId(index, defaultValue);
+        // Roboelectric returns zero for resource IDs - WTF???
+        return (resourceId == 0) ? defaultValue : resourceId;
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        removeAllViews();
+        super.onFinishInflate();
+        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setOrientation(LinearLayout.VERTICAL);
+        addTextView();
+        addToggle();
+    }
+
+    private void addTextView() {
+        textView = (TextView) inflater.inflate(contentLayout, this, false);
+        textView.setContentDescription(getContext().getString(R.string.collapsible_text_content_description));
+        textView.setEllipsize(TruncateAt.END);
+        textView.setMaxLines(maxLines);
+        addView(textView);
+    }
+
+    private void addToggle() {
+        toggle = (TextView) inflater.inflate(toggleLayout, this, false);
+        toggle.setClickable(true);
+        toggle.setVisibility(View.GONE);
+        toggle.setText(R.string.read_more);
+
+        toggle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (shouldExpand()) {
+                    expandTextView();
+                } else {
+                    shrinkTextView();
+                }
+                textView.requestLayout();
+            }
+        });
+        addView(toggle);
+    }
+
+    private boolean shouldExpand() {
+        return toggle.getText().toString().equalsIgnoreCase(getContext().getString(R.string.read_more));
+    }
+
+    private void expandTextView() {
+        textView.setEllipsize(null);
+        textView.setMaxLines(Integer.MAX_VALUE);
+        toggle.setText(R.string.read_less);
+        isExpanding = true;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (listener.isPresent() && elementId.isPresent()) {
+            listener.get().onStateChanged(elementId.get(), isExpanding);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void shrinkTextView() {
+        textView.setEllipsize(TruncateAt.END);
+        textView.setMaxLines(maxLines);
+        toggle.setText(R.string.read_more);
+        isExpanding = false;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (listener.isPresent() && elementId.isPresent()) {
+            listener.get().onStateChanged(elementId.get(), isExpanding);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void setText(String text) {
+        textView.setText(text);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (isExpanding) {
+            toggle.setText(R.string.read_less);
+            textView.setMaxLines(Integer.MAX_VALUE);
+            toggle.setVisibility(View.VISIBLE);
+        } else if (textView.getLineCount() >= maxLines && textView.getLayout().getEllipsisCount(maxLines - 1) > 0) {
+            toggle.setVisibility(View.VISIBLE);
+            toggle.setText(R.string.read_more);
+        } else {
+            toggle.setVisibility(View.GONE);
+        }
+    }
+
+    public CharSequence getText() {
+        return textView.getText();
+    }
+
+    public void setExpandState(boolean isExpanding) {
+        this.isExpanding = isExpanding;
+    }
+
+    public void setCollapseStateListener(CollapseStateListener listener) {
+        this.listener = Optional.fromNullable(listener);
+    }
+
+    public void setElementId(Long elementId) {
+        this.elementId = Optional.fromNullable(elementId);
+    }
+
+    public interface CollapseStateListener {
+        void onStateChanged(Long id, boolean isExpanding);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

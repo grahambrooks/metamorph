@@ -1,0 +1,129 @@
+<html><head><title>ActionBarUpNavigationConfigurationTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ActionBarUpNavigationConfigurationTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/actionbar/amplify_client/ActionBarUpNavigationConfigurationTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionbar;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.SundaeShadowActionBar;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ActionBarUpNavigationConfigurationTest {
+    @Inject
+    private ActionBarUpNavigationConfiguration actionBarConfiguration;
+    private Activity activity;
+
+    @Before
+    public void setUp() throws Exception {
+        ActivityTestInjector<ActionBarUpNavigationConfiguration> testInjector =
+                new ActivityTestInjector<ActionBarUpNavigationConfiguration>(this, ActionBarUpNavigationConfiguration.class);
+        testInjector.configureTestSubject();
+        activity = testInjector.getCurrentActivityContext();
+        invokeOnCreateAndSetContentView();
+    }
+
+    private void invokeOnCreateAndSetContentView() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Method onCreate = Activity.class.getDeclaredMethod("onCreate", Bundle.class);
+        onCreate.setAccessible(true);
+        onCreate.invoke(activity, new Object[]{null});
+        activity.setContentView(new View(Robolectric.application));
+    }
+
+    @Test
+    public void shouldEnableHomeAsUpNavigation() {
+        actionBarConfiguration.setIconForUpNavigation(0);
+
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP, is(ActionBar.DISPLAY_HOME_AS_UP));
+    }
+
+    @Test
+    public void shouldEnableDisplayShowHome() {
+        actionBarConfiguration.setIconForUpNavigation(0);
+
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_HOME, is(ActionBar.DISPLAY_SHOW_HOME));
+    }
+
+    @Test
+    public void shouldDisableDisplayShowTitle() {
+        actionBarConfiguration.setIconForUpNavigation(0);
+
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_TITLE, not(ActionBar.DISPLAY_SHOW_TITLE));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private SundaeShadowActionBar getActionBar() {
+        return (SundaeShadowActionBar) activity.getActionBar();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

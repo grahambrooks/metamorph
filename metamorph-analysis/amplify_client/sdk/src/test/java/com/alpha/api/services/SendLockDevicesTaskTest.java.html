@@ -1,0 +1,132 @@
+<html><head><title>SendLockDevicesTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SendLockDevicesTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/SendLockDevicesTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.DeviceLockRequestSucceededEvent;
+import com.alpha.api.services.events.DeviceLockingRequestFailureEvent;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class SendLockDevicesTaskTest {
+    public static final String JSON = "JSON";
+    private SendLockDevicesTask task;
+    @Mock
+    private DeviceLockingService deviceLockingService;
+    @Mock
+    private Event event;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private Section section;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        task = new SendLockDevicesTask(eventBus, analyticsAgent, deviceLockingService, teacher);
+        when(event.asJson()).thenReturn(JSON);
+        when(teacher.lockDevicesEvent()).thenReturn(event);
+        when(teacher.getCurrentSection()).thenReturn(section);
+        when(teacher.getCurrentControlSettingsModel()).thenReturn(controlSettingsModel);
+        given(teacher.getSession()).willReturn(classSession);
+    }
+
+    @Test
+    public void shouldInvokeFailureCallbackOnException() {
+        task.onException(new Exception());
+
+        verify(eventBus).post(any(DeviceLockingRequestFailureEvent.class));
+    }
+
+    @Test
+    public void shouldInvokeSuccessCallbackOnSuccess() throws Exception {
+        task.onSuccess(true);
+        verify(eventBus).post(any(DeviceLockRequestSucceededEvent.class));
+    }
+
+    @Test
+    public void shouldLockDevicesIrrespectiveOfServerEventLog() throws Exception {
+        when(deviceLockingService.sendLockDevicesMessage(teacher)).thenReturn(true);
+        Boolean success = task.call();
+        assertThat(success, is(true));
+
+    }
+
+    @Test
+    public void shouldSetTheParticipantsEyesOnTeacherStatusAfterSendingMessage() throws Exception {
+        task.onSuccess(true);
+
+        verify(classSession).engageEyesOnTeacher();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

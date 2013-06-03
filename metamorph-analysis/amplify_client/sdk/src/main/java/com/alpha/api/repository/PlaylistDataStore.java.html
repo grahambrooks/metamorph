@@ -1,0 +1,165 @@
+<html><head><title>PlaylistDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/PlaylistDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.services.User;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.PLAYLISTS;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.user_id;
+import static com.google.common.collect.Lists.newArrayList;
+
+@Singleton
+public class PlaylistDataStore {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final Context context;
+    private final LearningElementsDataStore learningElementsDataStore;
+
+    @Inject
+    public PlaylistDataStore(Context context, LearningElementsDataStore learningElementsDataStore) {
+        this.context = context;
+        this.learningElementsDataStore = learningElementsDataStore;
+    }
+
+    public List<Playlist> getPlaylistFor(User user) {
+        Cursor cursor = null;
+
+        try {
+            cursor = context.getContentResolver()
+                    .query(PLAYLISTS.uri(),
+                            PLAYLISTS.allColumnNames(),
+                            user_id.equalTo(), new String[]{user.getId().toString()}, null);
+
+            return asPlaylist(cursor);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                IOUtils.closeSafely(cursor);
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    protected List<Playlist> asPlaylist(Cursor cursor) {
+        final int content = cursor.getColumnIndex(TableColumn.content.name());
+
+        List<Playlist> playlists = newArrayList();
+
+        while (cursor.moveToNext()) {
+            String contents = cursor.getString(content);
+
+            Playlist playlist = AmplifyJsonHelper.fromJson(contents, Playlist.class);
+
+            playlists.add(playlist);
+        }
+
+        return playlists;
+    }
+
+    public void save(List<Playlist> playlists, User user) {
+        List<Long> playlistsIds = newArrayList(Collections2.transform(getPlaylistFor(user), new Function<Playlist, Long>() {
+            @Override
+            public Long apply(Playlist playlist) {
+                return playlist.getId();
+            }
+        }));
+
+        for (Playlist playlist : playlists) {
+            if (playlistsIds.contains(playlist.getId())) {
+                update(playlist);
+            } else {
+                insert(playlist);
+            }
+
+            learningElementsDataStore.save(playlist.getElements(), playlist);
+        }
+    }
+
+    protected void insert(Playlist playlist) {
+        final ContentResolver contentResolver = context.getContentResolver();
+
+        contentResolver.insert(Table.PLAYLISTS.uri(), playlist.asValues());
+        LOG.debug("Inserting playlist with json: {}", playlist.asJson());
+    }
+
+    protected void update(Playlist playlist) {
+        final ContentResolver contentResolver = context.getContentResolver();
+
+        LOG.debug("Updating playlist with json: {}", playlist.asJson());
+        contentResolver.update(Table.PLAYLISTS.uri(), playlist.asValues(), _id.equalTo(), new String[]{playlist.getId().toString()});
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

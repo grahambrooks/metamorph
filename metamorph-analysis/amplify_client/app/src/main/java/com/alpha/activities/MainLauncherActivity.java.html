@@ -1,0 +1,186 @@
+<html><head><title>MainLauncherActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MainLauncherActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/MainLauncherActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.api.messaging.notifications.PushNotificationRegistrationService;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.logging.LogUtils;
+import com.alpha.services.ControlMessageListeningService;
+import com.google.inject.Inject;
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
+import org.slf4j.Logger;
+import roboguice.activity.RoboActivity;
+
+public class MainLauncherActivity extends RoboActivity {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    public enum RequestCode{
+        MIGRATION(1),
+        REGISTRATION(2);
+        private int code;
+
+        RequestCode(int code) {
+            this.code = code;
+        }
+
+        public int code(){
+            return code;
+        }
+    }
+    @Inject
+    private UserService userService;
+    @Inject
+    private DeviceLockingService lockingService;
+    @Inject
+    private Environment environment;
+    @Inject
+    private SundaeDatabase database;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LOG.info("onCreate");
+        checkForCrashes();
+        checkStateAndRedirect();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkStateAndRedirect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(registrationSucceeded(requestCode, resultCode)){
+            startNotebooksActivity();
+        } else if(migrationSucceeded(requestCode, resultCode)){
+            startServices();
+            startNotebooksActivity();
+        }
+    }
+
+    private void checkStateAndRedirect(){
+        /**
+         * We only need to launch the registration workflow if
+         *   1) the user is not registered
+         *   2) there is not already a registration in progress
+         *
+         *   This is synchronized... but I'm not sure why... because it is on the main thread...
+         */
+
+        synchronized (MainLauncherActivity.class) {
+
+            if(userService.hasUserRegistered() && database.requiresMigration()){
+                Intent intent = new Intent(this, DBMigrationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivityForResult(intent, RequestCode.MIGRATION.code());
+                return;
+            }
+
+            if (userService.hasUserRegistered() && lockingService.isLocked()) {
+                LOG.info("Device is locked, restarting EyesOnTeacherActivity");
+                Intent intent = new Intent(this, lockingService.getLockedActivity());
+                intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+                startActivity(intent);
+                finish();
+                return;
+            } else if (userService.hasUserRegistered() && !lockingService.isLocked()) {
+                startServices();
+                startNotebooksActivity();
+                return;
+            } else if(!userService.hasUserRegistered()){
+                LOG.trace("launching registration activity from NLA " + System.identityHashCode(this));
+                startServices();
+                Intent activityToStart = new Intent(this, RegistrationActivity.class);
+                activityToStart.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(activityToStart, RequestCode.REGISTRATION.code());
+            }
+        }
+    }
+
+    private void startNotebooksActivity() {
+        startActivity(new Intent(this, NotebooksActivity.class));
+        finish();
+    }
+
+    private void startServices() {
+        startService(new Intent(this, ControlMessageListeningService.class));
+        startService(new Intent(this, PushNotificationRegistrationService.class));
+        startService(new Intent(this, RetrievePostsService.class));
+    }
+
+    private boolean migrationSucceeded(int requestCode, int resultCode) {
+        return RequestCode.MIGRATION.code() == requestCode && Activity.RESULT_OK == resultCode;
+    }
+
+    private boolean registrationSucceeded(int requestCode, int resultCode) {
+        return RequestCode.REGISTRATION.code() == requestCode && Activity.RESULT_OK == resultCode;
+    }
+
+    protected void checkForCrashes() {
+        CrashManager.register(this, environment.getHockeyappKey(), new CrashManagerListener() {
+            @Override
+            public Boolean onCrashesFound() {
+                return true;
+            }
+        });
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

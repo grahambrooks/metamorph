@@ -1,0 +1,92 @@
+<html><head><title>NumberPicker.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NumberPicker.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/utils/amplify_client/NumberPicker.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+public class NumberPicker {
+
+    public static final int MIN_COUNT_DOWN_VALUE = 1;
+    public static final int MAX_COUNT_DOWN_VALUE = 20;
+    public static final int DEFAULT_TIMER_VALUE = 5;
+
+    private final int min;
+    private final int max;
+    private int current;
+
+    public NumberPicker(int min, int max) {
+        this(min, max, DEFAULT_TIMER_VALUE);
+    }
+
+    public NumberPicker(int min, int max, int current) {
+        this.current = current;
+        this.min = min;
+        this.max = max;
+    }
+
+    public int increment() {
+        return current < max ? ++current : max;
+    }
+
+    public int decrement() {
+        return current <= min ? min : --current;
+    }
+
+    public int getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(int current) {
+        this.current = isOutOfRange(current) ? this.current : current;
+    }
+
+    private boolean isOutOfRange(int currentValue) {
+        return (currentValue > this.max || currentValue < this.min);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

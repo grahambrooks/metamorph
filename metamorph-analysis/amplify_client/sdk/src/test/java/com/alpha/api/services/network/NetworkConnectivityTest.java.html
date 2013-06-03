@@ -1,0 +1,105 @@
+<html><head><title>NetworkConnectivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NetworkConnectivityTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/network/amplify_client/NetworkConnectivityTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.network;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class NetworkConnectivityTest {
+
+    @Mock
+    private Context context;
+    @Mock
+    private NetworkInfo networkInfo;
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private ConnectivityManager connectivityManager;
+    @Mock
+    private WifiManager wifiManager;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        when(context.getSystemService(Context.WIFI_SERVICE)).thenReturn(wifiManager);
+        when(context.getSystemService(Context.CONNECTIVITY_SERVICE)).thenReturn(connectivityManager);
+        when(connectivityManager.getActiveNetworkInfo()).thenReturn(networkInfo);
+
+        networkConnectivity = new NetworkConnectivity(context);
+    }
+
+    @Test
+    public void shouldBeTrueIfNetworkInfoIsConnected() {
+        when(networkInfo.isConnected()).thenReturn(true);
+        assertThat(networkConnectivity.isConnected(), is(true));
+    }
+
+    @Test
+    public void shouldBeFalseIfNetworkIsNotConnected() {
+        when(networkInfo.isConnected()).thenReturn(false);
+        assertThat(networkConnectivity.isConnected(), is(false));
+    }
+
+    @Test
+    public void shouldBeFalseIfNetworkInfoIsNull() {
+        when(connectivityManager.getActiveNetworkInfo()).thenReturn(null);
+        assertThat(networkConnectivity.isConnected(), is(false));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

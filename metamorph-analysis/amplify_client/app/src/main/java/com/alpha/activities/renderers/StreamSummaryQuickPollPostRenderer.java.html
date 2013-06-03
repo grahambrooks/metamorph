@@ -1,0 +1,123 @@
+<html><head><title>StreamSummaryQuickPollPostRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryQuickPollPostRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamSummaryQuickPollPostRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.res.Resources;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.domains.QuickPollResponse;
+import com.alpha.api.services.UserService;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import static com.alpha.utils.CharSequences.highlight;
+
+public class StreamSummaryQuickPollPostRenderer {
+
+    private final Post post;
+    private final UserService userService;
+    private final Resources resources;
+
+    @Inject
+    public StreamSummaryQuickPollPostRenderer(UserService userService, Resources resources, @Assisted Post post) {
+        this.userService = userService;
+        this.resources = resources;
+        if (post.getPostType() != PostType.QUICKPOLL) {
+            throw new IllegalArgumentException("PostType should be QUICKPOLL for QuickPollRenderer");
+        }
+        this.post = post;
+    }
+
+    public View renderView(ViewGroup parentView) {
+        TextView title = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        ImageView postIcon = (ImageView) parentView.findViewById(R.id.notebook_post_icon);
+
+        if (userService.isStudent()) {
+            if (post.wasActiveWhenShared(userService.getUser())) {
+                Optional<QuickPollResponse> response = myResponse();
+                if (response.isPresent()) {
+                    String answer = response.get().getQuickPollAnswer();
+                    title.setText(resources.getString(R.string.quick_poll_response, answer));
+                } else {
+                    title.setText(R.string.quick_poll_no_response);
+                }
+            } else {
+                title.setText(resources.getString(R.string.quick_poll_issued_by_teacher, post.getAuthor().getName()));
+            }
+        } else {
+            title.setText(highlight(resources.getString(R.string.quick_poll_issued_by_you), resources, R.color.blue));
+        }
+
+        postIcon.setImageDrawable(parentView.getContext().getResources().getDrawable(R.drawable.icn_stream_quickpoll));
+
+        View postContent = parentView.findViewById(R.id.notebook_post_content);
+        postContent.setVisibility(View.GONE);
+
+        return parentView;
+    }
+
+    private Optional<QuickPollResponse> myResponse() {
+        return Iterables.tryFind(post.getQuickPollResponses(), new Predicate<QuickPollResponse>() {
+            @Override
+            public boolean apply(QuickPollResponse response) {
+                return userService.getUser().asAuthor().equals(response.getAuthor());
+            }
+        });
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

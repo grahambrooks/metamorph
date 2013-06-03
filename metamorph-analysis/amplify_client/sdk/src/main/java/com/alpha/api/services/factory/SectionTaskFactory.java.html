@@ -1,0 +1,87 @@
+<html><head><title>SectionTaskFactory.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionTaskFactory.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/factory/amplify_client/SectionTaskFactory.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.factory;
+
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.Response;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.services.*;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.tasks.AddPostParticipantsTask;
+import com.google.inject.assistedinject.Assisted;
+
+import java.util.Collection;
+import java.util.List;
+
+
+public interface SectionTaskFactory {
+
+    AddPostTask createNewAddPostTask(Post post, PostResponseCallback callback);
+
+    AddQuickActivityPostTask createNewAddQuickActivityPostTask(Post post, PostResponseCallback callback, QuickActivitySettings settings);
+
+    UpdatePostTask createUpdatePostTask(Post post);
+
+    AddPostParticipantsTask createAddPostParticipantsTask(Long postId, Collection<Long> participantIds);
+
+    AddCommentTask createAddCommentTask(Long postId, Comment comment);
+
+    AddResponseTask createAddResponseTask(Long postId, List<? extends Response> responses);
+
+    AddCallOnSomeoneTask createAddCallOnSomeoneTask(@Assisted("postId") Long postId, @Assisted ("userId") Long userId);
+
+    DeletePostTask createDeletePostTask(Post post);
+
+    DeleteCommentTask createDeleteCommentTask(Long postId, Comment comment);
+
+    AddPostForAllSectionsTask createNewAddPostForAllSectionsTask(Post post, List<Long> sectionIds, PostResponseCallback callback);
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

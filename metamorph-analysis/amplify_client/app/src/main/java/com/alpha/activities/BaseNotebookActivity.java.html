@@ -1,0 +1,185 @@
+<html><head><title>BaseNotebookActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BaseNotebookActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/BaseNotebookActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import com.alpha.api.domains.Post;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.User;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+public abstract class BaseNotebookActivity<T extends User> extends SundaeTimedActivity implements PostResponseCallback {
+    public static final String SECTION_ID_KEY = "SECTION_ID";
+
+    @Inject
+    protected Toaster toaster;
+
+    @Inject
+    protected EventBus eventBus;
+
+    private boolean restartRequired = false;
+
+    @VisibleForTesting
+    protected final Listeners baseListeners = new Listeners();
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected boolean recordAnalytics() { // NOPMD
+        // BaseNotebookActivitys shouldn't record analytics the way their
+        // superclass SundaeTimedActivity does because BaseNotebookActivitys
+        // are mostly hosts for Fragments, who record analytics because they
+        // are subclasses of SundaeTimedFragment.
+        //
+        // Better solution would be to have the polling functionality provided
+        // by SectionPollingActivity separated out in to an Android Service.
+        return false;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    protected T getUser() {
+        return (T) userService.getUser();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(baseListeners);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(baseListeners);
+        super.onPause();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onFailure(ApiErrorReason reason) {
+        toaster.errorToast(reason, R.string.sharing_post_failure);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onSuccess(Post post) {
+        toaster.makeToast(R.string.post_shared);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        updateCurrentSection(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (restartRequired) {
+            //Dont need to save section information if we are restarting due to user information refresh
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        outState.putLong(SECTION_ID_KEY, userService.getCurrentUserSection().getId());
+    }
+
+    private void updateCurrentSection(Bundle savedInstanceState) {
+        userService.getUser().setCurrentSection(retrieveSectionId(savedInstanceState));
+    }
+
+    private Long retrieveSectionId(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            return savedInstanceState.getLong(SECTION_ID_KEY);
+        }
+
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            return getIntent().getExtras().getLong(SECTION_ID_KEY);
+        }
+
+        throw new IllegalStateException("Section Id is not present in the intent/bundle.");
+    }
+
+    protected class Listeners {
+        @Subscribe
+        public void userInformationRefreshed(UserInformationRefreshedEvent event) {
+            restartRequired = event.requiresRestart();
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

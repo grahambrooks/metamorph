@@ -1,0 +1,131 @@
+<html><head><title>XmppConnectionConfigurationProviderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppConnectionConfigurationProviderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/amplify_client/XmppConnectionConfigurationProviderTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import com.alpha.api.properties.Environment;
+import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+
+@RunWith(BlockJUnit4ClassRunner.class)
+public class XmppConnectionConfigurationProviderTest{
+
+    private ConnectionConfiguration connectionConfiguration;
+
+    @Mock
+    private Environment mockEnvironment;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void shouldTurnDebuggingOffInRepsonseToEnvironment() {
+        when(mockEnvironment.isXmppDebuggingEnabled()).thenReturn(false);
+
+        connectionConfiguration = new XmppConnectionConfigurationProvider(mockEnvironment).get();
+
+        assertThat(connectionConfiguration.isDebuggerEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldTurnDebuggingOnInRepsonseToEnvironment() {
+        when(mockEnvironment.isXmppDebuggingEnabled()).thenReturn(true);
+
+        connectionConfiguration = new XmppConnectionConfigurationProvider(mockEnvironment).get();
+
+        assertThat(connectionConfiguration.isDebuggerEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldHavePermissiveConfigurationForDevelopment() {
+        when(mockEnvironment.isValidatingXmppCertificates()).thenReturn(false);
+
+        connectionConfiguration = new XmppConnectionConfigurationProvider(mockEnvironment).get();
+
+        shouldHaveCommonConfigurationForProdAndDev();
+        assertThat(connectionConfiguration.isExpiredCertificatesCheckEnabled(), is(false));
+        assertThat(connectionConfiguration.isVerifyRootCAEnabled(), is(false));
+        assertThat(connectionConfiguration.isNotMatchingDomainCheckEnabled(), is(false));
+        assertThat(connectionConfiguration.isSelfSignedCertificateEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldHaveRestrictiveConfigurationForProduction() {
+        when(mockEnvironment.isValidatingXmppCertificates()).thenReturn(true);
+
+        connectionConfiguration = new XmppConnectionConfigurationProvider(mockEnvironment).get();
+
+        shouldHaveCommonConfigurationForProdAndDev();
+        assertThat(connectionConfiguration.getSecurityMode(), is(SecurityMode.required));
+        assertThat(connectionConfiguration.isExpiredCertificatesCheckEnabled(), is(true));
+        assertThat(connectionConfiguration.isVerifyRootCAEnabled(), is(true));
+        assertThat(connectionConfiguration.isNotMatchingDomainCheckEnabled(), is(true));
+        assertThat(connectionConfiguration.isSelfSignedCertificateEnabled(), is(false));
+    }
+
+    private void shouldHaveCommonConfigurationForProdAndDev() {
+        assertThat(connectionConfiguration.isSASLAuthenticationEnabled(), is(true));
+        assertThat(connectionConfiguration.isReconnectionAllowed(), is(true));
+        assertThat(connectionConfiguration.isRosterLoadedAtLogin(), is(true));
+        assertThat(connectionConfiguration.getSecurityMode(), is(SecurityMode.required));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

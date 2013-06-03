@@ -1,0 +1,311 @@
+<html><head><title>QuickShortAnswerStudentActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickShortAnswerStudentActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/QuickShortAnswerStudentActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.domains.Response;
+import com.alpha.api.domains.ResponseType;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.events.ResponseEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import roboguice.inject.InjectFragment;
+import roboguice.inject.InjectView;
+
+public class QuickShortAnswerStudentActivity extends LockedInClassActivity {
+    public static final int MAX_CHARACTERS = 140;
+    @Inject
+    private PostService postService;
+
+    @InjectView(R.id.submit)
+    private Button submitButton;
+
+    @InjectView(R.id.answer_text)
+    private EditText answerTextView;
+
+    @InjectFragment(R.id.network_status_short_answer)
+    NetworkStatusFragment networkStatus;
+
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+
+    @VisibleForTesting
+    final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.quick_short_answer_student);
+        submitButton.setOnClickListener(submitButtonListener());
+        TextView characterCounter = (TextView) findViewById(R.id.character_counter);
+        answerTextView.addTextChangedListener(characterCountListener(MAX_CHARACTERS, characterCounter));
+        eventBus.register(listeners);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        quickShortAnswerSettings = (QuickShortAnswerSettings) getActivitySettings();
+
+        displayStudentResponseIfAvailable();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        closeKeyboardIfOpen();
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onDestroy() {
+        eventBus.unregister(listeners);
+        super.onDestroy();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getActivitySettings() {
+        return userService.getUser()
+                .getCurrentControlSettingsModel()
+                .getQuickShortAnswerSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void displayStudentResponseIfAvailable() {
+        String studentResponse = quickShortAnswerSettings.getStudentResponse();
+        if (!Strings.isNullOrEmpty(studentResponse)) {
+            submitButton.setVisibility(View.INVISIBLE);
+            findViewById(R.id.answer_submitted_subheader).setVisibility(View.VISIBLE);
+            answerTextView.setText(studentResponse);
+            answerTextView.setEnabled(false);
+            answerTextView.setFocusable(false);
+        }
+    }
+
+    public void closeKeyboardIfOpen() {
+        InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(answerTextView.getWindowToken(), 0);
+    }
+
+    private View.OnClickListener submitButtonListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (quickShortAnswerSettings.isRunning()) {
+                    String answer = answerTextView.getText().toString().trim();
+                    if (StringUtils.isNotBlank(answer)) {
+                        postService.addResponse(quickShortAnswerSettings.getPostId(), createQuickShortAnswerResponse(answer));</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    } else {
+                        submitButton.setEnabled(true);
+                    }
+                } else {
+                    finish();
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            }
+        };
+    }
+
+    private Response createQuickShortAnswerResponse(String answer) {
+        return new QuickShortAnswerResponse(answer, userService.getUser().asAuthor());
+    }
+
+    private TextWatcher characterCountListener(final int maxCharacters, final TextView characterCounter) {
+        return new TextWatcher() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
+                characterCounter.setText(String.valueOf(maxCharacters - charSequence.length()));
+            }
+
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void afterTextChanged(Editable editable) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected Optional<NetworkStatusFragment> getNetworkStatus() {
+        return Optional.of(networkStatus);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    class Listeners {
+
+        @Subscribe
+        public void onSubmit(ResponseEvent event) {
+            QuickShortAnswerResponse response = (QuickShortAnswerResponse) event.getResponse();
+
+            if (response.getType().equals(ResponseType.QUICK_SHORT_ANSWER)) {
+                String answer = response.getAnswer();
+
+                quickShortAnswerSettings.setAsResponded();
+                quickShortAnswerSettings.setStudentResponse(answer);
+                submitButton.setVisibility(View.INVISIBLE);
+                answerTextView.setText(answer);
+                answerTextView.setEnabled(false);
+
+                findViewById(R.id.answer_submitted_subheader).setVisibility(View.VISIBLE);
+                toaster.makeToast(getString(R.string.short_answer_submitted));
+            }
+        }
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onFailed(ResponseFailureEvent event) {
+            submitButton.setEnabled(true);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void onStudentSessionEnded(StudentSessionEndedEvent event) {
+            submitButton.setEnabled(false);
+            answerTextView.setEnabled(false);
+        }
+    }
+
+}
+</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

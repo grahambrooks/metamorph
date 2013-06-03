@@ -1,0 +1,246 @@
+<html><head><title>UserTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/UserTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.xmpp.XmppUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.NoSuchElementException;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("PMD.TooManyMethods")
+public class UserTest {
+
+    public static final String MARLYN = "Marlyn";
+    public static final long USER_ID = 12345L;
+    public static final long SECTION_ID_1 = 2L;
+    public static final long SECTION_ID_2 = 3L;
+    @Mock
+    private Section sectionOne;
+    @Mock
+    private Section sectionTwo;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    private User user;
+    @Mock
+    private User oldUser;
+    @Mock
+    private ClassSession oldClassSession;
+
+
+    @Before
+    public void setup() {
+        given(sectionOne.getId()).willReturn(SECTION_ID_1);
+        given(sectionTwo.getId()).willReturn(SECTION_ID_2);
+        // Username is null so that #getXmppUsername() will use lazy instantiation to auto-generate username/login based on User.id
+        user = new User(USER_ID, MARLYN, UserRole.TEACHER, "School", null, "password", newArrayList(sectionOne, sectionTwo), null);
+    }
+
+    @Test
+    public void shouldConvertUserIdToStringInLoginIds() throws Exception {
+        String loginId = User.generateXmppUsername(11L);
+
+        assertThat(loginId, containsString("11"));
+    }
+
+    @Test
+    public void shouldAppendTimestampToLoginId() throws Exception {
+        String loginId = User.generateXmppUsername(14L);
+
+        assertThat(loginId.matches("amp_14_\\d+"), is(true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptNegativeUserId() throws Exception {
+        User.generateXmppUsername(-1L);
+    }
+
+    @Test
+    public void shouldGenerateRandomPassword() throws Exception {
+        String password = User.generateXmppPassword();
+
+        assertThat(password, is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldGenerateRandomPasswordWithAMinimumLength() throws Exception {
+        String password = User.generateXmppPassword();
+
+        assertThat(password.length(), is(User.NUMBER_OF_PASSWORD_CHARACTERS));
+    }
+
+    @Test
+    public void shouldGeneratePasswordWithOnlyAlphaNumericCharacters() throws Exception {
+        char[] password = User.generateXmppPassword().toCharArray();
+
+        for (char c : password) {
+            assertThat(Character.isLetterOrDigit(c), is(true));
+        }
+    }
+
+    @Test
+    public void shouldReturnNullWhenNoSectionsAreLive() {
+        assertThat(user.getLiveSectionOld().isPresent(), is(false));
+    }
+
+
+    @Test
+    public void shouldCreatePostAuthorFromUser() throws Exception {
+        PostAuthor author = user.asAuthor();
+        assertThat(author.getId(), is(user.getId()));
+        assertThat(author.getName(), is(user.getName()));
+        assertThat(author.getRole(), is(user.getRole()));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfRequestingLiveSectionButNoneExists() {
+        user.getLiveSection();
+    }
+
+    @Test
+    public void shouldReturnFalseIfLiveSectionDoesNotExist() {
+        assertThat(user.hasLiveSection(), is(false));
+    }
+
+    @Test
+    public void shouldReturnTrueWhenIamBeingCalledOn() {
+        when(callOnSomeoneSettings.getCalledOnParticipantId()).thenReturn(user.getId());
+        user.getSession().saveCallOnSomeoneSettings(callOnSomeoneSettings);
+
+        assertThat(user.amIBeingCalledOn(), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseWhenIAmNotBeingCalledOn() {
+        when(callOnSomeoneSettings.getCalledOnParticipantId()).thenReturn(456L);
+        user.getSession().saveCallOnSomeoneSettings(callOnSomeoneSettings);
+
+        assertThat(user.amIBeingCalledOn(), is(false));
+    }
+
+    @Test
+    public void shouldUpdateCurrentSection() {
+        user.setCurrentSection(sectionOne.getId());
+        assertThat(user.getCurrentSection(), is(sectionOne));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOnInvalidSectionId() {
+        user.setCurrentSection(30L);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailOnNullSectionId() throws Exception {
+        user.setCurrentSection(null);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldFailSettingCurrentSectionOnDefaultValueForLong() throws Exception {
+        user.setCurrentSection(0L);
+    }
+
+    @Test
+    public void shouldNotCopyOverAnyInformationIfOldUserDoesntHaveLiveSession() {
+        when(oldUser.hasLiveSection()).thenReturn(false);
+        user.copySessionInformation(oldUser);
+        verify(oldUser, never()).getLiveSection();
+        verifyZeroInteractions(sectionOne, sectionTwo);
+    }
+
+    @Test
+    public void shouldCopyOverSessionOfOldLiveSession() {
+        Section oldLiveSection = mock(Section.class);
+        when(oldUser.hasLiveSection()).thenReturn(true);
+        when(oldUser.getLiveSection()).thenReturn(oldLiveSection);
+        when(oldUser.getSession()).thenReturn(oldClassSession);
+        when(oldLiveSection.getId()).thenReturn(22L);
+        when(sectionOne.getId()).thenReturn(22L);
+
+        user.copySessionInformation(oldUser);
+
+        verify(oldClassSession).updateSection(sectionOne);
+        assertThat(user.getSession(), is(oldClassSession));
+    }
+
+    @Test
+    public void shouldGenerateLoginIdBasedOnUserId() {
+        String actual = user.getXmppUsername();
+
+        assertThat(actual, containsString(String.valueOf(USER_ID)));
+    }
+
+    @Test
+    public void shouldNotUseNameToGenerateXmppIdBecauseOfPiiLegislation() {
+        String actual = user.getXmppUsername();
+
+        String sanitizedName = XmppUtils.addPrefixAndSanitize(MARLYN);
+        assertThat(actual, not(containsString(sanitizedName)));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

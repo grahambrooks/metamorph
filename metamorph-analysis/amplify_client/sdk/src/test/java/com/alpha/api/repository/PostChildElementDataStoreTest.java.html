@@ -1,0 +1,234 @@
+<html><head><title>PostChildElementDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostChildElementDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/PostChildElementDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.PostResponseRecord;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.repository.contentprovider.SundaeContentProvider;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowContentResolver;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.RESPONSES;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.String.valueOf;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class PostChildElementDataStoreTest {
+
+    private static final long FIRST_RESPONSE_ID = 1L;
+    private static final long SECOND_RESPONSE_ID = 2L;
+    private static final Long POST_ID = 111L;
+    @Mock
+    private SQLiteDatabase db;
+    @Mock
+    private SundaeDatabase dbHelper;
+    private PostChildElementDataStore dataStore;
+    @Mock
+    private Cursor cursor;
+    private static final Long AUTHOR_ID = 10l;
+    private PostResponseRecord postResponseRecord;
+    private ContentValues postResponseRecordContentValues;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        SundaeContentProvider provider = new SundaeContentProvider();
+        provider.onCreate();
+        provider.dbHelper = dbHelper;
+        ShadowContentResolver.registerProvider("com.alpha.api.Sundae",
+                provider);
+
+        dataStore = new PostChildElementDataStore(Robolectric.application);
+        given(dbHelper.getWritableDatabase()).willReturn(db);
+        given(dbHelper.getReadableDatabase()).willReturn(db);
+
+        postResponseRecord = mock(PostResponseRecord.class);
+        when(postResponseRecord.getPostId()).thenReturn(POST_ID);
+        when(postResponseRecord.getAuthorId()).thenReturn(AUTHOR_ID);
+        postResponseRecordContentValues = mock(ContentValues.class);
+        when(postResponseRecord.asValues()).thenReturn(postResponseRecordContentValues);
+
+    }
+
+    @Test
+    public void shouldSaveAllResponsesForAPost() {
+        when(db.query(eq(RESPONSES.name()), eq(new String[]{TableColumn._id.name()}), eq(TableColumn._id.equalTo()),
+                any(String[].class), anyString(), anyString(), anyString(), anyString())).thenReturn(cursor);
+        when(cursor.getCount()).thenReturn(0);
+
+        QuickShortAnswerResponse firstResponse = createMockResponse(FIRST_RESPONSE_ID);
+        QuickShortAnswerResponse secondResponse = createMockResponse(SECOND_RESPONSE_ID);
+        List<QuickShortAnswerResponse> responses = newArrayList(firstResponse, secondResponse);
+
+        dataStore.saveNewResponses(POST_ID, responses);
+
+        verify(db).insertOrThrow(RESPONSES.name(), null, firstResponse.asValues(POST_ID));
+        verify(db).insertOrThrow(RESPONSES.name(), null, secondResponse.asValues(POST_ID));
+    }
+
+    @Test
+    public void shouldNotInsertResponseIfIsAlreadyInDatabase() {
+        when(cursor.getCount()).thenReturn(0, 1);
+
+        stubExistingResponseInDatabase(FIRST_RESPONSE_ID);
+        stubExistingResponseInDatabase(SECOND_RESPONSE_ID);
+
+        QuickShortAnswerResponse firstResponse = createMockResponse(FIRST_RESPONSE_ID);
+        QuickShortAnswerResponse duplicateResponse = createMockResponse(SECOND_RESPONSE_ID);
+        List<QuickShortAnswerResponse> responses = newArrayList(firstResponse, duplicateResponse);
+
+        dataStore.saveNewResponses(POST_ID, responses);
+
+        verify(db).insertOrThrow(RESPONSES.name(), null, firstResponse.asValues(POST_ID));
+        verify(db, never()).insertOrThrow(RESPONSES.name(), null, duplicateResponse.asValues(POST_ID));
+    }
+
+    private void stubExistingResponseInDatabase(long responseId) {
+        when(db.query(RESPONSES.name(), new String[]{TableColumn._id.name()}, TableColumn._id.equalTo(), new String[]{valueOf(responseId)}, null, null, null, null)).thenReturn(cursor);
+    }
+
+    @Test
+    public void shouldDeleteComment() {
+        Long postId = 2l;
+
+        Comment comment = mock(Comment.class);
+        when(comment.getId()).thenReturn(1l);
+
+        dataStore.deleteComment(postId, comment);
+
+        verify(db).delete(Table.COMMENTS.name(), TableColumn._id.equalTo(), new String[]{String.valueOf(comment.getId())});
+    }
+
+    @Test
+    public void shouldNotInsertCommentIfTheCommentHasToBeDeleted() {
+        Long postId = 2l;
+        Long commentId = 1l;
+
+        Comment comment = mock(Comment.class);
+        when(comment.isRemoved()).thenReturn(true);
+        when(comment.getId()).thenReturn(commentId);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableColumn._id.name(), commentId);
+        when(comment.asValues(postId)).thenReturn(contentValues);
+
+        dataStore.saveNewComments(postId, newArrayList(comment));
+        verify(db).delete(Table.COMMENTS.name(), TableColumn._id.equalTo(), new String[]{String.valueOf(comment.getId())});
+        verify(db, never()).insert(eq(Table.COMMENTS.name()), anyString(), isA(ContentValues.class));
+    }
+
+    @Test
+    public void shouldInsertActivityResponseRecordWithAuthorIds() {
+        stubExistingPostResponseRecordInDatabase();
+        when(cursor.getCount()).thenReturn(0);
+
+        dataStore.saveActivityResponses(newHashSet(postResponseRecord));
+
+        verify(db).insertOrThrow(Table.POST_RESPONSE_RECORDS.name(), null, postResponseRecord.asValues());
+    }
+
+    @Test
+    public void shouldNotInsertPostResponseRecordIfItsAlreadyThere() {
+        stubExistingPostResponseRecordInDatabase();
+        when(cursor.getCount()).thenReturn(1);
+
+        dataStore.saveActivityResponses(newHashSet(postResponseRecord));
+
+        verify(db, never()).insertOrThrow(Table.POST_RESPONSE_RECORDS.name(), null, postResponseRecordContentValues);
+    }
+
+    private void stubExistingPostResponseRecordInDatabase() {
+        when(db.query(Table.POST_RESPONSE_RECORDS.name(), new String[]{TableColumn._id.name()}, PostChildElementDataStore.UNIQUE_RESPONSE_RECORD_SELECTION, new String[]{AUTHOR_ID.toString(), POST_ID.toString()}, null, null, null, null)).thenReturn(cursor);
+    }
+
+    @Test
+    public void shouldUpdateComment() {
+        Long postId = 2l;
+
+        ContentValues contentValues = mock(ContentValues.class);
+        when(contentValues.get(TableColumn._id.name())).thenReturn(1l);
+        Comment comment = mock(Comment.class);
+        when(comment.getId()).thenReturn(1l);
+        when(comment.asValues(postId)).thenReturn(contentValues);
+
+        dataStore.deleteElement(Table.COMMENTS, postId, comment.asValues(postId));
+
+        verify(db).delete(Table.COMMENTS.name(), TableColumn._id.equalTo(), new String[]{String.valueOf(comment.getId())});
+    }
+
+    private QuickShortAnswerResponse createMockResponse(long responseId) {
+        QuickShortAnswerResponse response = mock(QuickShortAnswerResponse.class);
+        when(response.getId()).thenReturn(responseId);
+        ContentValues responsesContentValues = new ContentValues();
+        responsesContentValues.put(TableColumn._id.name(), responseId);
+        when(response.asValues(POST_ID)).thenReturn(responsesContentValues);
+        return response;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

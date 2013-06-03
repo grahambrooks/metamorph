@@ -1,0 +1,178 @@
+<html><head><title>KeyboardStateMonitorTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>KeyboardStateMonitorTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/listeners/amplify_client/KeyboardStateMonitorTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.listeners;
+
+
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.SundaeShadowApplication;
+import com.alpha.utils.ActivityUtils;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.MatcherAssert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf_;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class KeyboardStateMonitorTest {
+
+    private KeyboardStateMonitor monitor;
+
+    @Mock
+    ActivityUtils activityUtils;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ActivityInfo activityInfo;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private Activity activity;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        monitor = new KeyboardStateMonitor(Robolectric.application, activityUtils);
+
+        when(activity.getPackageManager().getActivityInfo(activity.getComponentName(),  PackageManager.GET_META_DATA)).thenReturn(activityInfo);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldRegisterForActivityLifeCycleEventsInTheConstructor() {
+        SundaeShadowApplication shadowApplication = shadowOf_(Robolectric.application);
+        MatcherAssert.assertThat(shadowApplication.hasActivityLifeCycleCallbacksRegistered(monitor), is(true));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldCallMakeKeyboardDisappearOnActivityUtilsIfKeyExistsAndIsTrue() {
+        setupBundle(true);
+
+        monitor.onActivityCreated(activity, null);
+
+        verify(activityUtils).makeKeyboardDisappear(activity);
+    }
+
+    @Test
+    public void shouldNotCallMakeKeyboardDisappearOnActivityUtilsIfKeyDoesNotExist() {
+        setupBundle(null);
+
+        monitor.onActivityCreated(activity, null);
+
+        verify(activityUtils, never()).makeKeyboardDisappear(activity);
+    }
+
+    @Test
+    public void shouldNotCallMakeKeyboardDisappearOnActivityUtilsIfKeyExistsAndIsFalse() {
+        setupBundle(false);
+
+        monitor.onActivityCreated(activity, null);
+
+        verify(activityUtils, never()).makeKeyboardDisappear(activity);
+    }
+
+    private void setupBundle(Boolean value) {
+        activityInfo.metaData = new Bundle();
+
+        if(value != null) {
+            activityInfo.metaData.putBoolean(KeyboardStateMonitor.KEYBOARD_STATE_KEY, value.booleanValue());
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<html><head><title>AccountHelperTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AccountHelperTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/authentication/amplify_client/AccountHelperTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.google.common.base.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.authentication.AccountHelper.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+@RunWith(AmplifySDKTestRunner.class)
+public class AccountHelperTest {
+
+    private static final String NON_MATCHING_EMAIL = "test@test.com";
+    private static final String AUTH_DOMAIN = "(mydomain.org|amplifydev.net)";
+    private static final String MATCHING_EMAIL = "student@mydomain.org";
+
+    private AccountHelper accountHelper;
+    private Account expectedAccount;
+    @Mock
+    private AccountManager accountManager;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        accountHelper = new AccountHelper(accountManager, AUTH_DOMAIN);
+        expectedAccount = new Account(MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE);
+    }
+
+    @Test
+    public void shouldReturnTrueIfAccountExists(){
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{
+                new Account(MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE)});
+        assertThat(accountHelper.isAccountRegistered(), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfNoAccountExists(){
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{});
+        assertThat(accountHelper.isAccountRegistered(), is(false));
+    }
+
+    @Test
+    public void shouldReturnFalseIfNoAccountExistsWithValidAuthDomain(){
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{new Account(NON_MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE)});
+        assertThat(accountHelper.isAccountRegistered(), is(false));
+    }
+
+    @Test
+    public void shouldReturnFirstAccountWithMatchingDomain() {
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{
+                new Account(NON_MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE),
+                expectedAccount});
+        assertThat(accountHelper.getFirstAccountByDomain().get(), is(expectedAccount));
+    }
+
+    @Test
+    public void shouldReturnFirstAccountWithSubDomain() {
+        expectedAccount = new Account("student@scholar.mydomain.org", GOOGLE_ACCOUNT_TYPE);
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{
+                new Account(NON_MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE),
+                expectedAccount});
+        assertThat(accountHelper.getFirstAccountByDomain(), is(Optional.of(expectedAccount)));
+    }
+
+    @Test
+    public void shouldReturnFirstAccountWithTestDomain() {
+        expectedAccount = new Account("amplify@amplifydev.net", GOOGLE_ACCOUNT_TYPE);
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{
+                new Account(NON_MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE),
+                expectedAccount});
+        assertThat(accountHelper.getFirstAccountByDomain(), is(Optional.of(expectedAccount)));
+    }
+
+    @Test
+    public void shouldReturnTheAccountWithSpecifiedName() {
+        when(accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE)).thenReturn(new Account[]{
+                new Account(NON_MATCHING_EMAIL, GOOGLE_ACCOUNT_TYPE),
+                expectedAccount});
+        assertThat(accountHelper.getAccountByName(MATCHING_EMAIL), is(expectedAccount));
+    }
+
+    @Test
+    public void shouldReturnTrueIfEmailIsFromValidDomain(){
+        assertThat(accountHelper.isAccountFromValidDomain(MATCHING_EMAIL), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfEmailIsNotFromValidDomain(){
+        assertThat(accountHelper.isAccountFromValidDomain(NON_MATCHING_EMAIL), is(false));
+    }
+
+    @Test
+    public void shouldMatchEmailAddress() throws Exception {
+        assertThat("student@scholar.mydomain.org".matches(String.format(EMAIL_REGEX_TEMPLATE, AUTH_DOMAIN)), is(true));
+        assertThat(MATCHING_EMAIL.matches(String.format(EMAIL_REGEX_TEMPLATE, AUTH_DOMAIN)), is(true));
+        assertThat("student@scholar.another.mydomain.org".matches(String.format(EMAIL_REGEX_TEMPLATE, AUTH_DOMAIN)), is(true));
+        assertThat("STUDENT@scholar.another.mydomain.org".matches(String.format(EMAIL_REGEX_TEMPLATE, AUTH_DOMAIN)), is(true));
+    }
+
+    @Test
+    public void shouldBuildOauthScopeStringFromAuthScopes() throws Exception {
+       assertThat(AuthScope.scopes(AuthScope.AUTH_DRIVE), equalTo("oauth2:" + AuthScope.AUTH_DRIVE.scope()));
+    }
+
+
+    @Test
+    public void shouldBuildOauthScopeStringFromMoreThanOneAuthScopes() throws Exception {
+       assertThat(AuthScope.scopes(AuthScope.AUTH_DRIVE, AuthScope.AUTH_DRIVE_FILE), equalTo("oauth2:" + AuthScope.AUTH_DRIVE.scope() + " " + AuthScope.AUTH_DRIVE_FILE.scope()));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

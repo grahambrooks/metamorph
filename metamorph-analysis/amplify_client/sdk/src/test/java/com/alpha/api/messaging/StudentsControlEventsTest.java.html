@@ -1,0 +1,241 @@
+<html><head><title>StudentsControlEventsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentsControlEventsTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/amplify_client/StudentsControlEventsTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging;
+
+import com.alpha.api.messaging.xmpp.events.ControlEvents;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ControlEvent;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class StudentsControlEventsTest {
+    private ControlSettingsModel controlSettingsModel;
+    private ControlEvents controlEvents;
+
+    @Before
+    public void setUp() throws Exception {
+        Set<String> sundaeAppInfos = newHashSet();
+        sundaeAppInfos.add("somePackage");
+        controlSettingsModel = new ControlSettingsModel();
+        controlSettingsModel.setForceFieldEngaged(true);
+        controlSettingsModel.setAllowedApps(sundaeAppInfos);
+        controlSettingsModel.getQuickPollSettings().setRunning(false);
+        controlEvents = new ControlEvents(controlSettingsModel);
+    }
+
+    @Test
+    public void shouldDetectEventAsLockWhenStateChangedToLockFromUnlocked() {
+        controlSettingsModel.setAsUnlocked();
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        newSettings.setAsLocked();
+
+        assertThat(controlEvents.detectEvents(newSettings).get(0), is(ControlEvent.LOCK));
+    }
+
+    @Test
+    public void shouldDetectEventAsUnlockWhenStateChangedToUnlockFromLocked() {
+        controlSettingsModel.setAsLocked();
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+
+        newSettings.setAsUnlocked();
+
+        assertThat(controlEvents.detectEvents(newSettings).get(0), is(ControlEvent.UNLOCK));
+    }
+
+    @Test
+    public void shouldDetectEventAsForceFieldAppliedWhenItsAppliedFirstTime() {
+        controlSettingsModel.setForceFieldEngaged(false);
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+
+        newSettings.setForceFieldEngaged(true);
+
+        assertThat(controlEvents.detectEvents(newSettings),hasItem(ControlEvent.FORCE_FIELD_ENGAGED));
+    }
+
+    @Test
+    public void shouldDetectEventAsForceFieldReleasedWhenItsCanceled() {
+        controlSettingsModel.setForceFieldEngaged(true);
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+
+        newSettings.setForceFieldEngaged(false);
+
+        assertThat(controlEvents.detectEvents(newSettings),hasItem(ControlEvent.FORCE_FIELD_DISENGAGED));
+    }
+
+    @Test
+    public void shouldDetectEventAsForceFieldChangeWhenForceFieldIsOnAndWhiteListAppChanges() {
+        controlSettingsModel.setForceFieldEngaged(true);
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+
+        newSettings.setAllowedApps(Collections.<String>emptySet());
+        final List<ControlEvent> actual = controlEvents.detectEvents(newSettings);
+
+        assertThat(actual, hasItem(ControlEvent.FORCE_FIELD_WHITELIST_UPDATED));
+    }
+
+    @Test
+    public void shouldDetectEventsFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        newSettings.setAsLocked();
+        newSettings.setAllowedApps(Collections.<String>emptySet());
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events.size(), is(2));
+        assertThat(events, hasItems(ControlEvent.LOCK, ControlEvent.FORCE_FIELD_WHITELIST_UPDATED));
+    }
+
+    @Test
+    public void shouldDetectQuickPollEventFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        QuickPollSettings quickPollSettings = newSettings.getQuickPollSettings();
+        quickPollSettings.setRunning(true);
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, hasItems(ControlEvent.QUICK_POLL));
+    }
+
+    @Test
+    public void shouldDetectSpotCheckEventFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        SpotCheckSettings spotCheckSettings = newSettings.getSpotCheckSettings();
+        spotCheckSettings.setRunning(true);
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, hasItems(ControlEvent.SPOT_CHECK));
+    }
+
+    @Test
+    public void shouldDetectQuickShortAnswerEventFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        QuickShortAnswerSettings quickShortAnswerSettings = newSettings.getQuickShortAnswerSettings();
+        quickShortAnswerSettings.setRunning(true);
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, hasItems(ControlEvent.QUICK_SHORT_ANSWER));
+    }
+
+    @Test
+    public void shouldDetectCountOffEventFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        CountOffSettings countOffSettings = newSettings.getCountOffSettings();
+        countOffSettings.setRunning(true);
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, hasItems(ControlEvent.COUNT_OFF));
+    }
+
+    @Test
+    public void shouldDetectCountdownTimerEventFromControlMessage() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        CountdownTimerSettings countdownTimerSettings = newSettings.getCountdownTimerSettings();
+        countdownTimerSettings.setRunning(true);
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, hasItems(ControlEvent.COUNTDOWN_TIMER));
+    }
+
+    @Test
+    public void shouldReturnLockEventAfterCountdownTimerEvent() {
+        ControlSettingsModel newSettings = new ControlSettingsModel(controlSettingsModel);
+        CountdownTimerSettings countdownTimerSettings = newSettings.getCountdownTimerSettings();
+        countdownTimerSettings.setRunning(true);
+        newSettings.setAsLocked();
+
+        final List<ControlEvent> events = controlEvents.detectEvents(newSettings);
+        assertThat(events, equalTo((List<ControlEvent>) newArrayList(ControlEvent.COUNTDOWN_TIMER, ControlEvent.LOCK)));
+    }
+
+    @Test
+    public void shouldReturnLockEventAfterEveryOtherEvent() {
+        final ControlEvents oldControlEvents = new ControlEvents(new ControlSettingsModel());
+
+        ControlSettingsModel newSettings = new ControlSettingsModel(new ControlSettingsModel());
+        // Change everything
+        newSettings.getCountdownTimerSettings().setRunning(true);
+        newSettings.setForceFieldEngaged(true);
+        newSettings.getQuickPollSettings().setRunning(true);
+        newSettings.getQuickShortAnswerSettings().setRunning(true);
+        newSettings.getSpotCheckSettings().setRunning(true);
+        newSettings.getCountOffSettings().setRunning(true);
+        newSettings.getCountdownTimerSettings().setRunning(true);
+        // including lock
+        newSettings.setAsLocked();
+
+        final List<ControlEvent> events = oldControlEvents.detectEvents(newSettings);
+
+        // Lock event should be last item
+        final ControlEvent lastItemInList = events.get(events.size() - 1);
+        assertThat(ControlEvent.LOCK, equalTo(lastItemInList));
+        // Everything else should be included, except white list updated, that can't be included along with
+        // a force field engaged event.
+        assertThat(events, hasItems(
+                ControlEvent.COUNTDOWN_TIMER,
+                ControlEvent.FORCE_FIELD_ENGAGED,
+                ControlEvent.QUICK_POLL,
+                ControlEvent.QUICK_SHORT_ANSWER,
+                ControlEvent.SPOT_CHECK,
+                ControlEvent.COUNT_OFF,
+                ControlEvent.COUNTDOWN_TIMER
+        ));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

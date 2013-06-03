@@ -1,0 +1,147 @@
+<html><head><title>SubviewHasVisibilityMatcher.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SubviewHasVisibilityMatcher.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/matchers/amplify_client/SubviewHasVisibilityMatcher.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.matchers;
+
+import android.view.View;
+import org.hamcrest.Description;
+import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
+import org.junit.internal.matchers.TypeSafeMatcher;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public class SubviewHasVisibilityMatcher extends TypeSafeMatcher<Object> {
+    private final int expectedVisibleViewResourceId;
+    private final int expectedVisibility;
+    private boolean subviewNotFound;
+    private boolean matchesSafelyCalled;
+    private int actualVisibility;
+
+    @Override
+    public boolean matchesSafely(Object item) {
+        matchesSafelyCalled = true;
+        View view;
+        try {
+            Method method = item.getClass().getMethod("findViewById", Integer.TYPE);
+            view = (View) method.invoke(item, expectedVisibleViewResourceId);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        return makeTheMatch(view);
+    }
+
+    @Factory
+    public static Matcher<Object> hasVisibleView(int expectedVisibleViewResourceId) {
+        return new SubviewHasVisibilityMatcher(expectedVisibleViewResourceId, View.VISIBLE);
+    }
+
+    public SubviewHasVisibilityMatcher(int expectedVisibleViewResourceId, int expectedVisibility) {
+        this.expectedVisibleViewResourceId = expectedVisibleViewResourceId;
+        this.expectedVisibility = expectedVisibility;
+    }
+
+    public boolean makeTheMatch(View view) {
+        if (view == null) {
+            subviewNotFound = true;
+            return false;
+        }
+
+        actualVisibility = view.getVisibility();
+        return actualVisibility == expectedVisibility;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+        if (!matchesSafelyCalled) {
+            description.appendText("Can't find subview from null actual");
+            return;
+        }
+
+        if (subviewNotFound) {
+            description.appendText("No subview found with id " + expectedVisibleViewResourceId);
+            return;
+        }
+
+        description.appendValue(describeVisibility(actualVisibility));
+        description.appendText(" to equal ");
+        description.appendValue(describeVisibility(expectedVisibility));
+    }
+
+    private String describeVisibility(int visibility) {
+        switch (visibility) {
+            case View.VISIBLE:
+                return "visible";
+            case View.INVISIBLE:
+                return "invisible";
+            case View.GONE:
+                return "gone";
+            default:
+                throw new RuntimeException("Unknown visibility: " + visibility);
+        }
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

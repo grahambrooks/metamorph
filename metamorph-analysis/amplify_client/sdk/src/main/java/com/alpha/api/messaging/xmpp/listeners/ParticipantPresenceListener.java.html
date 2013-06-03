@@ -1,0 +1,187 @@
+<html><head><title>ParticipantPresenceListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantPresenceListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ParticipantPresenceListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.xmpp.MultiUserChatAdapter;
+import com.alpha.api.messaging.xmpp.XmppUtils;
+import com.alpha.api.messaging.xmpp.filters.BasePacketFilter;
+import com.alpha.api.messaging.xmpp.filters.Packets;
+import com.alpha.api.messaging.xmpp.filters.PresenceTypeFilter;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.ParticipantStatusChangeEvent;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.alpha.api.utilities.UIUtils;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.gson.JsonSyntaxException;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.packet.MUCUser;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import static com.alpha.api.services.events.UserSessionChangeEvent.Type.JOIN;
+
+public class ParticipantPresenceListener extends BasePacketListener<Presence> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private final UserService userService;
+    private final EventBus eventBus;
+
+    public ParticipantPresenceListener(String roomName, UserService userService, EventBus eventBus) {
+        super(roomName);
+        this.eventBus = eventBus;
+        this.userService = userService;
+    }
+
+    @Override
+    public PacketFilter filter() {
+        return new AndFilter(
+                new PacketExtensionFilter(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE),
+                new PresenceTypeFilter(Type.available),
+                new ParticipantPresencePacketFilter()
+        );
+    }
+
+    @Override
+    protected void process(Presence packet) {
+        final String participantId = XmppUtils.getNickName(packet.getFrom());
+        final String status = packet.getStatus();
+        //TODO Why do we do this here?!
+        onJoinRoom(participantId);
+        handleStatus(participantId, status);
+    }
+
+    protected void onJoinRoom(final String participantId) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() {
+                User user = userService.getUser();
+                Optional<Section> liveSectionOptional = user.getLiveSectionOld();
+                Section section = liveSectionOptional.orNull();
+
+                long id = Long.parseLong(participantId);
+                if (liveSectionOptional.isPresent() && section.participantExistsInSession(id)) {
+                    Participant participant = section.getParticipant(id);
+                    participant.joinSession(section.getName());
+                    eventBus.post(new UserSessionChangeEvent(participant, JOIN));
+                }
+                return null;
+            }
+        });
+    }
+
+    private void handleStatus(String participantId, String status) {
+        LOG.debug("Received new status for participant " + participantId);
+        ParticipantPresenceModel newParticipantStatus = getNewParticipantPresenceModel(status);
+
+        if (newParticipantStatusIsNull(newParticipantStatus)) {
+            LOG.error("Looks like we have a null participant user status for participant " + participantId);
+            return;
+        }
+        LOG.debug("New user status is > " + newParticipantStatus.toString());
+        userStatusChanged(participantId, newParticipantStatus);
+    }
+
+    protected void userStatusChanged(final String participantId, final ParticipantPresenceModel newModel) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                User user = userService.getUser();
+                if (user.hasLiveSection()) {
+                    Participant participant = user.getLiveSection().getParticipant(Long.parseLong(participantId));
+                    ParticipantPresenceModel currentPresence = participant.getParticipantPresence();
+                    Collection<ParticipantStatusChangeEvent> events = currentPresence.detectChanges(newModel);
+                    participant.setParticipantPresence(newModel);
+                    LOG.info("User status changes are : " + events);
+                    for (ParticipantStatusChangeEvent event : events) {
+                        event.handleEvent(newModel, participant, user, eventBus);
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    private boolean newParticipantStatusIsNull(ParticipantPresenceModel newParticipantStatus) {
+        return newParticipantStatus == null;
+    }
+
+    private ParticipantPresenceModel getNewParticipantPresenceModel(String status) {
+        try {
+            return AmplifyJsonHelper.fromJson(status, ParticipantPresenceModel.class);
+        } catch (JsonSyntaxException exception) {
+            LOG.warn("Malformed XMPP User Presence", exception);
+            return null;
+        }
+    }
+
+    private static class ParticipantPresencePacketFilter extends BasePacketFilter<Presence> {
+        private static final String MODERATOR = "moderator";
+
+        @Override
+        protected boolean acceptPacket(Presence packet) {
+            MUCUser mucExtension = Packets.getMucExtension(packet).get();
+            return !MODERATOR.equals(mucExtension.getItem().getRole());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

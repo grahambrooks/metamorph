@@ -1,0 +1,247 @@
+<html><head><title>WebServices.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>WebServices.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/web/amplify_client/WebServices.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.web;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.Event;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+public class WebServices {
+    private static final String POST_REQUEST_FAILED = "Post request failed";
+    private static final String REQUEST_FAILED = "Get request failed";
+    public static final String GET_REQUEST_FAILED_FOR_RESOURCE = "Get request failed for resource ";
+    private final HttpClient httpClient;
+    private final Environment environment;
+    private final GoogleAuthenticationService googleAuthenticationService;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public WebServices(HttpClient httpClient, Environment environment, GoogleAuthenticationService googleAuthenticationService) {
+        this.httpClient = httpClient;
+        this.environment = environment;
+        this.googleAuthenticationService = googleAuthenticationService;
+    }
+
+    public boolean send(Event event) {
+        return post(event).isSuccess();
+    }
+
+    public Response post(Event event) {
+        try {
+            return httpClient.post(environment.getEventLogsURI(), event.asJson());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (IOException e) {
+            LOG.error("Failed to post event: " + event, e);
+            throw new WebServicesException(POST_REQUEST_FAILED, e);
+        } catch (URISyntaxException e) {
+            LOG.error("Failed to post event: " + event, e);
+            throw new WebServicesException(POST_REQUEST_FAILED, e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public Response get(final ApiRequest apiRequest) {
+        return new RequestExceptionHandler() {
+            @Override
+            Response makeRequest() throws IOException, URISyntaxException {
+                return httpClient.get(apiRequest.url(), apiRequest.headers());
+            }
+        }.execute(apiRequest);
+    }
+
+    public Response post(final ApiRequest apiRequest) {
+        return new RequestExceptionHandler() {
+            @Override
+            Response makeRequest() throws IOException, URISyntaxException {
+                return httpClient.post(apiRequest.url(), apiRequest.postBody());
+            }
+        }.execute(apiRequest);
+    }
+
+    public Response delete(final ApiRequest apiRequest) {
+        return new RequestExceptionHandler() {
+            @Override
+            Response makeRequest() throws IOException, URISyntaxException {
+                return httpClient.delete(apiRequest.url());
+            }
+        }.execute(apiRequest);
+    }
+
+    public Response put(final ApiRequest apiRequest) {
+        return new RequestExceptionHandler() {
+            @Override
+            Response makeRequest() throws IOException, URISyntaxException {
+                return httpClient.put(apiRequest.url(), apiRequest.postBody());
+            }
+        }.execute(apiRequest);
+    }
+
+    public Response get(final ApiRequest apiRequest, final String authToken) {
+        return new RequestExceptionHandler() {
+            @Override
+            Response makeRequest() throws IOException, URISyntaxException {
+                return httpClient.get(apiRequest.url(), apiRequest.headers(), authToken);
+            }
+        }.execute(apiRequest);
+    }
+
+    private abstract class RequestExceptionHandler {
+
+        abstract Response makeRequest() throws IOException, URISyntaxException;
+
+        public Response execute(ApiRequest apiRequest) {
+            Response response;
+            try {
+                response = makeRequest();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (response.isSuccess()) {
+                    return response;
+                }
+            } catch (IOException e) {
+                return ioException(apiRequest, e);
+            } catch (URISyntaxException e) {
+                return uriException(apiRequest, e);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            if (response.getStatusCode() == 401) {
+                LOG.warn("Google Auth Token invalid. Invalidating and retrying.");
+                try {
+                    invalidateAuthToken();
+                    response = makeRequest();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    if (response.isSuccess()) {
+                        return response;
+                    }
+                } catch (IOException e) {
+                    return ioException(apiRequest, e);
+                } catch (URISyntaxException e) {
+                    return uriException(apiRequest, e);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            }
+
+            String msg = "Request was not successful. Got " +
+                    response.getStatusCode() + " for " +
+                    apiRequest.url();
+            throw new WebServicesException(msg, apiRequest, response);
+
+        }
+
+        private void invalidateAuthToken() {
+            googleAuthenticationService.invalidateAuthToken();
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        private Response uriException(ApiRequest apiRequest, URISyntaxException e) {
+            LOG.error(GET_REQUEST_FAILED_FOR_RESOURCE + apiRequest.url(), e);
+            throw new WebServicesException(REQUEST_FAILED, e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        private Response ioException(ApiRequest apiRequest, IOException e) {
+            LOG.error(GET_REQUEST_FAILED_FOR_RESOURCE + apiRequest.url(), e);
+            throw new WebServicesException(REQUEST_FAILED, e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<html><head><title>HandRaisingTeacherActionProvider.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HandRaisingTeacherActionProvider.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/actionproviders/amplify_client/HandRaisingTeacherActionProvider.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionproviders;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import com.alpha.activities.MonitoringActivity;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.*;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+public class HandRaisingTeacherActionProvider extends SundaeActionProvider {
+
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private LayoutInflater inflater;
+    @Inject
+    private UserService userService;
+
+    private ImageView handIcon;
+
+    public HandRaisingTeacherActionProvider(Context context) {
+        super(context);
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showOrHideHand();
+        eventBus.register(this);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public View onCreateActionView() {
+        View view = inflater.inflate(R.layout.teacher_hand_raising_menu, null);
+
+        handIcon = (ImageView) view.findViewById(R.id.hand_raised_notifier);
+        handIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToMonitoringView();
+            }
+        });
+
+        showOrHideHand();
+        return view;
+    }
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onParticipantChange(UserSessionChangeEvent event) {
+        showOrHideHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onHandRaiseStatusChanged(HandRaiseStatusChangeEvent event) {
+        showOrHideHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionEnded(TeacherSessionEndedEvent endSessionEvent) {
+        hideHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe
+    public void onSessionStarted(SessionStartEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (event.succeeded()) {
+            showOrHideHand();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Subscribe
+    public void onUserInformationRefreshed(UserInformationRefreshedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!event.requiresRestart()) {
+            showOrHideHand();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionConnectionDropped(ConnectionClosedEvent event) {
+        hideHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void showOrHideHand() {
+        int count = userService.getCurrentUserSection().countRaisedHands();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (count > 0) {
+            showHand();
+        } else {
+            hideHand();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void showHand() {
+        handIcon.setVisibility(View.VISIBLE);
+    }
+
+    private void hideHand() {
+        handIcon.setVisibility(View.GONE);
+    }
+
+    private void goToMonitoringView() {
+        Intent intent = new Intent(context, MonitoringActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        context.startActivity(intent);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

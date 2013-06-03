@@ -1,0 +1,139 @@
+<html><head><title>PostCursorLoaderInitializerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostCursorLoaderInitializerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/PostCursorLoaderInitializerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.database.Cursor;
+import android.os.Bundle;
+import com.alpha.api.domains.Post;
+import com.alpha.api.services.UserRole;
+import com.alpha.builders.PostBuilder;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class PostCursorLoaderInitializerTest {
+
+    @Mock
+    private DiscussionDetailActivity fragment;
+    @Mock
+    private BaseCursorLoader mockedCursorLoader;
+    @Mock
+    private Cursor cursor;
+    private PostCursorLoaderInitializer loaderInitializer;
+    private static final long POST_ID = 0l;
+    private Post post;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        post = new PostBuilder().build();
+        loaderInitializer = new PostCursorLoaderInitializer(null, fragment, post);
+    }
+
+    @Test
+    public void shouldSetCommmentsCursorWhenLoaderIdIsResponsesonLoadFinished() {
+        when(mockedCursorLoader.getId()).thenReturn(PostCursorLoaderInitializer.COMMENTS_CURSOR_LOADER_ID);
+        loaderInitializer.onLoadFinished(mockedCursorLoader, cursor);
+        verify(mockedCursorLoader).onLoadFinished(cursor);
+    }
+
+    @Test
+    public void shouldSetCommmentsCursorToNullWhenLoaderIdIsResponsesOnLoaderReset() {
+        when(mockedCursorLoader.getId()).thenReturn(PostCursorLoaderInitializer.COMMENTS_CURSOR_LOADER_ID);
+        loaderInitializer.onLoaderReset(mockedCursorLoader);
+        verify(mockedCursorLoader).onLoaderReset();
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderWithCommentsURI() throws Exception {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(PostCursorLoaderInitializer.COMMENTS_CURSOR_LOADER_ID, null);
+        assertThat(cursorLoader.getUri().toString(), is("content://com.alpha.api.Sundae/posts/" +
+                POST_ID + "/comments"));
+    }
+
+    @Test
+    public void shouldCreateResponseCursorLoader() {
+        BaseCursorLoader cursorLoader = (BaseCursorLoader) loaderInitializer.onCreateLoader(PostCursorLoaderInitializer.POST_RESPONSE_RECORDS_CURSOR_LOADER_ID, null);
+        assertThat(cursorLoader, is(instanceOf(PostResponseRecordsCursorLoader.class)));
+    }
+
+    @Test
+    public void shouldLoadAllCursorsForTeacher() {
+        loaderInitializer = new PostCursorLoaderInitializer(null, fragment, post);
+        LoaderManager loaderManager = mock(LoaderManager.class);
+        loaderInitializer.register(loaderManager, UserRole.TEACHER);
+
+       verify(loaderManager, times(2)).initLoader(anyInt(), Mockito.<Bundle>eq(null), isA(LoaderManager.LoaderCallbacks.class));
+    }
+
+    @Test
+    public void shouldLoadAllCursorsForStudent() {
+        loaderInitializer = new PostCursorLoaderInitializer(null, fragment, post);
+
+        LoaderManager loaderManager = mock(LoaderManager.class);
+        loaderInitializer.register(loaderManager, UserRole.STUDENT);
+
+        verify(loaderManager, times(1)).initLoader(anyInt(), Mockito.<Bundle>eq(null), isA(LoaderManager.LoaderCallbacks.class));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

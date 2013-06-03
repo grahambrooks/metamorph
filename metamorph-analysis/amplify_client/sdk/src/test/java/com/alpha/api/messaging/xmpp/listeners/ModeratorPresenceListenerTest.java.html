@@ -1,0 +1,238 @@
+<html><head><title>ModeratorPresenceListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ModeratorPresenceListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ModeratorPresenceListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.xmpp.MultiUserChatAdapter;
+import com.alpha.api.messaging.xmpp.SessionHolder;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.packet.MUCUser;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.jivesoftware.smack.packet.Presence.Type;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ModeratorPresenceListenerTest {
+
+    private static final String ROOM_NAME = "roomname";
+    private static final String SERVICE = "/Smack";
+    private static final String XMPP_ROOM_OWNER = "owner";
+    private static final String XMPP_MODERATOR = "moderator";
+    private static final String NONE_AFFILIATION = "none";
+    private ModeratorPresenceListener listener;
+    private PacketFilter filter;
+    @Mock
+    private MUCUser mucUser;
+    @Mock
+    private Presence packet;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private SessionHolder xmppSession;
+    @Mock
+    private ModeratorPresenceListener.TeacherReconnectTimer teacherReconnectTimer;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        listener = new ModeratorPresenceListener(ROOM_NAME, xmppSession, eventBus);
+        filter = listener.filter();
+        given(mucUser.getItem()).willReturn(mock(MUCUser.Item.class));
+    }
+
+    @Test
+    public void shouldAcceptPacketsWithTypeUnavailableFromOwner() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.unavailable);
+        when(mucUser.getItem().getAffiliation()).thenReturn(XMPP_ROOM_OWNER);
+        assertThat(filter.accept(packet), is(true));
+    }
+
+    @Test
+    public void shouldAcceptPacketsWithTypeAvailableFromModerator() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.available);
+        when(mucUser.getItem().getRole()).thenReturn(XMPP_MODERATOR);
+        assertThat(filter.accept(packet), is(true));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsWithTypeUnavailableFromModerator() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.unavailable);
+        when(mucUser.getItem().getRole()).thenReturn(XMPP_MODERATOR);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsWithTypeAvailableFromOwner() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.available);
+        when(mucUser.getItem().getAffiliation()).thenReturn(XMPP_ROOM_OWNER);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsWithTypeUnavailableFromUserWithNoAffiliation() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.unavailable);
+        when(mucUser.getItem().getAffiliation()).thenReturn(NONE_AFFILIATION);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsWithoutMucUserExtensionNamespace() {
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(null);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPresencePacketsContainingOnlyPresenceType() {
+        when(packet.getType()).thenReturn(Type.unavailable);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsWithTypesOtherThanUnavailable() {
+        when(packet.getFrom()).thenReturn(ROOM_NAME + SERVICE);
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.subscribe);
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptPacketsContainingOnlyTheOwnerAffiliation() {
+        when(mucUser.getItem().getAffiliation()).thenReturn(XMPP_ROOM_OWNER);
+
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldNotAcceptRoomDestroyFilterPackets() {
+        when(packet.getExtension(null, MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getExtension(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE)).thenReturn(mucUser);
+        when(packet.getType()).thenReturn(Type.unavailable);
+        when(mucUser.getItem().getAffiliation()).thenReturn(NONE_AFFILIATION);
+        when(mucUser.getDestroy()).thenReturn(mock(MUCUser.Destroy.class));
+        assertThat(filter.accept(packet), is(false));
+    }
+
+    @Test
+    public void shouldCancelTimerWhenTeacherReconnectsBeforeTimeout() {
+        listener.timerRunning.set(true);
+        listener.teacherReconnectTimer = teacherReconnectTimer;
+        when(packet.getType()).thenReturn(Type.available);
+
+        listener.process(packet);
+
+        verify(listener.teacherReconnectTimer).cancel();
+        assertThat(listener.timerRunning.get(), is(false));
+    }
+
+    @Test
+    public void shouldEndSessionAfterTeacherDisconnectTimerTimesout() {
+        listener.timerRunning.set(false);
+        when(packet.getType()).thenReturn(Type.unavailable);
+
+        listener.process(packet);
+        listener.teacherReconnectTimer.onFinish();
+
+        verify(xmppSession).endSession();
+    }
+
+    @Test
+    public void shouldPostEndSessionEventAfterTeacherDisconnectTimerTimesout() {
+        listener.timerRunning.set(false);
+        when(packet.getType()).thenReturn(Type.unavailable);
+
+        listener.process(packet);
+        listener.teacherReconnectTimer.onFinish();
+
+        verify(eventBus).post(any(StudentSessionEndedEvent.class));
+    }
+
+    @Test
+    public void shouldSetTeacherDisconnectTimerRunningToFalseWhenTeacherDisconnectTimerTimesout() {
+        listener.timerRunning.set(false);
+        when(packet.getType()).thenReturn(Type.unavailable);
+
+        listener.process(packet);
+
+        assertThat(listener.timerRunning.get(), is(true));
+
+        listener.teacherReconnectTimer.onFinish();
+
+        assertThat(listener.timerRunning.get(), is(false));
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<html><head><title>WelcomeActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>WelcomeActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/WelcomeActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import com.alpha.api.authentication.GoogleAuthenticationCallback;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+public class WelcomeActivity extends SundaeTimedActivity implements GoogleAuthenticationCallback {
+
+    protected static final String QR_CODE_APPLICATION_ACTION = "com.caribou.app.qrcode.action.SCAN_STUDENT_CODE";
+    protected static final int REQUEST_CODE_SCANNER = 1;
+    private static final Logger LOG = LogUtils.getLogger();
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private GoogleAuthenticationService authService;
+
+    @InjectView(R.id.launch_options)
+    View launchOptionsView;
+    @InjectView(R.id.busy_view)
+    View busyView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.welcome_layout);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(authService.isAccountRegistered()){
+            authenticate();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void onScanQR(View clickedView) {
+        try{
+            startActivityForResult(new Intent(QR_CODE_APPLICATION_ACTION), REQUEST_CODE_SCANNER);
+        }catch(ActivityNotFoundException e){
+            toaster.makeToast(R.string.scanner_app_not_installed);
+        }
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onManualRegistration(View clickedView) {
+        authenticate();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void switchToBusyView(){
+        launchOptionsView.setVisibility(View.INVISIBLE);
+        busyView.setVisibility(View.VISIBLE);
+    }
+
+    private void authenticate() {
+        authService.authenticate(this, this);
+        switchToBusyView();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        LOG.info("Activity Result returned : {} for request code {}", resultCode, requestCode);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(resultFromScannerApp(requestCode) && resultIsSuccess(resultCode)){
+            authenticate();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private boolean resultFromScannerApp(int requestCode) {
+        return requestCode == REQUEST_CODE_SCANNER;
+    }
+
+    private boolean resultIsSuccess(int resultCode) {
+        return resultCode == Activity.RESULT_OK;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onAuthenticationSuccess(Bundle result) {
+        setResult(RESULT_OK);
+        finish();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onAuthenticationFailure(Exception ex) {
+
+        setResult(RegistrationActivity.REGISTRATION_STEP_FAILED);
+        finish();
+
+
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

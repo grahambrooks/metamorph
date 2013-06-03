@@ -1,0 +1,169 @@
+<html><head><title>LearningElementsDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LearningElementsDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/LearningElementsDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.LearningElementType;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.LEARNING_ELEMENTS;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.playlist_id;
+import static com.google.common.collect.Lists.newArrayList;
+
+@Singleton
+public class LearningElementsDataStore {
+    private final Context context;
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public LearningElementsDataStore(Context context) {
+        this.context = context;
+    }
+
+    public List<LearningElement> getLearningElementsFor(Playlist playlist) {
+        Cursor cursor = null;
+
+        try {
+            cursor = context.getContentResolver()
+                    .query(LEARNING_ELEMENTS.uri(),
+                            LEARNING_ELEMENTS.allColumnNames(),
+                            playlist_id.equalTo(), new String[]{playlist.getId().toString()}, null);
+
+            return asLearningElement(cursor);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                IOUtils.closeSafely(cursor);
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    protected List<LearningElement> asLearningElement(Cursor cursor) {
+        final int content = cursor.getColumnIndex(TableColumn.content.name());
+        final int type = cursor.getColumnIndex(TableColumn.type.name());
+
+        List<LearningElement> learningElements = newArrayList();
+
+        while (cursor.moveToNext()) {
+            String contents = cursor.getString(content);
+
+            LearningElementType learningElementType = LearningElementType.valueOf(cursor.getString(type));
+            LearningElement learningElement = learningElementType.fromJson(contents);
+
+            learningElements.add(learningElement);
+        }
+
+        return learningElements;
+    }
+
+    public void save(List<LearningElement> learningElements, Playlist playlist) {
+        List<Long> learningElementsIds = newArrayList(Collections2.transform(getLearningElementsFor(playlist), new Function<LearningElement, Long>() {
+            @Override
+            public Long apply(LearningElement learningElement) {
+                return learningElement.getId();
+            }
+        }));
+
+        for(LearningElement learningElement: learningElements) {
+            if(learningElementsIds.contains(learningElement.getId())) {
+                update(learningElement, playlist.getId());
+            } else {
+                insert(learningElement, playlist.getId());
+            }
+        }
+    }
+
+    protected void insert(LearningElement learningElement, Long playlistId) {
+        final ContentResolver contentResolver = context.getContentResolver();
+
+        ContentValues values = learningElement.asValues();
+        values.put(TableColumn.playlist_id.name(), playlistId);
+
+        LOG.debug("Inserting learning element json: {}", learningElement.asJson());
+        contentResolver.insert(Table.LEARNING_ELEMENTS.uri(), values);
+    }
+
+    protected void update(LearningElement learningElement, Long playlistId) {
+        final ContentResolver contentResolver = context.getContentResolver();
+
+        ContentValues values = learningElement.asValues();
+        values.put(TableColumn.playlist_id.name(), playlistId);
+
+        LOG.debug("Updating learning element json: {}", learningElement.asJson());
+        contentResolver.update(Table.LEARNING_ELEMENTS.uri(), values, _id.equalTo(), new String[]{learningElement.getId().toString()});
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<html><head><title>SundaeAppInfo.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaeAppInfo.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/SundaeAppInfo.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">27</span>
+    <progress max="100" value="27"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import android.graphics.drawable.Drawable;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.services.Section;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+
+import javax.annotation.Nullable;
+
+public class SundaeAppInfo {
+    protected static final int ICON_HEIGHT = 75;
+    protected static final int ICON_WIDTH = 75;
+
+    public static Function NAME_FUNCTION = new Function<SundaeAppInfo, String>() {
+        @Override
+        public String apply(@Nullable SundaeAppInfo input) {
+            return input.getAppName();
+        }
+    };
+
+    public static final Predicate<SundaeAppInfo> NOT_LOCKED_PREDICATE = new Predicate<SundaeAppInfo>() {
+        @Override
+        public boolean apply(@Nullable SundaeAppInfo sundaeAppInfo) {
+            return !sundaeAppInfo.isLockedApp();
+        }
+    };
+
+    private final String appName;
+    private final String appPackage;
+
+    private boolean isLockedApp;
+    private String appLabel;
+    private Drawable appIcon;
+
+    public SundaeAppInfo(String appName, String appPackage, boolean isLockedApp, String appLabel) {
+        this.appName = appName;
+        this.appPackage = appPackage;
+        this.isLockedApp = isLockedApp;
+        this.appLabel = appLabel;
+    }
+
+    public SundaeAppInfo(String appName, String appPackage, boolean isLockedApp, String appLabel, Drawable appIcon) {
+        this(appName, appPackage, isLockedApp, appLabel);
+        this.appIcon = appIcon;
+        if(appIcon != null) {
+            appIcon.setBounds(0, 0, ICON_WIDTH, ICON_HEIGHT);
+        }
+    }
+
+
+    public boolean isLockedApp() {
+        return isLockedApp;
+    }
+
+    public void setLockedApp(boolean lockedApp) {
+        isLockedApp = lockedApp;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public String getAppPackage() {
+        return appPackage;
+    }
+
+    @Override
+    @SuppressWarnings("PMD")
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SundaeAppInfo that = (SundaeAppInfo) o;
+
+        if (appPackage != null ? !appPackage.equals(that.appPackage) : that.appPackage != null) return false;
+
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("PMD")
+    public int hashCode() {
+        return appPackage != null ? appPackage.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{AppName=%s, AppPackage=%s, isLocked=%b}", appName, appPackage, isLockedApp);
+    }
+
+    public ContentValues asValues(Section section) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableColumn.app_name.name(), appName);
+        contentValues.put(TableColumn.app_package.name(), appPackage);
+        contentValues.put(TableColumn.section_id.name(), section.getId());
+        return contentValues;
+    }
+
+    public String getAppLabel() {
+        return appLabel;
+    }
+
+    public boolean isAmplifyApp() {
+            return (appPackage.contains("com.amplify") || appPackage.contains("com.alpha"))
+                    && !"com.amplify.eb.tablet".equals(appPackage); //Britannica started using our package name...
+    }
+
+    public boolean isSectorApp(){
+        return appPackage.contains("com.opeak") || appPackage.contains("com.openpeak");
+    }
+
+    public Drawable getAppIcon() {
+        return appIcon;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

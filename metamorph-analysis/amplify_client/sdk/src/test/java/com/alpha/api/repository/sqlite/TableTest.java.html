@@ -1,0 +1,181 @@
+<html><head><title>TableTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TableTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/sqlite/amplify_client/TableTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.sqlite;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import com.alpha.api.repository.contentprovider.SundaeContentProvider;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static com.alpha.api.repository.contentprovider.SundaeContentProvider.AUTHORITY;
+import static com.alpha.api.repository.contentprovider.SundaeContentProvider.CONTENT;
+import static com.alpha.api.repository.sqlite.Table.FORCE_FIELD_WHITELIST;
+import static com.alpha.api.repository.sqlite.Table.SECTIONS;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class TableTest {
+
+    public static final String JSON = "{}";
+    public static final Long ACTIVITY_ID = 1L;
+    public static final Long POST_ID = 33L;
+    public static final long ID = 10L;
+    private SundaeContentProvider provider;
+    @Mock
+    private SundaeDatabase dbHelper;
+    @Mock
+    private SQLiteDatabase readableDatabase;
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private SQLiteDatabase db;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        provider = new SundaeContentProvider();
+        provider.onCreate();
+        provider.dbHelper = dbHelper;
+        given(dbHelper.getWritableDatabase()).willReturn(db);
+    }
+
+    @Test
+    public void shouldSetNotificationUriForQueryCursor() throws Exception {
+        when(dbHelper.getReadableDatabase()).thenReturn(readableDatabase);
+        when(readableDatabase.query(SECTIONS.name(), null, null, null, null, null, null, null)).thenReturn(cursor);
+
+        Cursor query = provider.query(SECTIONS.uri(), null, null, null, null);
+
+        assertThat(cursor, is(sameInstance(query)));
+        verify(cursor).setNotificationUri(any(ContentResolver.class), eq(Table.SECTIONS.uri()));
+    }
+
+    @Test
+    public void shouldUpdateUrisMatchingSingleActivityId() throws Exception {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn.content.name(), JSON);
+        values.put(TableColumn._id.name(), "1");
+        Uri activiyIdUri = Table.SECTIONS.uri();
+        String selection = TableColumn._id.equalTo();
+        String[] selectionArgs = {ACTIVITY_ID.toString()};
+        provider.update(activiyIdUri, values, selection, selectionArgs);
+
+        verify(db).update(SECTIONS.name(), values, selection, selectionArgs);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowExceptionIfUriDoesNotMatch() throws Exception {
+        Uri uri = Table.SECTIONS.uri().buildUpon().appendPath("sdfgsdfgdsfg").build();
+        provider.update(uri, new ContentValues(), null, null);
+    }
+
+    @Test
+    public void shouldDeleteMatchingUri() {
+        String sectionId = String.valueOf(1L);
+
+        Uri uriToDelete = Table.FORCE_FIELD_WHITELIST.uri(sectionId);
+        String selection = TableColumn.section_id.equalTo();
+        String[] selectionArgs = {sectionId};
+        provider.delete(uriToDelete, selection, selectionArgs);
+
+        verify(db).delete(FORCE_FIELD_WHITELIST.name(), selection, selectionArgs);
+    }
+
+    @Test
+    public void shouldUseTheCorrectUri() throws Exception {
+        assertThat(Table.POSTS.uri(), is(Uri.parse(CONTENT + AUTHORITY + "/posts")));
+        assertThat(Table.LEARNING_ELEMENTS.uri(), is(Uri.parse(CONTENT + AUTHORITY + "/learning_elements")));
+        assertThat(Table.SECTIONS.uri(), is(Uri.parse(CONTENT + AUTHORITY + "/sections")));
+    }
+
+    @Test
+    public void shouldConstructUriWithOptionalParts() {
+        assertThat(Table.POSTS.uri("COUNT_OFF"), is(Uri.parse(CONTENT + AUTHORITY + "/COUNT_OFF/posts")));
+        assertThat(Table.RESPONSES.uri(3L, "SOMETHING"), is(Uri.parse(CONTENT + AUTHORITY + "/SOMETHING/posts/3/responses")));
+    }
+
+    @Test
+    public void shouldReplacePlaceHoldersInUri() throws Exception {
+        assertThat(Table.COMMENTS.uri(1L), is(Uri.parse(CONTENT + AUTHORITY + "/posts/1/comments")));
+        assertThat(Table.RESPONSES.uri(3L), is(Uri.parse(CONTENT + AUTHORITY + "/posts/3/responses")));
+    }
+
+    @Test
+    public void shouldFailIfNumberOfPlaceholdersDoNotMatchValues() throws Exception {
+        try {
+            Table.COMMENTS.uri();
+            fail("expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage(), is("Expecting 1 placeholder(s). You supplied 0."));
+        }
+    }
+
+    @Test
+    public void shouldReturnUriForSingleRecordInTheTable() {
+        assertThat(Table.POSTS.uriForSingleRow(ID).toString(), is("content://com.alpha.api.Sundae/posts/10"));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

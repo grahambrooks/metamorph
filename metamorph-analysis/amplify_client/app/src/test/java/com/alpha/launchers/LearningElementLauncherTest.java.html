@@ -1,0 +1,251 @@
+<html><head><title>LearningElementLauncherTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LearningElementLauncherTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/launchers/amplify_client/LearningElementLauncherTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.launchers;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import com.alpha.activities.Toaster;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.LearningElementType;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.xtremelabs.robolectric.Robolectric.getShadowApplication;
+import static junit.framework.Assert.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class LearningElementLauncherTest {
+
+    public static final String DESCRIPTION = "description";
+    @Mock
+    private ApplicationUtils applicationUtils;
+    @Mock
+    private Toaster toaster;
+
+    private Context context;
+    private static final String TITLE = "title";
+
+    @Inject
+    private LearningElementLauncher learningElementLauncher;
+    public static final String SAMPLE_URI = "http://com.kaldorgroup.amplify/CK12AlgebraISecondEdition/1#0";
+    public static final String WEBLINK = GoogleMapsLearningElement.GOOGLE_MAPS_URI_QUERY + "weblink";
+    public static final String GOOGLE_MAPS_ADDRESS = "name\nphone\naddress\n" + WEBLINK;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        ActivityTestInjector<LearningElementLauncher> injector = newInjector(this, LearningElementLauncher.class);
+        injector.bindInstance(ApplicationUtils.class, applicationUtils)
+                .bindInstance(Toaster.class, toaster);
+        injector.configureTestSubject();
+
+        context = Robolectric.application;
+    }
+
+    @Test
+    public void shouldLaunchGDriveIntentWhenSharePostOfTypeGDriveIsClicked() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GoogleDriveLearningElement.GOOGLE_DRIVE_PACKAGE))).thenReturn(true);
+        Optional<Uri> googleUri = Optional.of(Uri.parse("googledoc"));
+        sendGDriveIntent(googleUri);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getData(), is(googleUri.get()));
+    }
+
+    @Test
+    public void shouldShowToastIfGDriveIntentIsLaunchedButNotInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GoogleDriveLearningElement.GOOGLE_DRIVE_PACKAGE))).thenReturn(false);
+
+        Optional<Uri> googleUri = Optional.of(Uri.parse("googledoc"));
+        sendGDriveIntent(googleUri);
+
+        verify(toaster).makeToast(context.getString(R.string.app_not_installed, GoogleDriveLearningElement.GOOGLE_DRIVE_APPNAME));
+    }
+
+    @Test
+    public void shouldNotLaunchGDriveIfURIIsAbsentForSharedGDriveElement() {
+        Optional<Uri> googleUri = Optional.absent();
+
+        sendGDriveIntent(googleUri);
+
+        Intent intent = getShadowApplication().getNextStartedActivity();
+        assertNull(intent);
+    }
+
+    @Test
+    public void shouldShowToasterMessageWhenGDriveUriIsAbsent() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GoogleDriveLearningElement.GOOGLE_DRIVE_PACKAGE))).thenReturn(true);
+        Optional<Uri> googleUri = Optional.absent();
+        sendGDriveIntent(googleUri);
+        verify(toaster).makeToast(R.string.error_opening_google_drive_document);
+    }
+
+    @Test
+    public void shouldToastErrorMessageIfVideoFileNotAvailable() throws Exception {
+        Intent intent = mock(Intent.class);
+        when(intent.getDataString()).thenReturn("file:///some/random/unexisting/file");
+
+        VideoLearningElement videoLearningElement = mock(VideoLearningElement.class);
+        when(videoLearningElement.getType()).thenReturn(LearningElementType.VIDEO);
+        when(videoLearningElement.getVideoLaunchIntent()).thenReturn(intent);
+
+        learningElementLauncher.launchIntentForLearningElement(context, videoLearningElement);
+
+        verify(toaster).makeToast(R.string.video_unavailable);
+    }
+
+    @Test
+    public void shouldLaunchEreaderIntentWhenClickedOnSharedEreaderPost() throws Exception {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(EReaderLearningElement.KALDOR_PACKAGE))).thenReturn(true);
+        PackageManager packageManager = mock(PackageManager.class);
+        when(packageManager.getLaunchIntentForPackage(EReaderLearningElement.KALDOR_PACKAGE)).thenReturn(new Intent());
+        Robolectric.getShadowApplication().setPackageManager(packageManager);
+
+        EReaderLearningElement eReaderLearningElement = new EReaderLearningElement(TITLE, null, "Book", null, SAMPLE_URI);
+
+        learningElementLauncher.launchIntentForLearningElement(context, eReaderLearningElement);
+
+        verify(packageManager).getLaunchIntentForPackage(EReaderLearningElement.KALDOR_PACKAGE);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getData(), equalTo(Uri.parse(SAMPLE_URI)));
+        assertThat(intent.getAction(), is(Intent.ACTION_VIEW));
+    }
+
+    @Test
+    public void shouldToastErrorMessageWhenEReaderIsNotInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(EReaderLearningElement.KALDOR_PACKAGE))).thenReturn(false);
+
+        EReaderLearningElement learningElement = new EReaderLearningElement(TITLE, null, "Book", null, SAMPLE_URI);
+        learningElementLauncher.launchIntentForLearningElement(context, learningElement);
+
+        verify(toaster).makeToast(context.getString(R.string.app_not_installed, EReaderLearningElement.KALDOR_APPNAME));
+    }
+
+    @Test
+    public void shouldLaunchBrowserIntentWhenSharePostOfWebpageTypeIsClicked() {
+        Uri sampleUri = Uri.parse("www.sample.com");
+
+        WebPageLearningElement webLearningElement = new WebPageLearningElement(TITLE, null, sampleUri);
+
+        learningElementLauncher.launchIntentForLearningElement(context, webLearningElement);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getData(), is(sampleUri));
+        assertThat(intent.getAction(), is(Intent.ACTION_VIEW));
+    }
+
+    @Test
+    public void shouldLaunchMapsIntentWhenClickingAMapsElement() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GoogleMapsLearningElement.GOOGLE_MAPS_PACKAGE))).thenReturn(true);
+
+        GoogleMapsLearningElement element = new GoogleMapsLearningElement(TITLE, GOOGLE_MAPS_ADDRESS);
+        learningElementLauncher.launchIntentForLearningElement(context, element);
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getData().toString().contains("name"), is(true));
+    }
+
+    @Test
+    public void shouldToastErrorWhenGoogleMapsIsNotInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GoogleMapsLearningElement.GOOGLE_MAPS_PACKAGE))).thenReturn(false);
+
+        GoogleMapsLearningElement learningElement = new GoogleMapsLearningElement(TITLE, GOOGLE_MAPS_ADDRESS);
+        learningElementLauncher.launchIntentForLearningElement(context, learningElement);
+
+        verify(toaster).makeToast(context.getString(R.string.app_not_installed, GoogleMapsLearningElement.GOOGLE_MAPS_APPNAME));
+    }
+
+    private void sendGDriveIntent(Optional<Uri> googleUri) {
+        GoogleDriveLearningElement googleDriveLearningElement = new GoogleDriveLearningElement(TITLE, null, "fileId", 0);
+        if (googleUri.isPresent()) {
+            googleDriveLearningElement.setFileUri(googleUri.get().toString());
+        } else {
+            googleDriveLearningElement.setFileUri(null);
+        }
+
+        learningElementLauncher.launchIntentForLearningElement(context, googleDriveLearningElement);
+    }
+
+    @Test
+    public void shouldLaunchBrowserIntentWhenClickingAWebPageElement() {
+        final Uri SAMPLE_URI = Uri.parse("sample.com");
+        WebPageLearningElement element = new WebPageLearningElement(TITLE, DESCRIPTION, SAMPLE_URI);
+
+        learningElementLauncher.launchIntentForLearningElement(context, element);
+
+        Intent nextIntent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(nextIntent.getData(), is(SAMPLE_URI));
+        assertThat(nextIntent.getAction(), is(Intent.ACTION_VIEW));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

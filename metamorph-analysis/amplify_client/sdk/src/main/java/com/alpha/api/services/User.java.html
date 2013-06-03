@@ -1,0 +1,316 @@
+<html><head><title>User.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>User.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/User.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">25</span>
+    <progress max="100" value="25"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostSection;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.messaging.ForceFieldControlSettings;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.messaging.StudentsControlSettings;
+import com.alpha.api.messaging.xmpp.XmppUtils;
+import com.alpha.lock.GlobalInformationLock;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Sets.newHashSet;
+
+public class User extends SynchronisedUser implements ForceFieldControlSettings {
+
+    protected static final int NUMBER_OF_PASSWORD_CHARACTERS = 10;
+
+    protected static final String HARDCODED_SCHOOL_NAME = "Brooklyn Junior High";
+    private final Long id;  //NOPMD
+
+    private final UserRole role;
+    private final String schoolName;
+
+    private String xmppPassword;
+    private String xmppUsername;
+
+    private ClassSession classSession;
+
+    private boolean forceFieldApplied;
+    private Set<String> whiteList;
+
+    public User(Long id, String name, UserRole role, GlobalInformationLock globalInformationLock) {
+        this(id, name, role, HARDCODED_SCHOOL_NAME, null, null, Lists.<Section>newArrayList(), globalInformationLock);
+    }
+
+    public User(Long id, String name, UserRole role, String schoolName, String xmppUsername, String xmppPassword, List<Section> sections, GlobalInformationLock globalInformationLock) {
+        super(sections, name, globalInformationLock);
+        this.id = id;
+        this.schoolName = schoolName;
+        this.xmppUsername = xmppUsername;
+        this.xmppPassword = xmppPassword;
+        this.role = role;
+        this.whiteList = newHashSet();
+        this.classSession = new ClassSession();
+    }
+
+    public ClassSession getSession() {
+        return classSession;
+    }
+
+    @Override
+    public boolean isForceFieldEngaged() {
+        return forceFieldApplied;
+    }
+
+    private void setForceFieldEngaged(boolean forceFieldEngaged) {
+        this.forceFieldApplied = forceFieldEngaged;
+    }
+
+    @Override
+    public Set<String> getAllowedApps() {
+        return Collections.unmodifiableSet(whiteList);
+    }
+
+    public PostSection createPostSectionFromCurrentSection() {
+        return new PostSection(getCurrentSection().getName(), getCurrentSection().getId());
+    }
+
+    @Deprecated
+    public Optional<Section> getLiveSectionOld() {
+        Section liveSection = classSession.section();
+        return Optional.fromNullable(liveSection);
+    }
+
+    public Section getLiveSection() {
+        Section liveSection = classSession.section();
+        checkState(liveSection != null, "No section is currently live.");
+        return liveSection;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public PostAuthor asAuthor() {
+        return new PostAuthor(getId(), getName(), role);
+    }
+
+    protected Event createEvent(Event.Type type) {
+        return createEvent(type, getCurrentSection());
+    }
+
+    protected Event createEvent(Event.Type type, Section section) {
+        return new Event(getId(), type, section.getId());
+    }
+
+    public boolean hasLiveSection() {
+        return classSession.isOngoing();
+    }
+
+    public ControlSettingsModel getCurrentControlSettingsModel() {
+        StudentsControlSettings studentsControlSettings = classSession.studentsControlSettings();
+        CallOnSomeoneSettings callOnSomeoneSettings = classSession.getCallOnSomeoneSettings();
+        QuickPollSettings quickPollSettings = classSession.getQuickPollSettings();
+        QuickShortAnswerSettings quickShortAnswerSettings = classSession.getQuickShortAnswerSettings();
+        SpotCheckSettings spotCheckSettings = classSession.getSpotCheckSettings();
+        CountOffSettings countOffSettings = classSession.getCountOffSettings();
+        CountdownTimerSettings countdownTimerSettings = classSession.getCountdownTimerSettings();
+        return new ControlSettingsModel(this, studentsControlSettings, callOnSomeoneSettings, quickPollSettings, quickShortAnswerSettings, spotCheckSettings, countOffSettings, countdownTimerSettings);
+    }
+
+    protected void engageForceField(Set<String> whiteList) {
+        setForceFieldEngaged(true);
+        updateWhiteList(whiteList);
+    }
+
+    protected void updateWhiteList(Set<String> aWhitelist) {
+        whiteList = newHashSet(aWhitelist);
+    }
+
+    public Collection<Course> createCoursesFromSections() {
+        HashSet<Course> courses = new HashSet<Course>();
+
+        for (Section section : getSections()) {
+            courses.add(new Course(section.getCourseId(), section.getCourseName()));
+        }
+        return courses;
+    }
+
+    public void disengageForceField() {
+        setForceFieldEngaged(false);
+    }
+
+    public Boolean amIBeingCalledOn() {
+        return getId().equals(classSession.getCalledOnParticipantId());
+    }
+
+    public boolean isInASection() {
+        return getCurrentSection() != null;
+    }
+
+    protected void copySessionInformation(User oldUser) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!oldUser.hasLiveSection()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        Section oldLiveSection = oldUser.getLiveSection();
+        Section newLiveSection = getSectionWithId(oldLiveSection.getId());
+        if (newLiveSection == null) {
+            throw new IllegalStateException("User is not associated with section you are trying to copy over, maybe you should have restarted?");
+        }
+
+        copyParticipantState(oldLiveSection, newLiveSection);
+
+        this.classSession = oldUser.getSession();
+        this.classSession.updateSection(newLiveSection);
+    }
+
+    private void copyParticipantState(Section oldLiveSection, Section newLiveSection) {
+        for (Participant newParticipant : newLiveSection.getAllParticipants()) {
+
+            Participant oldParticipant = oldLiveSection.getParticipant(newParticipant.getId());
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (oldParticipant == null) {
+                continue;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            newParticipant.copyParticipantSessionDetails(oldParticipant);
+        }
+    }
+
+    public static enum Keys {
+        ROLE,
+        NAME,
+        SCHOOL,
+        PASSWORD,
+        LOGIN_ID,
+        SECTIONS,
+        ID
+    }
+
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public String currentSectionName() {
+        return getCurrentSection().getName();
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public String getXmppUsername() {
+        if (xmppUsername == null) {
+            xmppUsername = generateXmppUsername(id);
+        }
+        return xmppUsername;
+    }
+
+    public void resetXmppUsername() {
+        xmppUsername = generateXmppUsername(id);
+    }
+
+    protected static String generateXmppUsername(long userId) {
+        checkArgument(userId > 0, "User id should be a Long above zero");
+        return XmppUtils.addPrefixAndSanitize(String.valueOf(userId)) + "_" + System.nanoTime();
+    }
+
+    protected static String generateXmppPassword() {
+        return RandomStringUtils.randomAlphanumeric(NUMBER_OF_PASSWORD_CHARACTERS);
+    }
+
+    public String getXmppPassword() {
+        if (xmppPassword == null) {
+            xmppPassword = generateXmppPassword();
+        }
+        return xmppPassword;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

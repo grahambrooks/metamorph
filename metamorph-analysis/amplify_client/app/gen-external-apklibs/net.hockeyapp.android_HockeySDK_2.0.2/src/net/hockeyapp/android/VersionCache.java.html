@@ -1,0 +1,62 @@
+<html><head><title>VersionCache.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><h1>VersionCache.java</h1>
+<p>Scanned path = app/gen-external-apklibs/net.hockeyapp.android_HockeySDK_2.0.2/src/net/hockeyapp/android/amplify_client/VersionCache.java</p>
+<a href='../../../../../../../../index.html'>Index</a><table>
+<tr><th class='duplicate'>amplify_client : VersionCache.java</th><th class='duplicate'>amplify_client : VersionCache.java</th></tr><tr><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class VersionCache {
+  private static String VERSION_INFO_KEY = "versionInfo";
+  
+  public static void setVersionInfo(Context context, String json) {
+    if (context != null) {
+      SharedPreferences preferences = context.getSharedPreferences("HockeyApp", Context.MODE_PRIVATE);
+      SharedPreferences.Editor editor = preferences.edit();
+      editor.putString(VERSION_INFO_KEY, json);
+      editor.commit();
+    }
+  }
+  
+  public static String getVersionInfo(Context context) {
+    if (context != null) {
+      SharedPreferences preferences = context.getSharedPreferences("HockeyApp", Context.MODE_PRIVATE);
+      return preferences.getString(VERSION_INFO_KEY, "[]");
+    }
+    else {
+      return "[]";
+    }
+  }
+}</code></pre></td><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class VersionCache {
+  private static String VERSION_INFO_KEY = "versionInfo";
+  
+  public static void setVersionInfo(Context context, String json) {
+    if (context != null) {
+      SharedPreferences preferences = context.getSharedPreferences("HockeyApp", Context.MODE_PRIVATE);
+      SharedPreferences.Editor editor = preferences.edit();
+      editor.putString(VERSION_INFO_KEY, json);
+      editor.commit();
+    }
+  }
+  
+  public static String getVersionInfo(Context context) {
+    if (context != null) {
+      SharedPreferences preferences = context.getSharedPreferences("HockeyApp", Context.MODE_PRIVATE);
+      return preferences.getString(VERSION_INFO_KEY, "[]");
+    }
+    else {
+      return "[]";
+    }
+  }
+}</code></pre></td></tr></body>
+</html>

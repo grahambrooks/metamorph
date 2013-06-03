@@ -1,0 +1,190 @@
+<html><head><title>CountdownTimerDetailActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountdownTimerDetailActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/CountdownTimerDetailActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.TimeTickerEndEvent;
+import com.alpha.api.services.events.TimeTickerEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.tasks.EndCountdownTimerTask;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.TimeTickerProvider;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.alpha.utils.CountdownFormatter.formatRemainingTimeForTeacher;
+import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class CountdownTimerDetailActivityTest {
+
+    @Inject
+    CountdownTimerDetailActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private TimeTickerEvent timeTickerEvent;
+    @Mock
+    private TimeTickerEndEvent timeTickerEndEvent;
+    @Mock
+    private Section currentSection;
+    @Mock
+    private CountdownTimerSettings countdownTimerSettings;
+    @Mock
+    private TimeTickerProvider timeTickerProvider;
+    @Mock
+    private PostService postService;
+    @Mock
+    private PostsDataStore postDataStore;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private EndCountdownTimerTask endCountdownTimerTask;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        newInjector(this, CountdownTimerConfigurationActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(TimeTickerProvider.class, timeTickerProvider)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(PostsDataStore.class, postDataStore)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .configureActivity();
+
+        given(userService.getCurrentUserSection()).willReturn(currentSection);
+        given(userService.session()).willReturn(classSession);
+        given(classSession.getCountdownTimerSettings()).willReturn(countdownTimerSettings);
+        given(currentSection.getId()).willReturn(100L);
+        given(countdownTimerSettings.isRunning()).willReturn(true);
+        given(sessionTaskFactory.createEndCountdownTimerTask()).willReturn(endCountdownTimerTask);
+    }
+
+    @Test
+    public void shouldShowCurrentlyRunningTime() {
+        activity.onCreate(null);
+
+        assertNotNull(activity.findViewById(R.id.countdown_time));
+    }
+
+    @Test
+    public void shouldSetTheRemainingTimeOnTick() {
+        long remainingTime = 8000L;
+        when(timeTickerEvent.getRemainingMilliSec()).thenReturn(remainingTime);
+
+        activity.onCreate(null);
+        activity.listeners.onTick(timeTickerEvent);
+        TextView countdownTime = (TextView) activity.findViewById(R.id.countdown_time);
+
+        assertThat(countdownTime.getText().toString(), is(formatRemainingTimeForTeacher(remainingTime)));
+    }
+
+    @Test
+    public void shouldUpdateCountdownTimerSettingsOnFinish() {
+        when(timeTickerEndEvent.getRemainingMilliSec()).thenReturn(0L);
+        when(classSession.getCountdownTimerSettings()).thenReturn(countdownTimerSettings);
+        when(countdownTimerSettings.isRunning()).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.listeners.onFinish(timeTickerEndEvent);
+
+        verify(countdownTimerSettings).setRunning(false);
+    }
+
+    @Test
+    public void shouldStopTheTimerAndGobackToTeacherConsoleOnTimerStop() {
+        activity.onCreate(null);
+        Button stopButton = (Button) activity.findViewById(R.id.countdown_stop);
+        stopButton.performClick();
+
+        verify(timeTickerProvider).cancel();
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity().getComponent().getClassName(), is(TeacherConsoleActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldUpdateCountdownSettingOnTimerStop() {
+        activity.onCreate(null);
+        Button stopButton = (Button) activity.findViewById(R.id.countdown_stop);
+        stopButton.performClick();
+
+        verify(countdownTimerSettings).setRunning(false);
+    }
+
+    @Test
+    public void shouldCallEndCountdownTimerTaskOnTimerStop() {
+        activity.onCreate(null);
+        Button stopButton = (Button) activity.findViewById(R.id.countdown_stop);
+        stopButton.performClick();
+
+        verify(endCountdownTimerTask).execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

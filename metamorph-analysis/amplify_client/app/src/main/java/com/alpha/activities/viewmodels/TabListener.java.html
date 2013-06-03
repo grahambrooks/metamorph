@@ -1,0 +1,141 @@
+<html><head><title>TabListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TabListener.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/viewmodels/amplify_client/TabListener.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.viewmodels;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+public class TabListener<T extends Fragment> implements ActionBar.TabListener {
+    private final Activity activity;
+    private final String tag;
+    private final Class<T> clz;
+    private Fragment fragment;
+
+    public TabListener(Activity activity, String tag, Class<T> clz) {
+        this.activity = activity;
+        this.tag = tag;
+        this.clz = clz;
+
+        // Check to see if we already have a fragment for this tab, probably
+        // from a previously saved state.  If so, deactivate it, because our
+        // initial state is that a tab isn't shown.
+        fragment = this.activity.getFragmentManager().findFragmentByTag(this.tag);
+        if (fragment != null && !fragment.isDetached()) {
+            FragmentTransaction ft = this.activity.getFragmentManager().beginTransaction();
+            ft.detach(fragment);
+            ft.commit();
+        }
+    }
+
+    /**
+     * Factory method to remove some of the java generics verbosity.
+     */
+    public static <F extends Fragment> TabListener<F> tabListener(Activity activity, String tag, Class<F> clz) {
+        return new TabListener<F>(activity, tag, clz);
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        if (fragment == null) {
+            fragment = Fragment.instantiate(activity, clz.getName(), null);
+            ft.add(android.R.id.content, fragment, tag);
+        } else {
+            ft.attach(fragment);
+        }
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        if (fragment != null) {
+            ft.detach(fragment);
+            activity.getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+        ft.setTransition(FragmentTransaction.TRANSIT_NONE);
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        onTabUnselected(tab, ft);
+        onTabSelected(tab, ft);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this,o, "fragment");
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

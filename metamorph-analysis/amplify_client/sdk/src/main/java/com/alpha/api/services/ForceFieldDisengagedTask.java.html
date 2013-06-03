@@ -1,0 +1,122 @@
+<html><head><title>ForceFieldDisengagedTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldDisengagedTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ForceFieldDisengagedTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.services.events.ForceFieldEvent;
+import com.alpha.api.services.events.ForceFieldEvent.ForceFieldChangeSuccessEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+public class ForceFieldDisengagedTask extends SafeProgressAsyncTask<Void> {
+    private static final Logger LOG = LogUtils.getLogger();
+    private final TeacherSession session;
+    private final WebServices webServices;
+    private final EventBus eventBus;
+    private final Teacher teacher;
+
+    @Inject
+    public ForceFieldDisengagedTask(TeacherSession session, WebServices webServices,
+                                    EventBus eventBus,
+                                    AnalyticsAgent analyticsAgent,
+                                    @Assisted Teacher teacher,
+                                    @Assisted ProgressBar progressBar) {
+        super(progressBar, analyticsAgent);
+        this.session = session;
+        this.webServices = webServices;
+        this.eventBus = eventBus;
+        this.teacher = teacher;
+    }
+
+    @Override
+    public Void call() throws Exception {
+        ControlSettingsModel controlSettings = teacher.getCurrentControlSettingsModel();
+        controlSettings.setForceFieldEngaged(false);
+        session.sendStudentControlSettings(controlSettings);
+        webServices.send(teacher.disengageForceFieldEvent());
+        return null;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onSuccess(Void ignore) {
+        eventBus.post(new ForceFieldChangeSuccessEvent());
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Error when sending control settings", e);
+        eventBus.post(new ForceFieldEvent.DisengageFailed(e.getApiErrorReason()));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Error when sending control settings", e);
+        eventBus.post(new ForceFieldEvent.DisengageFailed(ApiErrorReason.INTERNAL_ERROR));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

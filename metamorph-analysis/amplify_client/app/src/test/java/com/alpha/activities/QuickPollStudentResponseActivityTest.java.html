@@ -1,0 +1,112 @@
+<html><head><title>QuickPollStudentResponseActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollStudentResponseActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollStudentResponseActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollStudentResponseActivityTest {
+
+    public static final String STUDENT_RESPONSE = "A";
+
+    @Inject
+    private QuickPollStudentResponseActivity activity;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private UserService userService;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        ActivityTestInjector.newInjector(this, QuickPollStudentResponseActivity.class)
+                .bindInstance(UserService.class, userService)
+                .configureActivity();
+        given(userService.getUser().getCurrentControlSettingsModel().getQuickPollSettings()).willReturn(quickPollSettings);
+    }
+
+    @Test
+    public void shouldDisplayStudentSelectedResponseIfItsCurrentlyRunning() {
+        when(quickPollSettings.getStudentChoice()).thenReturn("A");
+        when(quickPollSettings.isRunning()).thenReturn(true);
+        activity.onCreate(null);
+
+        View view = activity.findViewById(R.id.quick_poll_choice_a);
+        assertThat(view.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldFinishActivityOnDisplayingStudentResponseWhenQuickPollHasEnded() {
+        when(quickPollSettings.isRunning()).thenReturn(false);
+
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

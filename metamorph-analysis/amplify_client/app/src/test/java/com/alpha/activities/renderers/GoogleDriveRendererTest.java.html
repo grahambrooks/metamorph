@@ -1,0 +1,147 @@
+<html><head><title>GoogleDriveRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleDriveRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/GoogleDriveRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.app.Application;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.googledrive.StubFileLoader;
+import com.amplify.R;
+import com.google.api.services.drive.model.File;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.CoreMatchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class GoogleDriveRendererTest {
+
+    public static final String DESCRIPTION = "description";
+    public static final String TITLE = "title";
+
+    @Mock
+    private GoogleDriveLearningElement googleDriveLearningElement;
+
+    private final File file = new File();
+    private GoogleDriveRenderer renderer;
+
+    @Before
+    public void setUp() throws ExecutionException, IOException {
+        initMocks(this);
+
+        StubFileLoader fileLoader = new StubFileLoader();
+        fileLoader.setFile(file);
+
+        Application context = Robolectric.application;
+        renderer = new GoogleDriveRenderer(fileLoader, LayoutInflater.from(context), context);
+    }
+
+    @Test
+    public void shouldSetTheAlternateLinkOnTheElementFromGoogleDriveResponse() throws Exception {
+        String alternateLink = "alt Link";
+        file.setAlternateLink(alternateLink);
+        renderer.render(R.layout.google_drive_learning_element_detail, googleDriveLearningElement, null);
+
+        verify(googleDriveLearningElement, timeout(5000)).setFileUri(alternateLink);
+    }
+
+    @Test
+    public void shouldRenderTextForGoogleDriveLearningElement() {
+        file.setDescription(DESCRIPTION);
+        when(googleDriveLearningElement.getTitle()).thenReturn(TITLE);
+        when(googleDriveLearningElement.getDescription()).thenReturn(DESCRIPTION);
+
+        View someLayout = renderer.render(R.layout.google_drive_learning_element_detail, googleDriveLearningElement, null);
+
+        TextView title = (TextView) someLayout.findViewById(R.id.learning_element_title);
+        assertThat(title.getText().toString(), endsWith(TITLE));
+
+        TextView description = (TextView) someLayout.findViewById(R.id.google_drive_element_content);
+        assertThat(description.getText().toString(), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldRenderGoogleDriveLearningElement() {
+        View container = renderer.render(R.layout.google_drive_learning_element_stream_summary, googleDriveLearningElement, null);
+
+        assertThat(container.getId(), CoreMatchers.is(R.id.google_drive_learning_element_stream_summary_container));
+    }
+
+    @Test
+    public void shouldHideTitle() {
+        View container = renderer.renderWithoutTitleAndDescription(R.layout.google_drive_learning_element_stream_summary, googleDriveLearningElement, null);
+
+        assertThat(container.findViewById(R.id.learning_element_title).getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldHideDescription() {
+        View container = renderer.renderWithoutTitleAndDescription(R.layout.google_drive_learning_element_stream_summary, googleDriveLearningElement, null);
+
+        assertThat(container.findViewById(R.id.google_drive_element_content).getVisibility(), is(View.GONE));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

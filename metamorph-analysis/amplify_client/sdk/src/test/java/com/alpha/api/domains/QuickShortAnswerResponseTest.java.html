@@ -1,0 +1,85 @@
+<html><head><title>QuickShortAnswerResponseTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickShortAnswerResponseTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/domains/amplify_client/QuickShortAnswerResponseTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class QuickShortAnswerResponseTest {
+
+    private static final long ID= 99l;
+    private static final long POST_ID = 88l;
+
+    @Test
+    public void shouldReturnContentValues() {
+        Date createdOnDate = new Date();
+        PostAuthor author = new PostAuthor("George Micheal");
+        QuickShortAnswerResponse response = new QuickShortAnswerResponse(ID, "text", author, createdOnDate);
+
+        ContentValues contentValues = response.asValues(POST_ID);
+
+        assertThat(contentValues.getAsLong(TableColumn._id.name()), is(ID));
+        assertThat(contentValues.getAsString(TableColumn.response_type.name()), is(ResponseType.QUICK_SHORT_ANSWER.name()));
+        assertThat(contentValues.getAsLong(TableColumn.post_id.name()), is(POST_ID));
+        assertThat(contentValues.getAsString(TableColumn.content.name()), is(response.asJson()));
+        assertThat(contentValues.getAsLong(TableColumn.created_on.name()), is(response.getCreatedOn().getTime()));
+        assertThat(contentValues.getAsString(TableColumn.answer.name()), is(response.getAnswer()));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

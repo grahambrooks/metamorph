@@ -1,0 +1,112 @@
+<html><head><title>SundaeRobolectricTestRunner.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaeRobolectricTestRunner.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/runner/amplify_client/SundaeRobolectricTestRunner.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.runner;
+
+import com.alpha.runner.shadows.ShadowBroadcastReceiver;
+import com.alpha.runner.shadows.ShadowHorizontalScrollView;
+import com.alpha.runner.shadows.ShadowProcess;
+import com.alpha.runner.shadows.ShadowRelativeLayout;
+import com.alpha.runner.shadows.ShadowRoboFragment;
+import com.alpha.runner.shadows.SundaeShadowActivity;
+import com.alpha.runner.shadows.SundaeShadowApplication;
+import com.alpha.runner.shadows.SundaeShadowButton;
+import com.alpha.runner.shadows.SundaeShadowContentResolver;
+import com.alpha.runner.shadows.SundaeShadowLinearLayout;
+import com.alpha.runner.shadows.SundaeShadowTextView;
+import com.alpha.runner.shadows.SundaeShadowToggleButton;
+import com.alpha.widget.image.ShadowSmartImageView;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.junit.runners.model.InitializationError;
+import roboguice.RoboGuice;
+
+import java.lang.reflect.Method;
+
+public class SundaeRobolectricTestRunner extends RobolectricTestRunner {
+    public SundaeRobolectricTestRunner(Class<?> testClass) throws InitializationError {
+        super(testClass);
+        addClassOrPackageToInstrument("com.alpha.widgets.image.SmartImageView");
+    }
+
+    @Override
+    protected void bindShadowClasses() {
+        super.bindShadowClasses();
+
+        Robolectric.bindShadowClass(ShadowHorizontalScrollView.class);
+        Robolectric.bindShadowClass(ShadowSmartImageView.class);
+        Robolectric.bindShadowClass(ShadowRoboFragment.class);
+        Robolectric.bindShadowClass(SundaeShadowButton.class);
+        Robolectric.bindShadowClass(SundaeShadowActivity.class);
+        Robolectric.bindShadowClass(SundaeShadowApplication.class);
+        Robolectric.bindShadowClass(ShadowProcess.class);
+        Robolectric.bindShadowClass(ShadowBroadcastReceiver.class);
+        Robolectric.bindShadowClass(SundaeShadowTextView.class);
+        Robolectric.bindShadowClass(SundaeShadowToggleButton.class);
+        Robolectric.bindShadowClass(SundaeShadowContentResolver.class);
+        Robolectric.bindShadowClass(ShadowRelativeLayout.class);
+        Robolectric.bindShadowClass(SundaeShadowLinearLayout.class);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void afterTest(Method method) {
+        RoboGuice.util.reset();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<html><head><title>TeacherConsoleActionsFragment.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleActionsFragment.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/TeacherConsoleActionsFragment.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">71</span>
+    <progress max="100" value="71"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.activities.actions.*;
+import com.alpha.activities.events.TeacherConsoleActivityChangeEvent;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.repository.ForceFieldDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.*;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import roboguice.inject.InjectView;
+
+import java.text.MessageFormat;
+import java.util.Set;
+
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.TooManyFields"})
+public class TeacherConsoleActionsFragment extends SundaeTimedFragment {
+
+    @InjectView(R.id.student_monitor_layout)
+    private View studentMonitorButton;
+
+    @InjectView(R.id.active_student_count)
+    private TextView activeStudentCount;
+
+    @InjectView(R.id.total_student_count)
+    private TextView totalStudentCount;
+
+    @InjectView(R.id.session_toggle_button)
+    private Button sessionToggleButton;
+
+    @InjectView(R.id.session_toggle_overlay)
+    private ProgressBarViewGroup sessionToggleOverlay;
+
+    @InjectView(R.id.eyes_on_teacher_button)
+    private Button eyesOnTeacherButton;
+
+    @InjectView(R.id.eyes_on_teacher_progress_bar)
+    private ProgressBarViewGroup eyesOnTeacherProgressBar;
+
+    @InjectView(R.id.app_blocker_button)
+    private Button appBlockerButton;
+
+    @InjectView(R.id.app_blocker_progress_bar)
+    private ProgressBarViewGroup appBlockerTeacherProgressBar;
+
+    @InjectView(R.id.timer_button)
+    private Button timerButton;
+
+    @InjectView(R.id.quick_poll_button)
+    private Button quickPollButton;
+
+    @InjectView(R.id.quick_short_answer_button)
+    private Button quickShortAnswerButton;
+
+    @InjectView(R.id.spot_check_button)
+    private Button spotCheckButton;
+
+    @InjectView(R.id.call_on_someone_button)
+    private Button callOnSomeoneButton;
+
+    @InjectView(R.id.count_off_button)
+    private Button countOffButton;
+
+    @InjectView(R.id.go_research_button)
+    private Button goResearchButton;
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+
+    @Inject
+    private Toaster toaster;
+
+    @Inject
+    private EventBus eventBus;
+
+    @Inject
+    private Resources resources;
+
+    @Inject
+    private ForceFieldDataStore forceFieldDataStore;
+
+    @Inject
+    private TeacherConsoleAction teacherConsoleAction;
+
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+
+    private EyesOnTeacher eyesOnTeacher;
+    private AppBlocker appBlocker;
+    private SessionControl sessionControl;
+
+    @VisibleForTesting
+    protected final Listeners listeners = new Listeners();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.teacher_console_actions_layout, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupStudentMonitorButton();
+        setupEyesOnTeacherButton();
+        setupAppBlockerButton();
+        setupCountdownTimerButton();
+        setUpCallOnSomeoneButton();
+        setUpQuickPollButton();
+        setUpQuickShortAnswerButton();
+        setUpGoResearchButton();
+        setUpSpotCheckButton();
+        setupCountOffButton();
+        sessionControl = new SessionControl();
+        eyesOnTeacher = new EyesOnTeacher();
+        appBlocker = new AppBlocker();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateViewState();
+        eventBus.register(listeners);
+        moderatorSessionServiceConnection.open();
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(listeners);
+        moderatorSessionServiceConnection.close();
+        super.onPause();
+    }
+
+    private void setupCountdownTimerButton() {
+        timerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (networkConnectivity.isConnected()) {
+                    if (userService.session().getCountdownTimerSettings().isRunning()) {
+                        Intent intent = new Intent(getActivity(), CountdownTimerDetailActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(getActivity(), CountdownTimerConfigurationActivity.class);
+                        startActivity(intent);
+                    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                } else {
+                    toaster.makeToast(R.string.network_not_connected);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            }
+        });
+    }
+
+    private void setupStudentMonitorButton() {
+        studentMonitorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), MonitoringActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void setupEyesOnTeacherButton() {
+        eyesOnTeacherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eyesOnTeacher.sendLockOrUnlockMessage();
+            }
+        });
+    }
+
+    private void setupAppBlockerButton() {
+        appBlockerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appBlocker.sendEngageOrDisengageMessage();
+            }
+        });
+        appBlockerButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(TeacherConsoleActionsFragment.this.getActivity(), ForceFieldEditActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+    }
+
+    private void updateViewState() {
+        appBlocker.updateToCurrentState();
+        eyesOnTeacher.updateToCurrentState();
+        timerButton.setActivated(isCountdownTimerActive());
+
+        Section section = userService.getCurrentUserSection();
+        setCount(totalStudentCount, section.getAllParticipantsCount());
+        setCount(activeStudentCount, section.getInSessionParticipantsCount());
+
+        updateSessionState(appBlockerButton, timerButton, quickPollButton, quickShortAnswerButton,
+                goResearchButton, spotCheckButton, callOnSomeoneButton, countOffButton);
+
+        updateActiveState(quickPollButton, quickShortAnswerButton, spotCheckButton, callOnSomeoneButton,
+                countOffButton, goResearchButton);
+
+        setSessionState();
+    }
+
+    private boolean isCountdownTimerActive() {
+        return userService.isSessionOngoingForCurrentSection()
+                && userService.session().getCountdownTimerSettings().isRunning();
+    }
+
+    private void setCount(TextView view, Integer count) {
+        view.setText(ObjectUtils.toString(count));
+    }
+
+    private void updateSessionState(Button... buttons) {
+        boolean inSession = inSession();
+        for (Button button : buttons) {
+            button.setEnabled(inSession);
+        }
+    }
+
+    private void updateActiveState(Button... buttons) {
+        if (inSession()) {
+            String name = teacherConsoleAction.getName();
+            for (Button button : buttons) {
+                boolean activated = StringUtils.isNotEmpty(name) && button.getText().toString().contains(name);
+                button.setActivated(activated);
+            }
+        }
+    }
+
+    private boolean inSession() {
+        return userService.session().isOngoingFor(userService.getCurrentUserSection()) && (!userService.session().isRestarting());
+    }
+
+    private void setSessionState() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (inSession()) {
+            sessionControl.setInSessionState();
+        } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            sessionControl.setOutOfSessionState();
+        }
+    }
+
+    private ModeratorSessionService moderatorSessionService() {
+        return moderatorSessionServiceConnection.getService();
+    }
+
+    protected void setUpSpotCheckButton() {
+        spotCheckButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startQuickActivity(SpotCheckActionContext.class);
+            }
+        });
+        spotCheckButton.setEnabled(userService.session().isOngoing());
+    }
+
+    protected void setUpCallOnSomeoneButton() {
+        callOnSomeoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (!networkConnectivity.isConnected()) {
+                    toaster.makeToast(R.string.network_not_connected);
+                    return;
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (teacherConsoleAction.isActive()) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    if (teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)) {
+                        teacherConsoleAction.relaunch();
+                        return;
+                    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    showActionSwitcherDialog();
+                    return;
+                }
+                if (!userService.getCurrentUserSection().hasActiveParticipants()) {
+                    toaster.makeToast(getString(R.string.not_enough_participants_to_start_quick_activity));
+                    return;
+                }
+                toastUnlockOfStudentTablets();
+                teacherConsoleAction.startAndLaunch(getActivity(), CallOnSomeoneActionContext.class);
+            }
+        });
+    }
+
+    protected void setUpQuickPollButton() {
+        quickPollButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (!networkConnectivity.isConnected()) {
+                    toaster.makeToast(R.string.network_not_connected);
+                    return;
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (teacherConsoleAction.isActive()) {
+                    if (!teacherConsoleAction.isRunning(QuickPollActionContext.class)) {
+                        showActionSwitcherDialog();
+                        return;
+                    }
+                    teacherConsoleAction.relaunch();
+                    return;
+                }
+                startActivity(new Intent(getActivity(), QuickPollTeacherActivity.class));
+            }
+        });
+
+        quickPollButton.setEnabled(userService.session().isOngoing());
+    }
+
+    protected void setUpQuickShortAnswerButton() {
+        quickShortAnswerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startQuickActivity(QuickShortAnswerActionContext.class);
+            }
+        });
+
+        quickShortAnswerButton.setEnabled(userService.session().isOngoing());
+    }
+
+    private void setUpGoResearchButton() {
+        goResearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (networkConnectivity.isConnected()) {
+                    teacherConsoleAction.startGoResearch();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                } else {
+                    toaster.makeToast(R.string.network_not_connected);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            }
+        });
+    }
+
+    private void toastUnlockOfStudentTablets() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.getUser().getCurrentControlSettingsModel().isLocked()) {
+            toaster.makeToast(R.string.student_tablets_unlocked);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void setupCountOffButton() {
+        countOffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (!networkConnectivity.isConnected()) {
+                    toaster.makeToast(R.string.network_not_connected);
+                    return;
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (teacherConsoleAction.isActive()) {
+                    if (teacherConsoleAction.isRunning(CountOffActionContext.class)) {
+                        teacherConsoleAction.relaunch();
+                    } else {
+                        showActionSwitcherDialog();
+                    }
+                    return;
+                }
+                if (userService.getCurrentUserSection().hasEnoughActiveParticipantsForCountOff()) {
+                    startActivity(new Intent(getActivity(), CountOffActivity.class));
+                    return;
+                }
+                toaster.makeToast(getString(R.string.not_enough_participants_to_start_quick_activity));
+            }
+        });
+    }
+
+    protected void showActionSwitcherDialog() {
+        String formattedMessage = getActivity().getString(R.string.console_action_switcher_message, teacherConsoleAction.getName());
+        new AlertDialog.Builder(getActivity())
+                .setTitle(formattedMessage)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        endQuickActivity();
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), null)
+                .create()
+                .show();
+    }
+
+    private void startQuickActivity(Class<? extends ActionContext> type) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!networkConnectivity.isConnected()) {
+            toaster.makeToast(R.string.network_not_connected);
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (teacherConsoleAction.isActive()) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (teacherConsoleAction.isRunning(type)) {
+                teacherConsoleAction.relaunch();
+                return;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            showActionSwitcherDialog();
+            return;
+        }
+        toastUnlockOfStudentTablets();
+        teacherConsoleAction.startAndLaunch(getActivity(), type);
+    }
+
+    private void endQuickActivity() {
+        teacherConsoleAction.finishInClassActivity(false);
+        updateViewState();
+    }
+
+    private class AppBlocker {
+
+        public void sendEngageOrDisengageMessage() {
+            appBlockerButton.setEnabled(false);
+            Teacher teacher = userService.getUser();
+            if (teacher.isForceFieldEngaged()) {
+                moderatorSessionService().disengageForceField(teacher, appBlockerTeacherProgressBar.getProgressBar());
+            } else {
+                Section currentSection = userService.getCurrentUserSection();
+                Set<SundaeAppInfo> whitelistApps = forceFieldDataStore.getWhitelistApps(currentSection);
+                moderatorSessionService().engageForceField(whitelistApps, teacher, currentSection,
+                        appBlockerTeacherProgressBar.getProgressBar());
+            }
+        }
+
+        public void updateToCurrentState() {
+            appBlockerButton.setEnabled(inSession());
+            updateText();
+        }
+
+        private void updateText() {
+            Teacher teacher = userService.getUser();
+            boolean isForceFieldEngaged = teacher.isForceFieldEngaged();
+            String buttonText = resources.getString(R.string.app_control);
+            if (isForceFieldEngaged) {
+                int count = forceFieldDataStore.getWhitelistApps(userService.getCurrentUserSection()).size();
+                String pattern = resources.getString(R.string.app_control_allowed_apps_count);
+                buttonText += "\n" + MessageFormat.format(pattern, count); //NOPMD
+            }
+            appBlockerButton.setActivated(isForceFieldEngaged);
+            appBlockerButton.setText(buttonText);
+        }
+    }
+
+    private class EyesOnTeacher {
+
+        public void sendLockOrUnlockMessage() {
+            eyesOnTeacherButton.setEnabled(false);
+            Teacher teacher = userService.getUser();
+            if (teacher.getCurrentControlSettingsModel().isLocked()) {
+                moderatorSessionService().sendUnlockMessage(teacher);
+            } else {
+                moderatorSessionService().sendLockMessage(teacher);
+            }
+            eyesOnTeacherProgressBar.getProgressBar().setVisibility(View.VISIBLE);
+        }
+
+        public void updateToCurrentState() {
+            boolean isInSession = inSession();
+            eyesOnTeacherButton.setEnabled(isInSession);
+            updateEyesOnTeacherButtonOnOffText(isInSession);
+        }
+
+        public void updateEyesOnTeacherButtonOnOffText(boolean inSession) {
+            User user = userService.getUser();
+
+            if (inSession) {
+                boolean devicesAreLocked = user.getCurrentControlSettingsModel().isLocked();
+                eyesOnTeacherButton.setActivated(devicesAreLocked);
+                eyesOnTeacherProgressBar.getProgressBar().setVisibility(View.INVISIBLE);
+            } else {
+                eyesOnTeacherButton.setActivated(false);
+            }
+        }
+
+    }
+
+    private class SessionControl {
+
+        public final void setInSessionState() {
+            sessionToggleButton.setEnabled(true);
+            sessionToggleButton.setText(R.string.end_class);
+            sessionToggleButton.setTextColor(resources.getColor(R.color.white));
+            sessionToggleButton.setOnClickListener(new EndSessionClickListener());
+        }
+
+        public final void setOutOfSessionState() {
+            sessionToggleButton.setEnabled(true);
+            sessionToggleButton.setText(R.string.start_class);
+            sessionToggleButton.setTextColor(resources.getColor(R.color.primary_orange));
+            sessionToggleButton.setOnClickListener(new StartSessionClickListener());
+        }
+
+        public final void setReconnectingState() {
+            sessionToggleButton.setEnabled(false);
+            sessionToggleButton.setText(R.string.end_class);
+            sessionToggleButton.setTextColor(resources.getColor(R.color.white));
+            sessionToggleButton.setOnClickListener(null);
+        }
+
+        public void attemptToStartSession() {
+            sessionToggleButton.setEnabled(false);
+            Teacher teacher = userService.getUser();
+            moderatorSessionService().startSession(teacher, sessionToggleOverlay.getProgressBar());
+        }
+
+        public void attemptToEndSession() {
+            sessionToggleButton.setEnabled(false);
+            Teacher teacher = userService.getUser();
+            moderatorSessionService().endSession(teacher, sessionToggleOverlay.getProgressBar());
+        }
+    }
+
+    private class StartSessionClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Teacher teacher = userService.getUser();
+            Optional<Section> liveSectionOld = teacher.getLiveSectionOld();
+            if (liveSectionOld.isPresent()) {
+                String messageFormat = getActivity().getString(R.string.teacher_already_in_session);
+                toaster.makeToast(String.format(messageFormat, liveSectionOld.get().getName()));
+            } else {
+                sessionControl.attemptToStartSession();
+            }
+        }
+    }
+
+    private class EndSessionClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            teacherConsoleAction.updateParticipants();
+            sessionControl.attemptToEndSession();
+        }
+    }
+
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
+    public class Listeners {
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onTeacherConsoleActionsChanged(TeacherConsoleActivityChangeEvent event) {
+            updateViewState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onForceFieldChangeSuccess(ForceFieldEvent.ForceFieldChangeSuccessEvent event) {
+            appBlocker.updateToCurrentState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onForceFieldEnagageFailure(ForceFieldEvent.EngageFailed engageFailedEvent) {
+            appBlocker.updateToCurrentState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onForceFieldEnagageFailure(ForceFieldEvent.DisengageFailed engageFailedEvent) {
+            appBlocker.updateToCurrentState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void eyesOnTeacherEnabled(DeviceLockRequestSucceededEvent event) {
+            eyesOnTeacher.updateToCurrentState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void enableEyesOnTeacherFailure(DeviceLockingRequestFailureEvent event) {
+            eyesOnTeacher.updateToCurrentState();
+            int messageId = event.isForLock() ? R.string.lock_devices_failure : R.string.unlock_devices_failure;
+            toaster.errorToast(event.getApiErrorReason(), messageId);
+        }
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void eyesOnTeacherDisabled(DeviceUnlockRequestSucceededEvent event) {
+            eyesOnTeacher.updateToCurrentState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void sessionConnectionDropped(ConnectionClosedEvent event) {
+            updateViewState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void sessionEnded(TeacherSessionEndedEvent event) {
+            userService.getUser().disengageForceField();
+            updateViewState();
+        }
+
+        @Subscribe
+        public void onReconnectAttempted(SessionReconnectEvent event) {
+            if (event == SessionReconnectEvent.IN_PROGRESS) {
+                sessionControl.setReconnectingState();
+            }
+        }
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void sessionEndFailed(EndSessionFailureEvent event) {
+            sessionControl.setInSessionState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void sessionStarted(SessionStartEvent event) {
+            updateViewState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void participantsChanged(UserSessionChangeEvent event) {
+            updateViewState();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void onRefreshStudentRosterInformation(UserInformationRefreshedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (event.requiresRestart()) {
+                return;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            updateViewState();
+        }
+
+        @Subscribe
+        public void onFinish(TimeTickerEndEvent timerTickerEndEvent) {
+            timerButton.setActivated(false);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

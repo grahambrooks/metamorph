@@ -1,0 +1,144 @@
+<html><head><title>GoogleDriveLearningElement.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleDriveLearningElement.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/GoogleDriveLearningElement.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.view.ViewGroup;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.gson.annotations.Expose;
+
+public class GoogleDriveLearningElement extends LearningElement {
+    public static final String GOOGLE_DRIVE_PACKAGE = "com.google.android.apps.docs";
+    public static final String GOOGLE_DRIVE_APPNAME = "Google Drive";
+
+    @Expose
+    private final String fileId;
+    private final int icon;
+    private String fileUri;
+
+    public GoogleDriveLearningElement(String title, String description, String fileId, int icon) {
+        super(title, description, LearningElementType.GOOGLE_DRIVE, null);
+        this.fileId = fileId;
+        this.icon = icon;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getFileId() {
+        return fileId;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public <T> T getView(LearningElementVisitor<T> visitor, ViewGroup parent) {
+        return visitor.visit(this, parent);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void setFileUri(String fileUri) {
+        this.fileUri = fileUri;
+    }
+
+    public Optional<Uri> getFileUri() {
+        return Strings.isNullOrEmpty(fileUri) ? Optional.<Uri>absent() : Optional.of(Uri.parse(fileUri));
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public Intent getGoogleDriveIntent() {
+        Optional<Uri> googleUri = getFileUri();
+        if(googleUri.isPresent()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, getFileUri().get());
+            intent.setPackage(GOOGLE_DRIVE_PACKAGE);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            return intent;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public Intent getGoogleDriveShareIntent() {
+        Intent shareIntent = new Intent();
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getFileUri().get().toString());
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getTitle());
+        return shareIntent;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

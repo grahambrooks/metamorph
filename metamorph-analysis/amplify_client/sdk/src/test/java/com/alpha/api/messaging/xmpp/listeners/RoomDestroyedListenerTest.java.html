@@ -1,0 +1,117 @@
+<html><head><title>RoomDestroyedListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RoomDestroyedListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/RoomDestroyedListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.xmpp.SessionHolder;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.packet.Presence;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class RoomDestroyedListenerTest {
+    private RoomDestroyedListener listener;
+    @Mock
+    private SessionHolder session;
+    @Mock
+    private Presence packet;
+    @Mock
+    private UserService userService;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private User user;
+    @Mock
+    private Section section;
+    @Mock
+    private ClassSession classSession;
+
+    private Optional<Section> optional;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        given(userService.getUser()).willReturn(user);
+        given(user.getSession()).willReturn(classSession);
+        optional = Optional.of(section);
+        listener = new RoomDestroyedListener("ROOM_NAME", session, userService, eventBus);
+    }
+
+    @Test
+    public void shouldCallTheSessionEndedCallback() {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        listener.process(packet);
+        verify(eventBus).post(isA(StudentSessionEndedEvent.class));
+    }
+
+    @Test
+    public void shouldLeaveTheMultiUserChatWhenSessionIsDestroyed() throws Exception {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+
+        listener.process(packet);
+        verify(session).endSession();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

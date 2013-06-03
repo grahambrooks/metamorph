@@ -1,0 +1,151 @@
+<html><head><title>MigrationReaderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MigrationReaderTest.java</h1>
+<p>Scanned path = core-utils/src/test/java/com/amplify/db/amplify_client/MigrationReaderTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.db;
+
+import com.amplify.runner.CoreUtilsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static com.amplify.db.MigrationReader.MigrationType;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@RunWith(CoreUtilsTestRunner.class)
+public class MigrationReaderTest {
+
+    private MigrationReader migrationReader;
+
+    @Before
+    public void setUp() throws Exception {
+        migrationReader = new MigrationReader();
+    }
+
+    @Test
+    public void shouldRetrieveTheUpMigrationForValidMigrationFileWithNoNewlines(){
+        String upMigration = migrationReader.getMigration(1, MigrationType.UP);
+        assertThat(upMigration, is("goodupmigration"));
+    }
+
+    @Test
+    public void shouldRetrieveTheDownMigrationForValidMigrationFileWithNoNewlines(){
+        String upMigration = migrationReader.getMigration(1, MigrationType.DOWN);
+        assertThat(upMigration, is("gooddownmigration"));
+    }
+
+    @Test
+    public void shouldRetrieveTheUpMigrationForValidMigrationFileWithNewlines(){
+        String upMigration = migrationReader.getMigration(2, MigrationType.UP);
+        assertThat(upMigration, is("goodupmigration"));
+    }
+
+    @Test
+    public void shouldRetrieveTheDownMigrationForValidMigrationFileWithNewlines(){
+        String upMigration = migrationReader.getMigration(2, MigrationType.DOWN);
+        assertThat(upMigration, is("gooddownmigration"));
+    }
+
+    @Test
+    public void shouldReturnNullIfUpMigrationVersionCannotBeFound(){
+        String upMigration = migrationReader.getMigration(99, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfDownMigrationVersionCannotBeFound(){
+        String upMigration = migrationReader.getMigration(99, MigrationType.DOWN);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfEmptyUpMigrationSpecifiedInFileWhenRequestingUpMigration(){
+        String upMigration = migrationReader.getMigration(3, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfEmptyDownMigrationSpecifiedInFileWhenRequestingDownMigration(){
+        String downMigration = migrationReader.getMigration(3, MigrationType.DOWN);
+        assertThat(downMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfMigrationFileDoesNotContainDownMigrationWhenRequestingUpMigration(){
+        String upMigration = migrationReader.getMigration(4, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfMigrationFileDoesNotContainAnyMigrations(){
+        String upMigration = migrationReader.getMigration(5, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfMigrationFileDoesNotContainDownMigrationHeader(){
+        String upMigration = migrationReader.getMigration(6, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnNullIfMigrationFileDoesNotContainUpMigrationHeader(){
+        String upMigration = migrationReader.getMigration(7, MigrationType.UP);
+        assertThat(upMigration, is(nullValue()));
+    }
+
+    @Test
+    public void shouldStripNewLineCharsFromMigration(){
+        String upMigration = migrationReader.getMigration(8, MigrationType.UP);
+        assertThat(upMigration, is("migration1migration2"));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

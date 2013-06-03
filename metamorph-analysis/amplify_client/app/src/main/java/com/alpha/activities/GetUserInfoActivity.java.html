@@ -1,0 +1,167 @@
+<html><head><title>GetUserInfoActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GetUserInfoActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/GetUserInfoActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.activities.events.SuccessfulGoogleTokenRetrieval;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.User;
+import com.alpha.api.services.events.FailureGoogleTokenRetrieval;
+import com.alpha.api.services.events.UserRetrievalEvent;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+
+
+public class GetUserInfoActivity extends SundaeTimedActivity {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    @Inject
+    protected UserTaskFactory userTaskFactory;
+    @Inject
+    private Toaster toaster;
+    @Inject
+    protected EventBus eventBus;
+
+    private String googleAuthToken = null;
+    public static final String GOOGLE_TOKEN_EXTRA = "GOOGLE_TOKEN_EXTRA";
+    public static final String USER_INFO_EXTRA = "USER_INFO_EXTRA";
+    public static final int GOOGLE_AUTH_FAILED_RESULT_CODE = -3231;
+    protected final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        eventBus.register(listeners);
+        authenticateWithGoogle();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onDestroy() {
+        eventBus.unregister(listeners);
+        super.onDestroy();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void authenticateWithGoogle() {
+        userTaskFactory.createRetrieveGoogleTokenForAdamTask().execute();
+    }
+
+    protected void registrationFailed(ApiErrorReason errorReason) {
+        LOGGER.error("Registration failed - "+errorReason.toString());
+        toaster.errorToast(errorReason, R.string.user_info_failed);
+
+        setResult(GOOGLE_AUTH_FAILED_RESULT_CODE);
+        finish();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    protected class Listeners {
+        @Subscribe
+        public void onSuccessfulTokenRetrieval(SuccessfulGoogleTokenRetrieval authTokenResponse) {
+            LOGGER.debug("On Successful Token Retrieval with auth Token: " + authTokenResponse.getAuthToken());
+            googleAuthToken = authTokenResponse.getAuthToken();
+            userTaskFactory.createRequestUserInfoTask(googleAuthToken).execute();
+        }
+
+        @Subscribe
+        public void onFailureOfTokenRetrieval(FailureGoogleTokenRetrieval authTokenResponse) {
+            LOGGER.debug("On Failure of Token retrieval with message of: " + authTokenResponse.getExplanation());
+            registrationFailed(authTokenResponse.getErrorReason());
+        }
+
+        @Subscribe
+        public void onUserInfoRetrieval(UserRetrievalEvent event) {
+            User user = event.getUser();
+            if (user == null) {
+                LOGGER.debug("Failure of user retrieval in ThirdPartyRegistration");
+                registrationFailed(ApiErrorReason.USER_RETRIEVAL_FAILURE);
+            } else {
+                Intent intent = new Intent();
+                intent.putExtra(GOOGLE_TOKEN_EXTRA, googleAuthToken);
+                intent.putExtra(USER_INFO_EXTRA, user.getRole());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

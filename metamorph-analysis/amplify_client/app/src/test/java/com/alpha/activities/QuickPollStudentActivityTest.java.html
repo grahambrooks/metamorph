@@ -1,0 +1,257 @@
+<html><head><title>QuickPollStudentActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollStudentActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollStudentActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.view.View;
+import com.alpha.api.domains.QuickPollResponse;
+import com.alpha.api.domains.Response;
+import com.alpha.api.domains.ResponseType;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.ResponseEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.core.Is;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollStudentActivityTest {
+
+    @Inject
+    private QuickPollStudentActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock
+    private PostService postService;
+
+    private View buttonA;
+    private View buttonB;
+    private View buttonC;
+    private View buttonD;
+    private View submit;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        ActivityTestInjector.newInjector(this, QuickPollStudentActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .configureActivity();
+
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.getQuickPollSettings()).willReturn(quickPollSettings);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setupActivityWithNumberOfResponses(int numberOfResponses) {
+        when(quickPollSettings.getNumberOfOptions()).thenReturn(numberOfResponses);
+
+        activity.onCreate(null);
+
+        buttonA = activity.findViewById(R.id.quick_poll_choice_a);
+        buttonB = activity.findViewById(R.id.quick_poll_choice_b);
+        buttonC = activity.findViewById(R.id.quick_poll_choice_c);
+        buttonD = activity.findViewById(R.id.quick_poll_choice_d);
+        submit = activity.findViewById(R.id.submit_button);
+    }
+
+    @Test
+    public void shouldRenderTwoResponseButtons() {
+        setupActivityWithNumberOfResponses(2);
+
+        assertThat(buttonA.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonB.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonC.getVisibility(), is(View.GONE));
+        assertThat(buttonD.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldRenderThreeResponseButtons() {
+        setupActivityWithNumberOfResponses(3);
+
+        assertThat(buttonA.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonB.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonC.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonD.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldRenderFourResponseButtons() {
+        setupActivityWithNumberOfResponses(4);
+
+        assertThat(buttonA.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonB.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonC.getVisibility(), is(View.VISIBLE));
+        assertThat(buttonD.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldLaunchStudentResponseActivityWhenStudentResponds() {
+        setupActivityWithNumberOfResponses(2);
+
+        activity.listeners.onSubmit(new ResponseEvent(new QuickPollResponse("A", null)));
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(QuickPollStudentResponseActivity.class.getName()));
+        verify(quickPollSettings).setStudentChoice("A");
+    }
+
+    @Test
+    public void shouldFinishCurrentActivityWhenStudentResponds() {
+        setupActivityWithNumberOfResponses(2);
+
+        activity.listeners.onSubmit(new ResponseEvent(new QuickPollResponse("A", null)));
+
+        assertThat(shadowOf(activity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldDisableAllResponsButtonsWhenStudentResponse() {
+        setupActivityWithNumberOfResponses(4);
+
+        activity.listeners.onSubmit(new ResponseEvent(new QuickPollResponse("A", null)));
+
+        assertThat(buttonA.isEnabled(), is(false));
+        assertThat(buttonB.isEnabled(), is(false));
+        assertThat(buttonC.isEnabled(), is(false));
+        assertThat(buttonD.isEnabled(), is(false));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldCreateQuickPollResponseTaskWhenStudentChosesAnswer() {
+        Long postId = 10L;
+        when(quickPollSettings.getPostId()).thenReturn(postId);
+        when(quickPollSettings.isRunning()).thenReturn(true);
+        setupActivityWithNumberOfResponses(3);
+
+        buttonB.performClick();
+        submit.performClick();
+
+        ArgumentCaptor<Response> responseCaptor = ArgumentCaptor.forClass(Response.class);
+        verify(postService).addResponse(eq(postId), responseCaptor.capture());
+
+        QuickPollResponse response = (QuickPollResponse) responseCaptor.getValue();
+        assertThat(response.getType(), is(ResponseType.QUICK_POLL));
+        assertThat(response.getQuickPollAnswer(), is("B"));
+    }
+
+    @Test
+    public void shouldEnableSubmitButtonWhenNetworkNotConnected() {
+        activity.onCreate(null);
+
+        submit = activity.findViewById(R.id.submit_button);
+
+        submit.setEnabled(false);
+
+        activity.listeners.onFailed(new ResponseFailureEvent(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE));
+
+        assertThat(submit.isEnabled(), Is.is(true));
+    }
+
+    @Test
+    public void shouldDisableButtonWhenSessionEnded() {
+        setupActivityWithNumberOfResponses(4);
+
+        submit.setEnabled(true);
+        buttonA.setEnabled(true);
+        buttonB.setEnabled(true);
+        buttonC.setEnabled(true);
+        buttonD.setEnabled(true);
+
+        activity.listeners.onStudentSessionEnded(null);
+
+        assertThat(submit.isEnabled(), is(false));
+        assertThat(buttonA.isEnabled(), is(false));
+        assertThat(buttonB.isEnabled(), is(false));
+        assertThat(buttonC.isEnabled(), is(false));
+        assertThat(buttonD.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldFinishActivityOnSubmitIfQuickPollIsNotRunning() {
+        when(quickPollSettings.isRunning()).thenReturn(false);
+        setupActivityWithNumberOfResponses(2);
+
+        submit.performClick();
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

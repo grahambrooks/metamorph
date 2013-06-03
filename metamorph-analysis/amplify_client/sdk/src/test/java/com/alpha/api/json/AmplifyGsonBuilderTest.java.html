@@ -1,0 +1,113 @@
+<html><head><title>AmplifyGsonBuilderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AmplifyGsonBuilderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/json/amplify_client/AmplifyGsonBuilderTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.json;
+
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.List;
+
+import static java.lang.String.format;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class AmplifyGsonBuilderTest {
+
+    private static final String MEDIA_PATH = "/mnt/sdcard/Movies/Khan/algebra/algebra.mp4";
+    private static final String PLAY_ORDER = "1";
+    private static final String SHARED_ON = "null";
+    private static final String VIDEO_LEARNING_ELEMENT_ID = "1";
+
+    private static final String VIDEO_LEARNING_ELEMENT_JSON = "{\"id\":%s,\"type\":\"VIDEO\",\"content\":\"{\\\"pathToVideo\\\":\\\"%s\\\",\\\"type\\\":\\\"VIDEO\\\",\\\"title\\\":\\\"title\\\",\\\"description\\\":\\\"desc\\\"}\",\"playOrder\":%s,\"sharedOn\":%s}";
+    private static final String VIDEO_LEARNING_ELEMENT = format(VIDEO_LEARNING_ELEMENT_JSON, VIDEO_LEARNING_ELEMENT_ID, MEDIA_PATH, PLAY_ORDER, SHARED_ON);
+
+    private static final String POST_JSON = "{\"id\":1303,\"author\":{\"id\":11,\"name\":\"Arya Stark\",\"role\":\"TEACHER\",\"sections\":[{\"id\":11,\"sectionName\":\"MySection\"},{\"id\":12,\"sectionName\":\"Algebra\"},{\"id\":13,\"sectionName\":\"English\"},{\"id\":14,\"sectionName\":\"Literature\"},{\"id\":15,\"sectionName\":\"Science\"},{\"id\":16,\"sectionName\":\"Geography\"},{\"id\":17,\"sectionName\":\"Art\"},{\"id\":18,\"sectionName\":\"Chemistry\"},{\"id\":19,\"sectionName\":\"Spontaneous Combustion Section A\"},{\"id\":20,\"sectionName\":\"Music\"}]},\"description\":\"This is a must watch!\",\"title\":\"Learn more about Amplify\",\"section\":{\"id\":11,\"sectionName\":\"MySection\"},\"createdOn\":\"Tuesday, August 14, 2012 4:36:43 PM UTC\", \"postType\":\"ACTIVITY\",\"elements\":[" +
+            VIDEO_LEARNING_ELEMENT +
+            "]}";
+    private static final JsonParser PARSER = new JsonParser();
+    private Post post;
+
+    @Before
+    public void setUp() throws Exception {
+        post = AmplifyJsonHelper.fromJson(POST_JSON, Post.class);
+    }
+
+    @Test
+    public void shouldUnmarshallFromJsonString() throws Exception {
+        List<LearningElement> learningElements = post.elements();
+        assertThat(learningElements.size(), is(1));
+
+        LearningElement element = learningElements.get(0);
+        assertThat(element, is(instanceOf(VideoLearningElement.class)));
+
+        VideoLearningElement video = (VideoLearningElement) element;
+        assertThat(video.getPathToVideo(), is(MEDIA_PATH));
+    }
+
+    @Test
+    public void shouldMarshallElementContentIntoElementJson() throws Exception {
+        JsonObject postJson = PARSER.parse(AmplifyJsonHelper.toJson(post)).getAsJsonObject();
+        JsonArray elementsJson = postJson.getAsJsonArray("elements");
+        assertThat(elementsJson.size(), is(1));
+
+        JsonObject firstLearningElement = elementsJson.get(0).getAsJsonObject();
+        assertThat(firstLearningElement.get("content"), is(not(nullValue())));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<html><head><title>PostChildElementDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostChildElementDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/PostChildElementDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.PostResponseRecord;
+import com.alpha.api.domains.Response;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import javax.inject.Singleton;
+import java.util.Set;
+
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+
+@Singleton
+public class PostChildElementDataStore {
+    public static final String POST_RESPONSE_RECORDS_SELECTION = post_id.equalTo() + " AND " + TableColumn.author_id.equalTo() + " AND " + TableColumn.learning_element_id.equalTo();
+    public static final String[] POST_RESPONSE_RECORDS_PROJECTION = asStrings(_id, answer, content);
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String UNIQUE_RESPONSE_RECORD_SELECTION = TableColumn.author_id.equalTo() + " and " + TableColumn.post_id.equalTo();
+
+    public static final String ID_COLUMN_SELECTION = TableColumn._id.equalTo();
+
+    private final Context context;
+
+    @Inject
+    public PostChildElementDataStore(Context context) {
+        this.context = context;
+    }
+
+    public void saveNewResponses(Long postId, Iterable<? extends Response> responses) {
+        for (Response response : responses) {
+            if (isNewElement(Table.RESPONSES, postId, ID_COLUMN_SELECTION, new String[]{response.getId().toString()})) {
+                insertElement(Table.RESPONSES, postId, response.asValues(postId));
+            }
+        }
+    }
+
+    public void saveNewComments(Long postId, Iterable<Comment> comments) {
+        for (Comment comment : comments) {
+            if (comment.isRemoved()) {
+                deleteElement(Table.COMMENTS, postId, comment.asValues(postId));
+                continue;
+            }
+            if (isNewElement(Table.COMMENTS, postId, ID_COLUMN_SELECTION, new String[]{comment.getId().toString()})) {
+                insertElement(Table.COMMENTS, postId, comment.asValues(postId));
+            }
+        }
+    }
+
+    void deleteElement(Table table, Long postId, ContentValues values) {
+        LOG.info("Deleting from table: '{}' for post with id: {}", table.name(), postId);
+        contentResolver().delete(table.uri(postId), TableColumn._id.equalTo(), new String[]{String.valueOf(values.get(TableColumn._id.name()))});
+    }
+
+    private void insertElement(Table table, Long postId, ContentValues values) {
+        LOG.info("Inserting into table: '{}' for post with id: {}", table.name(), postId);
+        contentResolver().insert(table.uri(postId), values);
+    }
+
+    private boolean isNewElement(Table table, Long postId, String selection, String[] arguments) {
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver().query(table.uri(postId), asStrings(_id), selection, arguments, null);
+            return cursor.getCount() == 0;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void deleteComment(Long postId, Comment comment) {
+        contentResolver().delete(Table.COMMENTS.uri(postId), TableColumn._id.equalTo(), new String[]{String.valueOf(comment.getId())});
+    }
+
+    public void saveActivityResponses(Set<PostResponseRecord> postResponseRecords) {
+        for (PostResponseRecord record : postResponseRecords) {
+            String[] authorIDAndPostId = {String.valueOf(record.getAuthorId()), String.valueOf(record.getPostId())};
+            if (isNewElement(Table.POST_RESPONSE_RECORDS, record.getPostId(), UNIQUE_RESPONSE_RECORD_SELECTION, authorIDAndPostId)) {
+                insertElement(Table.POST_RESPONSE_RECORDS, record.getPostId(), record.asValues());
+            }
+        }
+    }
+
+
+    private ContentResolver contentResolver() {
+        return context.getContentResolver();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

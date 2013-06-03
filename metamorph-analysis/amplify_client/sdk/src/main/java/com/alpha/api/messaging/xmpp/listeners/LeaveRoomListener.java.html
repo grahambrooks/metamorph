@@ -1,0 +1,122 @@
+<html><head><title>LeaveRoomListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LeaveRoomListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/LeaveRoomListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.xmpp.MultiUserChatAdapter;
+import com.alpha.api.messaging.xmpp.XmppUtils;
+import com.alpha.api.messaging.xmpp.filters.PresenceTypeFilter;
+import com.alpha.api.messaging.xmpp.filters.RoomDestroyedPresenceFilter;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.alpha.api.utilities.UIUtils;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.NotFilter;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+
+import java.util.concurrent.Callable;
+
+import static com.alpha.api.services.events.UserSessionChangeEvent.Type.LEAVE;
+
+public class LeaveRoomListener extends BasePacketListener<Presence> {
+
+    private final UserService userService;
+    private final EventBus eventBus;
+
+    public LeaveRoomListener(String room, UserService userService, EventBus eventBus) {
+        super(room);
+        this.eventBus = eventBus;
+        this.userService = userService;
+    }
+
+    @Override
+    protected void process(Presence packet) {
+        String participantId = XmppUtils.getNickName(packet.getFrom());
+        onLeaveRoom(participantId);
+    }
+
+    private void onLeaveRoom(final String participantId) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() {
+                return processParticipantEvent(participantId);
+            }
+        });
+    }
+
+    private Object processParticipantEvent(String participantId) {
+        Optional<Section> liveSectionOptional = userService.getUser().getLiveSectionOld();
+        Section section = liveSectionOptional.orNull();
+
+        long id = Long.parseLong(participantId);
+        if (liveSectionOptional.isPresent() && section.participantExistsInSession(id)) {
+            Participant participant = section.getParticipant(id);
+            participant.leaveSession();
+            eventBus.post(new UserSessionChangeEvent(participant, LEAVE));
+        }
+        return null;
+    }
+
+    @Override
+    protected PacketFilter filter() {
+        return new AndFilter(
+                new PresenceTypeFilter(Type.unavailable),
+                new PacketExtensionFilter(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE),
+                new NotFilter(new RoomDestroyedPresenceFilter())
+        );
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

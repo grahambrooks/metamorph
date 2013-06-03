@@ -1,0 +1,237 @@
+<html><head><title>HttpClientTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HttpClientTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/http/amplify_client/HttpClientTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.http;
+
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.runner.TestAnalyticsAgent;
+import com.xtremelabs.robolectric.Robolectric;
+import org.apache.http.Header;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.xtremelabs.robolectric.util.Strings.fromStream;
+import static java.util.Collections.unmodifiableMap;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class HttpClientTest {
+    private static final Map<String,String> HEADERS = unmodifiableMap(new HashMap<String, String>());
+    private static final String API_KEY = "apiKey";
+    private static final String URL = "www.example.com";
+    private  static final String POST_BODY = "a post body";
+    @Mock
+    private HttpClient httpClient;
+    @Mock
+    private Environment environment;
+    @Mock
+    private HttpClientFactory httpClientFactory;
+    @Mock
+    private GoogleAuthenticationService googleAuthenticationService;
+    @Mock
+    private Context context;
+    @Mock
+    private WifiManager wifiManager;
+    @Mock
+    private WifiInfo wifiInfo;
+
+    @Before
+    public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        Robolectric.setDefaultHttpResponse(200, "OK");
+        when(httpClientFactory.createClient()).thenReturn(new DefaultHttpClient());
+        when(context.getSystemService(Context.WIFI_SERVICE)).thenReturn(wifiManager);
+        when(wifiManager.getConnectionInfo()).thenReturn(wifiInfo);
+        httpClient = new HttpClient(environment, httpClientFactory, googleAuthenticationService, new TestAnalyticsAgent(), context);
+    }
+
+    @Test
+    public void shouldInsertApiKeyHeaderWhenMakingGetRequest() throws Exception {
+        when(environment.getApiKey()).thenReturn(API_KEY);
+        httpClient.get(URL, HEADERS);
+        Header[] apiKeyHeaders = Robolectric.getSentHttpRequest(0).getHeaders(HttpClient.API_KEY_HEADER);
+        assertThat(apiKeyHeaders.length, is(1));
+        assertThat(apiKeyHeaders[0].getValue(), is(API_KEY));
+    }
+
+    @Test
+    public void shouldInsertApiKeyHeaderWhenMakingPostRequest() throws Exception {
+        when(environment.getApiKey()).thenReturn(API_KEY);
+        httpClient.post(URL, "");
+        Header[] apiKeyHeaders = Robolectric.getSentHttpRequest(0).getHeaders(HttpClient.API_KEY_HEADER);
+        assertThat(apiKeyHeaders.length, is(1));
+        assertThat(apiKeyHeaders[0].getValue(), is(API_KEY));
+    }
+
+    @Test
+    public void shouldInsertApiKeyHeaderWhenMakingPutRequest() throws Exception {
+        when(environment.getApiKey()).thenReturn(API_KEY);
+        httpClient.put(URL, "");
+        Header[] apiKeyHeaders = Robolectric.getSentHttpRequest(0).getHeaders(HttpClient.API_KEY_HEADER);
+        assertThat(apiKeyHeaders.length, is(1));
+        assertThat(apiKeyHeaders[0].getValue(), is(API_KEY));
+    }
+
+    @Test
+    public void testGet_FormsCorrectRequest_noBasicAuth() throws Exception {
+        Robolectric.addPendingHttpResponse(200, "OK");
+
+        httpClient.get(URL, HEADERS);
+
+        assertThat(((HttpUriRequest) Robolectric.getSentHttpRequest(0)).getURI(), equalTo(URI.create(URL)));
+    }
+
+    @Test
+    public void testGet_shouldApplyCorrectHeaders() throws Exception {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("foo", "bar");
+        httpClient.get(URL, headers);
+
+        HttpRequest sentHttpRequest = Robolectric.getSentHttpRequest(0);
+        assertThat(sentHttpRequest.getHeaders("foo")[0].getValue(), equalTo("bar"));
+    }
+
+    @Test
+    public void testGet_ShouldUseCorrectHttpMethod() throws Exception {
+        httpClient.get(URL, HEADERS);
+        HttpUriRequest sentHttpRequest = (HttpUriRequest) Robolectric.getSentHttpRequest(0);
+        assertThat(sentHttpRequest.getMethod(), equalTo(HttpGet.METHOD_NAME));
+    }
+
+    @Test
+    public void shouldReturnCorrectResponse() throws Exception {
+        Robolectric.addPendingHttpResponse(666, "it's all cool");
+
+        HttpClient.Response response = httpClient.get(URL, HEADERS);
+
+        assertThat(response.getBody(), equalTo("it's all cool"));
+        assertThat(response.getStatusCode(), equalTo(666));
+    }
+
+    @Test
+    public void testPut_ShouldUseCorrectMethod() throws Exception {
+        httpClient.put(URL, POST_BODY);
+
+        HttpUriRequest sentHttpRequest = (HttpUriRequest) Robolectric.getSentHttpRequest(0);
+        assertThat(sentHttpRequest.getMethod(), equalTo(HttpPut.METHOD_NAME));
+    }
+
+    @Test
+    public void testPost_ShouldUseCorrectMethod() throws Exception {
+        httpClient.post(URL, HEADERS, POST_BODY);
+
+        HttpUriRequest sentHttpRequest = (HttpUriRequest) Robolectric.getSentHttpRequest(0);
+        assertThat(sentHttpRequest.getMethod(), equalTo(HttpPost.METHOD_NAME));
+    }
+
+    @Test
+    public void testPost_ShouldIncludePostBody() throws Exception {
+        httpClient.post(URL, HEADERS, POST_BODY);
+
+        HttpPost sentHttpRequest = (HttpPost) Robolectric.getSentHttpRequest(0);
+        StringEntity entity = (StringEntity) sentHttpRequest.getEntity();
+        String sentPostBody = fromStream(entity.getContent());
+        assertThat(sentPostBody, equalTo(POST_BODY));
+        assertThat(entity.getContentType().getValue(), equalTo("text/plain; charset=UTF-8"));
+    }
+
+    @Test
+    public void testPut_ShouldIncludeaBody() throws Exception {
+        httpClient.put(URL, POST_BODY);
+
+        HttpPut sentHttpRequest = (HttpPut) Robolectric.getSentHttpRequest(0);
+        StringEntity entity = (StringEntity) sentHttpRequest.getEntity();
+        String sentPostBody = fromStream(entity.getContent());
+        assertThat(sentPostBody, equalTo(POST_BODY));
+        assertThat(entity.getContentType().getValue(), equalTo("text/plain; charset=UTF-8"));
+    }
+
+    @Test
+    public void httpResponse_shouldHaveADescriptiveToStringOnSuccess() {
+        HttpClient.Response response = new HttpClient.Response(200, "baz");
+
+        assertThat(response.toString(), equalTo("{HttpResponse status:200 success:true}"));
+    }
+
+    @Test
+    public void httpResponse_shouldHaveADescriptiveToStringOnFailure() {
+        HttpClient.Response response = new HttpClient.Response(500, "quz");
+
+        assertThat(response.toString(), equalTo("{HttpResponse status:500 success:false}"));
+    }
+
+    @Test
+    public void httpResponse_shouldNotIncludeItsBodyInItsStringRepresentation() {
+        HttpClient.Response response = new HttpClient.Response(200, "some pii in body");
+
+        assertThat(response.toString(), not(containsString("some pii in body")));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

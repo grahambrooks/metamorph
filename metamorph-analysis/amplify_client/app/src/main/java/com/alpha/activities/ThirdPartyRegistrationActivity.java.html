@@ -1,0 +1,309 @@
+<html><head><title>ThirdPartyRegistrationActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ThirdPartyRegistrationActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ThirdPartyRegistrationActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.accounts.AccountManager;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.messaging.notifications.events.PushNotificationsRegisteredEvent;
+import com.alpha.api.messaging.notifications.events.PushNotificationsRegistrationErrorEvent;
+import com.alpha.api.messaging.notifications.tasks.PushNotificationsRegistrationFactory;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.ControlServerRegistrationResult;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.events.SaveUserSectionsEvent;
+import com.alpha.api.services.events.SaveUserSectionsFailureEvent;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.logging.LogUtils;
+import com.alpha.task.BindRemoteServiceWithTokenTask;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+import static android.accounts.AccountManager.KEY_ACCOUNT_NAME;
+import static android.accounts.AccountManager.KEY_AUTHTOKEN;
+import static com.alpha.api.services.ApiErrorReason.INTERNAL_ERROR;
+import static com.alpha.api.services.ApiErrorReason.USER_RETRIEVAL_FAILURE;
+import static com.alpha.api.services.ControlServerRegistrationResult.NETWORK_NOT_CONNECTED;
+
+public class ThirdPartyRegistrationActivity extends SundaeTimedActivity implements ControlServerRegistrationCallback {
+
+    public static final Logger LOGGER = LogUtils.getLogger();
+    protected static final String WALLPAPER_FILE_PATH = "/mnt/sdcard/Pictures/lockimage.jpg";
+    public static final String SET_WALLPAPER_ACTION = "com.caribou.autosetwallpaper.SET_DEFAULT_WALLPAPER";
+    public static final ComponentName MDM_COMPONENT = new ComponentName("com.openpeak.adam", "com.openpeak.adamclient.ADAMClient");
+    public static final String MDM_ACTION = "com.openpeak.adam.USER_AUTHENTICATED";
+    protected static final int ADAM_ACTIVITY_REQUEST_CODE = 1;
+
+    @InjectView(R.id.registration_in_progress)
+    private ProgressBar progressBar;
+    @InjectView(R.id.progress_text)
+    private TextView progressText;
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private Environment environment;
+    @Inject
+    private PushNotificationsRegistrationFactory pushNotificationRegistrationFactory;
+    @Inject
+    private GoogleAuthenticationService googleAuthService;
+
+    protected final Listeners listeners = new Listeners();
+    private String authToken;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.registration_lock_screen);
+
+        if(!getIntent().hasExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA)){
+            registrationFailed(ApiErrorReason.INTERNAL_ERROR);
+            setResult(RegistrationActivity.REGISTRATION_STEP_FAILED);
+            LOGGER.debug("Exiting because there's no google auth token");
+            finish();
+            return;
+        }
+        eventBus.register(listeners);
+
+        authToken = getIntent().getStringExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA);
+        pushNotificationRegistrationFactory.createRegistrationTask().register();
+    }
+
+    private void notifyAdamClient(String token, String userName) {
+        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(userName)) {
+            registrationFailed(USER_RETRIEVAL_FAILURE);
+        } else {
+            Intent intent = new Intent()
+                    .setAction(MDM_ACTION)
+                    .setComponent(MDM_COMPONENT)
+                    .putExtra(KEY_ACCOUNT_NAME, userName)
+                    .putExtra(KEY_AUTHTOKEN, token);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            try {
+                startActivityForResult(intent, ADAM_ACTIVITY_REQUEST_CODE);
+            } catch (Exception e) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                LOGGER.error("Ignoring error launching adam client.", e);
+            }
+        }
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onDestroy() {
+        eventBus.unregister(listeners);
+        super.onDestroy();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onControlServerRegistrationSuccess() {
+        if(environment.isAdamRequired()) {
+            notifyAdamClient(authToken, userService.getAccountName());
+        } else {
+            retrievePostsAndSyncSections();
+        }
+    }
+
+    private void retrievePostsAndSyncSections() {
+        startService(new Intent(this, RetrievePostsService.class));
+
+        progressText.setText(R.string.syncing_sections_message);
+        // TODO: This might be redundant with the ControlServerRegistrationTask.saveUserAndSections call?
+        userService.syncAllStudentsForAllSections(userService.<Teacher>getUser());
+
+        if (userService.isTeacher()) {
+            new BindRemoteServiceWithTokenTask(this, googleAuthService).execute();
+        }
+    }
+
+    @Override
+    public void onControlServerRegistrationFailure(ControlServerRegistrationResult registrationResult) {
+        if (registrationResult == NETWORK_NOT_CONNECTED) {
+            registrationFailed(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE);
+        }
+        registrationFailed(INTERNAL_ERROR);
+    }
+
+    private void initializeCaribouWallpaper() {
+        Intent intent = new Intent(SET_WALLPAPER_ACTION);
+        // To specify an alternative path. If this is not specified, image will be picked from the default path.
+        intent.putExtra("filepath", WALLPAPER_FILE_PATH);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        try {
+            startActivity(intent);
+        } catch (Exception e) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            LOGGER.error("AutoSetWallpaper app not found; unable to set device wallpaper", e);
+        }
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        LOGGER.debug("Retrieved result from Adam.");
+
+        // called after ADAM association activity is done
+        if (requestCode == ADAM_ACTIVITY_REQUEST_CODE) {
+            LOGGER.debug("Retrieved Adam activity request code.");
+
+            // parse resultCode and display intent message here
+            if ((resultCode == Activity.RESULT_OK) ) {
+                LOGGER.debug("Retrieved OK for Adam registration.");
+
+                retrievePostsAndSyncSections();
+            } else {
+                String stringExtra = null;
+                if (data != null) {
+                    stringExtra = data.getStringExtra(AccountManager.KEY_ERROR_MESSAGE);
+                }
+                LOGGER.error(StringUtils.join("OpenPeak failure - intent: " + data + " result_code= " + resultCode + " error_message= ", stringExtra));
+                registrationFailed(ApiErrorReason.OPEN_PEAK_ASSOCIATION_FAILED);
+            }
+        }
+    }
+
+    private void setResultAndFinish() {
+        initializeCaribouWallpaper();
+        toaster.makeToast(R.string.registration_successful_message);
+        setResult(Activity.RESULT_OK);
+        LOGGER.debug("Finishing registration activity");
+        finish();
+    }
+
+    protected void registrationFailed(ApiErrorReason errorReason) {
+        progressBar.setVisibility(View.GONE);
+        progressText.setText(getString(R.string.registration_failed_message));
+        LOGGER.error("Registration failed");
+        toaster.errorToast(errorReason, R.string.user_info_failed);
+    }
+
+    public class Listeners {
+        @Subscribe
+        public void onRetrieveStudentsForAllSectionFailure(SaveUserSectionsFailureEvent saveUserSectionsFailureEvent) {
+            LOGGER.error("retrieve students for all section failed");
+            registrationFailed(saveUserSectionsFailureEvent.getReason());
+        }
+
+        @Subscribe
+        public void onRetrieveStudentsForAllSectionSuccess(SaveUserSectionsEvent saveUserSectionsEvent) {
+            setResultAndFinish();
+        }
+
+        @Subscribe
+        public void onPushNotificationsRegisteredEvent(PushNotificationsRegisteredEvent event) {
+            progressText.setText(R.string.registering_on_messaging_server_message);
+            userService.registerUser(event.getUserInfo(), ThirdPartyRegistrationActivity.this);
+        }
+
+        @Subscribe
+        public void onPushNotificationsRegistrationErrorEvent(PushNotificationsRegistrationErrorEvent event) {
+            registrationFailed(event.getErrorReason());
+        }
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

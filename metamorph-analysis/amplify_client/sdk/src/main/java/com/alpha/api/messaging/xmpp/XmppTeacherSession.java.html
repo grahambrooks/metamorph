@@ -1,0 +1,176 @@
+<html><head><title>XmppTeacherSession.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppTeacherSession.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/amplify_client/XmppTeacherSession.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.messaging.xmpp.listeners.ControlMessageListener;
+import com.alpha.api.messaging.xmpp.listeners.LeaveRoomListener;
+import com.alpha.api.messaging.xmpp.listeners.ParticipantPresenceListener;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.utilities.AmplifyException;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
+
+import static com.alpha.api.messaging.xmpp.XmppUtils.connectAndAuthenticateIfNecessary;
+
+public class XmppTeacherSession extends XmppSession implements TeacherSession {
+
+    @Inject
+    public XmppTeacherSession(AmplifyXmppConnection xmppConnection, MultiUserChatAdapter chatAdapter,
+                              UserService userService, EventBus eventBus, NetworkConnectivity networkConnectivity) {
+        super(xmppConnection, chatAdapter, userService, eventBus, networkConnectivity);
+    }
+
+    @Override
+    public void createSession(Teacher user) {
+        ClassSession classSession = user.getSession();
+        try {
+
+            classSession.tryStart(user.getCurrentSection());
+            String roomName = classSession.id();
+            connectAndAuthenticateIfNecessary(xmppConnection, user.getXmppUsername(), user.getXmppPassword());
+            multiUserChat = chatAdapter.create(roomName);
+            addListeners(roomName);
+            joinRoom(user, true);
+            classSession.start();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            classSession.end();
+            XmppUtils.cleanUpAndRethrow(xmppConnection, e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override
+    protected void addListeners(String roomName) {
+        addConnectionListenerIfNecessary();
+        addSessionListeners(new LeaveRoomListener(roomName, userService, eventBus),
+                new ParticipantPresenceListener(roomName, userService, eventBus),
+                new ControlMessageListener(roomName, userService, eventBus));
+    }
+
+    @Override
+    public void sendStudentControlSettings(ControlSettingsModel controlSettings) {
+        try {
+            Message message = multiUserChat.createMessage();
+            String messageJSON = AmplifyJsonHelper.toJson(controlSettings);
+            message.setSubject(messageJSON);
+            multiUserChat.sendMessage(message);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            throw new AmplifyException(e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+
+    @Override
+    public void sendMessage(String message) {
+        try {
+            multiUserChat.sendMessage(message);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            throw new AmplifyException(e);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Override
+    protected void onEndSession() throws XMPPException {
+        multiUserChat.destroy(ENDING_SESSION_MSG, null);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected boolean isSessionToBeRecreated() {
+        return true;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

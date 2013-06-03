@@ -1,0 +1,233 @@
+<html><head><title>DiscussionCommentsCursorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DiscussionCommentsCursorAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/DiscussionCommentsCursorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+
+import android.content.Context;
+import android.database.Cursor;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class DiscussionCommentsCursorAdapterTest {
+
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private Comment comment1;
+    @Mock
+    private Comment comment2;
+    @Mock
+    private PostAuthor author;
+
+    private DiscussionCommentsCursorAdapter adapter;
+
+    @Mock
+    private TextView dummyTextView;
+    @Mock
+    private View commentRowView1;
+    @Mock
+    private View commentRowView2;
+
+    private static final String AUTHOR = "Mr. Author";
+    private static final String COMMENT = "Hello, world!";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        given(comment1.getAuthor()).willReturn(author);
+        given(comment2.getAuthor()).willReturn(author);
+        given(author.getName()).willReturn(AUTHOR);
+        given(comment1.getText()).willReturn(COMMENT);
+        when(commentRowView1.findViewById(anyInt())).thenReturn(dummyTextView);
+        when(commentRowView2.findViewById(anyInt())).thenReturn(dummyTextView);
+
+        adapter = new DiscussionCommentsCursorAdapterTestClass(Robolectric.application);
+    }
+
+    @Test
+    public void shouldHaveDifferentBackgroundColorsForAdjacentRows() {
+        ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        when(cursor.getPosition()).thenReturn(100);
+        adapter.populateView(commentRowView1, comment1);
+        verify(commentRowView1).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource1 = argumentCaptor.getValue();
+
+        when(cursor.getPosition()).thenReturn(101);
+        adapter.populateView(commentRowView2, comment2);
+        verify(commentRowView2).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource2 = argumentCaptor.getValue();
+
+        assertThat(colorResource1, not(colorResource2));
+    }
+
+    @Test
+    public void shouldHaveSameBackgroundColorsForOddRows() {
+        ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        when(cursor.getPosition()).thenReturn(101);
+        adapter.populateView(commentRowView1, comment1);
+        verify(commentRowView1).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource1 = argumentCaptor.getValue();
+
+        when(cursor.getPosition()).thenReturn(103);
+        adapter.populateView(commentRowView2, comment2);
+        verify(commentRowView2).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource2 = argumentCaptor.getValue();
+
+        assertThat(colorResource1, is(colorResource2));
+    }
+
+    @Test
+    public void shouldHaveSameBackgroundColorsForEvenRows() {
+        ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        when(cursor.getPosition()).thenReturn(100);
+        adapter.populateView(commentRowView1, comment1);
+        verify(commentRowView1).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource1 = argumentCaptor.getValue();
+
+        when(cursor.getPosition()).thenReturn(102);
+        adapter.populateView(commentRowView2, comment2);
+        verify(commentRowView2).setBackgroundResource(argumentCaptor.capture());
+        final int colorResource2 = argumentCaptor.getValue();
+
+        assertThat(colorResource1, is(colorResource2));
+    }
+
+    @Test
+    public void shouldHaveDifferentTextColorsForAdjacentRows() {
+        TextView authorTextView1 = mock(TextView.class);
+        TextView authorTextView2 = mock(TextView.class);
+
+        when(commentRowView1.findViewById(R.id.comment_author)).thenReturn(authorTextView1);
+        when(commentRowView2.findViewById(R.id.comment_author)).thenReturn(authorTextView2);
+
+        ArgumentCaptor<Integer> argumentCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        when(cursor.getPosition()).thenReturn(100);
+        adapter.populateView(commentRowView1, comment1);
+        verify(authorTextView1).setTextColor(argumentCaptor.capture());
+        final int color1 = argumentCaptor.getValue();
+
+        when(cursor.getPosition()).thenReturn(101);
+        adapter.populateView(commentRowView2, comment2);
+        verify(authorTextView2).setTextColor(argumentCaptor.capture());
+        final int color2 = argumentCaptor.getValue();
+
+        assertThat(color1, not(color2));
+    }
+
+    @Test
+    public void shouldSetAuthorText() {
+        View rootView = LayoutInflater.from(Robolectric.application).inflate(R.layout.discussion_comment_row, null);
+
+        TextView authorView = (TextView) rootView.findViewById(R.id.comment_author);
+        adapter.populateView(rootView, comment1);
+
+        assertThat(authorView.getText().toString(), is(AUTHOR));
+    }
+
+    @Test
+    public void shouldSetCommentText() {
+        View rootView = LayoutInflater.from(Robolectric.application).inflate(R.layout.discussion_comment_row, null);
+
+        TextView commentText = (TextView) rootView.findViewById(R.id.comment_content);
+        adapter.populateView(rootView, comment1);
+
+        assertThat(commentText.getText().toString(), is(COMMENT));
+    }
+
+
+    private class DiscussionCommentsCursorAdapterTestClass extends DiscussionCommentsCursorAdapter {
+        public DiscussionCommentsCursorAdapterTestClass(Context context) {
+            super(context);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public Cursor getCursor() {
+            return cursor;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

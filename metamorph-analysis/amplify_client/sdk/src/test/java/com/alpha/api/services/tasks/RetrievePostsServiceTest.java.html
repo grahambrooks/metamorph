@@ -1,0 +1,230 @@
+<html><head><title>RetrievePostsServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RetrievePostsServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/tasks/amplify_client/RetrievePostsServiceTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.tasks;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.http.QueryParameters;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.services.web.WebServicesException;
+import com.alpha.api.utilities.DateTimeFormatter;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class RetrievePostsServiceTest {
+    public static final long USER_ID = 1L;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Section section;
+    @Mock
+    private APIRequestBuilder apiRequestBuilder;
+    @Mock
+    private ApiRequest apiRequest;
+    @Mock
+    private PostsDataStore postsDataStore;
+    @Mock
+    private Date mostRecentPostTimestamp;
+    @Mock
+    private HttpClient.Response response;
+    @Mock
+    private DateTimeFormatter dateTimeFormatter;
+    @Mock
+    private Environment environment;
+    @Mock
+    private UserService userService;
+    @Mock
+    User user;
+
+    private RetrievePostsService service;
+
+    private static final String URI = "uri";
+    private static final String TIMESTAMP_STRING = "timestamp";
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        service = new RetrievePostsService(userService, apiRequestBuilder, dateTimeFormatter,
+                environment, webServices, postsDataStore);
+        given(user.getId()).willReturn(USER_ID);
+        given(user.getSections()).willReturn(newArrayList(section));
+        given(userService.getUser()).willReturn(user);
+        given(userService.hasUserRegistered()).willReturn(true);
+
+        given(apiRequestBuilder.withUrl(anyString(), eq(APIRequestBuilder.HttpRequest.GET))).willReturn(apiRequestBuilder);
+        given(apiRequestBuilder.withQueryParameter(QueryParameters.SINCE, TIMESTAMP_STRING)).willReturn(apiRequestBuilder);
+        given(apiRequestBuilder.withQueryParameter(QueryParameters.USER_ID, "12")).willReturn(apiRequestBuilder);
+    }
+
+    @Test
+    public void shouldRetrieveAllPostsIfNoneExistLocally() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(false);
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(environment.getPostsForUserURI(USER_ID)).thenReturn(URI);
+
+        service.retrievePosts();
+
+        verify(apiRequestBuilder).withUrl(URI, APIRequestBuilder.HttpRequest.GET);
+        verify(apiRequestBuilder, never()).withQueryParameter(eq(QueryParameters.SINCE), any(String.class));
+
+        verify(webServices).get(apiRequest);
+    }
+
+    @Test
+    public void shouldGetPostsSinceMostRecentForCurrentUserIfSomeExistLocally() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(true);
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(dateTimeFormatter.formatDateInUtcWithMilliseconds(mostRecentPostTimestamp)).thenReturn(TIMESTAMP_STRING);
+        when(postsDataStore.timestampOfMostRecentlyModifiedPost()).thenReturn(mostRecentPostTimestamp);
+        when(environment.getPostsForUserURI(USER_ID)).thenReturn(URI);
+
+        service.retrievePosts();
+
+        verify(apiRequestBuilder).withQueryParameter(QueryParameters.SINCE, TIMESTAMP_STRING);
+        verify(apiRequestBuilder).withUrl(URI, APIRequestBuilder.HttpRequest.GET);
+        verify(webServices).get(apiRequest);
+    }
+
+    @Test
+    public void shouldTransformApiResponseIntoPosts() throws Exception {
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(webServices.get(apiRequest)).thenReturn(response);
+
+        service.retrievePosts();
+
+        verify(response).getBodyAs(Post.LIST_TYPE);
+    }
+
+    @Test
+    public void shouldPersistPostsIntoRepository() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(true);
+        Date timestampOfMostRecentPost = new Date();
+        when(postsDataStore.timestampOfMostRecentlyModifiedPost()).thenReturn(timestampOfMostRecentPost);
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(webServices.get(apiRequest)).thenReturn(response);
+        List<Post> posts = Lists.newArrayList(mock(Post.class));
+        when(response.getBodyAs(Post.LIST_TYPE)).thenReturn(posts).thenReturn(newArrayList());
+
+        service.retrievePosts();
+
+        verify(postsDataStore).saveAll(posts);
+    }
+
+    @Test
+    public void shouldSetLimitOnApiRequestBuilder() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(true);
+        Date timestampOfMostRecentPost = new Date();
+        when(postsDataStore.timestampOfMostRecentlyModifiedPost()).thenReturn(timestampOfMostRecentPost);
+
+        service.retrievePosts();
+
+        verify(apiRequestBuilder).withQueryParameter(QueryParameters.LIMIT, "100");
+    }
+
+    @Test
+    public void shouldSetLimitOnApiRequestBuilderWhenNoTimestampisAvailable() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(false);
+
+        service.retrievePosts();
+
+        verify(apiRequestBuilder).withQueryParameter(QueryParameters.LIMIT, "100");
+    }
+
+    @Test
+    public void shouldStopAfterThreeRepeatedTimestamps() throws Exception {
+        when(postsDataStore.hasPosts()).thenReturn(true);
+        Date timestampOfMostRecentPost = new Date(100L);
+        when(postsDataStore.timestampOfMostRecentlyModifiedPost()).thenReturn(timestampOfMostRecentPost);
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        List<Post> posts = new ArrayList<Post>();
+        posts.add(mock(Post.class));
+        posts.add(mock(Post.class));
+        posts.add(mock(Post.class));
+        when(response.getBodyAs(Post.LIST_TYPE)).thenReturn(posts);
+
+        service.retrievePosts();
+
+        verify(postsDataStore, times(3)).saveAll(posts);
+    }
+
+    @Test
+    public void shouldHandleExceptionsRaisedFromWebServices() throws Exception {
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(webServices.get(apiRequest)).thenThrow(WebServicesException.class);
+
+        service.retrievePosts();
+
+        verifyZeroInteractions(response);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<html><head><title>PlatformConfigurationService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlatformConfigurationService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/exposed/amplify_client/PlatformConfigurationService.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.exposed;
+
+import android.app.Service;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+
+
+public class PlatformConfigurationService extends Service {
+
+    private static Logger LOG = LogUtils.getLogger();
+
+    public static final int GET_PROPERTY = 1;
+    public static final String ENVIRONMENT_PACKAGE = "com.amplify.environment";
+
+
+    /**
+     * Target we publish for clients to send messages to IncomingHandler.
+     */
+    private final Messenger mMessenger = new Messenger(new IncomingHandler());
+    private ResourceBundle properties;
+    private InputStream stream;
+
+    /**
+     * Handler of incoming messages from clients.
+     */
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case GET_PROPERTY:
+                    Bundle bundle = msg.getData();
+                    for (String key : bundle.keySet()) {
+                        bundle.putString(key, properties.getString(key));
+                    }
+                    try {
+                        Message replyMsg = Message.obtain(null, GET_PROPERTY);
+                        replyMsg.setData(bundle);
+                        msg.replyTo.send(replyMsg);
+                    } catch (RemoteException e) {
+                        LOG.error("Exception while sending a message to other process: " + e);
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        try {
+            PackageManager packageManager = getApplication().getPackageManager();
+            Resources environmentResources = packageManager.getResourcesForApplication(ENVIRONMENT_PACKAGE);
+            //Get configuration file for environment
+            int identifier = environmentResources.getIdentifier("environment", "raw", ENVIRONMENT_PACKAGE);
+            stream = environmentResources.openRawResource(identifier);
+            properties = new PropertyResourceBundle(stream);
+        } catch (PackageManager.NameNotFoundException e) {
+            LOG.error("Environment package not present", e);
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            IOUtils.closeSafely(stream);
+            LOG.error("Could not read configuration for environment", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        properties = null; // NOPMD
+        IOUtils.closeSafely(stream);
+        super.onDestroy();
+    }
+
+    /**
+     * When binding to the service, we return an interface to our messenger
+     * for sending messages to the service.
+     */
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

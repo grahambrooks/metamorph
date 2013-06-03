@@ -1,0 +1,110 @@
+<html><head><title>LearningElementJsonAdapterDeserializationTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LearningElementJsonAdapterDeserializationTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/json/amplify_client/LearningElementJsonAdapterDeserializationTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.json;
+
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.domains.LearningElementType.VIDEO;
+import static com.alpha.api.domains.LearningElementType.WEBPAGE;
+import static com.alpha.api.json.LearningElementJsonAdapter.*;
+import static com.alpha.api.utilities.DateTestHelper.now;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class LearningElementJsonAdapterDeserializationTest {
+
+    private static final String JSON = "{\"type\":\"VIDEO\", \"id\":1}";
+    private LearningElementJsonAdapter adapter;
+    @Mock
+    private JsonElement jsonElement;
+    private JsonObject jsonObject; // Final class. Hence cannot be mocked.
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        adapter = new LearningElementJsonAdapter();
+        jsonObject = new JsonObject();
+        jsonObject.addProperty(CONTENT, JSON);
+        jsonObject.addProperty(ID, "99");
+        jsonObject.addProperty(PLAY_ORDER, "1");
+        jsonObject.addProperty(SHARED_ON, now().getTime());
+        given(jsonElement.getAsJsonObject()).willReturn(jsonObject);
+    }
+
+    @Test
+    public void shouldDeserializeJsonIntoLearningElementOfCorrectType() throws Exception {
+        jsonObject.addProperty(TYPE, VIDEO.name());
+
+        LearningElement element = adapter.deserialize(jsonElement, null, null);
+        assertThat(element, is(instanceOf(VideoLearningElement.class)));
+        assertThat(element.getType(), is(VIDEO));
+    }
+
+    @Test
+    public void shouldSetLearningElementId() {
+        jsonObject.addProperty(TYPE, WEBPAGE.name());
+
+        LearningElement element = adapter.deserialize(jsonElement, null, null);
+        assertThat(element.getId(), is(99l));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

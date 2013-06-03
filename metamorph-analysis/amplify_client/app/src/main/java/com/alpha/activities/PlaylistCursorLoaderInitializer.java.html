@@ -1,0 +1,95 @@
+<html><head><title>PlaylistCursorLoaderInitializer.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistCursorLoaderInitializer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/PlaylistCursorLoaderInitializer.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
+import com.alpha.activities.adapters.PlaylistCursorAdapter;
+import com.alpha.api.adapters.PlaylistCursorLoader;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+public class PlaylistCursorLoaderInitializer implements LoaderManager.LoaderCallbacks<Cursor> {
+    protected static final int LEARNING_ELEMENTS_CURSOR_LOADER_ID = 50;
+
+    private final Context context;
+    private final Long playlistId;
+    private final PlaylistCursorAdapter playlistCursorAdapter;
+
+    @Inject
+    public PlaylistCursorLoaderInitializer(Context context, @Assisted Long playlistId, @Assisted PlaylistCursorAdapter playlistCursorAdapter) {
+        this.context = context;
+        this.playlistId = playlistId;
+        this.playlistCursorAdapter = playlistCursorAdapter;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        return new PlaylistCursorLoader(context, playlistId);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        playlistCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        playlistCursorAdapter.swapCursor(null);
+    }
+
+    public void register(LoaderManager loaderManager) {
+        loaderManager.initLoader(LEARNING_ELEMENTS_CURSOR_LOADER_ID, null, this);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

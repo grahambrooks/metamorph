@@ -1,0 +1,136 @@
+<html><head><title>TeacherTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/TeacherTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.services.Event.Type;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class TeacherTest {
+
+    public static final String LARRY = "Larry";
+    public static final String SCHOOL = "School";
+    public static final String SECTION_NAME = "SectionName";
+    public static final long USER_ID = 1L;
+    public static final long SECTION_ID = 2L;
+    private Teacher teacher;
+    private final Section section = new Section(new Course(1L), SECTION_ID, SECTION_NAME, "amplifydev@amplifydev.net");
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        teacher = new Teacher(USER_ID, LARRY, SCHOOL, "loginId", "password", Lists.<Section>newArrayList(section), null);
+        teacher.setCurrentSection(SECTION_ID);
+    }
+
+    @Test
+    public void shouldCreateLockDeviceEvent() {
+        Event event = teacher.lockDevicesEvent();
+        assertThat(event.getType(), is(Type.LOCK_DEVICES));
+    }
+
+    @Test
+    public void shouldCreateUnlockDeviceEvent() {
+        Event event = teacher.unlockDevicesEvent();
+        assertThat(event.getType(), is(Type.UNLOCK_DEVICES));
+    }
+
+    @Test
+    public void shouldHaveOngoingSessionIfSectionHasNoOngoingSession() {
+        teacher.getCurrentSection().resetParticipantStatus();
+        assertThat(teacher.getSession().isOngoing(), is(false));
+    }
+
+    @Test
+    public void teacherShouldCreateStartSessionEvent() {
+        Event event = teacher.startSessionEvent();
+        assertEvent(event, Type.START_SESSION);
+    }
+
+    @Test
+    public void teacherShouldCreateEndSessionEvent() {
+        Event event = teacher.endSessionEvent();
+        assertEvent(event, Type.END_SESSION);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void assertEvent(Event event, Type type) {
+        assertThat(event.getType(), is(type));
+        assertThat(event.getUserId(), is(USER_ID));
+        assertThat(event.getSectionId(), is(SECTION_ID));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void teacherShouldCreateEngageForceField() {
+        Event event = teacher.engageForceFieldEvent();
+        assertEvent(event, Type.ENGAGE_FORCEFIELD);
+    }
+
+    @Test
+    public void teacherShouldCreateDisengageForceField() {
+        Event event = teacher.disengageForceFieldEvent();
+        assertEvent(event, Type.DISENGAGE_FORCEFIELD);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

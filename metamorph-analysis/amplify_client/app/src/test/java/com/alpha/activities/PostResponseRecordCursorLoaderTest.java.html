@@ -1,0 +1,107 @@
+<html><head><title>PostResponseRecordCursorLoaderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostResponseRecordCursorLoaderTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/PostResponseRecordCursorLoaderTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.database.Cursor;
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.repository.sqlite.Order.ASC;
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(RobolectricTestRunner.class)
+public class PostResponseRecordCursorLoaderTest {
+
+    public static final long POST_ID = 1L;
+    private PostResponseRecordsCursorLoader recordsCursorLoader;
+    @Mock
+    private Cursor mockedCursor;
+    @Mock
+    private PostCursorLoaderCallbacks callbacks;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        recordsCursorLoader = new PostResponseRecordsCursorLoader(null, callbacks, POST_ID);
+    }
+
+    @Test
+    public void shouldCreateResponseCursorLoader() {
+        assertThat(recordsCursorLoader.getUri().toString(), is("content://com.alpha.api.Sundae/posts/" +POST_ID + "/post_response_records"));
+        assertThat(recordsCursorLoader.getSortOrder(), is(ASC.by(created_on)));
+        assertThat(recordsCursorLoader.getProjection(), is(new String[]{_id.name(), author_name.name(), created_on.name(), author_id.name()}));
+        assertThat(recordsCursorLoader.getSelection(), is("post_id = ?"));
+        assertThat(recordsCursorLoader.getSelectionArgs(), is(new String[]{String.valueOf(POST_ID)}));
+    }
+
+    @Test
+    public void shouldInvokeCallBackOnLoadFinished() {
+        recordsCursorLoader.onLoadFinished(mockedCursor);
+
+        verify(callbacks).setResponsesCursor(mockedCursor);
+        verify(callbacks).updateResponseCount();
+    }
+
+    @Test
+    public void shouldInvokeCallBackOnLoadReset() {
+        recordsCursorLoader.onLoaderReset();
+
+        verify(callbacks).setResponsesCursor(null);
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

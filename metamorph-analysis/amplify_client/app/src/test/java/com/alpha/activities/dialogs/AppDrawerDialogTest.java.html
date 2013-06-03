@@ -1,0 +1,134 @@
+<html><head><title>AppDrawerDialogTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AppDrawerDialogTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/dialogs/amplify_client/AppDrawerDialogTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.dialogs;
+
+
+import android.content.Intent;
+import android.view.View;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowApplication.Wrapper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.List;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class AppDrawerDialogTest {
+
+    public static final Predicate<Wrapper> RECEIVER_PREDICATE = new Predicate<Wrapper>() {
+        @Override
+        public boolean apply(Wrapper input) {
+            return input.getBroadcastReceiver() instanceof AppDrawerDialog.AppDrawerBroadcastReceiver;
+        }
+    };
+    private AppDrawerDialog appDrawerDialog;
+
+    @Before
+    public void setUp(){
+        appDrawerDialog = new AppDrawerDialog(Robolectric.application) {
+            @Override
+            public void configureDialog() {
+                setView(new View(Robolectric.application));
+            }
+        };
+    }
+
+    @Test
+    public void shouldRegisterOpenPeakIntentBroadcastReceiverWhenShowingDialog(){
+        appDrawerDialog.show();
+        List<Wrapper> wrappers = Robolectric.getShadowApplication().getRegisteredReceivers();
+        Optional<Wrapper> optional = Iterables.tryFind(wrappers, RECEIVER_PREDICATE);
+        assertThat(optional.isPresent(), is(true));
+    }
+
+    @Test
+    public void shouldUnregisterOpenPeakIntentBroadcastReceiverWhenDialogIsDismissed(){
+        appDrawerDialog.show();
+        //Robolectric doesnt retrieve onStop when dismiss is called so retrieve onStop manually
+        appDrawerDialog.onStop();
+        List<Wrapper> wrappers = Robolectric.getShadowApplication().getRegisteredReceivers();
+        Optional<Wrapper> optional = Iterables.tryFind(wrappers, RECEIVER_PREDICATE);
+        assertThat(optional.isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldRefreshAppsListWhenWindowComesIntoFocus(){
+        appDrawerDialog.onWindowFocusChanged(true);
+        assertThat(shadowOf(appDrawerDialog).getView(), notNullValue());
+    }
+
+    @Test
+    public void shouldNotRefreshAppsListWhenWindowGoesOutOfFocus(){
+        appDrawerDialog.onWindowFocusChanged(false);
+        assertThat(shadowOf(appDrawerDialog).getView(), nullValue());
+    }
+
+    @Test
+    public void shouldRefreshDialogWhenOpenPeakIntentIsReceived(){
+        assertThat(shadowOf(appDrawerDialog).getView(), is((View)null));
+        appDrawerDialog.show();
+        Robolectric.application.sendBroadcast(new Intent(AppDrawerDialog.OPEN_PEAK_APP_WHITELIST_INTENT));
+        assertThat(shadowOf(appDrawerDialog).getView(), notNullValue());
+
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

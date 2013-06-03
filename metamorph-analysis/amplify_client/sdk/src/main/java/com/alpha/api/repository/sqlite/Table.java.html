@@ -1,0 +1,194 @@
+<html><head><title>Table.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Table.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/sqlite/amplify_client/Table.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.sqlite;
+
+
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import com.google.common.base.Joiner;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.alpha.api.repository.contentprovider.SundaeContentProvider.AUTHORITY;
+import static com.alpha.api.repository.contentprovider.SundaeContentProvider.CONTENT;
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Iterables.isEmpty;
+import static com.google.common.collect.Lists.newArrayList;
+
+public enum Table {
+    POSTS(_id, created_on, modified_on, section_id, post_type, content),
+    RESPONSES("posts/#/", _id, created_on, post_id, learning_element_id, question_id, selected_option_id, response_type, answer, author_id, quick_poll_answer, spot_check_answer, content),
+    POST_RESPONSE_RECORDS("posts/#/", _id, post_id, author_id, author_name, created_on),
+    COMMENTS("posts/#/", _id, post_id, created_on, content),
+    SECTIONS(_id, name, course_id, group_email),
+    COURSES(_id, name),
+    FORCE_FIELD_WHITELIST("section/#/", _id, section_id, app_name, app_package),
+    PARTICIPANTS(_id, section_id, participant_id, name),
+    PLAYLISTS(_id, name, user_id, content),
+    LEARNING_ELEMENTS(_id, type, content, playlist_id, play_order, shared_on),
+    LINK_LESSON_COMPONENTS(_id, title, url, image_url);
+
+    public static final String LIMIT_BY = "limitBy";
+    public static final String URI_WILDCARD_PLACEHOLDERS = "(#|\\*)";
+    public static final Pattern URI_WILDCARD_PATTERN = Pattern.compile(URI_WILDCARD_PLACEHOLDERS);
+
+    private final TableColumn[] columns;
+    private final String uriPathPrefix;
+
+    private Table(String uriPathPrefix, TableColumn... columns) {
+        this.uriPathPrefix = uriPathPrefix;
+        this.columns = columns;
+    }
+
+    private Table(TableColumn... columns) {
+        this("", columns);
+    }
+
+    public static void registerAll(UriMatcher matcher) {
+        for (Table table : values()) {
+            matcher.addURI(AUTHORITY, table.uriPath(), table.ordinal());
+        }
+    }
+
+    public String ddl() {
+        String createTable = "CREATE TABLE %s (%s)";
+        return String.format(createTable, name(), Joiner.on(", ").join(columns));
+    }
+
+    public Cursor query(ContentResolver resolver, SQLiteDatabase db, Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        String limit = uri.getQueryParameter(LIMIT_BY);
+        Cursor cursor = db.query(name(), projection, selection,
+                selectionArgs, null, null, sortOrder, limit);
+        cursor.setNotificationUri(resolver, uri);
+        return cursor;
+    }
+
+    public Uri insert(ContentResolver resolver, SQLiteDatabase db, Uri uri, ContentValues values) {
+        values.put(TableColumn._id.name(), db.insertOrThrow(name(), null, values));
+        Uri uriToPost = insertOrUpdateUri(uri, values);
+        resolver.notifyChange(uriToPost, null);
+        return uriToPost;
+    }
+
+    public int update(ContentResolver resolver, SQLiteDatabase db, Uri uri, ContentValues values, String where, String[] whereArgs) {
+        checkArgument(!isNullOrEmpty(where), "Cannot update table: '%s' without a where clause", name());
+        int rows = db.update(name(), values, where, whereArgs);
+        resolver.notifyChange(insertOrUpdateUri(uri, values), null);
+        return rows;
+    }
+
+    public int delete(ContentResolver resolver, SQLiteDatabase db, Uri uri, String where, String[] whereArgs) {
+        checkArgument(!isNullOrEmpty(where), "Cannot delete table: '%s' without a where clause", name());
+        int rows = db.delete(name(), where, whereArgs);
+        resolver.notifyChange(uri, null);
+        return rows;
+    }
+
+    public Uri uri(Object... values) {
+        List valueList = newArrayList(values);
+        String path = uriPath();
+        int expected = numberOfExpectedArgs(path);
+        int actual = values.length;
+
+        checkArgument(expected <= actual, "Expecting %s placeholder(s). You supplied %s.", expected, actual);
+        for(int i = 0; i < expected; i++) {
+            path = path.replaceFirst(URI_WILDCARD_PLACEHOLDERS, valueList.remove(i).toString());
+        }
+        if(!isEmpty(valueList)) {
+            path = String.format("%s/%s",Joiner.on("/").join(valueList), path);
+        }
+        return Uri.parse(CONTENT + AUTHORITY + "/" + path);
+    }
+
+    private static int numberOfExpectedArgs(String path) {
+        Matcher matcher = URI_WILDCARD_PATTERN.matcher(path);
+        int count = 0;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        while (matcher.find()) {
+            count++;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return count;
+    }
+
+    public String[] allColumnNames() {
+        return TableColumn.asStrings(columns);
+    }
+
+    private String uriPath() {
+        return uriPathPrefix + name().toLowerCase();
+    }
+
+    private Uri insertOrUpdateUri(Uri uri, ContentValues values) {
+        return ContentUris.withAppendedId(uri, values.getAsLong(_id.name()));
+    }
+
+    public Uri uriForSingleRow(Long id) {
+        return uri().buildUpon().appendPath(id.toString()).build();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<html><head><title>CountOffDetails.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountOffDetails.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/CountOffDetails.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.services.Participant;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.Nullable;
+import java.io.Serializable;
+import java.util.*;
+
+import static com.google.common.collect.Iterables.find;
+import static com.google.common.collect.Lists.newArrayList;
+
+public class CountOffDetails implements Serializable {
+
+    protected static final List<String> BACKGROUND_COLORS = newArrayList("#EF4E22", "#F9B041", "#89AE6A", "#00AEEF", "#B591C6");
+
+    private Map<Integer, List<Long>> participantGroups;
+
+    public void divideIntoGroups(List<Participant> activeParticipants, List<Participant> inactiveParticipants, int numberOfGroups) {
+        participantGroups = new HashMap<Integer, List<Long>>();
+
+        List<Long> activeParticipantIds = getParticipantIds(activeParticipants);
+        List<Long> inActiveParticipantIds = getParticipantIds(inactiveParticipants);
+
+        shuffle(activeParticipantIds);
+        shuffle(inActiveParticipantIds);
+
+        groupParticipants(numberOfGroups, activeParticipantIds, 0);
+        groupParticipants(numberOfGroups, inActiveParticipantIds, activeParticipantIds.size());
+    }
+
+    private void groupParticipants(int numberOfGroups, List<Long> activeParticipantIds, int startWithGroup) {
+        for (int i = 0; i < activeParticipantIds.size(); i++) {
+            int groupNumber = ((i + startWithGroup) % numberOfGroups) + 1;
+
+            if (!participantGroups.containsKey(groupNumber)) {
+                participantGroups.put(groupNumber, new ArrayList<Long>());
+            }
+
+            participantGroups.get(groupNumber).add(activeParticipantIds.get(i));
+        }
+    }
+
+    private List<Long> getParticipantIds(List<Participant> activeParticipants) {
+        return newArrayList(Collections2.transform(activeParticipants, new Function<Participant, Long>() {
+            @Override
+            public Long apply(Participant participant) {
+                return participant.getId();
+            }
+        }));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asJson() {
+        return AmplifyJsonHelper.toJson(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public String groupOf(final Long studentId) {
+        Map.Entry<Integer, List<Long>> group = null;
+
+        try {
+            group = find(participantGroups.entrySet(), new Predicate<Map.Entry<Integer, List<Long>>>() {
+                @Override
+                public boolean apply(@Nullable Map.Entry<Integer, List<Long>> input) {
+                    return input.getValue().contains(studentId);
+                }
+            });</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (NoSuchElementException e) {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        return group.getKey().toString();
+    }
+
+    public Map<Integer, List<Long>> getParticipantGroups() {
+        return ImmutableMap.copyOf(participantGroups);
+    }
+
+    public int getNumberOfGroups() {
+        return participantGroups.size();
+    }
+
+    public String getBackgroudColor(Long participantId) {
+        String groupOf = this.groupOf(participantId);
+
+        int position = ((Integer.parseInt(groupOf) -1) % (BACKGROUND_COLORS.size()));
+
+        return BACKGROUND_COLORS.get(position);
+    }
+
+    protected void shuffle(List<Long> participantIds) {
+        Collections.shuffle(participantIds);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

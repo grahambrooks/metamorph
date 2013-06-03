@@ -1,0 +1,126 @@
+<html><head><title>QuickPollOptionsLoaderInitializer.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollOptionsLoaderInitializer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/QuickPollOptionsLoaderInitializer.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
+import android.os.Bundle;
+import com.alpha.activities.adapters.QuickPollOptionsCursorAdapter;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import java.util.Map;
+
+import static com.alpha.api.domains.QuickPollResponseOptions.*;
+import static com.alpha.api.repository.sqlite.Table.RESPONSES;
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+import static com.google.common.collect.Maps.newHashMap;
+
+public class QuickPollOptionsLoaderInitializer implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final int OPTION_A_LOADER_ID = 43;
+    public static final int OPTION_B_LOADER_ID = 44;
+    public static final int OPTION_C_LOADER_ID = 45;
+    public static final int OPTION_D_LOADER_ID = 46;
+    private final Context context;
+    private final Long postId;
+    private final Map<Integer, QuickPollOptionsCursorAdapter> optionsCursorAdapterMap = newHashMap();
+
+    @Inject
+    public QuickPollOptionsLoaderInitializer(Context context, @Assisted Long postId) {
+        this.context = context;
+        this.postId = postId;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case OPTION_A_LOADER_ID:
+                return createCursorForQuickPollOption(A.name());
+            case OPTION_B_LOADER_ID:
+                return createCursorForQuickPollOption(B.name());
+            case OPTION_C_LOADER_ID:
+                return createCursorForQuickPollOption(C.name());
+            case OPTION_D_LOADER_ID:
+                return createCursorForQuickPollOption(D.name());
+            default:
+                throw new UnsupportedOperationException("Unknown loader id " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        optionsCursorAdapterMap.get(loader.getId()).swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        optionsCursorAdapterMap.get(loader.getId()).swapCursor(null);
+    }
+
+    public void register(LoaderManager loaderManager, QuickPollOptionsCursorAdapter quickPollOptionsCursorAdapter, Integer loaderId) {
+        loaderManager.initLoader(loaderId, null, this);
+        optionsCursorAdapterMap.put(loaderId, quickPollOptionsCursorAdapter);
+    }
+
+    private CursorLoader createCursorForQuickPollOption(String option) {
+        return new CursorLoader(
+                context,
+                RESPONSES.uri(postId),
+                asStrings(_id, author_id, quick_poll_answer, content),
+                String.format("%s AND %s", post_id.equalTo(), quick_poll_answer.equalTo()),
+                new String[]{postId.toString(), option},
+                null);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

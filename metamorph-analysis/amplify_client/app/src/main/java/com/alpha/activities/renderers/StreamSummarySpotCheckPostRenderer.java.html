@@ -1,0 +1,145 @@
+<html><head><title>StreamSummarySpotCheckPostRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummarySpotCheckPostRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamSummarySpotCheckPostRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.SpotCheckResponseOption;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import static com.alpha.utils.CharSequences.highlight;
+
+public class StreamSummarySpotCheckPostRenderer {
+
+    private final Context context;
+    private final UserService userService;
+    private final Post post;
+    private final Resources resources;
+
+    @Inject
+    public StreamSummarySpotCheckPostRenderer(Context context, UserService userService, Resources resources, @Assisted Post post) {
+        this.context = context;
+        this.userService = userService;
+        this.resources = resources;
+        this.post = post;
+    }
+
+    public void renderView(ViewGroup parentView) {
+        TextView title = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        ImageView postIcon = (ImageView) parentView.findViewById(R.id.notebook_post_icon);
+
+        if (userService.isTeacher()) {
+            title.setText(highlight(resources.getString(R.string.spot_check_issued_by_you), resources, R.color.blue));
+            postIcon.setImageDrawable(resources.getDrawable(R.drawable.icn_stream_moodcheck));
+        }
+
+        if (userService.isStudent()) {
+            renderViewForStudent(title, postIcon, userService.getUser());
+        }
+
+        View postContent = parentView.findViewById(R.id.notebook_post_content);
+        postContent.setVisibility(View.GONE);
+    }
+
+    private String getString(int resourceId, String... params) {
+        return context.getString(resourceId, params);
+    }
+
+    private void renderViewForStudent(TextView postTitle, ImageView postIcon, User student) {
+        postIcon.setImageDrawable(resources.getDrawable(R.drawable.icn_stream_moodcheck_default));
+        if (post.wasActiveWhenShared(student)) {
+            if (post.containsSpotCheckResponseFor(student)) {
+                SpotCheckResponseOption option = post.spotCheckResponseFor(userService.getUser()).getSelectedOption();
+                postTitle.setText(getString(R.string.spot_check_response, getAnswer(option)));
+                postIcon.setImageDrawable(resources.getDrawable(getIcon(option)));
+            } else {
+                postTitle.setText(getString(R.string.spot_check_no_response));
+            }
+        } else {
+            postTitle.setText(getString(R.string.spot_check_issued_by_teacher, post.getAuthorName()));
+        }
+    }
+
+    private String getAnswer(SpotCheckResponseOption option) {
+        switch (option) {
+            case GOT_IT:
+                return getString(R.string.spot_check_got_it);
+            case NOT_SURE:
+                return getString(R.string.spot_check_not_sure);
+            case CONFUSED:
+                return getString(R.string.spot_check_confused);
+            default:
+                throw new RuntimeException("Unexpected spot check response! " + option);
+        }
+    }
+
+    private int getIcon(SpotCheckResponseOption option) {
+        switch (option) {
+            case GOT_IT:
+                return R.drawable.icn_stream_moodcheck;
+            case NOT_SURE:
+                return R.drawable.icn_stream_moodcheck_yellow;
+            case CONFUSED:
+                return R.drawable.icn_stream_moodcheck_red;
+            default:
+                throw new RuntimeException("Unexpected spot check response! " + option);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

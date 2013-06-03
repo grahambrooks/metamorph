@@ -1,0 +1,353 @@
+<html><head><title>ControlSettingsModel.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlSettingsModel.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/amplify_client/ControlSettingsModel.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging;
+
+import com.alpha.api.domains.ActivityDetail;
+import com.alpha.api.messaging.xmpp.events.ControlEvents;
+import com.alpha.api.services.ControlEvent;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
+
+public class ControlSettingsModel implements ForceFieldControlSettings, SectionControlSettings {
+
+    private boolean isLocked;
+    private boolean isForceFieldEngaged;
+    private boolean isCommentsEnabled;
+    private Set<String> allowedApps = newHashSet();
+    private ActivityDetail activityDetail;
+    private CallOnSomeoneSettings callOnSomeoneSettings = new CallOnSomeoneSettings();   //NOPMD
+    private QuickPollSettings quickPollSettings = new QuickPollSettings(); //NOPMD
+    private QuickShortAnswerSettings quickShortAnswerSettings = new QuickShortAnswerSettings(); //NOPMD
+    private SpotCheckSettings spotCheckSettings = new SpotCheckSettings(); //NOPMD
+    private CountdownTimerSettings countdownTimerSettings = new CountdownTimerSettings(); //NOPMD
+    private CountOffSettings countOffSettings = new CountOffSettings(); //NOPMD
+
+    public ControlSettingsModel() {
+        //Required for JSON related operations
+    }
+
+    public ControlSettingsModel(ControlSettingsModel model) {
+        this.isLocked = model.isLocked();
+        this.isForceFieldEngaged = model.isForceFieldEngaged();
+        this.allowedApps = model.getAllowedApps();
+        this.isCommentsEnabled = model.isCommentsEnabled();
+    }
+
+    public ControlSettingsModel(ForceFieldControlSettings forceFieldControlSettings,
+                                StudentsControlSettings studentsControlSettings,
+                                CallOnSomeoneSettings callOnSomeoneSettings,
+                                QuickPollSettings quickPollSettings,
+                                QuickShortAnswerSettings quickShortAnswerSettings,
+                                SpotCheckSettings spotCheckSettings,
+                                CountOffSettings countOffSettings,
+                                CountdownTimerSettings countdownTimerSettings) {
+        this.isLocked = studentsControlSettings.isLocked();
+        this.isCommentsEnabled = studentsControlSettings.isCommentsEnabled();
+        this.activityDetail = studentsControlSettings.getActivityDetail();
+        this.isForceFieldEngaged = forceFieldControlSettings.isForceFieldEngaged();
+        this.allowedApps = forceFieldControlSettings.getAllowedApps();
+        this.callOnSomeoneSettings = callOnSomeoneSettings;
+        this.quickPollSettings = quickPollSettings;
+        this.quickShortAnswerSettings = quickShortAnswerSettings;
+        this.spotCheckSettings = spotCheckSettings;
+        this.countOffSettings = countOffSettings;
+        this.countdownTimerSettings = countdownTimerSettings;
+    }
+
+    ControlSettingsModel(CallOnSomeoneSettings callOnSomeoneSettings) {
+        this.callOnSomeoneSettings = callOnSomeoneSettings;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isLocked() {
+        return isLocked;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setAsLocked() {
+        isLocked = true;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setAsUnlocked() {
+        isLocked = false;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public boolean isForceFieldEngaged() {
+        return isForceFieldEngaged;
+    }
+
+    public void setForceFieldEngaged(boolean forceFieldEngaged) {
+        isForceFieldEngaged = forceFieldEngaged;
+    }
+
+    @Override
+    public Set<String> getAllowedApps() {
+        return allowedApps;
+    }
+
+    public void setAllowedApps(Set<String> allowedApps) {
+        this.allowedApps = allowedApps;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isCommentsEnabled() {
+        return isCommentsEnabled;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isJumpToMeEnabled() {
+        return activityDetail != null;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public ActivityDetail getActivityDetail() {
+        return activityDetail;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public List<ControlEvent> detectEvents(ControlSettingsModel newSettings) {
+        return new ControlEvents(this).detectEvents(newSettings);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public CallOnSomeoneSettings getCallOnSomeoneSettings() {
+        return callOnSomeoneSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public QuickPollSettings getQuickPollSettings() {
+        return quickPollSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public QuickShortAnswerSettings getQuickShortAnswerSettings() {
+        return quickShortAnswerSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public SpotCheckSettings getSpotCheckSettings() {
+        return spotCheckSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public CountOffSettings getCountOffSettings() {
+        return countOffSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    </code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public CountdownTimerSettings getCountdownTimerSettings() {
+        return countdownTimerSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

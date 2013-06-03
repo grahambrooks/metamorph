@@ -1,0 +1,180 @@
+<html><head><title>AccountHelper.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AccountHelper.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/authentication/amplify_client/AccountHelper.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
+
+import static com.alpha.api.configuration.AlphaAPIModule.AUTH_DOMAIN;
+import static com.google.common.collect.Iterables.tryFind;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
+
+public class AccountHelper {
+
+    protected enum AuthScope {
+        AUTH_USERINFO_EMAIL("https://www.googleapis.com/auth/userinfo.email"),
+        AUTH_DRIVE("https://www.googleapis.com/auth/drive"),
+        AUTH_DRIVE_FILE("https://www.googleapis.com/auth/drive.file"),
+        AUTH_DRIVE_META("https://www.googleapis.com/auth/drive.readonly.metadata"),
+        AUTH_DRIVE_READONLY("https://www.googleapis.com/auth/drive.readonly");
+
+        private static final Collection<String> ALL_AUTH_SCOPES = Sets.newHashSet();
+
+        static {
+            for (AuthScope authScope : values()) {
+                ALL_AUTH_SCOPES.add(authScope.scope());
+            }
+        }
+
+        private String scope;
+
+        AuthScope(String scope) {
+            this.scope = scope;
+        }
+
+        public String scope() {
+            return scope;
+        }
+
+        public static String scopes(AuthScope... authScopes) {
+            Set<String> scopes = newHashSet();
+
+            for (AuthScope authScope : authScopes) {
+                scopes.add(authScope.scope());
+            }
+
+            return "oauth2:" + Joiner.on(' ').join(scopes);
+        }
+    }
+
+    protected static final String EMAIL_REGEX_TEMPLATE = "^(\\S)+@(\\S)*%s$";
+    protected static final String GOOGLE_ACCOUNT_TYPE = "com.google";
+    protected static final String GOOGLE_TOKEN_TYPE = AuthScope.scopes(AuthScope.AUTH_USERINFO_EMAIL);
+    protected static final String GOOGLE_DRIVE_TOKEN_TYPE = AuthScope.scopes(AuthScope.AUTH_DRIVE, AuthScope.AUTH_DRIVE_FILE, AuthScope.AUTH_DRIVE_META, AuthScope.AUTH_DRIVE_READONLY);
+
+
+    private AccountManager accountManager;
+    private String authDomain;
+
+    @Inject
+    public AccountHelper(AccountManager accountManager, @Named(AUTH_DOMAIN) String authDomain) {
+        this.accountManager = accountManager;
+        this.authDomain = authDomain;
+    }
+
+    public boolean isAccountRegistered() {
+        return getFirstAccountByDomain().isPresent();
+    }
+
+    public boolean isGooglePlayServicesApkInstalled(Context context) {
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS) {
+            return true;
+        }
+        return false;
+    }
+
+    public Account getAccountByName(final String accountName) {
+        Account[] accounts = accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE);
+        return tryFind(asList(accounts), accountByName(accountName)).orNull();
+    }
+
+    public boolean isAccountFromValidDomain(String email) {
+        return emailMatchesDomain(email, authDomain);
+    }
+
+    protected String getGDriveToken(Context context, String email) throws IOException, GoogleAuthException {
+        return GoogleAuthUtil.getToken(context, email, GOOGLE_DRIVE_TOKEN_TYPE);
+    }
+
+    public Optional<Account> getFirstAccountByDomain() {
+        Account[] accounts = accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE);
+        return tryFind(asList(accounts), accountByDomain(authDomain));
+    }
+
+    private Predicate<Account> accountByDomain(final String domainName) {
+        return new Predicate<Account>() {
+            @Override
+            public boolean apply(Account input) {
+                return emailMatchesDomain(input.name, domainName);
+            }
+        };
+    }
+
+    private boolean emailMatchesDomain(String email, String domainName) {
+        String emailRegex = String.format(EMAIL_REGEX_TEMPLATE, domainName);
+        return email.matches(emailRegex);
+    }
+
+    private Predicate<Account> accountByName(final String accountName) {
+        return new Predicate<Account>() {
+            @Override
+            public boolean apply(Account input) {
+                return input.name.equalsIgnoreCase(accountName);
+            }
+        };
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

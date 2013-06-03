@@ -1,0 +1,112 @@
+<html><head><title>ReflectionUtilsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ReflectionUtilsTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/utilities/amplify_client/ReflectionUtilsTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.utilities;
+
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+public class ReflectionUtilsTest {
+
+    public static final String[] STRINGS = new String[]{"10"};
+    public static final int INT = 10;
+
+    @Test
+    public void shouldLoadInstanceFromClass() throws Exception {
+        Class<String> aClass = ReflectionUtils.forceInit(String.class);
+        assertThat(aClass == String.class, is(true));
+    }
+
+    @Test
+    public void shouldFindMatchingConstructorWithMultipleArguments() throws Exception {
+        MyTestClass instance = ReflectionUtils.newInstanceOf(MyTestClass.class, new Object[]{STRINGS, INT});
+        assertThat(instance.strings, is(STRINGS));
+        assertThat(instance.count, is(INT));
+    }
+
+    @Test
+    public void shouldFindMatchingDefaultConstructor() throws Exception {
+        MyTestClass instance = ReflectionUtils.newInstanceOf(MyTestClass.class);
+        assertThat(instance.strings, is(nullValue()));
+        assertThat(instance.count, is(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotCreateInstanceIfNoMatchingConstructor() throws Exception {
+        ReflectionUtils.newInstanceOf(MyTestClass.class, new Object[]{STRINGS});
+    }
+
+    @Test
+    public void shouldFindMatchingConstructorWithSingleArgument() throws Exception {
+        MyTestClass instance = ReflectionUtils.newInstanceOf(MyTestClass.class, INT);
+        assertThat(instance.strings, is(nullValue()));
+        assertThat(instance.count, is(INT));
+    }
+}
+
+class MyTestClass {
+    public String[] strings;
+    public int count;
+
+    public MyTestClass() {  //NOPMD
+    }
+
+    protected MyTestClass(int count) {
+        this.count = count;
+    }
+
+    protected MyTestClass(String[] strings, int count) {
+        this.strings = strings;
+        this.count = count;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<html><head><title>NetworkConnectivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NetworkConnectivity.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/network/amplify_client/NetworkConnectivity.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.network;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.provider.Settings;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+public class NetworkConnectivity {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String AMPLIFY_WIFI_LOCK = "AMPLIFY_WIFI_LOCK";
+    private final ConnectivityManager connectivityManager;
+    private final Context context;
+    private final WifiManager wifiManager;
+
+    @Inject
+    public NetworkConnectivity(Context context) {
+        this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.context = context;
+    }
+
+    public boolean isConnected() {
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    public boolean isNotConnected() {
+        return !isConnected();
+    }
+
+    public void unlockWifi() {
+        Settings.System.putInt(context.getContentResolver(),
+                Settings.System.WIFI_SLEEP_POLICY,
+                Settings.System.WIFI_SLEEP_POLICY_DEFAULT);
+        LOG.info("Wifi lock is released");
+
+    }
+
+    public void lockWifi() {
+        LOG.info("Wifi lock has been enguaged");
+        Settings.System.putInt(context.getContentResolver(),
+                Settings.System.WIFI_SLEEP_POLICY,
+                Settings.System.WIFI_SLEEP_POLICY_NEVER);
+    }
+
+    public WifiInfo getWifiConnectionInfo() {
+        return wifiManager.getConnectionInfo();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

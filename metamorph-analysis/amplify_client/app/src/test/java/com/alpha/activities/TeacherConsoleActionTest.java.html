@@ -1,0 +1,390 @@
+<html><head><title>TeacherConsoleActionTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleActionTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/TeacherConsoleActionTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import com.alpha.activities.actions.CallOnSomeoneActionContext;
+import com.alpha.activities.actions.CountOffActionContext;
+import com.alpha.activities.actions.QuickPollActionContext;
+import com.alpha.activities.actions.QuickShortAnswerActionContext;
+import com.alpha.activities.actions.SpotCheckActionContext;
+import com.alpha.activities.events.TeacherConsoleActivityChangeEvent;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.EndCallOnSomeoneTask;
+import com.alpha.api.services.EndQuickPollTask;
+import com.alpha.api.services.EndQuickShortAnswerTask;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.SendUnlockDevicesTask;
+import com.alpha.api.services.StartGoResearchTask;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.tasks.AddPostParticipantsTask;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.TestInjector;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.xtremelabs.robolectric.Robolectric.getShadowApplication;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD")
+@RunWith(SundaeRobolectricTestRunner.class)
+public class TeacherConsoleActionTest {
+
+    private TeacherConsoleAction teacherConsoleAction;
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private SectionTaskFactory sectionTaskFactory;
+    @Mock
+    private EndQuickPollTask endQuickPollTask;
+    @Mock
+    private AddPostParticipantsTask addPostParticipantsTask;
+    @Mock
+    private DeviceLockingService deviceLockingService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ControlSettingsModel controlSettings;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    @Mock
+    private SpotCheckSettings spotCheckSettings;
+    @Mock
+    private CountOffSettings countOffSettings;
+    @Mock
+    private Section section;
+    @Mock
+    private ClassSession session;
+    @Mock
+    private SendUnlockDevicesTask unlockDevicesTask;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        teacherConsoleAction = new TeacherConsoleAction(sessionTaskFactory, sectionTaskFactory,
+                userService, Robolectric.application, eventBus);
+        new TestInjector<TeacherConsoleAction>()
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(SectionTaskFactory.class, sectionTaskFactory)
+                .bindInstance(DeviceLockingService.class, deviceLockingService)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(EventBus.class, eventBus)
+                .injectMocks(teacherConsoleAction);
+
+        given(sessionTaskFactory.createEndQuickPollTask()).willReturn(endQuickPollTask);
+        given(userService.getUser()).willReturn(teacher);
+        given(teacher.getCurrentControlSettingsModel()).willReturn(controlSettings);
+        given(controlSettings.getQuickPollSettings()).willReturn(quickPollSettings);
+        given(controlSettings.getQuickShortAnswerSettings()).willReturn(quickShortAnswerSettings);
+        given(controlSettings.getCallOnSomeoneSettings()).willReturn(callOnSomeoneSettings);
+        given(controlSettings.getSpotCheckSettings()).willReturn(spotCheckSettings);
+        given(controlSettings.getCountOffSettings()).willReturn(countOffSettings);
+        given(sessionTaskFactory.createUnlockDevicesTask(teacher)).willReturn(unlockDevicesTask);
+
+        given(sectionTaskFactory.createAddPostParticipantsTask(anyLong(), anyList())).willReturn(addPostParticipantsTask);
+        given(section.getActiveParticipants()).willReturn(Lists.<Participant>newArrayList());
+        given(teacher.getLiveSection()).willReturn(section);
+
+        given(quickPollSettings.getPostId()).willReturn(1L);
+        given(quickPollSettings.getParticipantIds()).willReturn(Sets.<Long>newHashSet());
+        given(userService.session()).willReturn(session);
+    }
+
+    @Test
+    public void shouldSetQuickPollActionName() {
+        when(session.isQuickPollRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        assertThat(teacherConsoleAction.getName(), is("Quick Poll"));
+    }
+
+    @Test
+    public void shouldResetTheActionNameOnComplete() {
+        when(session.isOngoing()).thenReturn(true);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(true);
+
+        assertThat(teacherConsoleAction.getName(), is(""));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldCompleteQuickPollActivity() {
+        when(session.isQuickPollRunning()).thenReturn(true);
+        when(sessionTaskFactory.createEndQuickPollTask()).thenReturn(endQuickPollTask);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(endQuickPollTask).execute();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldPostActivityChangeEventOnEnd() {
+        when(session.isQuickPollRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(true);
+        verify(eventBus).post(isA(TeacherConsoleActivityChangeEvent.class));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldFinishInClassActivityFirstBeforeUnlockingDevices() {
+        when(session.isQuickPollRunning()).thenReturn(true);
+        when(sessionTaskFactory.createEndQuickPollTask()).thenReturn(endQuickPollTask);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(endQuickPollTask).execute();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldSetQuickShortAnswerActionName() {
+        when(session.isQuickShortAnswerRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickShortAnswerActionContext.class);
+
+        assertThat(teacherConsoleAction.getName(), is("Short Answer"));
+    }
+
+    @Test
+    public void shouldCompleteQuickShortAnswerActivity() {
+        EndQuickShortAnswerTask endQuickShortAnswerTask = mock(EndQuickShortAnswerTask.class);
+        when(sessionTaskFactory.createEndQuickShortAnswerTask()).thenReturn(endQuickShortAnswerTask);
+        when(session.isQuickShortAnswerRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickShortAnswerActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(endQuickShortAnswerTask).execute();
+    }
+
+    @Test
+    public void shouldNotCompleteShortAnswerIfEndingSession() {
+        EndQuickShortAnswerTask endQuickShortAnswerTask = mock(EndQuickShortAnswerTask.class);
+        when(sessionTaskFactory.createEndQuickShortAnswerTask()).thenReturn(endQuickShortAnswerTask);
+        when(session.isQuickShortAnswerRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickShortAnswerActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(true);
+
+        verifyZeroInteractions(endQuickShortAnswerTask);
+    }
+
+    @Test
+    public void shouldSetCallOnSomeoneActionName() {
+        when(session.isCallOnSomeoneRunning()).thenReturn(true);
+        teacherConsoleAction.start(CallOnSomeoneActionContext.class);
+
+        assertThat(teacherConsoleAction.getName(), is("Call On"));
+    }
+
+    @Test
+    public void shouldCompleteCallOnSomeoneActivity() {
+        EndCallOnSomeoneTask endCallOnSomeoneTask = mock(EndCallOnSomeoneTask.class);
+        when(session.isCallOnSomeoneRunning()).thenReturn(true);
+        when(sessionTaskFactory.createEndCallOnSomeoneTask()).thenReturn(endCallOnSomeoneTask);
+        teacherConsoleAction.start(CallOnSomeoneActionContext.class);
+
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(endCallOnSomeoneTask).execute();
+    }
+
+    @Test
+    public void shouldLaunchCallOnSomeoneActivity() {
+        when(session.isCallOnSomeoneRunning()).thenReturn(true);
+        teacherConsoleAction.start(CallOnSomeoneActionContext.class);
+
+        teacherConsoleAction.relaunch();
+
+        assertThat(getShadowApplication().getNextStartedActivity().getComponent().getClassName(), is(CallOnSomeoneActivity.class.getName()));
+    }
+
+
+    @Test
+    public void shouldLaunchQuickShortAnswerActivity() {
+        teacherConsoleAction.start(QuickShortAnswerActionContext.class);
+
+        teacherConsoleAction.relaunch();
+
+        assertThat(getShadowApplication().getNextStartedActivity().getComponent().getClassName(), is(QuickShortAnswerTeacherActivity.class.getName()));
+    }
+
+
+    @Test
+    public void shouldLaunchQuickPollActivity() {
+        teacherConsoleAction.start(QuickPollActionContext.class);
+
+        teacherConsoleAction.relaunch();
+        Intent intent = getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(QuickPollGraphActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchSpotCheckActivity() {
+        when(session.isSpotCheckRunning()).thenReturn(true);
+        teacherConsoleAction.start(SpotCheckActionContext.class);
+
+        teacherConsoleAction.relaunch();
+
+        assertThat(getShadowApplication().getNextStartedActivity().getComponent().getClassName(), is(SpotCheckTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchCountOffActivity() {
+        teacherConsoleAction.start(CountOffActionContext.class);
+
+        teacherConsoleAction.relaunch();
+
+        assertThat(getShadowApplication().getNextStartedActivity().getComponent().getClassName(), is(CountedOffTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldSetCountOffActionName() {
+        when(session.isCountOffRunning()).thenReturn(true);
+        teacherConsoleAction.start(CountOffActionContext.class);
+
+        assertThat(teacherConsoleAction.getName(), is("Count Off"));
+    }
+
+    @Test
+    public void shouldCompleteGoResearchTask() {
+        StartGoResearchTask goResearchTask = mock(StartGoResearchTask.class);
+        when(sessionTaskFactory.createGoResearchTask()).thenReturn(goResearchTask);
+        teacherConsoleAction.startGoResearch();
+
+        verify(goResearchTask).execute();
+    }
+
+
+    @Test
+    public void shouldUpdatePostParticipantsForQuickPollAction() throws Exception {
+        when(session.isQuickPollRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickPollActionContext.class);
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(addPostParticipantsTask).execute();
+    }
+
+    @Test
+    public void shouldUpdatePostParticipantsForQuickShortAnswerAction() throws Exception {
+        when(session.isQuickShortAnswerRunning()).thenReturn(true);
+        teacherConsoleAction.start(QuickShortAnswerActionContext.class);
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(addPostParticipantsTask).execute();
+    }
+
+    @Test
+    public void shouldUpdatePostParticipantsForSpotCheckAction() throws Exception {
+        when(session.isSpotCheckRunning()).thenReturn(true);
+        teacherConsoleAction.start(SpotCheckActionContext.class);
+        teacherConsoleAction.finishInClassActivity(false);
+
+        verify(addPostParticipantsTask).execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

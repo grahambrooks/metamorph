@@ -1,0 +1,244 @@
+<html><head><title>StreamSummaryDiscussionPostRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryDiscussionPostRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummaryDiscussionPostRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.res.Resources;
+import android.text.method.MovementMethod;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.text.AmplifyCollapsibleView;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamSummaryDiscussionPostRendererTest {
+
+    private static final String AUTHOR_NAME = "JK Rowling";
+    private static final String DESCRIPTION = "description";
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private Post discussionPost;
+    @Mock
+    private PostAuthor author;
+    @Mock
+    private User user;
+    @Mock
+    private CollapsibleViewStateHolder stateHolder;
+
+    private StreamSummaryDiscussionPostRenderer discussionPostRenderer;
+    private ViewGroup parentView;
+    private Resources resources;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        given(author.getName()).willReturn(AUTHOR_NAME);
+        given(discussionPost.getAuthor()).willReturn(author);
+        given(discussionPost.getPostType()).willReturn(PostType.DISCUSSION);
+        given(discussionPost.getDescription()).willReturn(DESCRIPTION);
+        given(userService.getUser()).willReturn(user);
+
+        resources = Robolectric.application.getResources();
+
+        discussionPostRenderer = new StreamSummaryDiscussionPostRenderer(discussionPost, stateHolder, Robolectric.application, resources, userService);
+        parentView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionInConstructorIfPostTypeNotDiscussion() {
+        when(discussionPost.getPostType()).thenReturn(PostType.SHARE);
+
+        new StreamSummaryDiscussionPostRenderer(discussionPost, stateHolder, null, resources, null);
+    }
+
+    @Test
+    public void shouldSetPostTitleWithYouIfAuthorSameAsUser() {
+        when(discussionPost.isUserSameAsAuthor(user)).thenReturn(true);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView title = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(title.getText().toString(), is("You started a discussion"));
+    }
+
+    @Test
+    public void shouldSetPostTitleWithAuthorNameIfAuthorNotSameAsUser() {
+        when(discussionPost.isUserSameAsAuthor(user)).thenReturn(false);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView title = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(title.getText().toString(), is("JK Rowling started a discussion"));
+    }
+
+    @Test
+    public void shouldSetTopicUsingPostDescription() {
+        discussionPostRenderer.renderView(parentView);
+
+        AmplifyCollapsibleView topicView = (AmplifyCollapsibleView) parentView.findViewById(R.id.discussion_post_topic);
+        assertThat(topicView.getText().toString(), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldNotDisplaySharedWithCountIfUserIsNotTeacher() {
+        when(userService.isTeacher()).thenReturn(false);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView titleView = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(titleView.getText().toString().contains("with"), is(false));
+    }
+
+    @Test
+    public void shouldSetSharedWithAllStudents() {
+        when(userService.isTeacher()).thenReturn(true);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView titleView = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(titleView.getText().toString().contains("with all students"), is(true));
+    }
+
+    @Test
+    public void shouldSetSharedWithOneStudent() {
+        when(userService.isTeacher()).thenReturn(true);
+        when(discussionPost.countOfStudentsSharedWith()).thenReturn(1);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView titleView = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(titleView.getText().toString().contains("with 1 student"), is(true));
+    }
+
+    @Test
+    public void shouldSetSharedWithTwoStudents() {
+        when(userService.isTeacher()).thenReturn(true);
+        when(discussionPost.countOfStudentsSharedWith()).thenReturn(2);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView titleView = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(titleView.getText().toString().contains("with 2 student"), is(true));
+    }
+
+    @Test
+    public void shouldSetNoCommentsText() {
+        discussionPostRenderer.renderView(parentView);
+
+        TextView commentsView = (TextView) parentView.findViewById(R.id.discussion_post_comments);
+        assertThat(commentsView.getText().toString(), is("0 comments"));
+    }
+
+    @Test
+    public void shouldSetOneCommentsText() {
+        given(discussionPost.numberOfComments()).willReturn(1);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView commentsView = (TextView) parentView.findViewById(R.id.discussion_post_comments);
+        assertThat(commentsView.getText().toString(), is("1 comment"));
+    }
+
+    @Test
+    public void shouldSetTwoCommentsText() {
+        given(discussionPost.numberOfComments()).willReturn(2);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView commentsView = (TextView) parentView.findViewById(R.id.discussion_post_comments);
+        assertThat(commentsView.getText().toString(), is("2 comments"));
+    }
+
+    @Test
+    public void shouldSetContentDescriptionForNumberOfCommentsView() {
+        when(discussionPost.getContentDescription()).thenReturn(DESCRIPTION);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView commentsView = (TextView) parentView.findViewById(R.id.discussion_post_comments);
+        assertThat(commentsView.getContentDescription().toString(), is("Number of comments for description"));
+    }
+
+    @Test
+    public void shouldRenderAsDiscussionPostWhenPostTypeIsDiscussion() {
+
+        when(userService.isTeacher()).thenReturn(true);
+
+        discussionPostRenderer.renderView(parentView);
+
+        TextView titleView = (TextView) parentView.findViewById(R.id.notebook_post_title);
+
+        MovementMethod actual = titleView.getMovementMethod();
+
+        Assert.assertNotNull(actual);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

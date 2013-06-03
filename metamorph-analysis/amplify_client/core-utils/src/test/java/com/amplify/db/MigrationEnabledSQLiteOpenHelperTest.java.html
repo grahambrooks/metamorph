@@ -1,0 +1,240 @@
+<html><head><title>MigrationEnabledSQLiteOpenHelperTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MigrationEnabledSQLiteOpenHelperTest.java</h1>
+<p>Scanned path = core-utils/src/test/java/com/amplify/db/amplify_client/MigrationEnabledSQLiteOpenHelperTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.db;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import com.amplify.runner.CoreUtilsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import java.sql.SQLException;
+
+import static com.amplify.db.MigrationReader.MigrationType;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(CoreUtilsTestRunner.class)
+public class MigrationEnabledSQLiteOpenHelperTest {
+
+    private static final int VERSION = 1;
+    public static final String DB_NAME = "mydb";
+    private MigrationEnabledSQLiteOpenHelper migrationEnabledSQLiteOpenHelper;
+
+    @Mock
+    private SQLiteDatabase database;
+    @Mock
+    private MigrationReader migrationReader;
+    @Mock
+    private Context context;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        migrationEnabledSQLiteOpenHelper = new MigrationEnabledSQLiteOpenHelper(context, DB_NAME, VERSION, migrationReader){
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onCreate(SQLiteDatabase db) {}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+    }
+
+    @Test
+    public void shouldPerformUpMigrationFromOldVersionToNew(){
+        when(migrationReader.getMigration(2, MigrationType.UP)).thenReturn("sql2");
+        when(migrationReader.getMigration(3, MigrationType.UP)).thenReturn("sql3");
+        when(migrationReader.getMigration(4, MigrationType.UP)).thenReturn("sql4");
+
+        migrationEnabledSQLiteOpenHelper.onUpgrade(database, 1, 4);
+
+        InOrder inOrder = inOrder(migrationReader,database);
+        inOrder.verify(migrationReader).getMigration(2, MigrationType.UP);
+        inOrder.verify(database).execSQL("sql2");
+        inOrder.verify(migrationReader).getMigration(3, MigrationType.UP);
+        inOrder.verify(database).execSQL("sql3");
+        inOrder.verify(migrationReader).getMigration(4, MigrationType.UP);
+        inOrder.verify(database).execSQL("sql4");
+    }
+
+    @Test
+    public void shouldExecuteMultipleQueriesSeparatedByASemiColonOnUpMigration(){
+        when(migrationReader.getMigration(4, MigrationType.UP)).thenReturn("sqla;sqlb;sqlc");
+
+        migrationEnabledSQLiteOpenHelper.onUpgrade(database, 3, 4);
+
+        InOrder inOrder = inOrder(migrationReader,database);
+        inOrder.verify(migrationReader).getMigration(4, MigrationType.UP);
+        inOrder.verify(database).execSQL("sqla");
+        inOrder.verify(database).execSQL("sqlb");
+        inOrder.verify(database).execSQL("sqlc");
+    }
+
+    @Test
+    public void shouldPerformDownMigrationFromNewVersionToOld(){
+        when(migrationReader.getMigration(5, MigrationType.DOWN)).thenReturn("sqlx");
+        when(migrationReader.getMigration(4, MigrationType.DOWN)).thenReturn("sqly");
+
+        migrationEnabledSQLiteOpenHelper.onDowngrade(database, 5, 3);
+
+        InOrder inOrder = inOrder(migrationReader,database);
+        inOrder.verify(migrationReader).getMigration(5, MigrationType.DOWN);
+        inOrder.verify(database).execSQL("sqlx");
+        inOrder.verify(migrationReader).getMigration(4, MigrationType.DOWN);
+        inOrder.verify(database).execSQL("sqly");
+    }
+
+    @Test
+    public void shouldExecuteMultipleQueriesSeparatedByASemiColonOnDownMigration(){
+        when(migrationReader.getMigration(5, MigrationType.DOWN)).thenReturn("sqld;sqle;sqlf");
+
+        migrationEnabledSQLiteOpenHelper.onDowngrade(database, 5, 4);
+
+        InOrder inOrder = inOrder(migrationReader,database);
+        inOrder.verify(migrationReader).getMigration(5, MigrationType.DOWN);
+        inOrder.verify(database).execSQL("sqld");
+        inOrder.verify(database).execSQL("sqle");
+        inOrder.verify(database).execSQL("sqlf");
+    }
+
+    @Test(expected = MigrationFileFormatException.class)
+    public void shouldRaiseExceptionOnUpMigrationIfNullReturnedByReader(){
+        when(migrationReader.getMigration(4, MigrationType.UP)).thenThrow(MigrationFileFormatException.class);
+
+        migrationEnabledSQLiteOpenHelper.onUpgrade(database, 3, 4);
+    }
+
+
+    @Test(expected = MigrationFileFormatException.class)
+    public void shouldRaiseExceptionOnDownMigrationIfNullReturnedByReader(){
+        when(migrationReader.getMigration(3, MigrationType.DOWN)).thenThrow(MigrationFileFormatException.class);
+
+        migrationEnabledSQLiteOpenHelper.onDowngrade(database, 4, 3);
+    }
+
+    @Test
+    public void shouldNotRequireMigrationIfNoDatabasesExist(){
+        when(context.databaseList()).thenReturn(null);
+        assertThat(migrationEnabledSQLiteOpenHelper.requiresMigration(), is(false));
+    }
+
+    @Test
+    public void shouldNotRequireMigrationIfDatabaseExistsButVersionIsTheSame(){
+        when(context.databaseList()).thenReturn(new String[]{DB_NAME});
+        when(context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null)).thenReturn(database);
+        when(database.getVersion()).thenReturn(VERSION);
+        assertThat(migrationEnabledSQLiteOpenHelper.requiresMigration(), is(false));
+    }
+
+    @Test
+    public void shouldRequireMigrationIfDatabaseExistsButVersionIsHigher(){
+        when(context.databaseList()).thenReturn(new String[]{DB_NAME});
+        when(context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null)).thenReturn(database);
+        when(database.getVersion()).thenReturn(VERSION+1);
+        assertThat(migrationEnabledSQLiteOpenHelper.requiresMigration(), is(true));
+    }
+
+    @Test
+    public void shouldRequireMigrationIfDatabaseExistsButVersionIsLower(){
+        when(context.databaseList()).thenReturn(new String[]{DB_NAME});
+        when(context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null)).thenReturn(database);
+        when(database.getVersion()).thenReturn(VERSION-1);
+        assertThat(migrationEnabledSQLiteOpenHelper.requiresMigration(), is(true));
+    }
+
+    @Test
+    public void shouldCloseDatabaseAfterOpeningIt(){
+        when(context.databaseList()).thenReturn(new String[]{DB_NAME});
+        when(context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null)).thenReturn(database);
+        migrationEnabledSQLiteOpenHelper.requiresMigration();
+        verify(database).close();
+    }
+
+    @Test
+    public void shouldCloseDatabaseWhenExceptonIsThrown(){
+        when(context.databaseList()).thenReturn(new String[]{DB_NAME});
+        when(context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null)).thenReturn(database);
+        when(database.getVersion()).thenThrow(SQLException.class);
+        try{
+            migrationEnabledSQLiteOpenHelper.requiresMigration();
+            fail("We should have thrown an exception");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }catch(Exception e){
+            //Ignore expected exception
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        verify(database).close();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

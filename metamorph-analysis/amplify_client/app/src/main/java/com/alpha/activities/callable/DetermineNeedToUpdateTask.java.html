@@ -1,0 +1,137 @@
+<html><head><title>DetermineNeedToUpdateTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DetermineNeedToUpdateTask.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/callable/amplify_client/DetermineNeedToUpdateTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.callable;
+
+import android.content.Context;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.VersionCheckResponse;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.events.ProgressEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.FileUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+import roboguice.util.SafeAsyncTask;
+
+import java.io.File;
+
+public class DetermineNeedToUpdateTask extends SafeAsyncTask<VersionCheckResponse> {
+
+    public static final String FILE_APK_NAME = "latestApk.apk";
+
+    private final Context context;
+    private final DetermineNeedToUpdateCallback callBack;
+    private final WebServices webServices;
+    private final Environment environment;
+    private final FileUtils fileUtils;
+    private final EventBus eventBus;
+    protected final Listener listener = new Listener();
+    private final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public DetermineNeedToUpdateTask(Context context, EventBus eventBus, WebServices webServices, Environment environment, FileUtils fileUtils, @Assisted DetermineNeedToUpdateCallback callBack){
+        this.context = context;
+        this.callBack = callBack;
+        this.webServices = webServices;
+        this.environment = environment;
+        this.fileUtils = fileUtils;
+        this.eventBus = eventBus;
+    }
+
+    @Override
+    public VersionCheckResponse call() throws Exception {
+        eventBus.register(listener);
+        int currentVersion = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+        Response response = webServices.get(ApiRequest.createGetRequest(environment.getVersionURI(currentVersion)));
+        VersionCheckResponse versionCheckResponse = response.getBodyAs(VersionCheckResponse.class);
+        fileUtils.deleteFromExternalCache(context);
+        if(versionCheckResponse.needToUpdate()) {
+            File apkFile = fileUtils.downloadFileToExternalCache(context, versionCheckResponse.getApkUrl(), FILE_APK_NAME);
+            versionCheckResponse.setApkFile(apkFile);
+        }
+        return versionCheckResponse;
+    }
+
+    @Override
+    protected void onSuccess(VersionCheckResponse versionCheckResponse) throws Exception {
+        callBack.onUpdateStatusDetermined(versionCheckResponse);
+    }
+
+    @Override
+    protected void onException(Exception e) throws RuntimeException {
+        LOG.error(e.getMessage());
+        callBack.onNotDetermined();
+    }
+
+    @Override
+    protected void onFinally() throws RuntimeException {
+        eventBus.unregister(listener);
+    }
+
+    public interface DetermineNeedToUpdateCallback {
+        void onUpdateStatusDetermined(VersionCheckResponse versionCheckResponse);
+        void onNotDetermined();
+        void onUpdateDownloadProgress(int percentComplete);
+    }
+
+    protected class Listener {
+        @Subscribe
+        public void onDownloadProgress(ProgressEvent event) {
+            callBack.onUpdateDownloadProgress(event.getPercentComplete());
+        }
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<html><head><title>UserInfoRetrievalService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserInfoRetrievalService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/exposed/amplify_client/UserInfoRetrievalService.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.exposed;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.MessageHelper;
+import com.alpha.api.services.User;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.service.RoboService;
+
+
+public class UserInfoRetrievalService extends RoboService {
+
+    private static Logger LOG = LogUtils.getLogger();
+
+    public static final int GET_ROLE = 1;
+
+    public static final String GOOGLE_ACCESS_TOKEN_KEY = "google_access_token";
+    public static final String USER_ROLE_KEY = "user_role";
+
+    public static final int ERROR_CODE_SERVER_COMMUNICATION = 1;
+    public static final String ERROR_MSG_SERVER_COMMUNICATION = "Unable to contact server.";
+
+    public static final int ERROR_CODE_INVALID_USER = 1;
+    public static final String ERROR_MSG_INVALID_USER = "User not found";
+
+    /**
+     * Target we publish for clients to send messages to IncomingHandler.
+     */
+    private final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+    @Inject
+    private Environment environment;
+    @Inject
+    private WebServices webServices;
+    @Inject
+    private MessageHelper messageHelper;
+
+
+    private void sendGetRoleReply(Message msg, String userRole) {
+        Bundle replyData = new Bundle();
+        replyData.putString(USER_ROLE_KEY, userRole);
+        messageHelper.sendReply(msg, replyData);
+    }
+
+    private void sendErrorReply(Message msg, int errorNo, String errorMsg) {
+        Bundle replyData = new Bundle();
+        replyData.putString("error_msg", errorMsg);
+        replyData.putInt("error_code", errorNo);
+        messageHelper.sendReply(msg, replyData);
+    }
+
+    /**
+     * Handler of incoming messages from clients.
+     */
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case GET_ROLE:
+                    Bundle data = msg.getData();
+                    final String accessToken = data.getString(GOOGLE_ACCESS_TOKEN_KEY);
+                    User user = null;
+                    try {
+                        user = retrieveUserInfo(accessToken);
+                    } catch(RuntimeException ex) {
+                        LOG.error("Unable to retrieve user info.", ex);
+                    }
+
+                    if( user == null ) {
+                        sendErrorReply(msg, ERROR_CODE_SERVER_COMMUNICATION, ERROR_MSG_SERVER_COMMUNICATION);
+                    }
+                    else if( user.getRole() == null ) {
+                        sendErrorReply(msg, ERROR_CODE_INVALID_USER, ERROR_MSG_INVALID_USER);
+                    }
+                    else {
+                        sendGetRoleReply(msg, user.getRole().toString());
+                    }
+                    break;
+
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    private User retrieveUserInfo(String accessToken) {
+        ApiRequest request = makeRequest(environment.getCurrentUserURI());
+        request.addHeader("X-Auth-Token", accessToken);
+
+        Response response = webServices.get(request);
+        return response.getBodyAs(User.class);
+    }
+
+    // Used for testing
+    ApiRequest makeRequest(String url) {
+        return ApiRequest.createGetRequest(url);
+    }
+
+    /**
+     * When binding to the service, we return an interface to our messenger
+     * for sending messages to the service.
+     */
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<html><head><title>SpotCheckResponseCursorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SpotCheckResponseCursorAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/SpotCheckResponseCursorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.app.Application;
+import android.database.Cursor;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.api.domains.SpotCheckResponseOption;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class SpotCheckResponseCursorAdapterTest {
+
+    private SpotCheckResponseCursorAdapter cursorAdapter;
+    private ViewGroup graphContainer;
+    @Mock
+    private Cursor cursor;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        graphContainer = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.spot_check_teacher_graph, null).findViewById(R.id.graph_container);
+        cursorAdapter = new SpotCheckResponseCursorAdapterTestClass(Robolectric.application, graphContainer, 5);
+    }
+
+    @Test
+    public void shouldQuerySpotCheckResponsesFromCursor() {
+        prepareCursorWithResponses();
+
+        cursorAdapter.populateView(null, null);
+
+        assertThat(((ProgressBar) graphContainer.findViewById(R.id.got_it_graph_bar)).getProgress(), is(1));
+    }
+
+    private void prepareCursorWithResponses() {
+        when(cursor.getCount()).thenReturn(1);
+        when(cursor.isAfterLast()).thenReturn(false);
+        int columnIndex = 0;
+        when(cursor.getString(columnIndex)).thenReturn(SpotCheckResponseOption.GOT_IT.name());
+        when(cursor.moveToNext()).thenAnswer(new Answer<Object>() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                when(cursor.isAfterLast()).thenReturn(true);
+                return null;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+
+    @Test
+    public void shouldSetResponseStat() {
+        prepareCursorWithResponses();
+
+        cursorAdapter.populateView(null, null);
+
+        assertThat(statsText(), is("1/5 students have responded"));
+    }
+
+    @Test
+    public void shouldSetResponseStatAfterInit() {
+        prepareCursorWithResponses();
+
+        cursorAdapter.populateView(null, null);
+        cursorAdapter.updateResponseStatsText(32);
+
+        assertThat(statsText(), is("1/32 students have responded"));
+        cursorAdapter.populateView(null, null);
+
+        assertThat(statsText(), is("1/32 students have responded"));
+    }
+
+    private String statsText() {
+        return ((TextView) ((View) graphContainer.getParent()).findViewById(R.id.response_stat)).getText().toString();
+    }
+
+    @Test
+    public void shouldSetNumberOfResponsesToEachChoice() {
+        prepareCursorWithResponses();
+
+        cursorAdapter.populateView(null, null);
+
+        assertThat(((TextView) graphContainer.findViewById(R.id.got_it_count)).getText().toString(), is("1 Got it"));
+        assertThat(((TextView) graphContainer.findViewById(R.id.not_sure_count)).getText().toString(), is("0 Not sure"));
+        assertThat(((TextView) graphContainer.findViewById(R.id.confused_count)).getText().toString(), is("0 Confused"));
+    }
+
+    private class SpotCheckResponseCursorAdapterTestClass extends SpotCheckResponseCursorAdapter {
+        public SpotCheckResponseCursorAdapterTestClass(Application application, ViewGroup graphContainer, int activeParticipantsSize) {
+            super(application);
+            init(graphContainer, activeParticipantsSize);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public Cursor getCursor() {
+            return cursor;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

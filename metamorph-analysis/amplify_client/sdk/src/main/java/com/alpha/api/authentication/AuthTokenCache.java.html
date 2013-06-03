@@ -1,0 +1,85 @@
+<html><head><title>AuthTokenCache.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AuthTokenCache.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/authentication/amplify_client/AuthTokenCache.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+import java.util.concurrent.TimeUnit;
+
+public class AuthTokenCache {
+    private static final String AUTH_TOKEN_KEY = "AUTH_TOKEN";
+    public static final String AUTH_TOKEN_CACHE_INTERVAL = "auth_token_cache_time";
+    private final Cache<String, String> cache;
+
+    @Inject
+    AuthTokenCache(@Named(AUTH_TOKEN_CACHE_INTERVAL) int expiryTimeInMinutes) {
+        this.cache = CacheBuilder
+                .newBuilder()
+                .expireAfterWrite(expiryTimeInMinutes, TimeUnit.MINUTES)
+                .build();
+    }
+
+    public String get() {
+        return cache.getIfPresent(AUTH_TOKEN_KEY);
+    }
+
+    public void put(String token) {
+        cache.put(AUTH_TOKEN_KEY, token);
+    }
+
+    public void invalidateGoogleAuthToken() {
+        cache.invalidate(AUTH_TOKEN_KEY);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

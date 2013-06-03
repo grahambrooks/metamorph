@@ -1,0 +1,281 @@
+<html><head><title>PostsDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostsDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/PostsDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostResponseRecord;
+import com.alpha.api.domains.Response;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.Order;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.services.UserService;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import java.util.Date;
+import java.util.Set;
+
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.asStrings;
+import static com.alpha.api.repository.sqlite.TableColumn.content;
+import static com.alpha.api.repository.sqlite.TableColumn.modified_on;
+import static com.google.common.collect.Sets.newHashSet;
+
+@Singleton
+public class PostsDataStore {
+    private final Context context;
+    private final PostChildElementDataStore postChildElementDataStore;
+    private static final Logger LOG = LogUtils.getLogger();
+    private final UserService userService;
+
+    @Inject
+    public PostsDataStore(Context context, PostChildElementDataStore postChildElementDataStore, UserService userService) {
+        this.context = context;
+        this.postChildElementDataStore = postChildElementDataStore;
+        this.userService = userService;
+    }
+
+    public boolean hasPosts() {
+        Cursor cursor = null;
+        try {
+            Uri queryForExistenceUri = Table.POSTS.uri().buildUpon().appendQueryParameter(Table.LIMIT_BY, "1").build();
+            cursor = context.getContentResolver().query(queryForExistenceUri,
+                    asStrings(_id), null, new String[]{}, null);
+            final int rowCount = cursor.getCount();
+            LOG.trace("hasPosts returned {} rows", rowCount);
+            return rowCount > 0;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public Date timestampOfMostRecentlyModifiedPost() {
+        Date lastModifiedPostTime = userService.getLastModifiedPostTime();
+        if(lastModifiedPostTime != null) {
+            return lastModifiedPostTime;
+        }
+
+        Date postFromDatabase = getMostRecentPostFromDatabase();
+        if(postFromDatabase != null) {
+            userService.updateMostRecentPostTime(postFromDatabase);
+        }
+        return postFromDatabase;
+    }
+
+    private Date getMostRecentPostFromDatabase() {
+        Cursor cursor = null;
+        try {
+            Uri queryForTimestampUri = Table.POSTS.uri().buildUpon()
+                    .appendQueryParameter(Table.LIMIT_BY, "1").build();
+            cursor = context.getContentResolver().query(queryForTimestampUri,
+                    asStrings(modified_on), null, new String[]{}, Order.DESC.by(modified_on));
+            final int timestampColumnIndex = cursor.getColumnIndexOrThrow(modified_on.name());
+
+            if (cursor.moveToFirst()) {
+                final long timestampColumnValue = cursor.getLong(timestampColumnIndex);
+                LOG.trace("timestamp column value: " + timestampColumnValue);
+                return new Date(timestampColumnValue);
+            } else {
+                LOG.trace("timestamp query returned no rows, returning null");
+                return null;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void saveAll(Iterable<Post> instances) {
+        Date lastModified = new Date(0);
+        for (Post post : instances) {
+            process(post);
+            Date postLastModified = post.getModifiedOn();
+            if (postLastModified.after(lastModified)) {
+                lastModified = postLastModified;
+                userService.updateMostRecentPostTime(lastModified);
+            }
+        }
+    }
+
+    private void process(Post post) {
+        if (post.isDeleted()) {
+            delete(post);
+        } else {
+            insertOrUpdate(post);
+        }
+    }
+
+    protected void insertOrUpdate(Post post) {
+        if (isPresentLocally(post)) {
+            update(post);
+        } else {
+            insert(post);
+        }
+        postChildElementDataStore.saveNewComments(post.getId(), post.getComments());
+        postChildElementDataStore.saveNewResponses(post.getId(), post.getQuickShortAnswerResponses());
+        postChildElementDataStore.saveNewResponses(post.getId(), post.getQuickPollResponses());
+        postChildElementDataStore.saveNewResponses(post.getId(), post.getSpotCheckResponses());
+        postChildElementDataStore.saveActivityResponses(getUsersWhoResponded(post));
+    }
+
+    private Set<PostResponseRecord> getUsersWhoResponded(Post post) {
+        Set<PostResponseRecord> postResponseRecords = newHashSet();
+        for (Response response : post.getResponses()) {
+            postResponseRecords.add(new PostResponseRecord(post.getId(), response.getAuthor().getId(), response.getAuthor().getName(), response.getCreatedOn()));
+        }
+        return postResponseRecords;
+    }
+
+    protected boolean isPresentLocally(Post post) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver.query(Table.POSTS.uri(), new String[]{TableColumn._id.name()}, _id.equalTo(), new String[]{post.getId().toString()}, null);
+            return cursor.getCount() > 0;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            IOUtils.closeSafely(cursor);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void delete(Post post) {
+        if (isPresentLocally(post)) {
+            LOG.info("Deleting post with id: {}", post.getId());
+            ContentResolver contentResolver = context.getContentResolver();
+            contentResolver.delete(Table.POSTS.uri(), _id.equalTo(), new String[]{post.getId().toString()});
+        }
+    }
+
+    protected void update(Post post) {
+        LOG.info("Updating post with id: {}", post.getId());
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.update(Table.POSTS.uri(), post.asValues(), _id.equalTo(), new String[]{post.getId().toString()});
+        contentResolver.notifyChange(Table.POSTS.uri(post.getPostType()), null);
+    }
+
+    protected void insert(Post post) {
+        LOG.info("Inserting post with id: {}", post.getId());
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.insert(Table.POSTS.uri(), post.asValues());
+        contentResolver.notifyChange(Table.POSTS.uri(post.getPostType()), null);
+    }
+
+    public Post fetch(Long postId) {
+        Cursor cursor = null;
+        try {
+            final Uri postIdUri = Table.POSTS.uri();
+            cursor = context.getContentResolver().query(postIdUri, asStrings(content), TableColumn._id.equalTo(), new String[]{postId.toString()}, null);
+            if (cursor.moveToFirst()) {
+                return createPostForContent(cursor);
+            }
+            return null;</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private Post createPostForContent(Cursor cursor) {
+        String contentJson = cursor.getString(cursor.getColumnIndex(TableColumn.content.name()));
+        return AmplifyJsonHelper.fromJson(contentJson, Post.class);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<html><head><title>BundlesTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BundlesTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/utils/amplify_client/BundlesTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import android.os.Bundle;
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.Serializable;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(RobolectricTestRunner.class)
+public class BundlesTest {
+    private static class MyObject implements Serializable {}
+
+    @Test
+    public void shouldCreateABundleWithItem() throws Exception {
+        MyObject item = new MyObject();
+        Bundle bundle = Bundles.withItems(item);
+
+        assertThat((MyObject) bundle.getSerializable(MyObject.class.getName()), is(item));
+    }
+
+    @Test
+    public void shouldRetrieveAnItemFromBundle() throws Exception {
+        Bundle bundle = new Bundle();
+        MyObject item = new MyObject();
+        bundle.putSerializable(MyObject.class.getName(), item);
+
+        assertThat(Bundles.get(bundle, MyObject.class) , is(item));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

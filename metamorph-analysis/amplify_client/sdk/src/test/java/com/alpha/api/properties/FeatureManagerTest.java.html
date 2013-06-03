@@ -1,0 +1,125 @@
+<html><head><title>FeatureManagerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>FeatureManagerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/properties/amplify_client/FeatureManagerTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.properties;
+
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.yaml.snakeyaml.Yaml;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class FeatureManagerTest {
+
+    private static final String FEATURES_FILE_CONTENTS = "features file to parse, which contains cool stuff";
+
+    private enum MockFeature implements FeatureManager.FeatureKey {
+        FEATURE_ONE;
+
+        @Override
+        public String getKey() {
+            return name();
+        }
+    }
+
+    private FeatureManager featureManager;
+
+    @Mock
+    private Environment environment;
+    @Mock
+    private Yaml yamlParser;
+
+    @Mock
+    private FeatureMap featureMap;
+    @Mock
+    private FeatureInfo featureInfo;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        given(yamlParser.loadAs(FEATURES_FILE_CONTENTS, FeatureMap.class)).willReturn(featureMap);
+
+        featureManager = new FeatureManager(environment, FEATURES_FILE_CONTENTS, yamlParser);
+    }
+
+    @Test
+    public void shouldParseYamlContentsInConstructor() {
+        verify(yamlParser).loadAs(FEATURES_FILE_CONTENTS, FeatureMap.class);
+    }
+
+    @Test
+    public void shouldValidateFeatureKeysInConstrutorSoThatWeCanFailFast() {
+        verify(featureMap).validateKeys(FeatureManager.Feature.values());
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionIfFeatureToggleNotDefined() {
+        when(featureMap.getFeature(MockFeature.FEATURE_ONE.getKey())).thenReturn(null);
+
+        featureManager.isActive(MockFeature.FEATURE_ONE);
+    }
+
+    @Test
+    public void shouldCheckIfFeatureToggleIsActiveForEnvironment() {
+        when(featureMap.getFeature(MockFeature.FEATURE_ONE.getKey())).thenReturn(featureInfo);
+
+        featureManager.isActive(MockFeature.FEATURE_ONE);
+
+        verify(featureInfo).isActive(environment);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

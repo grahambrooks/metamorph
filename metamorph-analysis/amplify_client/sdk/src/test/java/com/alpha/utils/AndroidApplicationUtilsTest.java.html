@@ -1,0 +1,96 @@
+<html><head><title>AndroidApplicationUtilsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AndroidApplicationUtilsTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/utils/amplify_client/AndroidApplicationUtilsTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.google.common.collect.Lists;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class AndroidApplicationUtilsTest {
+    private final AndroidApplicationUtils applicationUtils = new AndroidApplicationUtils();
+
+    @Test
+    public void shouldBringSpecifiedTaskToFront() {
+        String alphaPackageName = "com.alpha";
+        int alphaTaskId = 2;
+        Context context = mock(Context.class);
+        ActivityManager activityManager = mock(ActivityManager.class);
+        ActivityManager.RunningTaskInfo mockTask = mock(ActivityManager.RunningTaskInfo.class);
+        ActivityManager.RunningTaskInfo mockAlphaTask = mock(ActivityManager.RunningTaskInfo.class);
+        ComponentName mockComponent = mock(ComponentName.class);
+        ComponentName alphaComponent = mock(ComponentName.class);
+
+        mockTask.topActivity = mockComponent;
+        mockAlphaTask.topActivity = alphaComponent;
+        mockTask.id = 1;
+        mockAlphaTask.id = alphaTaskId;
+
+        when(context.getSystemService(Activity.ACTIVITY_SERVICE)).thenReturn(activityManager);
+        when(activityManager.getRunningTasks(Integer.MAX_VALUE)).thenReturn(Lists.newArrayList(mockTask, mockTask, mockAlphaTask));
+
+        when(mockComponent.getPackageName()).thenReturn("not.alpha.packagename");
+        when(alphaComponent.getPackageName()).thenReturn(alphaPackageName);
+
+        applicationUtils.bringApplicationTaskToForeground(context, alphaPackageName);
+
+        verify(activityManager).moveTaskToFront(alphaTaskId, ActivityManager.MOVE_TASK_NO_USER_ACTION);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

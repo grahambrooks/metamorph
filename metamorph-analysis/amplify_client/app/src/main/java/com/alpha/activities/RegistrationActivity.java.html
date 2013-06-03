@@ -1,0 +1,275 @@
+<html><head><title>RegistrationActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RegistrationActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/RegistrationActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.UserRole;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+@SuppressWarnings("PMD.CyclomaticComplexity")
+public class RegistrationActivity extends SundaeTimedActivity{
+
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    @InjectView(R.id.registration_in_progress)
+    private ProgressBar progressBar;
+    @InjectView(R.id.progress_text)
+    private TextView progressText;
+
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private GoogleAuthenticationService googleAuthService;
+
+    public static final int REGISTRATION_STEP_FAILED = 1000000;
+    public static final int NET_NANNY_DISABLE_STEP_FAILED = 200000;
+    public static final int NET_NANNY_CONFIG_STEP_FAILED = 300000;
+    public static final int NET_NANNY_ENABLE_FAILED = 400000;
+
+    public static final int NET_NANNY_DISABLE_STEP = 40;
+    public static final int PROVISIONING_APK_CHECK = 60;
+    public static final int GOOGLE_ACCOUNT_SETUP_STEP = 10;
+    public static final int UPDATE_APPLICATION_STEP = 20;
+    public static final int GET_USER_INFO_STEP = 70;
+    public static final int NET_NANNY_CONFIG_STEP = 50;
+    public static final int THIRD_PARTY_REGISTRATION = 30;
+
+    protected boolean updated = false;
+    protected boolean isNetNannyDisabled = false;
+    protected boolean isNetNannyConfigured = false;
+    protected boolean isProvisioningInstallationDone = false;
+
+    protected String googleAuthToken = null;
+    protected UserRole userRole = null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        LOGGER.trace("Creating RegistrationActivity " + System.identityHashCode(this));
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.registration_lock_screen);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.hasUserRegistered()) {
+            setResult(Activity.RESULT_OK);
+            finish();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        else {
+            doNextStep();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        LOGGER.trace("On activity result in RegistrationActivity " + System.identityHashCode(this));
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK) {
+            handleSuccess(requestCode, data);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else if (resultCode == REGISTRATION_STEP_FAILED) {
+            handleFail(requestCode);
+        } else {
+            handleFail(requestCode);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void handleSuccess(int requestCode, Intent data) {
+        LOGGER.trace("handleSuccess in RegistrationActivity " + System.identityHashCode(this));
+
+        switch(requestCode) {
+            case NET_NANNY_DISABLE_STEP:
+                isNetNannyDisabled = true;
+                break;
+            case PROVISIONING_APK_CHECK:
+                isProvisioningInstallationDone = true;
+                break;
+            case GOOGLE_ACCOUNT_SETUP_STEP:
+                LOGGER.trace("success google reg in RegistrationActivity " + System.identityHashCode(this));
+                break;
+            case UPDATE_APPLICATION_STEP:
+                LOGGER.trace("success application update in RegistrationActivity " + System.identityHashCode(this));
+                updated = true;
+                break;
+            case GET_USER_INFO_STEP:
+                LOGGER.trace("success Google authenticated with Adam " + System.identityHashCode(this));
+                googleAuthToken = data.getStringExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA);
+                userRole = (UserRole) data.getSerializableExtra(GetUserInfoActivity.USER_INFO_EXTRA);
+                break;
+            case NET_NANNY_CONFIG_STEP:
+                isNetNannyConfigured = true;
+                break;
+            case THIRD_PARTY_REGISTRATION:
+                LOGGER.trace("success third party registration in RegistrationActivity " + System.identityHashCode(this));
+                setResult(Activity.RESULT_OK);
+                finish();
+                return;
+            default:
+                LOGGER.trace("Unknown step " + requestCode);
+
+
+
+        }
+        doNextStep();
+    }
+
+    private void launchProvisioning() {
+        Intent intent = new Intent(this, ProvisioningActivity.class);
+        startActivityForResult(intent, PROVISIONING_APK_CHECK);
+    }
+
+    private void handleFail(int requestCode) {
+
+        int stringId;
+        ApiErrorReason reason;
+        switch(requestCode){
+            case GOOGLE_ACCOUNT_SETUP_STEP:
+                stringId = R.string.user_info_failed;
+                reason = ApiErrorReason.NO_GOOGLE_CREDENTIALS;
+                break;
+            case UPDATE_APPLICATION_STEP:
+                stringId = R.string.update_failure;
+                reason = ApiErrorReason.UPDATE_APPLICATION_FAILED;
+                break;
+            case THIRD_PARTY_REGISTRATION:
+                stringId = R.string.third_party_update_failure;
+                reason = ApiErrorReason.UPDATE_APPLICATION_FAILED;
+                break;
+            case NET_NANNY_DISABLE_STEP:
+                stringId = R.string.net_nanny_disabling_failure;
+                reason = ApiErrorReason.NET_NANNY_DISABLING_FAILED;
+                break;
+            case PROVISIONING_APK_CHECK:
+                stringId = R.string.provisioningFailed;
+                reason = ApiErrorReason.PROVISIONING_FAILED;
+                break;
+            case GET_USER_INFO_STEP:
+                stringId = R.string.registration_failed_message;
+                reason = ApiErrorReason.INTERNAL_ERROR;
+                break;
+
+            default:
+                stringId = R.string.internal_error;
+                reason = ApiErrorReason.INTERNAL_ERROR;
+                LOGGER.trace("Failed in unknown step " + requestCode);
+        }
+        toaster.errorToast(reason, stringId);
+        progressBar.setVisibility(View.GONE);
+        progressText.setText(getString(R.string.registration_failed_message));
+        LOGGER.error("Registration failed with resultCode of: " + requestCode);
+    }
+
+    private void doNextStep() {
+        Intent activityToStart;
+
+        if(!isNetNannyDisabled) {//NOPMD
+            boolean enableNetNanny = false;
+            activityToStart = new Intent(this, EnableNetNannyActivity.class);
+            activityToStart.putExtra(EnableNetNannyActivity.EXTRA_ENABLE, enableNetNanny);
+            startActivityForResult(activityToStart, NET_NANNY_DISABLE_STEP);
+        } else if (!isProvisioningInstallationDone){//NOPMD
+            launchProvisioning();
+            LOGGER.info("Launching provisioning intent in Registration Activity " + System.identityHashCode(this));
+        } else if (!googleAuthService.isAccountRegistered() || StringUtils.isEmpty(userService.getAccountName())) {//NOPMD
+            LOGGER.trace("launching welcome activity in RegistrationActivity " + System.identityHashCode(this));
+            activityToStart = new Intent(this, WelcomeActivity.class);
+            startActivityForResult(activityToStart, GOOGLE_ACCOUNT_SETUP_STEP);
+        } else if (!updated) {//NOPMD
+            LOGGER.trace("launching update application in RegistrationActivity " + System.identityHashCode(this));
+            activityToStart = new Intent(this, UpdateApplicationActivity.class);
+            startActivityForResult(activityToStart, UPDATE_APPLICATION_STEP);
+        } else if(googleAuthToken == null || userRole == null){//NOPMD
+            LOGGER.trace("launching GoogleAuthForAdam activity " + System.identityHashCode(this));
+            activityToStart = new Intent(this, GetUserInfoActivity.class);
+            startActivityForResult(activityToStart, GET_USER_INFO_STEP);
+        } else if(!isNetNannyConfigured) {//NOPMD
+            activityToStart = new Intent(this, EnableNetNannyActivity.class);
+            activityToStart.putExtra(EnableNetNannyActivity.EXTRA_ENABLE, true);
+            activityToStart.putExtra(EnableNetNannyActivity.EXTRA_USER_ROLE, userRole);
+            startActivityForResult(activityToStart, NET_NANNY_CONFIG_STEP);
+        } else if (!userService.hasUserRegistered()) {//NOPMD
+            LOGGER.trace("launching third party registration in RegistrationActivity " + System.identityHashCode(this));
+            activityToStart = new Intent(this, ThirdPartyRegistrationActivity.class);
+            activityToStart.putExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA,
+                    googleAuthToken);
+            startActivityForResult(activityToStart, THIRD_PARTY_REGISTRATION);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

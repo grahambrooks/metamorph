@@ -1,0 +1,124 @@
+<html><head><title>MigrationReader.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MigrationReader.java</h1>
+<p>Scanned path = core-utils/src/main/java/com/amplify/db/amplify_client/MigrationReader.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.db;
+
+import com.amplify.log.LogUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.amplify.log.LogUtils.error;
+
+class MigrationReader {
+
+    private static final String NO_MIGRATION = null;
+
+    enum MigrationType {
+        UP(1),
+        DOWN(2);
+        private int groupPosition;
+
+        MigrationType(int groupPosition) {
+            this.groupPosition = groupPosition;
+        }
+
+        public int groupPosition(){
+            return groupPosition;
+        }
+    }
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private static final String MIGRATION_FILENAME_FORMAT = "db/migrations/%d.sql";
+    private static final Pattern MIGRATION_PATTERN = Pattern.compile("\\n*--!UP!\\n(.+?)--!DOWN!\\n(.+?)", Pattern.DOTALL);
+
+    public String getMigration(int version, MigrationType migrationType) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(String.format(MIGRATION_FILENAME_FORMAT, version));
+
+        if (inputStream == null) {
+            error(LOG, "Could not find migration file for version %d", version);
+            return null;
+        }
+
+        String migrationFileContents;
+        try {
+
+            migrationFileContents = IOUtils.toString(inputStream);
+
+        } catch (IOException e) {
+            error(LOG, e, "Problem when reading in migration for version %d", version);
+            return null;
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        Matcher matcher = MIGRATION_PATTERN.matcher(migrationFileContents);
+
+        if (!matcher.matches()) {
+            error(LOG, "Migration file contents are not valid for version %d", version);
+            return null;
+        }
+
+        if (matcher.groupCount() != 2) {
+            error(LOG, "Both up and down migration could not be found in file for version %d", version);
+            return null;
+        }
+
+        String migration = StringUtils.remove(matcher.group(migrationType.groupPosition()), "\n").trim();
+        return StringUtils.isBlank(migration) ? NO_MIGRATION : migration;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

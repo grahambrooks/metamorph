@@ -15,6 +15,10 @@ abstract class Signature {
       false
     }
   }
+
+  override def toString = {
+    hash.toString
+  }
 }
 
 object Signature {

@@ -1,0 +1,257 @@
+<html><head><title>ApplicationMonitoringService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ApplicationMonitoringService.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/api/services/amplify_client/ApplicationMonitoringService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Binder;
+import android.os.IBinder;
+import android.widget.Toast;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.api.utilities.UIUtils;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.AndroidApplicationUtils;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.service.RoboService;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+
+public class ApplicationMonitoringService extends RoboService {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final long DELAY = 0;
+    public static final long PERIOD = 5000;
+    @Inject
+    private ParticipantSessionService participantSessionService;
+    @Inject
+    private TimerProvider timerProvider;
+    @Inject
+    private UserService userService;
+    @Inject
+    private AndroidApplicationUtils applicationUtils;
+
+    private Timer timer;
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new ApplicationMonitoringServiceBinder();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        timer = timerProvider.get();
+
+        LOG.info("Application Monitoring Service created");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        LOG.info("Application Monitoring Service started");
+
+        return START_REDELIVER_INTENT;
+
+    }
+
+    public void updateLocation(StudentLocation location) {
+        if(location == StudentLocation.ANOTHER_APPLICATION) {
+            timer.schedule(new ApplicationMonitoringTask(), DELAY, PERIOD);
+        } else {
+            updateStudentPresenceModel(location, null, null);
+            timer.cancel();
+            timer = timerProvider.get();
+        }
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        LOG.info("Application Monitoring Service has been destroyed!!!");
+        super.onDestroy();
+    }
+
+    protected class ApplicationMonitoringTask extends TimerTask {
+        private String currentLocation;
+
+        @Override
+        public void run() {
+            if (!userService.getUser().hasLiveSection()) {
+                timer.cancel();
+                timer = timerProvider.get();
+                return;
+            }
+
+            String newLocation = findCurrentAppPackageName();
+            LOG.debug("New location is: " + newLocation + ", And last location was: " + currentLocation);
+            if (appIsCurrentlyBlocked(newLocation)) {
+                LOG.debug("User is currently in an app that is not allowed: " + newLocation);
+                removeFromBlockedApp(newLocation);
+            } else if (!newLocation.equals(currentLocation)) {
+                LOG.debug("Updating student's app location: " + newLocation);
+                currentLocation = newLocation;
+                updateStudentLocation(currentLocation);
+            }
+        }
+
+    }
+
+    private String findCurrentAppPackageName() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        RunningTaskInfo runningTaskInfo = activityManager.getRunningTasks(1).get(0);
+        String packageName = runningTaskInfo.topActivity.getPackageName();
+        LOG.debug("The package name is: " + packageName);
+        return packageName;
+    }
+
+    private void updateStudentLocation(String packageName) {
+        try {
+            updateStudentPresenceModel(StudentLocation.ANOTHER_APPLICATION, packageName, getAppName(packageName));
+        } catch (NameNotFoundException e) {
+            LOG.error("Could not find currently running Application", e);
+        }
+    }
+
+    private void updateStudentPresenceModel(StudentLocation studentLocation, String packageName, String displayName){
+        Student student = userService.getUser();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(!student.hasLiveSection()){
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        ParticipantPresenceModel model = student.getPresenceModel();
+
+        model.setLocation(studentLocation);
+
+        if(studentLocation.isSection()){
+            model.setDisplayName(student.currentSectionName());
+        } else if (studentLocation == StudentLocation.ANOTHER_APPLICATION) {
+            model.setPackageName(packageName);
+            model.setDisplayName(displayName);
+        }
+
+        student.setPresenceModel(model);
+        participantSessionService.updateStudentWhereabouts(student);
+    }
+
+    private void removeFromBlockedApp(final String packageName) {
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                String appName = getAppName(packageName);
+                String message = String.format(ApplicationMonitoringService.this.getString(R.string.active_app_blocked), appName);
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                return null;
+            }
+        });
+        //Knock user back to Notebook
+        applicationUtils.bringApplicationTaskToForeground(this, this.getPackageName());
+    }
+
+    private String getAppName(String packageName) throws NameNotFoundException {
+        PackageManager packageManager = getPackageManager();
+        ApplicationInfo info = packageManager.getApplicationInfo(packageName, 0);
+        return packageManager.getApplicationLabel(info).toString();
+    }
+
+    protected boolean appIsCurrentlyBlocked(String newLocation) {
+        User user = userService.getUser();
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(!user.isForceFieldEngaged()) {
+            return false;
+        }
+        if(newLocation.equalsIgnoreCase(getPackageName())) {
+            return false;
+        }
+        if (user.getAllowedApps().contains(newLocation)) {
+            return false;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return true;
+    }
+
+
+
+    public class ApplicationMonitoringServiceBinder extends Binder {
+        public ApplicationMonitoringService getService() {
+            return ApplicationMonitoringService.this;
+        }
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

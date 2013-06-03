@@ -1,0 +1,217 @@
+<html><head><title>NotebooksCoverMappings.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NotebooksCoverMappings.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/mappings/amplify_client/NotebooksCoverMappings.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.mappings;
+
+import com.amplify.R;
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
+import static java.util.Locale.getDefault;
+
+public class NotebooksCoverMappings {
+
+    static final String DEFAULT = "default";
+    static final NotebookCovers DEFAULT_COVERS = new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish);
+
+    private static final Map<String, NotebookCovers> COVER_MAP = ImmutableMap.<String, NotebookCovers>builder()
+            .put("writing", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("math horntail", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("math bridgeback", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("literature studies", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("global literacy", new NotebookCovers(R.drawable.img_home_socialstudies, R.drawable.img_share_socialstudies, R.drawable.img_stumon_socialstudies))
+            .put("science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put(DEFAULT, DEFAULT_COVERS)
+             // Generic one for demo
+            .put("art", new NotebookCovers(R.drawable.img_home_art, R.drawable.img_share_art, R.drawable.img_stumon_art))
+            .put("earth science", new NotebookCovers(R.drawable.img_home_earthscience, R.drawable.img_share_earthscience, R.drawable.img_stumon_earthscience))
+            .put("english language arts", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("english", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_english, R.drawable.img_stumon_reading))
+            .put("math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("social studies", new NotebookCovers(R.drawable.img_home_socialstudies, R.drawable.img_share_socialstudies, R.drawable.img_stumon_socialstudies))
+            .put("spanish", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+             // Fulton County
+            .put("2nd science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("3rd science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("4th science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("6th science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("7th science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("5th science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("8th science", new NotebookCovers(R.drawable.img_home_science, R.drawable.img_share_science, R.drawable.img_stumon_science))
+            .put("2nd spanish 8c", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+            .put("3rd spanish 8c", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+            .put("4th spanish 8c", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+            .put("7th spanish 8c", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+            .put("8th spanish 8c", new NotebookCovers(R.drawable.img_home_spanish, R.drawable.img_share_spanish, R.drawable.img_stumon_spanish))
+            .put("4th reading", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("5th reading", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("6th reading", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("7th reading", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("8th reading", new NotebookCovers(R.drawable.img_home_reading, R.drawable.img_share_reading, R.drawable.img_stumon_reading))
+            .put("3rd math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("4th math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("5th math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("6th math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("7th math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("8th math", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("4th math 8", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("7th math 8", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("2nd math 8a", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("3rd math 8a", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("7th math 8a", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("8th math 8a", new NotebookCovers(R.drawable.img_home_math, R.drawable.img_share_math, R.drawable.img_stumon_math))
+            .put("5th lang ar", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("6th lang ar", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("7th lang ar", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("8th lang ar", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("4th lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("5th lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("6th lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("7th lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("8th lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("2nd tag lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("3rd tag lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("8th tag lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("4th ol lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("7th ol lang atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("7th ol language atrs", new NotebookCovers(R.drawable.img_home_languagearts, R.drawable.img_share_languagearts, R.drawable.img_stumon_languagearts))
+            .put("2nd ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("3rd ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("4th ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("5th ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("6th ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("7th ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .put("8th ga studies", new NotebookCovers(R.drawable.img_home_georgiastudies, R.drawable.img_share_georgiastudies, R.drawable.img_stumon_georgiastudies))
+            .build();
+
+    public int getHomeCoverImage(String sectionName) {
+        return getCover(sectionName).getHomeCoverImage();
+    }
+
+    public int getShareCoverImage(String sectionName) {
+        return getCover(sectionName).getShareCoverImage();
+    }
+
+    public int getMonitorCoverImage(String sectionName) {
+        return getCover(sectionName).getMonitorCoverImage();
+    }
+
+    private NotebookCovers getCover(String sectionName) {
+        return COVER_MAP.get(getCoverKey(sectionName.toLowerCase(getDefault())));
+    }
+
+    private String getCoverKey(String sectionName) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (getKeyIfFound(sectionName)) {return sectionName;}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (sectionName.contains(" ")) {
+            String sectionNameWithoutLastWord = sectionName.subSequence(0, sectionName.lastIndexOf(' ')).toString();
+            if (getKeyIfFound(sectionNameWithoutLastWord)) {return sectionNameWithoutLastWord;}
+        }
+        for (String coverName : COVER_MAP.keySet()) {
+            if (sectionName.contains(coverName)) {return coverName;}
+        }
+
+        return DEFAULT;
+    }
+
+    private boolean getKeyIfFound(String sectionName) {
+        NotebookCovers cover;
+        cover = COVER_MAP.get(sectionName);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (cover != null) {
+            return true;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return false;
+    }
+
+    static class NotebookCovers {
+
+        private final int homeCoverImage;
+        private final int shareCoverImage;
+        private final int monitorCoverImage;
+
+        NotebookCovers(int homeCoverImage, int shareCoverImage, int monitorCoverImage) {
+            this.homeCoverImage = homeCoverImage;
+            this.shareCoverImage = shareCoverImage;
+            this.monitorCoverImage = monitorCoverImage;
+        }
+
+        public int getHomeCoverImage() {
+            return homeCoverImage;
+        }
+
+        public int getShareCoverImage() {
+            return shareCoverImage;
+        }
+
+        public int getMonitorCoverImage() {
+            return monitorCoverImage;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

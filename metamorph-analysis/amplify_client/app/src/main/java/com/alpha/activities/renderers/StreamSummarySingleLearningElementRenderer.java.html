@@ -1,0 +1,144 @@
+<html><head><title>StreamSummarySingleLearningElementRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummarySingleLearningElementRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamSummarySingleLearningElementRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.api.domains.*;
+import com.alpha.widgets.image.SmartImageView;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+public class StreamSummarySingleLearningElementRenderer extends LearningElementVisitor<View> {
+
+    private final GoogleDriveRenderer googleDriveRenderer;
+    private final LayoutInflater inflater;
+    private final Context context;
+    private final Post post;
+
+    @Inject
+    public StreamSummarySingleLearningElementRenderer(@Assisted Context context,
+                                                      @Assisted Post post,
+                                                      RendererFactory rendererFactory) {
+        this.context = context;
+        this.post = post;
+        this.googleDriveRenderer = rendererFactory.createGoogleDriveRenderer();
+        this.inflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public View visit(final WebPageLearningElement element, ViewGroup parent) {
+        View webPageLearningElementView = inflater.inflate(R.layout.webpage_learning_element_stream_summary, parent, false);
+        TextView webpageView = (TextView) webPageLearningElementView.findViewById(R.id.webpage_view);
+        webpageView.setText(element.getWebPageUri().toString());
+        setClickableLink(element, webpageView);
+        addNoteFromPost(webPageLearningElementView);
+        return webPageLearningElementView;
+    }
+
+    @Override
+    public View visit(final EReaderLearningElement element, ViewGroup parent) {
+        View eReaderLearningElementView = inflater.inflate(R.layout.ereader_learning_element_stream_summary, parent, false);
+        TextView eReaderView = (TextView) eReaderLearningElementView.findViewById(R.id.ereader_view);
+        eReaderView.setText(element.getTitle());
+        addNoteFromPost(eReaderLearningElementView);
+        return eReaderLearningElementView;
+    }
+
+    @Override
+    public View visit(GoogleMapsLearningElement element, ViewGroup parent) {
+        View mapsLearningElement = inflater.inflate(R.layout.maps_learning_element_stream_summary, parent, false);
+        TextView mapsView = (TextView) mapsLearningElement.findViewById(R.id.maps_view);
+        mapsView.setText(element.getTitle());
+        addNoteFromPost(mapsLearningElement);
+        return mapsLearningElement;
+    }
+
+    private void setClickableLink(final WebPageLearningElement element, TextView webpageView) {
+        webpageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent webpageIntent = new Intent();
+                webpageIntent.setAction(Intent.ACTION_VIEW);
+                webpageIntent.setData(element.getWebPageUri());
+                context.startActivity(webpageIntent);
+            }
+        });
+    }
+
+    @Override
+    public View visit(VideoLearningElement element, ViewGroup parent) {
+        View view = inflater.inflate(R.layout.video_learning_element_stream_summary, parent, false);
+        SmartImageView imageView = (SmartImageView) view.findViewById(R.id.video_thumbnail_image);
+        imageView.setImageBitmap(element.getThumbnailBitmap(), R.drawable.video_thumbnail_default);
+        return view;
+    }
+
+    @Override
+    public View visit(GoogleDriveLearningElement element, ViewGroup parent) {
+        View view = googleDriveRenderer.renderWithoutTitleAndDescription(R.layout.google_drive_learning_element_stream_summary, element, parent);
+        addNoteFromPost(view);
+        return view;
+    }
+
+    private void addNoteFromPost(View learningElementView) {
+        if (post.getNote() != null) {
+            TextView noteView = (TextView) learningElementView.findViewById(R.id.post_note);
+            noteView.setText(post.getNote());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

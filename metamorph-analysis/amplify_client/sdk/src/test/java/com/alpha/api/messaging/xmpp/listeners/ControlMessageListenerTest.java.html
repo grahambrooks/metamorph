@@ -1,0 +1,109 @@
+<html><head><title>ControlMessageListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlMessageListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ControlMessageListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ControlEvent;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ControlMessageListenerTest {
+
+    private ControlMessageListener listener;
+    @Mock
+    private UserService userService;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private User user;
+    @Mock
+    private ControlEvent mockLockEvent;
+    @Mock
+    private ControlEvent mockUnlockEvent;
+
+    private ControlSettingsModel newControlSettings;
+
+    @Before
+    public void setUp(){
+        initMocks(this);
+        given(userService.getUser()).willReturn(user);
+        listener = new ControlMessageListener("", userService, eventBus);
+
+        ControlSettingsModel oldControlSettings = mock(ControlSettingsModel.class);
+        when(oldControlSettings.detectEvents(any(ControlSettingsModel.class))).thenReturn(newArrayList(mockLockEvent, mockUnlockEvent));
+        when(user.getCurrentControlSettingsModel()).thenReturn(oldControlSettings);
+
+        newControlSettings = mock(ControlSettingsModel.class);
+    }
+
+    @Test
+    public void shouldDispatchLockEventToHandler() {
+
+        listener.onSessionControlMessage(newControlSettings);
+
+        verify(mockLockEvent).handle(newControlSettings, user, eventBus);
+        verify(mockUnlockEvent).handle(newControlSettings, user, eventBus);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

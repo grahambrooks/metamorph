@@ -1,0 +1,167 @@
+<html><head><title>StreamSummaryCallOnPostRenderer.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryCallOnPostRenderer.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/renderers/amplify_client/StreamSummaryCallOnPostRenderer.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.UserService;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
+
+public class StreamSummaryCallOnPostRenderer {
+
+    private final Post post;
+    private final UserService userService;
+
+    private static final String UNKNOWN_STUDENT = "a student";
+
+    @Inject
+    public StreamSummaryCallOnPostRenderer(UserService userService, @Assisted Post post) {
+        this.userService = userService;
+        this.post = post;
+
+        if (!post.getPostType().isAction()) {
+            throw new IllegalArgumentException("PostType should be ACTION for ActionRenderer");
+        }
+    }
+
+    public View renderView(ViewGroup parentView) {
+        TextView title = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        ImageView postIcon = (ImageView) parentView.findViewById(R.id.notebook_post_icon);
+        Context context = parentView.getContext();
+
+        List<Participant> calledOnStudents = new ArrayList<Participant>();
+
+        if (post.getCalledOnStudents() != null) {
+            calledOnStudents.addAll(post.getCalledOnStudents());
+        }
+
+        String calledOnStudentsString = buildCalledOnStudentsString(calledOnStudents);
+
+        if (userService.isTeacher()) {
+            title.setText(format(context.getString(R.string.call_on_issued_by_you, calledOnStudentsString)));
+        } else {
+            title.setText(format(context.getString(R.string.call_on_issued_by_teacher, post.getAuthor().getName(), calledOnStudentsString)));
+        }
+
+        postIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.icn_stream_callon));
+
+        View postContent = parentView.findViewById(R.id.notebook_post_content);
+        postContent.setVisibility(View.GONE);
+
+        return parentView;
+    }
+
+    private String buildCalledOnStudentsString(List<Participant> calledOnStudents) {
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(calledOnStudents == null || calledOnStudents.isEmpty()) {
+            return UNKNOWN_STUDENT;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        StringBuilder sb = new StringBuilder();
+        int size = calledOnStudents.size();
+        boolean isStudent = userService.isStudent();
+        Long currentUserId = userService.getUser().getId();
+        if (size == 1) {
+            return nameOrYou(calledOnStudents.get(0), currentUserId, isStudent);
+        }
+        for (int i = 0; i < size; i++) {
+            sb.append(nameOrYou(calledOnStudents.get(i), currentUserId, isStudent));
+            if (i < size - 2) {
+                sb.append(", ");
+            }
+            else if (i == size - 2) {
+                sb.append(" and ");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String nameOrYou(Participant student, Long currentUserId, boolean isStudent) {
+        // Ensure that at least SOMETHING is present in the UI for the name of "unknown" students</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (student == null || StringUtils.isBlank(student.getName())) {
+            return UNKNOWN_STUDENT;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return (isStudent && student.getId() == currentUserId) ? "you" : student.getName();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

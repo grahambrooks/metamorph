@@ -1,0 +1,172 @@
+<html><head><title>AuthenticationTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AuthenticationTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/authentication/amplify_client/AuthenticationTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import android.accounts.*;
+import android.app.Activity;
+import android.os.Bundle;
+import com.alpha.api.authentication.AuthenticationTask.AuthenticationResult;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.UserService;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.LogUtils;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.common.base.Optional;
+import org.slf4j.Logger;
+import roboguice.util.SafeAsyncTask;
+
+import java.io.IOException;
+
+public class AuthenticationTask extends SafeAsyncTask<AuthenticationResult> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final Activity activity;
+
+    private final GoogleAuthenticationCallback callback;
+    private final AccountHelper accountHelper;
+    private final AccountManager accountManager;
+    private final UserService userService;
+
+    public AuthenticationTask(Activity activity, GoogleAuthenticationCallback callback, AccountHelper accountHelper, AccountManager accountManager, UserService userService) {
+        this.activity = activity;
+        this.callback = callback;
+        this.accountHelper = accountHelper;
+        this.accountManager = accountManager;
+        this.userService = userService;
+    }
+
+    @Override
+    public AuthenticationResult call() throws Exception {
+        Optional<Account> existingAccount = accountHelper.getFirstAccountByDomain();
+        Account account;
+        if (existingAccount.isPresent()) {
+            account = existingAccount.get();
+        } else {
+            account = getAccountInstanceByAddingNewAccount();
+            if (!accountHelper.isAccountFromValidDomain(account.name)) {
+                return AuthenticationResult.failure();
+            }
+        }
+
+        AccountManagerFuture<Bundle> authTokenResult = accountManager.getAuthToken(account, AccountHelper.GOOGLE_TOKEN_TYPE, null, activity, null, null);
+
+        Bundle result = authTokenResult.getResult();
+
+        userService.saveAccountName(result.getString(AccountManager.KEY_ACCOUNT_NAME));
+
+        // obtaining permissions for GDrive
+        if (accountHelper.isGooglePlayServicesApkInstalled(activity)) {
+            accountHelper.getGDriveToken(activity, account.name);
+            LOG.info("Permission for GDrive has been sucessfully granted.");
+        } else {
+            LOG.warn("Google Play Services apk is missing.");
+        }
+
+        return AuthenticationResult.success(result);
+    }
+
+    private Account getAccountInstanceByAddingNewAccount() throws OperationCanceledException, IOException, AuthenticatorException {
+        AccountManagerFuture<Bundle> future = accountManager.addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, null, null, null, activity, null, null);
+        Bundle result = future.getResult();
+        return new Account(result.getString(AccountManager.KEY_ACCOUNT_NAME), AccountHelper.GOOGLE_ACCOUNT_TYPE);
+    }
+
+    @Override
+    protected void onSuccess(AuthenticationResult result) throws Exception {
+        if (result.authenticationSucceeded()) {
+            callback.onAuthenticationSuccess(result.bundle);
+        } else {
+            callback.onAuthenticationFailure(new AuthenticationException("Invalid google email was added, not from a valid domain", ApiErrorReason.NO_GOOGLE_CREDENTIALS));
+        }
+    }
+
+    @Override
+    protected void onException(Exception e) throws RuntimeException {
+        if (e instanceof UserRecoverableAuthException) {
+            activity.startActivityForResult(
+                    ((UserRecoverableAuthException) e).getIntent(),
+                    GoogleAuthenticationService.USER_AUTH_ACTION_CODE);
+            return;
+        }
+        callback.onAuthenticationFailure(e);
+    }
+
+    @Override
+    protected void onThrowable(Throwable t) throws RuntimeException {
+        callback.onAuthenticationFailure(new AmplifyException(t));
+    }
+
+    protected static class AuthenticationResult {
+        private final Bundle bundle;
+
+
+        private AuthenticationResult(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        private AuthenticationResult() {
+            this(null);
+        }
+
+        public boolean authenticationSucceeded() {
+            return bundle != null;
+        }
+
+        protected static AuthenticationResult success(Bundle bundle) {
+            return new AuthenticationResult(bundle);
+        }
+
+        protected static AuthenticationResult failure() {
+            return new AuthenticationResult();
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

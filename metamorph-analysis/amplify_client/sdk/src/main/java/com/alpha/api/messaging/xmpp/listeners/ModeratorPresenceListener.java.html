@@ -1,0 +1,177 @@
+<html><head><title>ModeratorPresenceListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ModeratorPresenceListener.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/ModeratorPresenceListener.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+import android.os.CountDownTimer;
+import com.alpha.api.messaging.xmpp.MultiUserChatAdapter;
+import com.alpha.api.messaging.xmpp.SessionHolder;
+import com.alpha.api.messaging.xmpp.filters.BasePacketFilter;
+import com.alpha.api.messaging.xmpp.filters.Packets;
+import com.alpha.api.messaging.xmpp.filters.PresenceTypeFilter;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.alpha.api.utilities.UIUtils;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.filter.AndFilter;
+import org.jivesoftware.smack.filter.OrFilter;
+import org.jivesoftware.smack.filter.PacketExtensionFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.packet.MUCUser;
+import org.slf4j.Logger;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.jivesoftware.smack.packet.Presence.Type;
+
+public class ModeratorPresenceListener extends BasePacketListener<Presence> {
+
+    private static final long TWO_MINUTES = 2 * 60 * 1000;
+    public static final long COUNT_DOWN_INTERVAL = 1000l;
+    private static Logger LOG = LogUtils.getLogger();
+    private final SessionHolder xmppSession;
+    private final EventBus eventBus;
+    AtomicBoolean timerRunning;
+    TeacherReconnectTimer teacherReconnectTimer;
+
+    public ModeratorPresenceListener(String roomName, SessionHolder xmppSession, EventBus eventBus) {
+        super(roomName);
+        this.xmppSession = xmppSession;
+        this.eventBus = eventBus;
+        timerRunning = new AtomicBoolean();
+    }
+
+    @Override
+    protected void process(Presence packet) {
+        if (Type.available.equals(packet.getType())) {
+            if (timerRunning.get()) {
+                teacherReconnectTimer.cancel();
+                timerRunning.set(false);
+            }
+        } else if (Type.unavailable.equals(packet.getType())) {
+            startTimerToPostStudentSessionEndedEvent();
+        }
+    }
+
+    private void startTimerToPostStudentSessionEndedEvent() {
+        timerRunning.set(true);
+        LOG.info("Starting timer for Teacher Disconnect");
+        UIUtils.postToUiThread(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                teacherReconnectTimer = new TeacherReconnectTimer(TWO_MINUTES, COUNT_DOWN_INTERVAL);
+                teacherReconnectTimer.start();
+                return null;
+            }
+        });
+    }
+
+    @Override
+    protected PacketFilter filter() {
+        LOG.info("Registering packetfilters");
+        return new AndFilter(
+                new PacketExtensionFilter(MultiUserChatAdapter.MUC_USER_EXTENSION_NAMESPACE),
+                new OrFilter(
+                        new AndFilter(new PresenceTypeFilter(Type.unavailable), new OwnerPresencePacketFilter()),
+                        new AndFilter(new PresenceTypeFilter(Type.available), new ModeratorPresencePacketFilter())
+                ));
+    }
+
+    private class OwnerPresencePacketFilter extends BasePacketFilter<Presence> {
+        private static final String XMPP_AFFILIATION = "owner";
+
+        @Override
+        protected boolean acceptPacket(Presence packet) {
+            MUCUser mucExtension = Packets.getMucExtension(packet).get();
+            return XMPP_AFFILIATION.equals(mucExtension.getItem().getAffiliation());
+        }
+    }
+
+    private class ModeratorPresencePacketFilter extends BasePacketFilter<Presence> {
+        private static final String XMPP_MODERATOR = "moderator";
+
+        @Override
+        protected boolean acceptPacket(Presence packet) {
+            MUCUser mucExtension = Packets.getMucExtension(packet).get();
+            return XMPP_MODERATOR.equals(mucExtension.getItem().getRole());
+        }
+    }
+
+    class TeacherReconnectTimer extends CountDownTimer {
+
+        public TeacherReconnectTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onTick(long millisUntilFinished) {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public void onFinish() {
+            LOG.info("Timed out and end student session on teacher disconnecting");
+            xmppSession.endSession();
+            eventBus.post(new StudentSessionEndedEvent(StudentSessionEndedEvent.Reason.TEACHER_DISCONNECTED));
+            timerRunning.set(false);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

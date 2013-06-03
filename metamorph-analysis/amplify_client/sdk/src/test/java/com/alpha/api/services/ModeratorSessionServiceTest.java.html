@@ -1,0 +1,335 @@
+<html><head><title>ModeratorSessionServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ModeratorSessionServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ModeratorSessionServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">19</span>
+    <progress max="100" value="19"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.DeviceLockingRequestFailureEvent;
+import com.alpha.api.services.events.EndSessionFailureEvent;
+import com.alpha.api.services.events.ForceFieldEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+
+import java.util.Set;
+
+import static com.alpha.api.services.ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE;
+import static com.alpha.api.services.events.SessionStartEvent.failure;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+@SuppressWarnings("PMD.TooManyFields")
+public class ModeratorSessionServiceTest {
+
+    private ModeratorSessionService serviceModerator;
+
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private StartSessionTask startSessionTask;
+    @Mock
+    private EndSessionTask endSessionTask;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private SendLockDevicesTask sendLockDevicesMessageTask;
+    @Mock
+    private SendUnlockDevicesTask sendUnlockDevicesMessageTask;
+    @Mock
+    private ForceFieldEngagedTask forceFieldEngagedTask;
+    @Mock
+    private ForceFieldDisengagedTask forceFieldDisengagedTask;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Section section;
+    @Mock
+    private ClassSession session;
+    @Mock
+    private UserService userService;
+    private static final Boolean CONNECTED = true;
+    private static final Boolean NOT_CONNECTED = false;
+
+    @Before
+    public void setUp() throws Exception {
+        Robolectric.getBackgroundScheduler().pause();
+        initMocks(this);
+        serviceModerator = new ModeratorSessionService(sessionTaskFactory, networkConnectivity, eventBus, userService);
+        given(teacher.getSession()).willReturn(session);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotStartSessionIfNetworkIsNotConnected() {
+        internetIs(NOT_CONNECTED);
+        when(session.isOngoing()).thenReturn(false);
+
+        serviceModerator.startSession(teacher, progressBar);
+
+        verifyZeroInteractions(sessionTaskFactory);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotStartSessionIfNetworkIsAvailableButNotConnected() {
+        internetIs(NOT_CONNECTED);
+        when(session.isOngoing()).thenReturn(false);
+
+        serviceModerator.startSession(teacher, progressBar);
+
+        verifyZeroInteractions(sessionTaskFactory);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotStartSessionIfSessionIsCurrentlyOngoing() throws Exception {
+        internetIs(CONNECTED);
+        when(session.isOngoing()).thenReturn(true);
+
+        serviceModerator.startSession(teacher, progressBar);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackWhenNetworkIsNotConnected() {
+        internetIs(NOT_CONNECTED);
+        when(session.isOngoing()).thenReturn(false);
+
+        serviceModerator.startSession(teacher, progressBar);
+
+        verify(eventBus).post(failure(NO_NETWORK_CONNECTION_AVAILABLE));
+    }
+
+    @Test
+    public void shouldStartSessionWhenNetworkIsConnected() {
+        internetIs(CONNECTED);
+        when(sessionTaskFactory.createStartSessionTask(teacher, progressBar)).thenReturn(startSessionTask);
+        when(session.isOngoing()).thenReturn(false);
+        when(teacher.getXmppUsername()).thenReturn("amp_123");
+        when(teacher.getId()).thenReturn(123L);
+
+        serviceModerator.startSession(teacher, progressBar);
+
+        verify(startSessionTask).execute();
+    }
+
+    @Test
+    public void shouldDisconnectFromMessagingServiceWhenEndingSession() {
+        internetIs(CONNECTED);
+        when(session.isOngoing()).thenReturn(true);
+        when(sessionTaskFactory.createEndSessionTask(teacher, progressBar)).thenReturn(endSessionTask);
+
+        serviceModerator.endSession(teacher, progressBar);
+
+        verify(endSessionTask).execute();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfSessionForSectionIsNotOnGoing() throws Exception {
+        when(session.isOngoing()).thenReturn(false);
+        when(sessionTaskFactory.createEndSessionTask(teacher, progressBar)).thenReturn(endSessionTask);
+
+        serviceModerator.endSession(teacher, progressBar);
+    }
+
+    @Test
+    public void shouldNotEndSessionIfNoInternetConnectionAvailable() throws Exception {
+        internetIs(NOT_CONNECTED);
+        when(session.isOngoing()).thenReturn(true);
+
+        serviceModerator.endSession(teacher, progressBar);
+
+        verify(eventBus).post(any(EndSessionFailureEvent.class));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    @Test
+    public void shouldInvokeLockTaskOnSendLockMessage() throws Exception {
+        internetIs(CONNECTED);
+
+        when(sessionTaskFactory.createLockDeviceTask(eq(teacher))).thenReturn(sendLockDevicesMessageTask);
+        serviceModerator.sendLockMessage(teacher);
+
+        verify(sendLockDevicesMessageTask).execute();
+    }
+    
+    @Test
+    public void shouldNotInvokeLockMessageTaskWhenNotConnectedToTheNetwork() {
+        internetIs(NOT_CONNECTED);
+        serviceModerator.sendLockMessage(null);
+
+        verify(eventBus).post(any(DeviceLockingRequestFailureEvent.class));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    @Test
+    public void shouldNotStartUnlockMessageTaskIfNetworkIsNotConnected() {
+        internetIs(NOT_CONNECTED);
+        serviceModerator.sendUnlockMessage(teacher);
+        verify(eventBus).post(any(DeviceLockingRequestFailureEvent.class));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    @Test
+    public void shouldExecuteUnlockMessageTask() {
+        internetIs(CONNECTED);
+        when(sessionTaskFactory.createUnlockDevicesTask(teacher)).thenReturn(sendUnlockDevicesMessageTask);
+        serviceModerator.sendUnlockMessage(teacher);
+        verify(sendUnlockDevicesMessageTask).execute();
+    }
+
+    @Test
+    public void shouldExecuteEngageForceFieldTask() {
+        internetIs(CONNECTED);
+        Set<SundaeAppInfo> whiteListApps = Sets.<SundaeAppInfo>newHashSet();
+        when(sessionTaskFactory.createForceFieldEngagedTask(whiteListApps, teacher, section, progressBar)).thenReturn(forceFieldEngagedTask);
+        serviceModerator.engageForceField(whiteListApps, teacher, section, progressBar);
+
+        verify(forceFieldEngagedTask).execute();
+    }
+
+    @Test
+    public void shouldNotExecuteEngageForceFieldTaskWhenThereIsNoInternetConnection() {
+        internetIs(NOT_CONNECTED);
+        serviceModerator.engageForceField(null, teacher, section, progressBar);
+
+        ArgumentCaptor<ForceFieldEvent.EngageFailed> argumentCaptor = ArgumentCaptor.forClass(ForceFieldEvent.EngageFailed.class);
+
+        verify(eventBus).post(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue(), is(ForceFieldEvent.EngageFailed.class));
+        assertThat(argumentCaptor.getValue().reason, is(NO_NETWORK_CONNECTION_AVAILABLE));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    @Test
+    public void shouldExecuteDisengageForceFieldTask() {
+        internetIs(CONNECTED);
+        when(sessionTaskFactory.createForceFieldDisengagedTask(teacher, progressBar)).thenReturn(forceFieldDisengagedTask);
+
+        serviceModerator.disengageForceField(teacher, progressBar);
+
+        verify(forceFieldDisengagedTask).execute();
+    }
+
+    @Test
+    public void shouldNotExecuteDisengageForceFieldTaskWhenThereIsNoInternetConnection() {
+        internetIs(NOT_CONNECTED);
+        serviceModerator.disengageForceField(teacher, progressBar);
+
+        ArgumentCaptor<ForceFieldEvent.DisengageFailed> argumentCaptor = ArgumentCaptor.forClass(ForceFieldEvent.DisengageFailed.class);
+
+        verify(eventBus).post(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue(), is(ForceFieldEvent.DisengageFailed.class));
+        assertThat(argumentCaptor.getValue().reason, is(NO_NETWORK_CONNECTION_AVAILABLE));
+        verifyZeroInteractions(sessionTaskFactory);
+    }
+
+    @Test
+    public void shouldResetTeacherXMPPNameIfTheNameHasNotBeenUpdated() {
+        internetIs(CONNECTED);
+        when(userService.getUser()).thenReturn(teacher);
+        when(teacher.getXmppUsername()).thenReturn("amp_coolio");
+        when(teacher.getId()).thenReturn(1L);
+        serviceModerator.startSession(teacher, progressBar);
+        verify(teacher).resetXmppUsername();
+        verify(userService).registerUser(eq(teacher), Matchers.any(ControlServerRegistrationCallback.class));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void internetIs(boolean connected) {
+        when(networkConnectivity.isConnected()).thenReturn(connected);
+        when(networkConnectivity.isNotConnected()).thenReturn(!connected);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

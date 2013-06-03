@@ -1,0 +1,108 @@
+<html><head><title>AlphaConfigurationModule.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AlphaConfigurationModule.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/application/amplify_client/AlphaConfigurationModule.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.application;
+
+import com.alpha.activities.TeacherConsoleAction;
+import com.alpha.activities.adapters.CursorAdapterFactory;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.activities.factories.PresenterFactory;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.activities.listeners.KeyboardStateMonitor;
+import com.alpha.activities.listeners.StudentNotebookStateMonitor;
+import com.alpha.activities.renderers.CollapsibleViewStateHolder;
+import com.alpha.api.AlphaSDK;
+import com.alpha.api.properties.FeatureManager;
+import com.alpha.api.properties.FeatureManager.Feature;
+import com.alpha.featureToggle.MyLibraryDisabledFeature;
+import com.alpha.featureToggle.MyLibraryEnableFeature;
+import com.alpha.featureToggle.MyLibraryFeature;
+import com.alpha.receivers.tasks.ResetStateTaskFactory;
+import com.alpha.widgets.googledrive.FileLoader;
+import com.alpha.widgets.googledrive.GoogleFileLoader;
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import roboguice.inject.ContextSingleton;
+
+public class AlphaConfigurationModule extends AbstractModule {
+    private final AlphaSDK alphaSDK;
+
+    public AlphaConfigurationModule(AlphaSDK alphaSDK) {
+        this.alphaSDK = alphaSDK;
+    }
+
+    @Override
+    protected void configure() {
+        install(new FactoryModuleBuilder().build(RendererFactory.class));
+        install(new FactoryModuleBuilder().build(PresenterFactory.class));
+        install(new FactoryModuleBuilder().build(CursorAdapterFactory.class));
+        install(new FactoryModuleBuilder().build(CursorLoaderFactory.class));
+        install(new FactoryModuleBuilder().build(ResetStateTaskFactory.class));
+        install(new FactoryModuleBuilder().build(BackgroundTaskFactory.class));
+        bind(StudentNotebookStateMonitor.class).asEagerSingleton();
+        bind(KeyboardStateMonitor.class).asEagerSingleton();
+        bind(AlphaSDK.class).toInstance(alphaSDK);
+        bind(TeacherConsoleAction.class).in(Singleton.class);
+        bind(FileLoader.class).to(GoogleFileLoader.class);
+        bind(CollapsibleViewStateHolder.class).in(ContextSingleton.class);
+
+        bind(Feature.MY_LIBRARY, MyLibraryFeature.class,
+                MyLibraryEnableFeature.class,
+                MyLibraryDisabledFeature.class);
+    }
+
+    private <T extends Class> void bind(Feature feature, T interfaceClass, T toggleActiveClass, T toggleInactiveClass) {
+        FeatureManager featureManager = alphaSDK.getFeatureManager();
+        boolean isActive = featureManager.isActive(feature);
+        bind(interfaceClass).to(isActive ? toggleActiveClass : toggleInactiveClass);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

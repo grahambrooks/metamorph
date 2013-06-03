@@ -1,0 +1,289 @@
+<html><head><title>AppLauncherDialogTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AppLauncherDialogTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/dialogs/amplify_client/AppLauncherDialogTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.dialogs;
+
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.adapters.AppDrawerAdapter;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Set;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class AppLauncherDialogTest extends AppDialogBasedTest {
+
+    public static final String ALL_APPLICATIONS = "All Apps";
+    private static final SundaeAppInfo SUNDAE_APP_ONE_INFO = new SundaeAppInfo(null, APP_ONE_PACKAGE_NAME, false, APP_LABEL_1);
+    private static final SundaeAppInfo SUNDAE_APP_TWO_INFO = new SundaeAppInfo(null, APP_TWO_PACKAGE_NAME, false, APP_LABEL_2);
+
+    @Inject
+    private AppLauncherDialog dialog;
+    @Inject
+    private UserService userService;
+    @Mock
+    private AppDrawerAdapter mockAdapter;
+    @Mock
+    private User user;
+    @Mock
+    private EventBus eventBus;
+
+
+    @Before
+    @Override
+    public void setUp() {
+        initMocks(this);
+        super.setUp();
+        ActivityTestInjector<AppLauncherDialog> activityTestInjector = new ActivityTestInjector<AppLauncherDialog>(this, AppLauncherDialog.class);
+        activityTestInjector.bindInstance(AppDrawerAdapter.class, mockAdapter).bindInstance(EventBus.class, eventBus);
+        activityTestInjector.configureTestSubject();
+
+    }
+
+    @Test
+    public void shouldClearTheAdapterWhenRequestedMultipleTimes() {
+        setForcefieldDisengaged();
+        dialog.show();
+        dialog.dismiss();
+        dialog.show();
+        verify(mockAdapter, times(2)).clear();
+    }
+
+    @Test
+    public void shouldSetAllAvailableAppsInTheAdapterIfForcefieldIsDisengaged() {
+        setForcefieldDisengaged();
+        dialog.show();
+        verify(mockAdapter).addAll(Sets.newHashSet(SUNDAE_APP_ONE_INFO,
+                SUNDAE_APP_TWO_INFO));
+    }
+
+    @Test
+    public void shouldSetOnlyWhitelistedAppsIfForceFieldIsEngaged() {
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        dialog.show();
+
+        verify(mockAdapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO)));
+    }
+
+    @Test
+    public void shouldNotFilterListOfAppsIfUserIsTeacher() {
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        when(userService.isTeacher()).thenReturn(true);
+        dialog.show();
+        verify(mockAdapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO,
+                SUNDAE_APP_TWO_INFO)));
+    }
+
+    @Test
+    public void shouldUpdateArrayAdapterWhenWhitelistChanges() {
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        dialog.show();
+        reset(mockAdapter);
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME, APP_TWO_PACKAGE_NAME);
+        dialog.whiteListUpdated(null);
+        verify(mockAdapter).clear();
+        verify(mockAdapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO, SUNDAE_APP_TWO_INFO)));
+    }
+
+    @Test
+    public void shouldRegisterOnFFChangedEventOnShow() {
+        setForcefieldDisengaged();
+        dialog.show();
+        verify(eventBus).register(dialog);
+    }
+
+    @Test
+    public void shouldUnregisterFromEventBusWhenDialogIsDismissed() {
+        setForcefieldDisengaged();
+        dialog.show();
+        reset(eventBus);
+        //ShadowDialog doesnt trigger onStop when dismiss is called, so trigger it manually
+        dialog.onStop();
+        verify(eventBus).unregister(dialog);
+    }
+
+    @Test
+    public void shouldClearAdapterToFreeDrawableMemoryWhenDialogIsDismissed() {
+        setForcefieldDisengaged();
+        dialog.show();
+        reset(mockAdapter);
+        //ShadowDialog doesnt trigger onStop when dismiss is called, so trigger it manually
+        dialog.onStop();
+        verify(mockAdapter).clear();
+    }
+
+    @Test
+    public void shouldDisplayNoAppsMessageIfWhitelistDoesNotAllowAnyApps() {
+        setForcefieldEnagagedWithAppList();
+        dialog.show();
+
+        assertThat(getView(R.id.apps_drawer_grid).getVisibility(), is(View.GONE));
+        assertThat(getView(R.id.no_allowed_apps_text_view).getVisibility(), is(View.VISIBLE));
+    }
+
+    private View getView(int id){
+        return shadowOf(dialog).findViewById(id);
+    }
+
+    @Test
+    public void shouldHideTheNoAppsMessageIfOneAppAllowed() {
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+
+        dialog.show();
+        assertThat(getView(R.id.apps_drawer_grid).getVisibility(), is(View.VISIBLE));
+        assertThat(getView(R.id.no_allowed_apps_text_view).getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldShowAllAppsTitleIfForceFieldIsDisengagedForAStudent() {
+        when(userService.isStudent()).thenReturn(true);
+        setForcefieldDisengaged();
+
+        dialog.show();
+
+        assertThat(((TextView)getView(R.id.app_drawer_title)).getText().toString(), is(ALL_APPLICATIONS));
+    }
+
+    @Test
+    public void shouldShowForceFieldOnTitleIfEngagedInForceFieldForAStudent() {
+        when(userService.isStudent()).thenReturn(true);
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+
+        dialog.show();
+        assertThat(((TextView)getView(R.id.app_drawer_title)).getText().toString(), is("Forcefield turned on"));
+    }
+
+    @Test
+    public void shouldShowAllAppsTitleAllTimesForTeacher() {
+        when(userService.isStudent()).thenReturn(false);
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+
+        dialog.show();
+        assertThat(((TextView)getView(R.id.app_drawer_title)).getText().toString(), is(ALL_APPLICATIONS));
+    }
+
+    @Test
+    public void shouldUpdateTheAdapterIfFFWasTurnedOn() {
+        setForcefieldDisengaged();
+        dialog.show();
+        reset(mockAdapter);
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        dialog.forceFieldApplied(null);
+        verify(mockAdapter).clear();
+        verify(mockAdapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO)));
+    }
+
+    @Test
+    public void shouldUpdateTheAdapterIfFFWasTurnedOff() {
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        dialog.show();
+        reset(mockAdapter);
+        setForcefieldDisengaged();
+        dialog.forceFieldDisengaged(null);
+        verify(mockAdapter).clear();
+        verify(mockAdapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO, SUNDAE_APP_TWO_INFO)));
+    }
+
+    @Test
+    public void shouldResetTheAppDrawerWhenSessionEnds(){
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        when(user.isForceFieldEngaged()).thenReturn(false);
+        dialog.sessionEnded(null);
+        final Set<SundaeAppInfo> allApps = Sets.newHashSet(SUNDAE_APP_ONE_INFO, SUNDAE_APP_TWO_INFO);
+        verify(mockAdapter).clear();
+        verify(mockAdapter).addAll(allApps);
+    }
+
+    @Test
+    public void shouldResetTheAppDrawerTitleWhenSessionEnds(){
+        setForcefieldEnagagedWithAppList(APP_ONE_PACKAGE_NAME);
+        when(user.isForceFieldEngaged()).thenReturn(false);
+        dialog.sessionEnded(null);
+        assertThat(((TextView)getView(R.id.app_drawer_title)).getText().toString(), is(ALL_APPLICATIONS));
+    }
+
+    private void setForcefieldDisengaged() {
+        when(userService.getUser()).thenReturn(user);
+        when(user.isForceFieldEngaged()).thenReturn(false);
+        when(mockAdapter.getCount()).thenReturn(allApps.size());
+    }
+
+    private void setForcefieldEnagagedWithAppList(String... appPackages) {
+        when(userService.getUser()).thenReturn(user);
+        when(user.isForceFieldEngaged()).thenReturn(true);
+        when(user.getAllowedApps()).thenReturn(Sets.<String>newHashSet(appPackages));
+        when(mockAdapter.getCount()).thenReturn(appPackages.length);
+    }
+
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

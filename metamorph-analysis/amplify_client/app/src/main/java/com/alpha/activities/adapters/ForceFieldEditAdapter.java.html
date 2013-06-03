@@ -1,0 +1,209 @@
+<html><head><title>ForceFieldEditAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldEditAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/ForceFieldEditAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.R.color;
+import android.app.Activity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.activities.ForceFieldAdapterChangeListener;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.amplify.R;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
+import javax.inject.Inject;
+
+public class ForceFieldEditAdapter extends AppInfoResolvingAdapter {
+    private ForceFieldAdapterChangeListener forceFieldAdapterChangeListener;
+    private int whitelistAppsCount;
+
+    private static final String STUDENT_INSTALLED_APPS_PACKAGE = "com.amplify.appcontrol.student_installed_apps";
+
+    @Inject
+    public ForceFieldEditAdapter(Activity context) {
+        super(context, R.layout.animateable_app_drawer_icon, R.id.animateable_app_icon_text_view);
+        setNotifyOnChange(true);
+    }
+
+    public void setAdapterChangeListener(ForceFieldAdapterChangeListener forceFieldAdapterChangeListener) {
+        this.forceFieldAdapterChangeListener = forceFieldAdapterChangeListener;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v = super.getView(position, convertView, parent);
+        SundaeAppInfo sundaeAppInfo = getItem(position);
+
+        // Reset some default behavior
+        v.setOnClickListener(null);
+        v.setEnabled(isEnabled(position));
+
+        // TODO (Dec 10, 2012): Hard-coded. How to improve this?
+        if (isSpecialStudentInstalledApps(sundaeAppInfo.getAppPackage())) {
+            renderStudentInstalledApps(v, sundaeAppInfo);
+        } else {
+            renderNormalApp(v, sundaeAppInfo);
+        }
+
+        return v;
+    }
+
+    private void renderStudentInstalledApps(View v, SundaeAppInfo sundaeAppInfo) {
+        v.setBackgroundResource(R.drawable.btn_allotherapps_active);
+
+        TextView textViewTopAligned = (TextView) v.findViewById(R.id.animateable_app_icon_text_view_top_aligned);
+        textViewTopAligned.setVisibility(View.VISIBLE);
+        textViewTopAligned.setText(sundaeAppInfo.getAppLabel());
+
+        TextView textView = (TextView) v.findViewById(R.id.animateable_app_icon_text_view);
+        textView.setVisibility(View.GONE);
+        textView.setText(null);
+
+        ImageView overlay = (ImageView) v.findViewById(R.id.animateable_app_overlay);
+        overlay.setVisibility(View.GONE);
+
+        ImageView icon = (ImageView) v.findViewById(R.id.animateable_app_icon);
+        icon.setVisibility(View.GONE);
+        icon.setImageDrawable(null);
+    }
+
+    private void renderNormalApp(View v, SundaeAppInfo sundaeAppInfo) {
+        v.setBackgroundResource(color.transparent);
+
+        TextView textViewTopAligned = (TextView) v.findViewById(R.id.animateable_app_icon_text_view_top_aligned);
+        textViewTopAligned.setVisibility(View.GONE);
+        textViewTopAligned.setText(null);
+
+        TextView textView = (TextView) v.findViewById(R.id.animateable_app_icon_text_view);
+        textView.setVisibility(View.VISIBLE);
+        loadLabel(sundaeAppInfo, textView);
+
+        ImageView overlay = (ImageView) v.findViewById(R.id.animateable_app_overlay);
+        overlay.setVisibility(View.VISIBLE);
+
+        ImageView icon = (ImageView) v.findViewById(R.id.animateable_app_icon);
+        icon.setVisibility(View.VISIBLE);
+        icon.setImageDrawable(sundaeAppInfo.getAppIcon());
+
+        if (sundaeAppInfo.isLockedApp()) {
+            overlay.setAlpha(1f);
+            icon.setScaleX(0.6f);
+            icon.setScaleY(0.6f);
+        } else {
+            overlay.setAlpha(0f);
+            icon.setScaleX(1f);
+            icon.setScaleY(1f);
+        }
+
+        setupClickEvent(sundaeAppInfo, v);
+    }
+
+    protected void setupClickEvent(final SundaeAppInfo item, View v) {
+        v.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                item.setLockedApp(!item.isLockedApp());
+                boolean becomingLocked = item.isLockedApp();
+                ImageView overlay = (ImageView) v.findViewById(R.id.animateable_app_overlay);
+                ImageView icon = (ImageView) v.findViewById(R.id.animateable_app_icon);
+                if (becomingLocked) {
+                    overlay.animate().alpha(1f).start();
+                    icon.animate().scaleX(0.6f).scaleY(0.6f).start();
+                } else {
+                    overlay.animate().alpha(0f).start();
+                    icon.animate().scaleX(1f).scaleY(1f).start();
+                }
+                updateWhitelistAppsCount(item.isLockedApp());
+            }
+        });
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        // Special case for our "Student Installed Apps" fake app
+        SundaeAppInfo sundaeAppInfo = getItem(position);
+        return isSpecialStudentInstalledApps(sundaeAppInfo.getAppPackage()) ? false : super.isEnabled(position);
+    }
+
+    public int getWhitelistAppsCount() {
+        return whitelistAppsCount;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        whitelistAppsCount = Collections2.filter(getAllItems(), new Predicate<SundaeAppInfo>() {
+            @Override
+            public boolean apply(SundaeAppInfo input) {
+                return !input.isLockedApp();
+            }
+        }).size();
+    }
+
+    private void updateWhitelistAppsCount(boolean lockedApp) {
+        if (lockedApp) {
+            whitelistAppsCount--;
+        } else {
+            whitelistAppsCount++;
+        }
+        if (forceFieldAdapterChangeListener != null) {
+            forceFieldAdapterChangeListener.notifyAdapterChange();
+        }
+    }
+
+    private boolean isSpecialStudentInstalledApps(String packageName) {
+        return STUDENT_INSTALLED_APPS_PACKAGE.equals(packageName);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<html><head><title>StudentTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/StudentTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Event.Type;
+import com.alpha.lock.GlobalInformationLock;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+@RunWith(AmplifySDKTestRunner.class)
+public class StudentTest {
+
+    public static final String LARRY = "Larry";
+    public static final String SCHOOL = "School";
+    public static final String SECTION_NAME = "Section";
+    public static final long SECTION_ID = 2L;
+    public static final Section SECTION = new Section(new Course(1L), SECTION_ID, SECTION_NAME, "amplifydev@amplifydev.net");
+    public static final long USER_ID = 1L;
+    private Student student;
+    @Mock
+    private ParticipantPresenceModel presenceModel;
+    @Mock
+    private Section section;
+    private GlobalInformationLock globalInformationLock;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        globalInformationLock = spy(new GlobalInformationLock());
+        student = new Student(USER_ID, LARRY, SCHOOL, "loginID", "password", Lists.<Section>newArrayList(SECTION), globalInformationLock);
+        student.setCurrentSection(SECTION_ID);
+        student.setPresenceModel(presenceModel);
+        reset(globalInformationLock);
+    }
+
+    @Test
+    public void shouldCreateJoinSessionEventForStudent() throws Exception {
+        when(section.getId()).thenReturn(SECTION_ID);
+        Event event = student.joinSessionEvent(section);
+        assertEvent(event, Type.JOIN_SESSION);
+    }
+
+    @Test
+    public void shouldCreateLeaveSessionEventForStudent() {
+        Event event = student.leaveSessionEvent();
+        assertEvent(event, Type.LEAVE_SESSION);
+    }
+
+    @Test
+    public void shouldBuildRaiseHandEventIfStudentHandIsRaised() {
+        when(presenceModel.getHandRaisedStatus()).thenReturn(HandRaiseStatus.HAND_RAISE);
+        Event event = student.buildHandEvent();
+        assertEvent(event, Type.RAISE_HAND);
+    }
+
+    @Test
+    public void shouldBuildLowerHandEventIfStudentHandIsDown() {
+        when(presenceModel.isHandRaised()).thenReturn(false);
+        Event event = student.buildHandEvent();
+        assertEvent(event, Type.LOWER_HAND);
+    }
+
+    @Test
+    public void shouldRequestReadLockWhenGettingPresenceModel(){
+        student.getPresenceModel();
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test
+    public void shouldRequestReadLockWhenSettingPresenceModel(){
+        student.setPresenceModel(mock(ParticipantPresenceModel.class));
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test
+    public void shouldCopyOverPresenceModelFromOldUser(){
+        Student oldStudent = mock(Student.class);
+        ParticipantPresenceModel oldPresenceModel = new ParticipantPresenceModel(HandRaiseStatus.HAND_RAISE, StudentLocation.EYES_ON_TEACHER, "display name", "packageName");
+        when(oldStudent.getPresenceModel()).thenReturn(oldPresenceModel);
+
+        student.copySessionInformation(oldStudent);
+        ParticipantPresenceModel model = student.getPresenceModel();
+        assertThat(model, equalTo(oldPresenceModel));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void assertEvent(Event event, Type type) {
+        assertThat(event.getType(), is(type));
+        assertThat(event.getUserId(), is(USER_ID));
+        assertThat(event.getSectionId(), is(SECTION_ID));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}
+</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

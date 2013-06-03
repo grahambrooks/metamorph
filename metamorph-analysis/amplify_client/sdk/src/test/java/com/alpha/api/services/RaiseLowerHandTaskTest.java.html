@@ -1,0 +1,144 @@
+<html><head><title>RaiseLowerHandTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RaiseLowerHandTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/RaiseLowerHandTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.base.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class RaiseLowerHandTaskTest {
+    @Mock
+    private SendRaiseLowerHandCallbacks callbacks;
+    @Mock
+    private Student student;
+    private RaiseLowerHandTask task;
+    @Mock
+    private StudentSession studentSession;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Event handEvent;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private ParticipantPresenceModel presenceModel;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        Optional<ProgressBar> progressBar = Optional.absent();
+        task = new RaiseLowerHandTask(studentSession, webServices, analyticsAgent, student, callbacks, progressBar);
+        when(student.getPresenceModel()).thenReturn(presenceModel);
+    }
+
+    @Test
+    public void shouldUpdateStudentPresenceInformationIfHandIsBeingRaised() throws Exception {
+        when(presenceModel.isHandRaised()).thenReturn(false);
+        task.call();
+        verify(studentSession).updateStudentPresenceStatus(presenceModel);
+        verify(presenceModel).setHandRaisedStatus(HandRaiseStatus.HAND_RAISE);
+    }
+
+    @Test
+    public void shouldUpdateStudentPresenceInformationIfHandIsBeingLowered() throws Exception {
+        when(presenceModel.isHandRaised()).thenReturn(true);
+        task.call();
+        verify(studentSession).updateStudentPresenceStatus(presenceModel);
+        verify(presenceModel).setHandRaisedStatus(HandRaiseStatus.HAND_LOWER);
+    }
+
+    @Test
+    public void shouldPersistHandRaisingEvent() throws Exception {
+        when(student.buildHandEvent()).thenReturn(handEvent);
+        task.call();
+        verify(webServices).send(handEvent);
+    }
+
+    @Test
+    public void testCallFailureCallbackOnFailure() throws Exception {
+        task.onException(new Exception());
+        verify(callbacks).onFailure(ApiErrorReason.RAISE_LOWER_HAND_FAILED);
+        verify(callbacks, never()).onRaiseHandSuccess();
+    }
+
+    @Test
+    public void shouldCallOnLowerHandSuccessWhenJustLoweredHand() throws Exception {
+        when(student.hasHandRaised()).thenReturn(false);
+        task.onSuccess(true);
+        verify(callbacks).onLowerHandSuccess();
+        verify(callbacks, never()).onFailure(ApiErrorReason.RAISE_LOWER_HAND_FAILED);
+    }
+
+    @Test
+    public void shouldCallOnRaiseHandSuccessWhenTaskExecutedSuccessfully() throws Exception {
+        when(student.hasHandRaised()).thenReturn(true);
+        task.onSuccess(true);
+        verify(callbacks).onRaiseHandSuccess();
+        verify(callbacks, never()).onFailure(ApiErrorReason.RAISE_LOWER_HAND_FAILED);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

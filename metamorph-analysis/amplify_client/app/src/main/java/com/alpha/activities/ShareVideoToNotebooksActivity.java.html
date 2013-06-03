@@ -1,0 +1,192 @@
+<html><head><title>ShareVideoToNotebooksActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShareVideoToNotebooksActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ShareVideoToNotebooksActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import static com.google.common.base.Strings.nullToEmpty;
+
+public class ShareVideoToNotebooksActivity extends ShareToNotebooksActivity {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String KHAN_ACADEMY_SDCARD_LOCATION = Environment.getExternalStorageDirectory() + "/Movies/Khan";
+    public static final String FILE = "file";
+    public static final String MP4 = ".mp4";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (isUserStudent()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        Uri sendFileUri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+        Optional<MediaData> mediaData = pathToSharedMedia(sendFileUri).or(fromPlaylistIntent());
+
+        if (!mediaData.isPresent() || notAKhanAcademyVideo(mediaData)) {
+            cannotShareMedia();
+            return;
+        }
+
+        setContentView(R.layout.choose_share_notebook);
+
+        LOG.debug("File shared from gallery: {} ", mediaData.get().path);
+
+        shareButton.setOnClickListener(getKhanAcademyVideoLearningElementPostListener(mediaData.get().title, mediaData.get().title, mediaData.get().path));
+        setupNotebookSharePreview();
+    }
+
+    private Optional<MediaData> fromPlaylistIntent() {
+        MediaData mediaData = new MediaData();
+        mediaData.path = getIntent().getStringExtra(VideoLearningElement.EXTRA_MEDIA_PATH);
+        mediaData.title = getIntent().getStringExtra(VideoLearningElement.EXTRA_MEDIA_TITLE);
+        return nullToEmpty(mediaData.path).isEmpty() ? Optional.<MediaData>absent() : Optional.of(mediaData);
+    }
+
+    boolean notAKhanAcademyVideo(Optional<MediaData> mediaData) {
+        LOG.debug("File shared from gallery: {} ", mediaData.get().path);
+        return !mediaData.get().path.startsWith(KHAN_ACADEMY_SDCARD_LOCATION);
+    }
+
+    private void cannotShareMedia() {
+        toaster.makeToast(R.string.not_a_khan_academy_video);
+        finish();
+    }
+
+    private SharePostForNoteBookListener getKhanAcademyVideoLearningElementPostListener(final String videoTitle, final String streamTitle, final String pathToVideo) {
+        setShareableElementFactory(new ShareableElementFactory() {
+            @Override
+            public LearningElement create() {
+                LearningElement videoLearningElement = new VideoLearningElement(videoTitle, StringUtils.EMPTY, pathToVideo);
+
+                long longId = getIntent().getLongExtra(PlaylistActivity.EXTRA_ID, 0);
+                if (longId != 0) {
+                    videoLearningElement.setId(longId);
+                }
+
+                videoLearningElement.setPlayOrder(FIRST_PLAY_ORDER);
+                return videoLearningElement;
+            }
+        });
+        return new SharePostForNoteBookListener(streamTitle);
+    }
+
+    protected Optional<MediaData> pathToSharedMedia(Uri contentUri) {
+        MediaData mediaData = null;
+
+        if (contentUri == null) {
+            return Optional.<MediaData>absent();
+        }
+
+        if (StringUtils.equals(contentUri.getScheme(), FILE)) {
+            mediaData = new MediaData();
+            mediaData.path = contentUri.getPath();
+            mediaData.title = contentUri.getLastPathSegment().replace(MP4, StringUtils.EMPTY);
+
+        } else {
+            String[] mediaColumns = {MediaStore.Video.Media.DATA, MediaStore.Video.Media.TITLE, MediaStore.Video.Media._ID};
+            Cursor cursor = null;
+
+            try {
+                cursor = getContentResolver().query(contentUri, mediaColumns, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    mediaData = new MediaData();
+                    mediaData.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+                    mediaData.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
+                    mediaData.id = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } finally {
+                IOUtils.closeSafely(cursor);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        }
+        return Optional.fromNullable(mediaData);
+    }
+
+    static class MediaData {
+        public String path;
+        public String title;
+        public String id;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

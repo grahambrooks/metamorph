@@ -1,0 +1,140 @@
+<html><head><title>ClassSessionEndTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ClassSessionEndTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ClassSessionEndTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.*;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ClassSessionEndTest {
+
+    private ClassSession session;
+
+    @Before
+    public void setUp() throws Exception {
+        session = new ClassSession();
+
+    }
+
+    @Test
+    public void shouldResetSpotCheckSettingOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        SpotCheckSettings spotCheckSetting = new SpotCheckSettings();
+        spotCheckSetting.setRunning(true);
+        session.saveSpotCheckSettings(spotCheckSetting);
+        session.end();
+
+        assertThat(session.isSpotCheckRunning(), is(false));
+    }
+
+    @Test
+    public void shouldResetQuickPollSettingOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        QuickPollSettings quickPollSettings = new QuickPollSettings();
+        quickPollSettings.setRunning(true);
+        session.saveQuickPollSettings(quickPollSettings);
+        session.end();
+
+        assertThat(session.isQuickPollRunning(), is(false));
+    }
+
+    @Test
+    public void shouldResetQuickShortAnswerSettingsOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        QuickShortAnswerSettings quickShortAnswerSettings = new QuickShortAnswerSettings();
+        quickShortAnswerSettings.setRunning(true);
+        session.saveQuickShortAnswerSettings(quickShortAnswerSettings);
+        session.end();
+
+        assertThat(session.isQuickShortAnswerRunning(), is(false));
+    }
+
+    @Test
+    public void shouldResetCallOnSomeoneSettingsOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        CallOnSomeoneSettings callOnSomeoneSettings = new CallOnSomeoneSettings();
+        callOnSomeoneSettings.setRunning(true);
+        session.saveCallOnSomeoneSettings(callOnSomeoneSettings);
+        session.end();
+
+        assertThat(session.isCallOnSomeoneRunning(), is(false));
+    }
+
+    @Test
+    public void shouldResetCountOffSettingsOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        CountOffSettings countOffSettings = new CountOffSettings();
+        countOffSettings.setRunning(true);
+        session.saveCountOffSettings(countOffSettings);
+        session.end();
+
+        assertThat(session.isCountOffRunning(), is(false));
+    }
+
+    @Test
+    public void shouldResetTimerSettingsOnSessionEnd() {
+        session.tryStart(mock(Section.class));
+        CountdownTimerSettings countdownTimerSettings = new CountdownTimerSettings();
+        countdownTimerSettings.setRunning(true);
+        session.saveCountdownTimerSettings(countdownTimerSettings);
+        session.end();
+
+        assertThat(session.isCountdownTimerRunning(), is(false));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

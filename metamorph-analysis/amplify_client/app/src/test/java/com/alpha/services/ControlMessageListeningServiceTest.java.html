@@ -1,0 +1,577 @@
+<html><head><title>ControlMessageListeningServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlMessageListeningServiceTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/services/amplify_client/ControlMessageListeningServiceTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">47</span>
+    <progress max="100" value="47"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.services;
+
+import android.app.Notification;
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.activities.*;
+import com.alpha.api.domains.CountOffDetails;
+import com.alpha.api.domains.Post;
+import com.alpha.api.messaging.*;
+import com.alpha.api.messaging.notifications.events.SessionStartMessageEvent;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.*;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.AndroidApplicationUtils;
+import com.alpha.utils.NotificationUtils;
+import com.alpha.utils.TimeTickerProvider;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import junit.framework.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.CONNECTION_LOST;
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.TEACHER_INITIATED;
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static junit.framework.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.TooManyFields", "PMD.ExcessivePublicCount", "PMD.CouplingBetweenObjects"})
+public class ControlMessageListeningServiceTest {
+    private static final String JACLYN = "Jaclyn";
+
+    @Inject
+    private ControlMessageListeningService service;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private Context context;
+    @Inject
+    private Toaster toaster;
+    @Mock
+    private Section section;
+    @Mock
+    private CallOnSomeoneEvent calledOnOnSomeoneEvent;
+    @Mock
+    private Student student;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    @Mock
+    private QuickPollEvent quickPollEvent;
+    @Mock
+    private QuickShortAnswerEvent quickShortAnswerEvent;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock
+    private SpotCheckSettings spotCheckSettings;
+    @Mock
+    private SpotCheckEvent spotCheckEvent;
+    @Mock
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    @Mock
+    private AndroidApplicationUtils applicationUtils;
+    @Mock
+    private SessionStartMessageEvent sessionStartMessageEvent;
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+    @Inject
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+    @Mock
+    private User user;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private SectionTaskFactory sectionTaskFactory;
+    @Mock
+    private TimeTickerProvider timeTickerProvider;
+    @Mock
+    private PostsDataStore postsDataStore;
+    @Mock
+    private PostService postService;
+    @Mock
+    private Post post;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private CountOffDetails countOffDetails;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private NotificationUtils notificationUtils;
+    @Mock
+    private Notification notification;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        newInjector(this, ControlMessageListeningService.class)
+                .bindInstance(AndroidApplicationUtils.class, applicationUtils)
+                .bindInstance(ModeratorSessionService.class, moderatorSessionService)
+                .bindInstance(SectionTaskFactory.class, sectionTaskFactory)
+                .bindInstance(TimeTickerProvider.class, timeTickerProvider)
+                .bindInstance(PostsDataStore.class, postsDataStore)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(NotificationUtils.class, notificationUtils)
+                .configureTestSubject();
+        notification = mock(Notification.class);
+
+        CountdownTimerSettings countdownTimerSettings = new CountdownTimerSettings();
+        countdownTimerSettings.setRunning(false);
+
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(userService.session()).willReturn(classSession);
+        given(moderatorSessionServiceConnection.getService()).willReturn(moderatorSessionService);
+        given(userService.isStudent()).willReturn(true);
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.getQuickPollSettings()).willReturn(quickPollSettings);
+        given(classSession.getCountdownTimerSettings()).willReturn(countdownTimerSettings);
+        given(post.getCountOffDetails()).willReturn(countOffDetails);
+        given(notificationUtils.getNotification(eq(context), anyString())).willReturn(notification);
+    }
+
+    @Test
+    public void shouldStartTheLockDeviceActivityOnReceivingALockEvent() {
+        service.onLockDevice(new ActivateDeviceLockEvent());
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(EyesOnTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldBringTheAppsTaskToTheForegroundWhenLocking() {
+        service.onLockDevice(new ActivateDeviceLockEvent());
+        verify(applicationUtils).bringApplicationTaskToForeground(isA(Context.class), anyString());
+    }
+
+    @Test
+    public void shouldLockDeviceWhenLockMessageReceived() {
+        service.onLockDevice(new ActivateDeviceLockEvent());
+        verify(deviceLockingService).lock(eq(EyesOnTeacherActivity.class), eq(true));
+    }
+
+    @Test
+    public void shouldUnlockDeviceWhenUnlockEventReceived() {
+        service.onUnlockDevice(new DeactivateDeviceLockEvent());
+        verify(deviceLockingService).unlock(EyesOnTeacherActivity.class);
+    }
+
+    @Test
+    public void shouldUnlockDeviceIfSessionEnds() {
+        when(deviceLockingService.isLocked()).thenReturn(true);
+        service.onStudentSessionEnded(new StudentSessionEndedEvent(TEACHER_INITIATED));
+        verify(deviceLockingService).resetLocks();
+    }
+
+    @Test
+    public void shouldNotLockTheTabletIfTheUserIsATeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        service.onLockDevice(new ActivateDeviceLockEvent());
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is((Intent) null));
+        verifyZeroInteractions(deviceLockingService);
+    }
+
+    @Test
+    public void shouldNotUnlockTheTabletWhenTheUserIsATeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        service.onUnlockDevice(new DeactivateDeviceLockEvent());
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is((Intent) null));
+        verifyZeroInteractions(deviceLockingService);
+    }
+
+    @Test
+    public void shouldNotUnlockTheTabletWhenSessionEndsIfTheUserIsATeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+        when(deviceLockingService.isLocked()).thenReturn(true);
+        service.onStudentSessionEnded(new StudentSessionEndedEvent(TEACHER_INITIATED));
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is((Intent) null));
+        verify(deviceLockingService, never()).unlock(EyesOnTeacherActivity.class);
+    }
+
+    @Test
+    public void shouldNotUnlockIfDeviceIsNotLockAndSessionEnds() {
+        when(deviceLockingService.isLocked()).thenReturn(false);
+        service.onStudentSessionEnded(new StudentSessionEndedEvent(TEACHER_INITIATED));
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is((Intent) null));
+        verify(deviceLockingService, never()).unlock(EyesOnTeacherActivity.class);
+    }
+
+    @Test
+    public void shouldToastOnForceFieldEngaged() {
+        service.onForceFieldEngaged(null);
+
+        verify(toaster).makeToast(R.string.force_field_engaged);
+    }
+
+    @Test
+    public void shouldToastOnForceFieldDisengaged() {
+        service.onForceFieldDisengaged(null);
+
+        verify(toaster).makeToast(R.string.force_field_disengaged);
+    }
+
+    @Test
+    public void shouldToastOnForceFieldChanged() {
+        service.onForceFieldChanged(null);
+
+        verify(toaster).makeToast(R.string.force_field_changed);
+    }
+
+    @Test
+    public void shouldToastOnSessionReconnectionFailureForStudent() throws Exception {
+        service.onStudentSessionEnded(new StudentSessionEndedEvent(CONNECTION_LOST));
+
+        verify(toaster).makeToast(R.string.disconnected_from_session_message);
+    }
+
+    @Test
+    public void shouldToastOnSessionReconnectionFailureForTeacher() throws Exception {
+        when(classSession.isOngoing()).thenReturn(true);
+        service.onTeacherSessionEnded(new TeacherSessionEndedEvent(CONNECTION_LOST));
+
+        verify(toaster).makeToast(R.string.disconnected_from_session_message);
+    }
+
+    @Test
+    public void shouldStopTimerOnTeacherSessionEnd() {
+        service.onTeacherSessionEnded(new TeacherSessionEndedEvent(TEACHER_INITIATED));
+
+        verify(timeTickerProvider).cancel();
+    }
+
+    @Test
+    public void shouldToastMessageWhenSessionEnds() {
+        service.onStudentSessionEnded(new StudentSessionEndedEvent(TEACHER_INITIATED));
+        verify(toaster).makeToast(R.string.session_ended_successfully_message);
+    }
+
+    @Test
+    public void shouldToastSuccessMessageWhenSessionStarted() throws Exception {
+        when(classSession.isStarted()).thenReturn(true);
+
+        service.onSessionStart(SessionStartEvent.success());
+        verify(toaster).makeToast(R.string.session_started_successfully_message);
+    }
+
+    @Test
+    public void shouldToastReJoinMessageWhenJoiningAPreviousSession() throws Exception {
+        when(classSession.isNotStarted()).thenReturn(true);
+
+        service.onSessionStart(SessionStartEvent.success());
+        verify(toaster).makeToast(R.string.session_rejoined_successfully_message);
+    }
+
+    @Test
+    public void shouldToastErrorMessageWhenSessionStartFailed() throws Exception {
+        SessionStartEvent failure = SessionStartEvent.failure(ApiErrorReason.INTERNAL_ERROR);
+        service.onSessionStart(failure);
+        verify(toaster).errorToast(failure.reason);
+    }
+
+    @Test
+    public void shouldToastMessageWhenEndSessionFailed() throws Exception {
+        EndSessionFailureEvent failureEvent = new EndSessionFailureEvent(ApiErrorReason.INTERNAL_ERROR);
+        service.onSessionEndFailed(failureEvent);
+        verify(toaster).errorToast(failureEvent.getReasonForFailure(), R.string.end_session_failure);
+    }
+
+    @Test
+    public void shouldSaveCallOnSomeoneSettingsInTheSession() {
+        setupCallOnSomeoneSettings(1L);
+
+        service.onCalledOn(calledOnOnSomeoneEvent);
+
+        verify(classSession).saveCallOnSomeoneSettings(callOnSomeoneSettings);
+    }
+
+    @Test
+    public void shouldSaveQuickPollSettingsOnCurrentUserSection() {
+        when(quickPollSettings.isRunning()).thenReturn(true);
+        when(quickPollEvent.getQuickPollSettings()).thenReturn(quickPollSettings);
+
+        service.onQuickPoll(quickPollEvent);
+
+        verify(classSession).saveQuickPollSettings(quickPollSettings);
+    }
+
+    @Test
+    public void shouldStartStudentQuickPollActivity() {
+        when(quickPollSettings.isRunning()).thenReturn(true);
+        when(quickPollEvent.getQuickPollSettings()).thenReturn(quickPollSettings);
+
+        service.onQuickPoll(quickPollEvent);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(SplashActivity.class.getName()));
+        assertThat(intent.getExtras().getString(SplashActivity.SPLASH_TARGET), is(QuickPollStudentActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldSaveQuickShortAnswerSettingsOnCurrentUserSection() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerEvent.getQuickShortAnswerSettings()).thenReturn(quickShortAnswerSettings);
+
+        service.onQuickShortAnswer(quickShortAnswerEvent);
+
+        verify(classSession).saveQuickShortAnswerSettings(quickShortAnswerSettings);
+    }
+
+    @Test
+    public void shouldStartStudentQuickShortAnswerActivity() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerEvent.getQuickShortAnswerSettings()).thenReturn(quickShortAnswerSettings);
+
+        service.onQuickShortAnswer(quickShortAnswerEvent);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(SplashActivity.class.getName()));
+        assertThat(intent.getExtras().getString(SplashActivity.SPLASH_TARGET), is(QuickShortAnswerStudentActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldStartServiceInForegroundInOnSessionStart() {
+        service.onSessionStart(SessionStartEvent.success());
+        verify(moderatorSessionService).startForeground(ControlMessageListeningService.FOREGROUND_SERVICE_ID, notification);
+    }
+
+    @Test
+    public void shouldStartServiceInForegrounfInSessionJoinedSuccessfully() {
+        service.sessionJoinedSuccessfully(mock(JoinSessionEvent.class));
+        verify(moderatorSessionService).startForeground(ControlMessageListeningService.FOREGROUND_SERVICE_ID, notification);
+    }
+
+    @Test
+    public void shouldUpdateNotificationStatusMessageToIndicateReconnection() {
+        final String[] stringHolder = new String[1];
+
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object[] args = invocationOnMock.getArguments();
+                stringHolder[0] = (String) args[1];
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }).when(notificationUtils).getNotification(eq(context), anyString());
+
+        service.onReconnectEvent(mock(SessionReconnectEvent.class));
+
+        Assert.assertTrue(((String) stringHolder[0]).toLowerCase().contains("reconnect"));
+
+    }
+
+    @Test
+    public void shouldUnlockSessionOnTeacherSessionEnded() {
+        service.onTeacherSessionEnded(mock(TeacherSessionEndedEvent.class));
+
+        verify(moderatorSessionService).stopForeground(true);
+    }
+
+    @Test
+    public void shouldUnlockSessionOnStudentSessionEnded() {
+        service.onStudentSessionEnded(mock(StudentSessionEndedEvent.class));
+
+        verify(moderatorSessionService).stopForeground(true);
+    }
+
+    @Test
+    public void shouldOpenConnectionToModeratorServiceConnectionOnStart() {
+        service.onStartCommand(null, 1, 1);
+        verify(moderatorSessionServiceConnection).open();
+    }
+
+    @Test
+    public void shouldOpenConnectionToModeratorServiceConnectionOnBind() {
+        service.onBind(null);
+        verify(moderatorSessionServiceConnection).open();
+    }
+
+    @Test
+    public void shouldNotOpenConnectionIfServiceAlreadyStarted() {
+        service.onStartCommand(null, 1, 1);
+        service.onStartCommand(null, 1, 1);
+        verify(moderatorSessionServiceConnection).open();
+    }
+
+    @Test
+    public void closeConnectionWhenModeratorServiceStopped() {
+        service.onDestroy();
+        verify(moderatorSessionServiceConnection).close();
+    }
+
+    @Test
+    public void shouldSaveSpotCheckSettingsOnCurrentUserSection() {
+        when(spotCheckSettings.isRunning()).thenReturn(true);
+        when(spotCheckEvent.getSpotCheckSettings()).thenReturn(spotCheckSettings);
+
+        service.onSpotCheckEvent(spotCheckEvent);
+
+        verify(classSession).saveSpotCheckSettings(spotCheckSettings);
+    }
+
+    @Test
+    public void shouldStartStudentSpotCheckActivity() {
+        when(spotCheckSettings.isRunning()).thenReturn(true);
+        when(spotCheckEvent.getSpotCheckSettings()).thenReturn(spotCheckSettings);
+
+        service.onSpotCheckEvent(spotCheckEvent);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(SplashActivity.class.getName()));
+        assertThat(intent.getExtras().getString(SplashActivity.SPLASH_TARGET), is(SpotCheckStudentActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldStartJoinSessionActivityOnSessionStartMessage() {
+        when(sessionStartMessageEvent.getSectionId()).thenReturn(12345L);
+        when(sessionStartMessageEvent.getTeacherName()).thenReturn("Loreal, cause you are worth it");
+        when(userService.getUser()).thenReturn(student);
+        when(student.getSectionWithId(12345L)).thenReturn(section);
+        when(classSession.isOngoing()).thenReturn(false);
+        service.onSessionStartMessage(sessionStartMessageEvent);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(JoinSessionActivity.class.getName()));
+        assertThat(intent.getLongExtra("sectionId", 0L), is(12345L));
+        assertThat(intent.getStringExtra("teacherName"), is("Loreal, cause you are worth it"));
+        assertThat(intent.getFlags(), is(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
+
+    @Test
+    public void shouldNotStartJoinSessionActivityIfWeAreATeacher() {
+        when(userService.getUser()).thenReturn(student);
+        when(userService.isStudent()).thenReturn(false);
+        service.onSessionStartMessage(sessionStartMessageEvent);
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldBringApplicationToForegroundBeforeLaunchingJoinSessionActivity() {
+        when(userService.getUser()).thenReturn(student);
+        when(student.getSectionWithId(anyLong())).thenReturn(section);
+        when(classSession.isOngoing()).thenReturn(false);
+        service.onSessionStartMessage(sessionStartMessageEvent);
+        verify(applicationUtils).bringApplicationTaskToForeground(isA(Context.class), anyString());
+    }
+
+    @Test
+    public void shouldIgnoreSessionStartEventIfCurrentlyConnectedToSpecifiedSectionsSession() {
+        when(sessionStartMessageEvent.getSectionId()).thenReturn(22L);
+        when(userService.getUser()).thenReturn(student);
+        when(student.getSectionWithId(22L)).thenReturn(section);
+        when(userService.isSessionOngoingFor(section)).thenReturn(true);
+        service.onSessionStartMessage(sessionStartMessageEvent);
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldStartRestartActivityIfRequired() {
+        service.userInformationRefreshed(new UserInformationRefreshedEvent(true));
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(ApplicationRestartActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldStartRetrievePostsServiceButNotStartRestartActivityIfRestartNotRequired() {
+        service.userInformationRefreshed(new UserInformationRefreshedEvent(false));
+        Intent intent1 = Robolectric.getShadowApplication().getNextStartedActivity();
+        Intent intent2 = Robolectric.getShadowApplication().getNextStartedService();
+        assertThat(intent1, is(nullValue()));
+        assertThat(intent2.getComponent().getClassName(), is(RetrievePostsService.class.getName()));
+    }
+
+    @Test
+    public void shouldStartCountOffActivityOnCountOffEventForStudent() {
+        CountOffSettings countOffSettings = mock(CountOffSettings.class);
+        when(countOffSettings.getCountOffDetails()).thenReturn(countOffDetails);
+        when(countOffSettings.isRunning()).thenReturn(true);
+
+        service.onCountOff(new CountOffEvent(countOffSettings));
+
+        Intent activity = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(activity.getComponent().getClassName(), is(CountedOffStudentActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldNotStartCountOffActivityOnCountOffEventForTeacher() {
+        CountOffSettings countOffSettings = mock(CountOffSettings.class);
+        when(countOffSettings.getCountOffDetails()).thenReturn(countOffDetails);
+        when(countOffSettings.isRunning()).thenReturn(true);
+        when(userService.isStudent()).thenReturn(false);
+
+        service.onCountOff(new CountOffEvent(countOffSettings));
+
+        Intent activity = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertNull(activity);
+    }
+
+    private void setupCallOnSomeoneSettings(long calledOnParticipantId) {
+        when(student.getId()).thenReturn(1L);
+        when(student.getName()).thenReturn(JACLYN);
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(true);
+        when(callOnSomeoneSettings.getCalledOnParticipantId()).thenReturn(calledOnParticipantId);
+        when(calledOnOnSomeoneEvent.getCallOnSomeoneSettings()).thenReturn(callOnSomeoneSettings);
+        when(userService.getUser()).thenReturn(student);
+        when(student.getCurrentSection()).thenReturn(section);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

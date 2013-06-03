@@ -1,0 +1,200 @@
+<html><head><title>PostService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/PostService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.Response;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.events.AddCallOnSomeoneParticipantFailedEvent;
+import com.alpha.api.services.events.DeleteCommentFailureEvent;
+import com.alpha.api.services.events.DeletePostFailureEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+import static com.alpha.api.services.ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE;
+import static com.alpha.api.services.events.CommentAddedEvent.failure;
+import static com.google.common.collect.Lists.newArrayList;
+
+
+public class PostService {
+
+    private final NetworkConnectivity networkConnectivity;
+    private final SectionTaskFactory sectionTaskFactory;
+    private final EventBus eventBus;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public PostService(NetworkConnectivity networkConnectivity, SectionTaskFactory sectionTaskFactory, EventBus eventBus) {
+        this.networkConnectivity = networkConnectivity;
+        this.sectionTaskFactory = sectionTaskFactory;
+        this.eventBus = eventBus;
+    }
+
+    public void addPost(Post post, PostResponseCallback callback) {
+        if (networkConnectivity.isConnected()) {
+            AddPostTask addPostTask = sectionTaskFactory.createNewAddPostTask(post, callback);
+            addPostTask.execute();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            LOG.info("Invalid attempt to create post when network not connected");
+            callback.onFailure(NO_NETWORK_CONNECTION_AVAILABLE);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void addPostForSections(Post post, List<Long> sectionIds, PostResponseCallback callback) {
+        if (networkConnectivity.isConnected()) {
+            AddPostForAllSectionsTask addPostTask = sectionTaskFactory.createNewAddPostForAllSectionsTask(post, sectionIds, callback);
+            addPostTask.execute();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            LOG.info("Invalid attempt to create post when network not connected");
+            callback.onFailure(NO_NETWORK_CONNECTION_AVAILABLE);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void addQuickActivityPost(Post post, PostResponseCallback callback, QuickActivitySettings settings) {
+        if (networkConnectivity.isConnected()) {
+            AddPostTask addPostTask = sectionTaskFactory.createNewAddQuickActivityPostTask(post, callback, settings);
+            addPostTask.execute();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            LOG.info("Invalid attempt to create post when network not connected");
+            callback.onFailure(NO_NETWORK_CONNECTION_AVAILABLE);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void updatePost(Post post) {
+        sectionTaskFactory.createUpdatePostTask(post).execute();
+    }
+
+    public void addComment(Long postId, Comment comment) {
+        if (networkConnectivity.isConnected()) {
+            AddCommentTask addCommentTask = sectionTaskFactory.createAddCommentTask(postId, comment);
+            addCommentTask.execute();
+        } else {
+            eventBus.post(failure(NO_NETWORK_CONNECTION_AVAILABLE));
+        }
+    }
+
+    public void addResponse(Long postId, List<Response> responses) {
+        if (networkConnectivity.isConnected()) {
+            AddResponseTask addResponseTask = sectionTaskFactory.createAddResponseTask(postId, responses);
+            addResponseTask.execute();
+        } else {
+            eventBus.post(new ResponseFailureEvent(NO_NETWORK_CONNECTION_AVAILABLE));
+        }
+    }
+
+    public void addResponse(Long postId, Response response) {
+        addResponse(postId, newArrayList(response));
+    }
+
+    public void delete(Post post) {
+        if (networkConnectivity.isConnected()) {
+            sectionTaskFactory.createDeletePostTask(post).execute();
+        } else {
+            eventBus.post(new DeletePostFailureEvent(NO_NETWORK_CONNECTION_AVAILABLE));
+        }
+    }
+
+    public void deleteComment(Long postId, Comment comment) {
+        if (networkConnectivity.isNotConnected()) {
+            eventBus.post(new DeleteCommentFailureEvent(NO_NETWORK_CONNECTION_AVAILABLE));
+            return;
+        }
+
+        sectionTaskFactory.createDeleteCommentTask(postId, comment).execute();
+    }
+
+    public void addCallOnSomeoneParticipant(Long postId, Long userId) {
+        if (networkConnectivity.isConnected()) {
+            sectionTaskFactory.createAddCallOnSomeoneTask(postId, userId).execute();
+        } else {
+            eventBus.post(new AddCallOnSomeoneParticipantFailedEvent(NO_NETWORK_CONNECTION_AVAILABLE));
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

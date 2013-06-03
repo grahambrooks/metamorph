@@ -1,0 +1,279 @@
+<html><head><title>QuickShortAnswerStudentActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickShortAnswerStudentActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickShortAnswerStudentActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.domains.Response;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.ResponseEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickShortAnswerStudentActivityTest {
+    public static final String ANSWER = "The Answer";
+    public static final String ANSWER_SPACES = "The Answer            ";
+    @Inject
+    private QuickShortAnswerStudentActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    @Mock
+    private User student;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private PostService postService;
+    @Mock
+    private ClassSession classSession;
+
+    private final ActivityTestInjector<QuickShortAnswerStudentActivity> activityTestInjector =
+            new ActivityTestInjector<QuickShortAnswerStudentActivity>(this, QuickShortAnswerStudentActivity.class);
+    private TextView answerTextView;
+    private TextView submitAnswerHeader;
+    private Button submitButton;
+
+    @Captor
+    ArgumentCaptor<Response> responsesCaptor;
+    private static final Long POST_ID = 1L;
+    private ResponseEvent responseEvent;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        activityTestInjector
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(QuickShortAnswerSettings.class, quickShortAnswerSettings)
+                .configureActivity();
+        given(userService.getUser()).willReturn(student);
+        given(student.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.getQuickShortAnswerSettings()).willReturn(quickShortAnswerSettings);
+        given(quickShortAnswerSettings.getPostId()).willReturn(POST_ID);
+        given(userService.session()).willReturn(classSession);
+        given(classSession.isStarted()).willReturn(true);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        answerTextView = (TextView) activity.findViewById(R.id.answer_text);
+        submitButton = (Button) activity.findViewById(R.id.submit);
+        submitAnswerHeader = (TextView) activity.findViewById(R.id.answer_submitted_subheader);
+        responseEvent = new ResponseEvent(new QuickShortAnswerResponse(ANSWER));
+    }
+
+    @Test
+    public void shouldNotShowAnswerSubmittedSubheaderBeforeSubmittingAnswer() {
+        assertThat(submitAnswerHeader.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test
+    public void shouldShowAnswerSubmittedSubheaderBeforeSubmittingAnswer() {
+        activity.listeners.onSubmit(new ResponseEvent(new QuickShortAnswerResponse(ANSWER)));
+        assertThat(submitAnswerHeader.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldNotSubmitEmptyAnswer() {
+        answerTextView.setText("");
+
+        submitButton.performClick();
+
+        verify(postService, never()).addResponse(anyLong(), anyList());
+    }
+
+    @Test
+    public void shouldTrimAnswerTextOnSubmit() {
+        ArgumentCaptor<Long> postIdCaptor = ArgumentCaptor.forClass(Long.class);
+        answerTextView.setText(ANSWER_SPACES);
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+
+        submitButton.performClick();
+
+        verify(postService).addResponse(postIdCaptor.capture(), responsesCaptor.capture());
+        Response responses = responsesCaptor.getValue();
+        QuickShortAnswerResponse firstResponse = (QuickShortAnswerResponse) responses;
+        assertThat(firstResponse.getAnswer(), is(ANSWER));
+    }
+
+    @Test
+    public void shouldUpdateTextViewWithResponseAndDisableIt() {
+        activity.listeners.onSubmit(responseEvent);
+        assertThat(answerTextView.getText().toString(), is(ANSWER));
+        assertThat(answerTextView.isEnabled(), is(false));
+        assertThat(submitButton.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test
+    public void shouldSetAsRespondedOnSubmitResponse() {
+        activity.listeners.onSubmit(responseEvent);
+        verify(quickShortAnswerSettings).setAsResponded();
+    }
+
+    @Test
+    public void shouldCreateResponseOnSubmit() {
+        ArgumentCaptor<Long> postIdCaptor = ArgumentCaptor.forClass(Long.class);
+        answerTextView.setText(ANSWER);
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+
+        submitButton.performClick();
+
+        verify(postService).addResponse(postIdCaptor.capture(), responsesCaptor.capture());
+        Response responses = responsesCaptor.getValue();
+        assertThat(postIdCaptor.getValue(), is(POST_ID));
+        assertThat(((QuickShortAnswerResponse) responses).getAnswer(), is(ANSWER));
+    }
+
+    @Test
+    public void shouldHideSubmitButtonOnSubmit() {
+        activity.listeners.onSubmit(responseEvent);
+
+        assertThat(submitButton.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test
+    public void shouldSaveStudentResponseInSettingsOnSubmit() {
+        activity.listeners.onSubmit(responseEvent);
+
+        verify(quickShortAnswerSettings).setStudentResponse(ANSWER);
+    }
+
+    @Test
+    public void shouldHideSubmitButtonWhenStudentAlreadySubmittedResponse() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerSettings.getStudentResponse()).thenReturn(ANSWER);
+
+        activity.onResume();
+
+        assertThat(submitButton.getVisibility(), is(View.INVISIBLE));
+    }
+
+    @Test
+    public void shouldDisplayStudentResponseWhenItIsAlreadySubmitted() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerSettings.getStudentResponse()).thenReturn(ANSWER);
+
+        activity.onResume();
+
+        assertThat(answerTextView.getText().toString(), is(ANSWER));
+    }
+
+    @Test
+    public void shouldDisplayAnswerHeaderWhenStudentAlreadySubmittedResponse() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerSettings.getStudentResponse()).thenReturn(ANSWER);
+
+        activity.onResume();
+
+        assertThat(submitAnswerHeader.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldDisableEditTextWhenStudentAlreadySubmittedResponse() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        when(quickShortAnswerSettings.getStudentResponse()).thenReturn(ANSWER);
+
+        activity.onResume();
+
+        assertThat(answerTextView.isEnabled(), is(false));
+        assertThat(answerTextView.isFocusable(), is(false));
+    }
+
+    @Test
+    public void shouldEnableSubmitButtonWhenNetworkNotConnected() {
+        submitButton.setEnabled(false);
+
+        activity.listeners.onFailed(new ResponseFailureEvent(ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE));
+
+        assertThat(submitButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldDisableButtonWhenSessionEnded() {
+        submitButton.setEnabled(true);
+        answerTextView.setEnabled(true);
+
+        activity.listeners.onStudentSessionEnded(null);
+
+        assertThat(submitButton.isEnabled(), is(false));
+        assertThat(answerTextView.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldFinishActivityOnSubmitIfQuickShortAnswerIsNotRunning() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(false);
+
+        submitButton.performClick();
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

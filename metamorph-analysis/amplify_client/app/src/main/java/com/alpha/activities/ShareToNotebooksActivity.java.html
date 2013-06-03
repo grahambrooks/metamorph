@@ -1,0 +1,316 @@
+<html><head><title>ShareToNotebooksActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ShareToNotebooksActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ShareToNotebooksActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.NotebookPreviewAdapter;
+import com.alpha.activities.callable.UpdateGDriveFilePermissionTask.UpdateGDrivePermissionCallback;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.activities.view.AmplifyCheckableView;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.services.*;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.utils.GoogleDriveUtils;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionRole;
+import com.alpha.widgets.googledrive.GoogleDriveProvider.PermissionType;
+import com.amplify.R;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import roboguice.inject.InjectView;
+
+import java.util.Collection;
+import java.util.List;
+
+import static com.alpha.utils.CharSequences.highlight;
+import static com.google.common.collect.Lists.newArrayList;
+
+@SuppressWarnings({"PMD.TooManyFields", "ClassWithTooManyMethods"})
+public abstract class ShareToNotebooksActivity extends SundaeTimedActivity
+        implements PostResponseCallback, UpdateGDrivePermissionCallback {
+
+    public static final int FIRST_PLAY_ORDER = 1;
+
+    @Inject
+    private NotebooksCoverMappings coverMappings;
+    @Inject
+    private PostService postService;
+    @Inject
+    protected Toaster toaster;
+    @Inject
+    private GoogleDriveUtils googleDriveUtils;
+    @Inject
+    private NetworkConnectivity networkConnectivity;
+    @Inject
+    protected BackgroundTaskFactory backgroundTaskFactory;
+
+    @InjectView(R.id.notebooks_container)
+    private GridView notebooksContainer;
+    @InjectView(R.id.share_to_section_button)
+    protected Button shareButton;
+    @InjectView(R.id.progress_bar_overlay)
+    private ProgressBarViewGroup progressBarViewGroup;
+    @InjectView(R.id.selected_notebooks_stat)
+    private TextView selected_notebook_stat;
+
+    protected String sharedUrl;
+    protected String thumbnailUri;
+    protected String title;
+    protected ShareableElementFactory shareableElementFactory;
+    protected NotebookPreviewAdapter notebookPreviewAdapter;
+
+    protected boolean isURLAvailable() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (sharedUrl != null) {
+            return true;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        toaster.makeToast(R.string.error_cant_share_with_amplify);
+        finish();
+        return false;
+    }
+
+    protected boolean isUserStudent() {
+        if (userService.isStudent()) {
+            toaster.makeToast(R.string.error_cant_share_if_student);
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    protected void setupNotebookSharePreview() {
+        User user = userService.getUser();
+        List<Section> sections = ImmutableList.copyOf(user.getSections());
+        notebookPreviewAdapter = new NotebookPreviewAdapter(sections, coverMappings, this);
+        notebooksContainer.setAdapter(notebookPreviewAdapter);
+        notebooksContainer.setOnItemClickListener(getNoteBookSelectionListener());
+        updateSelectedNotebooksStat();
+    }
+
+    private List<Long> selectedSectionsId() {
+        return notebookPreviewAdapter.getSelectedSectionsIds();
+    }
+
+    private List<Section> selectedSections() {
+        return notebookPreviewAdapter.getSelectedSections();
+    }
+
+    private AdapterView.OnItemClickListener getNoteBookSelectionListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                AmplifyCheckableView checkableView = (AmplifyCheckableView) view;
+                checkableView.toggle();
+                changeShareButtonState();
+                updateSelectedNotebooksStat();
+            }
+        };
+    }
+
+    private void updateSelectedNotebooksStat() {
+        String text = getString(R.string.selected_notebooks_stat, notebookPreviewAdapter.getSelectedSectionsCount(), notebookPreviewAdapter.getCount());
+        selected_notebook_stat.setText(highlight(text, getResources(), R.color.primary_orange));
+    }
+
+    private void changeShareButtonState() {
+        shareButton.setEnabled(!selectedSectionsId().isEmpty());
+    }
+
+    protected void enableProgressBar() {
+        progressBarViewGroup.getProgressBar().setVisibility(View.VISIBLE);
+    }
+
+    protected void disableProgressBar() {
+        progressBarViewGroup.getProgressBar().setVisibility(View.INVISIBLE);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onFailure(ApiErrorReason reason) {
+        toaster.errorToast(reason, R.string.sharing_post_failure);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onSuccess(Post post) {
+        toaster.makeToast(R.string.post_shared_with_selected_notebooks);
+    }
+
+    protected class SharePostForNoteBookListener implements View.OnClickListener {
+        final String postTitle;
+
+        public SharePostForNoteBookListener(String postTitle) {
+            this.postTitle = postTitle;
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (networkConnectivity.isConnected()) {
+                if (googleDriveUtils.isGDoc(sharedUrl)) {
+                    shareGDriveDoc();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                } else {
+                    createSharePost();
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } else {
+                toaster.makeToast(R.string.network_communication_failure);
+                shareButton.setEnabled(true);
+            }
+        }
+    }
+
+    private void shareGDriveDoc() {
+        List<String> groupEmailsToShare = Lists.transform(selectedSections(), Section.GET_GROUP_EMAIL);
+
+        if (hasSectionsWithNoGroupEmail(groupEmailsToShare)) {
+            toaster.makeToast(R.string.shareto_error_section_missing_an_email);
+            shareButton.setEnabled(true);
+        } else {
+            String fileId = googleDriveUtils.getFileId(sharedUrl);
+            enableProgressBar();
+            backgroundTaskFactory.createUpdateGDriveFilePermissionTask(
+                    this,
+                    fileId,
+                    PermissionRole.READER,
+                    PermissionType.GROUP,
+                    Joiner.on(',').skipNulls().join(groupEmailsToShare)).execute();
+        }
+    }
+
+    private boolean hasSectionsWithNoGroupEmail(Collection<String> groupEmailsToShare) {
+        return groupEmailsToShare.contains(null);
+    }
+
+    @Override
+    public void postPermissionUpdate(boolean sharedSuccessfully) {
+        disableProgressBar();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (sharedSuccessfully) {
+            createSharePost();
+        } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            toaster.makeToast(R.string.gdrive_update_error);
+            shareButton.setEnabled(true);
+        }
+    }
+
+    private void createSharePost() {
+        User user = userService.getUser();
+        List<Participant> participants = newArrayList();
+        Post post = new Post(newArrayList(getShareableElementFactory().create()), PostType.SHARE, user.asAuthor(), null,
+                null, title, StringUtils.EMPTY, participants);
+        postService.addPostForSections(post, selectedSectionsId(), this);
+
+        Intent intent = new Intent(this, NotebooksActivity.class);
+        startActivity(intent);
+
+        finish();
+    }
+
+    interface ShareableElementFactory {
+        LearningElement create();
+    }
+
+    protected ShareableElementFactory getShareableElementFactory() {
+        return shareableElementFactory;
+    }
+
+    protected void setShareableElementFactory(ShareableElementFactory shareableElementFactory) {
+        this.shareableElementFactory = shareableElementFactory;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

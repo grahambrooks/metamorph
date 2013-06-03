@@ -1,0 +1,297 @@
+<html><head><title>QuickShortAnswerTeacherActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickShortAnswerTeacherActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickShortAnswerTeacherActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.activities.events.QuickShortAnswerResponseEvent;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.QuickShortAnswerTask;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.QuickShortAnswerEndEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static com.alpha.activities.QuickShortAnswerTeacherActivity.QuickShortAnswerResponsesCursorAdapter;
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+//TODO Fix CouplingBetweenObjects
+@SuppressWarnings({"PMD.CouplingBetweenObjects"})
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickShortAnswerTeacherActivityTest extends BaseQuickActivityTest {
+
+    @Inject
+    QuickShortAnswerTeacherActivity activity;
+
+    @Mock
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    @Mock
+    private QuickShortAnswerTask quickShortAnswerTask;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        newInjector(this, QuickShortAnswerTeacherActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(PostsDataStore.class, postsDataStore)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .configureActivity();
+
+        given(section.getActiveParticipants()).willReturn(participants);
+        given(controlSettingsModel.getQuickShortAnswerSettings()).willReturn(quickShortAnswerSettings);
+        given(quickShortAnswerSettings.getActiveParticipantsIds()).willReturn(participantIds);
+        given(sessionTaskFactory.createQuickShortAnswerTask()).willReturn(quickShortAnswerTask);
+        given(quickShortAnswerSettings.isRunning()).willReturn(true);
+        given(quickShortAnswerSettings.activityPostCreated()).willReturn(true);
+        given(postsDataStore.fetch(POST_ID)).willReturn(post);
+    }
+
+    @Test
+    public void shouldCreateNewPostWhenActivityIsNotRunning() {
+        when(quickShortAnswerSettings.activityPostCreated()).thenReturn(false);
+        when(quickShortAnswerSettings.isRunning()).thenReturn(false);
+        ArgumentCaptor<Post> postArgumentCaptor = ArgumentCaptor.forClass(Post.class);
+
+        Intent startIntentWithoutExtras = new Intent();
+        activity.setIntent(startIntentWithoutExtras);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        verify(postService).addQuickActivityPost(postArgumentCaptor.capture(), eq(activity), eq(quickShortAnswerSettings));
+        Post actualPost = postArgumentCaptor.getValue();
+        assertThat(actualPost.getTitle(), is(activity.getString(R.string.short_answer)));
+        assertThat(actualPost.getDescription(), is(activity.getString(R.string.short_answer_post_description)));
+        assertThat(actualPost.getStudentsSharedWith().size(), is(0));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldCompleteConsoleActionOnClickingDone() {
+        when(quickShortAnswerSettings.getPostId()).thenReturn(POST_ID);
+        Intent startIntentWithoutExtras = new Intent();
+        activity.setIntent(startIntentWithoutExtras);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        Button doneButton = (Button) activity.findViewById(R.id.done);
+
+        doneButton.performClick();
+
+        verify(teacherConsoleAction).finishInClassActivity(false);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldUpdatePostOnClickingDone() {
+        when(quickShortAnswerSettings.getPostId()).thenReturn(POST_ID);
+
+        Intent startIntentWithoutExtras = new Intent();
+        activity.setIntent(startIntentWithoutExtras);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        Button doneButton = (Button) activity.findViewById(R.id.done);
+
+        doneButton.performClick();
+
+        verify(teacherConsoleAction).finishInClassActivity(false);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldShowDoneButtonWhenLaunchedFromStreamViewAndPostIsSameAsRunning() {
+        when(quickShortAnswerSettings.getPostId()).thenReturn(POST_ID);
+
+        Intent intentWithPostId = createIntentWithPostId();
+        activity.setIntent(intentWithPostId);
+        activity.onCreate(null);
+        activity.onResume();
+
+        Button doneButton = (Button) activity.findViewById(R.id.done);
+        assertThat(doneButton.getVisibility(), is(View.VISIBLE));
+
+        doneButton.performClick();
+        verify(teacherConsoleAction).finishInClassActivity(false);
+    }
+
+    private Intent createIntentWithPostId() {
+        Intent intentWithPostId = new Intent();
+        intentWithPostId.putExtra(POST_ID_KEY, POST_ID);
+        return intentWithPostId;
+    }
+
+    @Test
+    public void shouldSendAnswerEventWhenStudentRespondsToShortAnswer() throws Exception {
+        QuickShortAnswerResponsesCursorAdapter adapter = new QuickShortAnswerResponsesCursorAdapter(Robolectric.application, eventBus);
+
+        View view = LayoutInflater.from(Robolectric.application).inflate(R.layout.quick_short_answer_response_teacher, null);
+        adapter.populateView(view, new QuickShortAnswerResponse("answer", new PostAuthor("student-1")));
+        verify(eventBus).post(isA(QuickShortAnswerResponseEvent.class));
+    }
+
+    public void shouldChangeBackgroundColorForEveryItemInList() {
+        QuickShortAnswerResponsesCursorAdapter responsesCursorAdapter =
+                new QuickShortAnswerResponsesCursorAdapter(Robolectric.application, eventBus);
+
+        View view = mock(View.class);
+        View rootView = mock(View.class);
+        when(view.getRootView()).thenReturn(rootView);
+        TextView textView = mock(TextView.class);
+        when(view.findViewById(anyInt())).thenReturn(textView);
+
+        responsesCursorAdapter.changeBackgroundAndTextColors(0, view);
+
+        verify(rootView).setBackgroundDrawable(any(Drawable.class));
+        verify(textView).setTextColor(anyInt());
+    }
+
+    @Test
+    public void shouldSetPostIdToNullOnEndingShortAnswer() {
+        activity.quickShortAnswerListeners.onEndSuccess(new QuickShortAnswerEndEvent());
+
+        verify(quickShortAnswerSettings).clearPost();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getQuickActivitySettings() {
+        return quickShortAnswerSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected BaseQuickActivity getQuickActivity() {
+        return activity;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldExecuteQuickShortAnswerTaskWhenNextActivityStarts() {
+        activity.setIntent(new Intent());
+        activity.onCreate(null);
+
+        activity.startQuickActivityTask(post);
+
+        verify(quickShortAnswerTask).execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

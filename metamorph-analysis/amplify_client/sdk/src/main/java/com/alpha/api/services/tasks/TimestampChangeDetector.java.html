@@ -1,0 +1,84 @@
+<html><head><title>TimestampChangeDetector.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TimestampChangeDetector.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/tasks/amplify_client/TimestampChangeDetector.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.tasks;
+
+import com.alpha.logging.LogUtils;
+import org.slf4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.Date;
+
+public class TimestampChangeDetector {
+    private final Logger LOG = LogUtils.getLogger();
+    @Nullable
+    private Date lastTimestamp = null;
+    private int repeatedTimestampCount;
+
+    public void reset() {
+        lastTimestamp = null; //NOPMD
+        repeatedTimestampCount = 0;
+    }
+
+    public boolean isChanging(Date timestamp) {
+        if ((lastTimestamp == null && timestamp == null) || (lastTimestamp != null && lastTimestamp.equals(timestamp))) {
+            repeatedTimestampCount++;
+        } else {
+            repeatedTimestampCount = 0;
+        }
+        lastTimestamp = timestamp;
+
+        final boolean timestampIsChanging = repeatedTimestampCount < 2;
+        if (!timestampIsChanging) {
+            LOG.trace("{} timestamps repeated the value of the previous timestamp: {}", repeatedTimestampCount, lastTimestamp);
+        }
+        return timestampIsChanging;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

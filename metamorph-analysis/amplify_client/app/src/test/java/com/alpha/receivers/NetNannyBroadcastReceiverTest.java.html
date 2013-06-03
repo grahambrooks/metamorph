@@ -1,0 +1,112 @@
+<html><head><title>NetNannyBroadcastReceiverTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NetNannyBroadcastReceiverTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/receivers/amplify_client/NetNannyBroadcastReceiverTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.receivers;
+
+import android.content.Intent;
+import com.alpha.api.services.events.NetNannyConfigurationEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class NetNannyBroadcastReceiverTest {
+    @Mock
+    private Intent intent;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private NetNannyBroadcastReceiver netNannyBroadcastReceiver;
+
+    @Before
+    public void setup(){
+        initMocks(this);
+        ActivityTestInjector<NetNannyBroadcastReceiver> injector = newInjector(this, NetNannyBroadcastReceiver.class);
+        injector.bindMocksToContext();
+        injector.configureTestSubject();
+    }
+
+    @Test
+    public void shouldPublishFailedNetNannyEventWhenNetNannyStatusIsFalse() {
+        ArgumentCaptor<NetNannyConfigurationEvent> netNannyEventCaptor = ArgumentCaptor.forClass(NetNannyConfigurationEvent.class);
+        when(intent.getBooleanExtra(NetNannyBroadcastReceiver.NETNANNY_STATUS_KEY, false)).thenReturn(false);
+
+        netNannyBroadcastReceiver.handleReceive(Robolectric.application, intent);
+
+        verify(eventBus).post(netNannyEventCaptor.capture());
+        assertThat(netNannyEventCaptor.getValue().isSuccess(), is(false));
+    }
+
+    @Test
+    public void shouldPublishSuccessfulNetNannyEventWhenNetNannyStatusIsTrue() {
+        ArgumentCaptor<NetNannyConfigurationEvent> netNannyEventCaptor = ArgumentCaptor.forClass(NetNannyConfigurationEvent.class);
+        when(intent.getBooleanExtra(NetNannyBroadcastReceiver.NETNANNY_STATUS_KEY, false)).thenReturn(true);
+
+        netNannyBroadcastReceiver.handleReceive(Robolectric.application, intent);
+
+        verify(eventBus).post(netNannyEventCaptor.capture());
+        assertThat(netNannyEventCaptor.getValue().isSuccess(), is(true));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<html><head><title>PostTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/domains/amplify_client/PostTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">25</span>
+    <progress max="100" value="25"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import android.net.Uri;
+import android.view.ViewGroup;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserRole;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.alpha.api.utilities.DateTestHelper.now;
+import static com.alpha.api.utilities.DateTestHelper.yesterday;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD.TooManyMethods")
+@RunWith(AmplifySDKTestRunner.class)
+public class PostTest {
+
+    public static final String SECTION_IDS = "sectionIds";
+    @Mock
+    private User user;
+    @Mock
+    private LearningElement discussionLearningElement;
+    @Mock
+    private VideoLearningElement videoLearningElement;
+
+    private Post post;
+    private PostSection section;
+    private PostAuthor author;
+    private Date date = new Date(123213); //  NOPMD
+    private final List<LearningElement> elements = new ArrayList<LearningElement>();
+
+    private static final String CREATOR = "creator";
+    private static final String DESCRIPTION = "description";
+    private static final String NOTE = "note";
+    private static final String TITLE = "title";
+    private static final Long POST_ID = 3L;
+    private static final Long SECTION_ID = 8L;
+    private static final Long USER_ID = 6L;
+    private static final List<Participant> STUDENTS_SHARED_WITH = new ArrayList<Participant>();
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        author = new PostAuthor(USER_ID, CREATOR, UserRole.TEACHER);
+        section = new PostSection("section", SECTION_ID);
+        elements.add(discussionLearningElement);
+        post = createPost();
+    }
+
+    private Post createPost() {
+        List learningElements = newArrayList(new WebPageLearningElement("Page title", "Page description", Uri.parse("http://www.google.com")));
+        Post aPost = new Post(learningElements, PostType.DISCUSSION, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, new ArrayList<Response>());
+        aPost.setId(POST_ID);
+        aPost.setNote(NOTE);
+        return aPost;
+    }
+
+    @Test
+    public void shouldPopulateContentValuesWithExpectedValues() {
+        ContentValues values = post.asValues();
+
+        assertThat(values.getAsLong(TableColumn.created_on.name()), is(post.getCreatedOn().getTime()));
+        assertThat(values.getAsLong(TableColumn.modified_on.name()), is(post.getCreatedOn().getTime()));
+        assertThat(values.getAsString(TableColumn.post_type.name()), is(post.getPostType().name()));
+        assertThat(values.getAsLong(TableColumn.section_id.name()), is(SECTION_ID));
+        assertThat(values.getAsLong(TableColumn._id.name()), is(POST_ID));
+        assertThat(values.getAsString(TableColumn.content.name()), is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldCreateJsonWithAllMandatoryParameters() throws Exception {
+        JsonObject request = toJson(post.asRequestJson());
+        assertRequest(request);
+    }
+
+    private void assertRequest(JsonObject request) {
+        assertThat(request.get("authorId").getAsLong(), is(USER_ID));
+        assertThat(request.get(SECTION_IDS).getAsJsonArray().get(0).getAsLong(), is(SECTION_ID));
+        assertThat(request.get("title").getAsString(), is(TITLE));
+        assertThat(request.get("description").getAsString(), is(DESCRIPTION));
+        JsonElement note = request.get("note");
+        if (note != null) {
+            assertThat(note.getAsString(), is(NOTE));
+        }
+        assertThat(request.get("removed").getAsInt(), is(0));
+    }
+
+    @Test
+    public void shouldCreateJsonWithNumberOfQuickPollAnswers() {
+        post.setNumberOfQuickPollAnswers(4);
+
+        JsonObject requestJson = toJson(post.asRequestJson());
+        assertThat(requestJson.get("numberOfQuickPollAnswers").getAsInt(), is(4));
+    }
+
+    @Test
+    public void shouldCreateRequestWhenPostIsNotAssociatedWithAnActivity() throws Exception {
+        post = new Post(PostType.SHARE, author, yesterday(), section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH);
+        JsonObject request = toJson(post.asRequestJson());
+        assertRequest(request);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private JsonObject toJson(String json) {
+        return new JsonParser().parse(json).getAsJsonObject();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void assertJsonValues(Post post) {
+        String json = post.asRequestJson();
+        JsonParser parser = new JsonParser();
+        JsonObject out = parser.parse(json).getAsJsonObject();
+
+        assertThat(out.get("authorId").getAsLong(), is(USER_ID));
+        assertThat(out.get(SECTION_IDS).getAsJsonArray().get(0).getAsLong(), is(SECTION_ID));
+        assertThat(out.get("title").getAsString(), is(TITLE));
+        assertThat(out.get("description").getAsString(), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldCreateJsonWithAllParametersIfActivityIsNotSet() throws Exception {
+        LearningElement emptyElement = new TestEmptyLearningElement(DESCRIPTION);
+        List<LearningElement> learningElements = new ArrayList<LearningElement>();
+        learningElements.add(emptyElement);
+        post = new Post(learningElements, PostType.SHARE, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH);
+        assertJsonValues(post);
+    }
+
+    @Test
+    public void shouldReturnVideoLearningElementWhenSingleElementActivityPostIsCreated() {
+        List learningElements = newArrayList(videoLearningElement);
+        post = new Post(learningElements, PostType.SHARE, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, new ArrayList<Response>());
+
+        List<LearningElement> elements = post.elements();
+        assertThat(elements.size(), is(1));
+        assertThat(elements.iterator().next(), is(instanceOf(VideoLearningElement.class)));
+    }
+
+    @Test
+    public void shouldGetNumberOfComments() {
+        post = new Post(elements, PostType.SHARE, author, now(), section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH);
+        post.comments.add(new Comment(author, "Comment"));
+        Comment anotherComment = new Comment(author, "Comment");
+        post.comments.add(anotherComment);
+        assertThat(post.numberOfComments(), is(2));
+    }
+
+    @Test
+    public void shouldHaveDescriptionForDiscussionPost() throws Exception {
+        String description = " test description";
+        post = new Post(elements, PostType.SHARE, author, now(), section, TITLE, description, STUDENTS_SHARED_WITH);
+        assertThat(post.getDescription(), is(description));
+    }
+
+    @Test
+    public void shouldFindTheShortAnswerResponse() {
+        post = new Post(elements, PostType.SHARE, author, now(), section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH);
+
+        List<QuickShortAnswerResponse> responses = new ArrayList<QuickShortAnswerResponse>();
+        responses.add(mock(QuickShortAnswerResponse.class));
+
+        post.setShortAnswerResponses(responses);
+
+        List<QuickShortAnswerResponse> actualResponses = post.getQuickShortAnswerResponses();
+        assertThat(actualResponses, is(responses));
+    }
+
+    @Test
+    public void shouldReturnDescriptionOfPostForDiscussionPosts() {
+        when(discussionLearningElement.getDescription()).thenReturn(DESCRIPTION);
+
+        post = new Post(elements, PostType.DISCUSSION, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH);
+
+        assertThat(post.getContentDescription(), is(post.getDescription()));
+    }
+
+    @Test
+    public void shouldProvideElementOnConstructedJson() throws Exception {
+        String uriString = "http://google.com";
+        List elements = newArrayList(new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(uriString)));
+        post = new Post(elements, PostType.SHARE, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, null);
+        assertThat(post.asRequestJson(), containsString(Uri.parse(uriString).toString()));
+    }
+
+    @Test
+    public void shouldAddContentFieldWhenSerializedForRequest() throws Exception {
+        String uriString = "http://google.com";
+        List elements = newArrayList(new WebPageLearningElement(TITLE, DESCRIPTION, Uri.parse(uriString)));
+        post = new Post(elements, PostType.SHARE, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, null);
+
+        JsonObject learningElement = new JsonParser().parse(post.asRequestJson()).getAsJsonObject().get("elements").getAsJsonArray().get(0).getAsJsonObject();
+
+        assertThat(learningElement.get("content"), notNullValue());
+        assertThat(learningElement.get("content").toString().trim(), not(""));
+    }
+
+    @Test
+    public void shouldReturnTrueIfUserIdIsSameAsPostAuthor() {
+        when(user.getId()).thenReturn(USER_ID);
+
+        final boolean expected = true;
+        final boolean result = post.isUserSameAsAuthor(user);
+
+        assertThat(result, is(expected));
+    }
+
+    @Test
+    public void shouldReturnFalseIfUserIdDifferentThanPostAuthor() {
+        when(user.getId()).thenReturn(USER_ID + 1);
+
+        final boolean expected = false;
+        final boolean result = post.isUserSameAsAuthor(user);
+
+        assertThat(result, is(expected));
+    }
+
+    public static class TestEmptyLearningElement extends LearningElement {
+
+        public TestEmptyLearningElement(String content) {
+            super("", content, LearningElementType.VIDEO, null);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public <T> T getView(LearningElementVisitor<T> visitor, ViewGroup parent) {
+            return null;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Test
+    public void shouldBeFalseIfThereAreNoSpotCheckResponsesForUser() {
+        User james = mock(User.class);
+        PostAuthor jamesPostAuthor = mock(PostAuthor.class);
+        when(james.asAuthor()).thenReturn(jamesPostAuthor);
+
+        PostAuthor debbieAsAuthor = mock(PostAuthor.class);
+        List<Response> responses = newArrayList();
+        responses.add(new SpotCheckResponse(SpotCheckResponseOption.GOT_IT, debbieAsAuthor));
+
+        post = new Post(elements, PostType.SPOT_CHECK, author, date, section, TITLE, DESCRIPTION, null, responses);
+
+        assertThat(post.containsSpotCheckResponseFor(james), is(false));
+    }
+
+    @Test
+    public void shouldBeTrueIfThereAreSpotCheckResponsesForUser() {
+        User james = mock(User.class);
+        User debbie = mock(User.class);
+        PostAuthor debbiePostAuthor = mock(PostAuthor.class);
+        PostAuthor jamesPostAuthor = mock(PostAuthor.class);
+
+        when(james.asAuthor()).thenReturn(jamesPostAuthor);
+        when(debbie.asAuthor()).thenReturn(debbiePostAuthor);
+        List<Response> responses = newArrayList();
+        responses.add(new SpotCheckResponse(SpotCheckResponseOption.CONFUSED, debbiePostAuthor));
+        responses.add(new SpotCheckResponse(SpotCheckResponseOption.GOT_IT, jamesPostAuthor));
+
+        post = new Post(elements, PostType.SPOT_CHECK, author, date, section, TITLE, DESCRIPTION, null, responses);
+
+        assertThat(post.containsSpotCheckResponseFor(james), is(true));
+    }
+
+    @Test
+    public void shouldSerializeSectionIdAsAnArrayOfSectionIds() {
+        List<Response> responses = newArrayList();
+        List learningElements = newArrayList(new WebPageLearningElement("Page title", "Page description", Uri.parse("http://www.google.com")));
+        Post post = new Post(learningElements, PostType.SPOT_CHECK, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, responses);
+        String json = post.asRequestJson();
+
+        JsonParser parser = new JsonParser();
+        JsonObject out = parser.parse(json).getAsJsonObject();
+
+        assertThat(out.get(SECTION_IDS).getAsJsonArray().get(0).getAsLong(), is(SECTION_ID));
+
+    }
+
+    @Test
+    public void shouldSerializeListOfSectionIds() {
+        List<Response> responses = newArrayList();
+        List learningElements = newArrayList(new WebPageLearningElement("Page title", "Page description", Uri.parse("http://www.google.com")));
+        Post post = new Post(learningElements, PostType.SPOT_CHECK, author, date, section, TITLE, DESCRIPTION, STUDENTS_SHARED_WITH, responses);
+        List<Long> sectionIds = newArrayList(1l, 2l, 3l);
+
+        String json = post.asRequestJson(sectionIds);
+
+        JsonParser parser = new JsonParser();
+        JsonObject out = parser.parse(json).getAsJsonObject();
+        JsonArray jsonArray = out.get(SECTION_IDS).getAsJsonArray();
+
+        assertThat(jsonArray.size(), is(3));
+        assertThat(jsonArray.get(0).getAsLong(), is(1l));
+        assertThat(jsonArray.get(1).getAsLong(), is(2l));
+        assertThat(jsonArray.get(2).getAsLong(), is(3l));
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

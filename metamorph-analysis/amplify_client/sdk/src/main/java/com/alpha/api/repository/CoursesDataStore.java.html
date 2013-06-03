@@ -1,0 +1,150 @@
+<html><head><title>CoursesDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CoursesDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/CoursesDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import com.alpha.api.services.Course;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.IOUtils;
+import com.google.common.base.Function;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.Collection;
+
+import static com.alpha.api.repository.sqlite.Table.COURSES;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.name;
+import static com.google.common.collect.Collections2.transform;
+
+@Singleton
+public class CoursesDataStore {
+
+    public static final Function<Course, ContentValues> AS_CONTENT_VALUES = new Function<Course, ContentValues>() {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public ContentValues apply(Course input) {
+            return input.asValues();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    };
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final Context context;
+
+    @Inject
+    public CoursesDataStore(Context context) {
+        this.context = context;
+    }
+
+    public void saveAll(Collection<Course> courses) {
+        LOGGER.debug("Saving courses {}", courses);
+        Uri uri = COURSES.uri();
+        context.getContentResolver().bulkInsert(uri, asContentValues(courses));
+    }
+
+    public int deleteAll() {
+        Uri uri = COURSES.uri();
+        int rowsDeleted =  context.getContentResolver().delete(uri, "1=1", null);
+        LOGGER.debug("Number of courses deleted "  + rowsDeleted);
+        return rowsDeleted;
+    }
+
+    public Course getCourse(Long courseId) {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(COURSES.uri(), COURSES.allColumnNames(), _id.equalTo(), new String[]{courseId.toString()}, null);
+            return asCourses(cursor, courseId);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            IOUtils.closeSafely(cursor);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+    private Course asCourses(Cursor cursor, Long courseId) {
+        //can we use the enum ordinal?
+        int idColumn = cursor.getColumnIndex(_id.name());
+        int nameColumn = cursor.getColumnIndex(name.name());
+
+        if(cursor.moveToNext()) {
+            return new Course(cursor.getLong(idColumn), cursor.getString(nameColumn));
+        } else {
+            return new Course(courseId, null);
+        }
+    }
+
+    private ContentValues[] asContentValues(Collection<Course> courses) {
+        Collection<ContentValues> allContentValues = transform(courses, AS_CONTENT_VALUES);
+        return allContentValues.toArray(new ContentValues[allContentValues.size()]);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

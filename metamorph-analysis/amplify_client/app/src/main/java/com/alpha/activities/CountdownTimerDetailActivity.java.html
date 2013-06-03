@@ -1,0 +1,168 @@
+<html><head><title>CountdownTimerDetailActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountdownTimerDetailActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/CountdownTimerDetailActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.services.events.TimeTickerEndEvent;
+import com.alpha.api.services.events.TimeTickerEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.utils.TimeTickerProvider;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import static com.alpha.utils.CountdownFormatter.formatRemainingTimeForTeacher;
+
+public class CountdownTimerDetailActivity extends SundaeTimedActivity {
+
+    @InjectView(R.id.done)
+    private View doneButton;
+
+    @InjectView(R.id.countdown_time)
+    private TextView countdownTime;
+
+    @InjectView(R.id.countdown_stop)
+    private View timerStop;
+
+    @Inject
+    private EventBus eventBus;
+
+    @Inject
+    private TimeTickerProvider timeTickerProvider;
+
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+
+    @VisibleForTesting
+    protected final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.countdown_timer_detail_view);
+        timerStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CountdownTimerDetailActivity.this, TeacherConsoleActivity.class);
+                startActivity(intent);
+                timeTickerProvider.cancel();
+                getCountdownSettings().setRunning(false);
+                sessionTaskFactory.createEndCountdownTimerTask().execute();
+            }
+        });
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private CountdownTimerSettings getCountdownSettings() {
+        return userService.session().getCountdownTimerSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+        CountdownFloatingWindow.close(this);
+    }
+
+    @Override
+    protected void onPause() {
+        if (getCountdownSettings().isRunning()) {
+            CountdownFloatingWindow.open(this, userService.getUser().getRole());
+        }
+        eventBus.unregister(listeners);
+        super.onPause();
+    }
+
+    public class Listeners {
+        @Subscribe
+        public void onTick(TimeTickerEvent timeTickerEvent) {
+            countdownTime.setText(formatRemainingTimeForTeacher(timeTickerEvent.getRemainingMilliSec()));
+        }
+
+        @Subscribe
+        public void onFinish(TimeTickerEndEvent timerTickerEndEvent) {
+            countdownTime.setText(formatRemainingTimeForTeacher(timerTickerEndEvent.getRemainingMilliSec()));
+            getCountdownSettings().setRunning(false);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

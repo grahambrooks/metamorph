@@ -1,0 +1,397 @@
+<html><head><title>UserRefreshTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserRefreshTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/UserRefreshTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">29</span>
+    <progress max="100" value="29"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.CoursesDataStore;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.api.services.events.UserInformationRefreshedFailedEvent;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.lock.GlobalInformationLock;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+@SuppressWarnings("PMD")
+public class UserRefreshTaskTest {
+
+    private UserRefreshTask userRefreshTask;
+
+    @Mock
+    private Environment environment;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private UserService userService;
+    @Mock
+    private SectionsDataStore sectionsDataStore;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private AnalyticsAgent analytics;
+    @Mock
+    private APIRequestBuilder apiRequestBuilder;
+    @Mock
+    private ApiRequest apiRequest;
+    @Mock
+    private User newUser;
+    @Mock
+    private Response response;
+    @Mock
+    private SectionRosterManager sectionRosterManager;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private CoursesDataStore coursesDataStore;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private Section section;
+    @Mock
+    private User user;
+    @Mock
+    private Section liveSection;
+    @Mock
+    private List<Section> sections;
+    private GlobalInformationLock globalInformationLock;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private StudentSession studentSession;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        globalInformationLock = spy(new GlobalInformationLock());
+
+        userRefreshTask = new UserRefreshTask(environment, apiRequestBuilder, webServices, userService,
+                sectionsDataStore, teacherSession, studentSession, analytics, sectionRosterManager, coursesDataStore, eventBus, globalInformationLock);
+
+        given(networkConnectivity.isNotConnected()).willReturn(false);
+        given(userService.hasUserRegistered()).willReturn(true);
+        given(apiRequestBuilder.getRequest(anyString())).willReturn(apiRequestBuilder);
+        given(webServices.get(any(ApiRequest.class))).willReturn(response);
+        given(response.isSuccess()).willReturn(true);
+        given(response.getBodyAs(User.class)).willReturn(newUser);
+        given(userService.getUser()).willReturn(user);
+
+    }
+
+    @After
+    public void tearDown(){
+        UserRefreshTask.refreshInProgress.set(false);
+    }
+
+    @Test
+    public void shouldReturnUserNotRegisteredErrorIfUserHasNotRegistered() {
+        when(userService.hasUserRegistered()).thenReturn(false);
+        assertThat(userRefreshTask.call(), is(UserRefreshResult.USER_NOT_REGISTERED));
+    }
+
+    @Test
+    public void shouldRetrieveUpdatedUserFromBackend() throws Exception {
+
+        when(environment.getCurrentUserURI()).thenReturn("uri");
+        when(apiRequestBuilder.getRequest("uri")).thenReturn(apiRequestBuilder);
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        userRefreshTask.call();
+        verify(webServices).get(apiRequest);
+    }
+
+    @Test
+    public void shouldReturnFailureIfWebRequestFails() {
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        when(response.isSuccess()).thenReturn(false);
+        assertThat(userRefreshTask.call(), is(UserRefreshResult.UPDATE_FAILED));
+    }
+
+    @Test
+    public void shouldDeleteThenSaveCourses() {
+        List<Course> courses = Lists.newArrayList();
+        when(newUser.createCoursesFromSections()).thenReturn(courses);
+        userRefreshTask.call();
+        InOrder inOrder = inOrder(coursesDataStore);
+        inOrder.verify(coursesDataStore).deleteAll();
+        inOrder.verify(coursesDataStore).saveAll(courses);
+    }
+
+    @Test
+    public void shouldDeleteThenSaveSectionsForNewUser() {
+        List<Section> sections = Lists.newArrayList();
+        when(newUser.getSections()).thenReturn(sections);
+        userRefreshTask.call();
+        InOrder inOrder = inOrder(sectionsDataStore);
+        inOrder.verify(sectionsDataStore).deleteAll();
+        inOrder.verify(sectionsDataStore).saveAll(sections);
+    }
+
+    @Test
+    public void shouldRefreshTheUserInUserService() {
+        userRefreshTask.call();
+        verify(userService).refreshUser(any(User.class));
+    }
+
+    @Test
+    public void shouldReturnSuccessIfTaskSucceeds() {
+        assertThat(userRefreshTask.call(), is(UserRefreshResult.SUCCESS));
+    }
+
+    @Test
+    public void shouldCallFailureCallbackOnAuthenticationFailure() {
+        userRefreshTask.onAuthenticationException(mock(AuthenticationException.class));
+        verify(eventBus).post(new UserInformationRefreshedFailedEvent(UserRefreshResult.INVALID_USER_ACCOUNT));
+    }
+
+    @Test
+    public void shouldPostFailureEventOnException() {
+        userRefreshTask.onOtherException(mock(Exception.class));
+        verify(eventBus).post(new UserInformationRefreshedFailedEvent(UserRefreshResult.UPDATE_FAILED));
+    }
+
+    @Test
+    public void shouldPostSuccessEventOnSuccess() {
+        when(userService.getUser()).thenReturn(user);
+        when(user.getSections()).thenReturn(Lists.<Section>newArrayList());
+        userRefreshTask.call();
+        userRefreshTask.onSuccess(UserRefreshResult.SUCCESS);
+        verify(eventBus).post(isA(UserInformationRefreshedEvent.class));
+    }
+
+    @Test
+    public void shouldPostFailureEventOnUpdateFailedResult() {
+        userRefreshTask.onSuccess(UserRefreshResult.UPDATE_FAILED);
+        verify(eventBus).post(new UserInformationRefreshedFailedEvent(UserRefreshResult.UPDATE_FAILED));
+    }
+
+    @Test
+    public void shouldUpdateTheSectionRosterInformation() {
+        when(userService.getUser()).thenReturn(user);
+        userRefreshTask.call();
+        verify(sectionRosterManager).updateUsersSectionParticipants(user);
+    }
+
+    @Test
+    public void shouldStateRestartRequiredIfUserIsInSectionThatTheyHaveBeenDeletedFrom(){
+        shouldUserBeInSectionTheyHaveBeenDeletedFrom(true);
+
+        UserRefreshResult result = userRefreshTask.call();
+        userRefreshTask.onSuccess(result);
+
+        verify(eventBus).post(new UserInformationRefreshedEvent(true));
+    }
+
+    @Test
+    public void shouldStateNoRestartRequiredIfUserIsNotInSectionThatTheyHaveBeenDeletedFromAndHasNoLiveSession(){
+        shouldUserBeInSectionTheyHaveBeenDeletedFrom(false);
+        when(user.hasLiveSection()).thenReturn(false);
+
+        UserRefreshResult result = userRefreshTask.call();
+        userRefreshTask.onSuccess(result);
+
+        verify(eventBus).post(new UserInformationRefreshedEvent(false));
+    }
+
+    @Test
+    public void shouldStateRestartRequiredIfUserIsConnectedToSessionThatTheyHaveBeenDeletedFrom(){
+        shouldUserBeInSectionTheyHaveBeenDeletedFrom(false);
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(liveSection);
+        when(sections.contains(liveSection)).thenReturn(false);
+
+        UserRefreshResult result = userRefreshTask.call();
+        userRefreshTask.onSuccess(result);
+
+        verify(eventBus).post(new UserInformationRefreshedEvent(true));
+
+    }
+
+    @Test
+    public void shouldCopyOverLiveSessionDetailsIfRestartNotRequiredAndLiveSectionExists(){
+        User oldUser = mock(User.class);
+        when(userService.getUser()).thenReturn(oldUser,user);
+
+        shouldUserBeInSectionTheyHaveBeenDeletedFrom(false);
+        when(user.hasLiveSection()).thenReturn(false);
+        userRefreshTask.call();
+        verify(user).copySessionInformation(oldUser);
+    }
+
+    @Test
+    public void shouldStateNoRestartRequiredIfUserIsConnectedToSessionThatHasNotBeenRemoved(){
+        shouldUserBeInSectionTheyHaveBeenDeletedFrom(false);
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(liveSection);
+        when(sections.contains(liveSection)).thenReturn(true);
+        when(user.getSectionWithId(anyLong())).thenReturn(section);
+
+        UserRefreshResult result = userRefreshTask.call();
+        userRefreshTask.onSuccess(result);
+
+        verify(eventBus).post(new UserInformationRefreshedEvent(false));
+
+    }
+
+    @Test
+    public void shouldStateNoRestartRequiredIfUserHasNoCurrentSectionAndNoLiveSession(){
+        when(userService.getCurrentUserSection()).thenReturn(null);
+        when(user.hasLiveSection()).thenReturn(false);
+
+        UserRefreshResult result = userRefreshTask.call();
+        userRefreshTask.onSuccess(result);
+
+        verify(eventBus).post(new UserInformationRefreshedEvent(false));
+
+    }
+
+    @Test
+    public void shouldAcquireAndReleaseGlobalInformationLockWhenPerformingUpdate(){
+        userRefreshTask.call();
+        verify(globalInformationLock).callWithWriteLock(isA(AmplifyCallable.class));
+
+    }
+
+    @Test
+    public void shouldShutdownTeacherSessionIfUserIsTeacherAndConnectedToSectionSessionThatIsDeleted(){
+        when(teacher.hasLiveSection()).thenReturn(true);
+        when(teacher.getLiveSection()).thenReturn(liveSection);
+        when(teacher.getSections()).thenReturn(sections);
+        when(sections.contains(liveSection)).thenReturn(false);
+
+        when(userService.isTeacher()).thenReturn(true);
+        when(userService.getUser()).thenReturn(teacher);
+        userRefreshTask.call();
+        verify(teacherSession).shutdown();
+    }
+
+    @Test
+    public void shouldShutdownStudentSessionIfUserIsTeacherAndConnectedToSectionSessionThatIsDeleted(){
+        when(user.hasLiveSection()).thenReturn(true);
+        when(user.getLiveSection()).thenReturn(liveSection);
+        when(user.getSections()).thenReturn(sections);
+        when(sections.contains(liveSection)).thenReturn(false);
+
+        when(userService.isStudent()).thenReturn(true);
+        when(userService.getUser()).thenReturn(user);
+        userRefreshTask.call();
+        verify(studentSession).shutdown();
+    }
+
+    @Test
+    public void shouldNotShutdownConnectionsIfRestartNotRequired(){
+
+        userRefreshTask.call();
+        verifyZeroInteractions(studentSession);
+        verifyZeroInteractions(teacherSession);
+    }
+
+    @Test
+    public void shouldNotExecuteTaskIfOneInProgress(){
+        UserRefreshTask.refreshInProgress.set(true);
+        assertThat(userRefreshTask.call(), is(UserRefreshResult.IN_PROGRESS));
+        verifyZeroInteractions(globalInformationLock);
+    }
+
+    @Test
+    public void shouldNotPostEventIfTaskIsInProgress(){
+        userRefreshTask.onSuccess(UserRefreshResult.IN_PROGRESS);
+        verifyZeroInteractions(eventBus);
+        verifyZeroInteractions(user);
+        verifyZeroInteractions(userService);
+    }
+
+    @Test
+    public void shouldResetTheInProgressFlagAtEndOfExecution() {
+        userRefreshTask.call();
+        assertThat(UserRefreshTask.refreshInProgress.get(), is(false));
+    }
+
+    @Test
+    public void shouldNotResetTheInProgressFlagIfAlreadyInProgress() throws Exception {
+        UserRefreshTask.refreshInProgress.set(true);
+        userRefreshTask.execute();
+        assertThat(UserRefreshTask.refreshInProgress.get(), is(true));
+    }
+
+    private void shouldUserBeInSectionTheyHaveBeenDeletedFrom(boolean hasBeenDeletedFromSection) {
+        when(user.getCurrentSection()).thenReturn(section);
+        when(user.getSections()).thenReturn(sections);
+        when(sections.contains(section)).thenReturn(!hasBeenDeletedFromSection);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<html><head><title>ForceFieldDataStore.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldDataStore.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/repository/amplify_client/ForceFieldDataStore.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.net.Uri;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.services.Section;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.Set;
+
+import static com.alpha.api.repository.sqlite.TableColumn.app_name;
+import static com.alpha.api.repository.sqlite.TableColumn.app_package;
+import static com.alpha.api.repository.sqlite.TableColumn.asStrings;
+import static com.alpha.api.repository.sqlite.TableColumn.section_id;
+import static com.google.common.collect.Sets.newHashSet;
+
+@Singleton
+public class ForceFieldDataStore {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final Context context;
+    protected final PackageManager packageManager;
+
+    @Inject
+    public ForceFieldDataStore(Context context) {
+        this.context = context;
+        packageManager = context.getPackageManager();
+    }
+
+    public Set<SundaeAppInfo> getWhitelistApps(Section section) {
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(Table.FORCE_FIELD_WHITELIST.uri(section.getId()),
+                    asStrings(app_name, app_package),
+                    section_id.equalTo(), new String[]{section.getId().toString()}, null);
+
+            return asForceFieldAppInfos(cursor);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private Set<SundaeAppInfo> asForceFieldAppInfos(Cursor cursor) {
+        int appNameColumn = cursor.getColumnIndex(app_name.name());
+        int appPackageColumn = cursor.getColumnIndex(app_package.name());
+
+        Set<SundaeAppInfo> appInfos = newHashSet();
+        while (cursor.moveToNext()) {
+            String appName = cursor.getString(appNameColumn);
+            String appPackage = cursor.getString(appPackageColumn);
+            ResolveInfo resolveInfo = resolveInfoForPackagesLaunchActivity(appPackage, appName);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if(resolveInfo == null){
+                continue;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            final SundaeAppInfo appInfo = new SundaeAppInfo(appName, appPackage, false, resolveInfo.loadLabel(packageManager).toString());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (!appInfo.isAmplifyApp() && !appInfo.isSectorApp()) {
+                appInfos.add(appInfo);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+        return appInfos;
+    }
+
+    public void saveOrUpdate(Iterable<SundaeAppInfo> appInfos, Section section) {
+        Uri uri = Table.FORCE_FIELD_WHITELIST.uri(section.getId());
+        context.getContentResolver().delete(uri, section_id.equalTo(), new String[]{section.getId().toString()});
+        for (SundaeAppInfo appInfo : appInfos) {
+            LOGGER.info("Inserting application info: {}", appInfo.asValues(section));
+            context.getContentResolver().insert(uri, appInfo.asValues(section));
+        }
+    }
+
+    private ResolveInfo resolveInfoForPackagesLaunchActivity(String appPackage, String appName) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName(appPackage, appName));
+        return packageManager.resolveActivity(intent, 0);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

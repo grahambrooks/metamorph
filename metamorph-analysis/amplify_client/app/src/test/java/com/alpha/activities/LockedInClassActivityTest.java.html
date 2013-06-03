@@ -1,0 +1,264 @@
+<html><head><title>LockedInClassActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LockedInClassActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/LockedInClassActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import com.alpha.api.messaging.*;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.events.*;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class LockedInClassActivityTest {
+
+    @Inject
+    private TestLockedInClassActivity activity;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Mock
+    private QuickPollEvent quickPollEvent;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    @Mock
+    private CallOnSomeoneEvent callOnSomeoneEvent;
+    @Mock
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    @Mock
+    private SpotCheckEvent spotCheckEvent;
+    @Mock
+    private SpotCheckSettings spotCheckSettings;
+    @Mock
+    private QuickShortAnswerEvent quickShortAnswerEvent;
+    @Mock
+    private CountOffEvent countOffEvent;
+    @Mock
+    private static QuickActivitySettings quickActivitySettings;
+    @Mock
+    private EventBus eventBus;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        ActivityTestInjector<TestLockedInClassActivity> activityTestInjector =
+                new ActivityTestInjector<TestLockedInClassActivity>(this, TestLockedInClassActivity.class);
+        activityTestInjector.bindInstance(EventBus.class, eventBus);
+        activityTestInjector.configureActivity();
+        given(quickShortAnswerEvent.getQuickShortAnswerSettings()).willReturn(quickShortAnswerSettings);
+    }
+
+    @Test
+    public void shouldRegisterListenersOnCreate() {
+        activity.onCreate(null);
+        verify(eventBus).register(isA(LockedInClassActivity.LockListeners.class));
+    }
+
+    @Test
+    public void shouldUnRegisterListenersOnDestroy() {
+        activity.onCreate(null);
+        activity.onDestroy();
+
+        verify(eventBus).unregister(isA(LockedInClassActivity.LockListeners.class));
+    }
+
+    @Test
+    public void shouldFinishActivityOnQuickPollEnd() {
+        when(quickPollSettings.isRunning()).thenReturn(false);
+        when(quickPollEvent.getQuickPollSettings()).thenReturn(quickPollSettings);
+        activity.lockInClassListeners.onQuickPollEnd(quickPollEvent);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldFinishActivityOnCallOnSomeoneEnd() {
+        when(callOnSomeoneSettings.isCallOnSomeoneEnabled()).thenReturn(false);
+        when(callOnSomeoneEvent.getCallOnSomeoneSettings()).thenReturn(callOnSomeoneSettings);
+        activity.lockInClassListeners.onCallSomeoneEnd(callOnSomeoneEvent);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldFinishActivityOnSpotCheckEnd() {
+        when(spotCheckSettings.isRunning()).thenReturn(false);
+        when(spotCheckEvent.getSpotCheckSettings()).thenReturn(spotCheckSettings);
+        activity.lockInClassListeners.onSpotCheckEnd(spotCheckEvent);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldFinishActivityOnQuickShortAnswerEnd() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(false);
+        activity.lockInClassListeners.onQuickShortAnswerEnd(quickShortAnswerEvent);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void shouldFinishActivityOnCountOffEnd() {
+        when(countOffEvent.isRunning()).thenReturn(false);
+        activity.lockInClassListeners.onCountOffEnd(countOffEvent);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldFinishActivityWhenTeacherEnds() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(false);
+        activity.lockInClassListeners.onQuickShortAnswerEnd(new QuickShortAnswerEvent(quickShortAnswerSettings));
+        assertThat(activity.isFinishing(), is(true));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotEndActivityWhenTeacherStarts() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(true);
+        activity.lockInClassListeners.onQuickShortAnswerEnd(new QuickShortAnswerEvent(quickShortAnswerSettings));
+        assertThat(activity.isFinishing(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldUnlockDeviceIfQuickShortAnswerIsNotRunning() {
+        when(quickShortAnswerSettings.isRunning()).thenReturn(false);
+        activity.lockInClassListeners.onQuickShortAnswerEnd(quickShortAnswerEvent);
+        verify(deviceLockingService).unlock(activity);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldFinishOnCreateIfActivityIsNotRunningWhenLaunched() {
+        when(quickActivitySettings.isRunning()).thenReturn(false);
+        activity.onCreate(null);
+        assertThat(activity.isFinishing(), is(true));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotFinishOnCreateIfActivityIsRunningWhenLaunched() {
+        when(quickActivitySettings.isRunning()).thenReturn(true);
+        activity.onCreate(null);
+        assertThat(activity.isFinishing(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public static class TestLockedInClassActivity extends LockedInClassActivity {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        protected Optional<NetworkStatusFragment> getNetworkStatus() {
+            return Optional.absent();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        protected QuickActivitySettings getActivitySettings() {
+            return quickActivitySettings;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

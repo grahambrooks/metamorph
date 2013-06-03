@@ -1,0 +1,162 @@
+<html><head><title>LearningElementLauncher.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LearningElementLauncher.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/launchers/amplify_client/LearningElementLauncher.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.launchers;
+
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.activities.Toaster;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.utils.ApplicationUtils;
+import com.alpha.utils.FileUtils;
+import com.amplify.R.string;
+import com.google.inject.Inject;
+
+public class LearningElementLauncher {
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private ApplicationUtils applicationUtils;
+    @Inject
+    private FileUtils fileUtils;
+    @Inject
+    private AnalyticsAgent analyticsAgent;
+
+    public void launchIntentForLearningElement(Context context, LearningElement learningElement) {
+
+        switch(learningElement.getType()) {
+            case WEBPAGE:
+                sendWebpageIntent(context, learningElement);
+                break;
+            case VIDEO:
+                sendVideoIntent(context, learningElement);
+                break;
+            case GOOGLE_DRIVE:
+                sendGoogleDriveIntent(context, learningElement);
+                break;
+            case MAPS:
+                sendGoogleMapsIntent(context, learningElement);
+                break;
+            case EREADER:
+                sendEReaderIntent(context, learningElement);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void sendEReaderIntent(Context context, LearningElement learningElement) {
+        if (isEReaderInstalled(context)) {
+            EReaderLearningElement ereaderElement = (EReaderLearningElement) learningElement;
+            context.startActivity(ereaderElement.getLaunchIntent(context.getPackageManager()));
+        } else {
+            toaster.makeToast(context.getString(string.app_not_installed, EReaderLearningElement.KALDOR_APPNAME));
+        }
+    }
+
+    private boolean isEReaderInstalled(Context context) {
+        return applicationUtils.isAppInstalled(context, EReaderLearningElement.KALDOR_PACKAGE);
+    }
+
+    private boolean isGDriveInstalled(Context context) {
+        return applicationUtils.isAppInstalled(context, GoogleDriveLearningElement.GOOGLE_DRIVE_PACKAGE);
+    }
+
+    private boolean isGoogleMapsInstalled(Context context) {
+        return applicationUtils.isAppInstalled(context, GoogleMapsLearningElement.GOOGLE_MAPS_PACKAGE);
+    }
+
+    private void sendWebpageIntent(Context context, LearningElement learningElement) {
+        WebPageLearningElement webElement = (WebPageLearningElement) learningElement;
+        Intent webpageIntent = webElement.getWebPageViewIntent();
+        context.startActivity(webpageIntent);
+    }
+
+    private void sendGoogleDriveIntent(Context context, LearningElement learningElement) {
+        if (isGDriveInstalled(context)) {
+            GoogleDriveLearningElement gDriveElement = (GoogleDriveLearningElement) learningElement;
+            Intent googleDriveIntent = gDriveElement.getGoogleDriveIntent();
+            if (googleDriveIntent == null) {
+                toaster.makeToast(com.amplify.R.string.error_opening_google_drive_document);
+            } else {
+                analyticsAgent.logEvent(getClass().getSimpleName());
+                context.startActivity(googleDriveIntent);
+            }
+        } else {
+            toaster.makeToast(context.getString(string.app_not_installed, GoogleDriveLearningElement.GOOGLE_DRIVE_APPNAME));
+        }
+    }
+
+    private void sendGoogleMapsIntent(Context context, LearningElement learningElement) {
+        if (isGoogleMapsInstalled(context)) {
+            GoogleMapsLearningElement mapsLearningElement = (GoogleMapsLearningElement) learningElement;
+            Intent mapsIntent = mapsLearningElement.getLaunchIntent();
+            context.startActivity(mapsIntent);
+        } else {
+            toaster.makeToast(context.getString(string.app_not_installed, GoogleMapsLearningElement.GOOGLE_MAPS_APPNAME));
+        }
+    }
+
+    private void sendVideoIntent(Context context, LearningElement learningElement) {
+        VideoLearningElement videoElement = (VideoLearningElement) learningElement;
+        Intent videoLaunchIntent = videoElement.getVideoLaunchIntent();
+        if (fileUtils.fileExists(videoLaunchIntent.getDataString())) {
+            context.startActivity(videoLaunchIntent);
+        } else {
+            toaster.makeToast(com.amplify.R.string.video_unavailable);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

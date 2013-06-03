@@ -1,0 +1,83 @@
+<html><head><title>AmplifyUncaughtHandler.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AmplifyUncaughtHandler.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/application/amplify_client/AmplifyUncaughtHandler.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.application;
+
+import com.alpha.logging.LogUtils;
+import org.slf4j.Logger;
+
+import java.lang.Thread.UncaughtExceptionHandler;
+
+class AmplifyUncaughtHandler implements UncaughtExceptionHandler {
+
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final UncaughtExceptionHandler delegate;
+
+    AmplifyUncaughtHandler() {
+        this(Thread.getDefaultUncaughtExceptionHandler());
+    }
+
+    AmplifyUncaughtHandler(UncaughtExceptionHandler delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        LOGGER.error("Unexpected error happened in thread: '" + thread.getName() + ": " + thread.getId() + "'", ex);
+        if (delegate != null) {
+            delegate.uncaughtException(thread, ex);
+        }
+        exit();
+    }
+
+    protected void exit() {
+        System.exit(-1);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

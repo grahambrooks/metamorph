@@ -1,0 +1,140 @@
+<html><head><title>SpotCheckResponseLoaderInitializerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SpotCheckResponseLoaderInitializerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/SpotCheckResponseLoaderInitializerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.database.Cursor;
+import com.alpha.activities.adapters.SpotCheckResponseCursorAdapter;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.activities.SpotCheckResponseLoaderInitializer.SPOT_CHECK_RESPONSE_LOADER_ID;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class SpotCheckResponseLoaderInitializerTest {
+    @Mock
+    private SpotCheckResponseCursorAdapter cursorAdapter;
+    @Mock
+    private CursorLoader cursorLoader;
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private LoaderManager loaderManager;
+    private SpotCheckResponseLoaderInitializer loaderInitializer;
+    private static final Long POST_ID = 34L;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        loaderInitializer = new SpotCheckResponseLoaderInitializer(Robolectric.application, POST_ID, cursorAdapter);
+    }
+
+    @Test
+    public void shouldReturnCursorLoader() {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(23, null);
+
+        assertCursorLoaderUri(cursorLoader);
+        assertCursorLoaderSelection(cursorLoader);
+        assertThat(cursorLoader.getSelectionArgs()[0], is(POST_ID.toString()));
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadFinished() {
+        loaderInitializer.register(loaderManager);
+        loaderInitializer.onLoadFinished(cursorLoader, cursor);
+
+        verify(cursorAdapter).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldInitializeCursorLoader() {
+        loaderInitializer.register(loaderManager);
+
+        verify(loaderManager).initLoader(SPOT_CHECK_RESPONSE_LOADER_ID, null, loaderInitializer);
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadResetForGotIt() {
+        loaderInitializer.register(loaderManager);
+        loaderInitializer.onLoaderReset(cursorLoader);
+
+        verify(cursorAdapter).swapCursor(null);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void assertCursorLoaderUri(CursorLoader cursorLoader) {
+        assertThat(cursorLoader.getUri().toString(), is("content://com.alpha.api.Sundae/posts/" +
+                POST_ID + "/responses"));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void assertCursorLoaderSelection(CursorLoader cursorLoader) {
+        assertThat(cursorLoader.getSelection(), is("post_id = ?"));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

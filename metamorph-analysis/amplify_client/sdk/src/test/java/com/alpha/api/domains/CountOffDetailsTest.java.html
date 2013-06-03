@@ -1,0 +1,244 @@
+<html><head><title>CountOffDetailsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountOffDetailsTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/domains/amplify_client/CountOffDetailsTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import com.alpha.api.services.Participant;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+public class CountOffDetailsTest {
+    private static final Participant ALEX = new Participant(1L, "Alex");
+    private static final Participant BEN = new Participant(2L, "Ben");
+    private static final Participant CHARLIE = new Participant(3L, "Charlie");
+    private static final Participant DAN = new Participant(4L, "Dan");
+    private static final Participant EMILY = new Participant(5L, "Emily");
+    private static final Participant FRANK = new Participant(6L, "Frank");
+    private static final Participant GEORGE = new Participant(7L, "George");
+    private static final Participant HARRY = new Participant(8L, "Harry");
+    private static final Participant IRIS = new Participant(9L, "Iris");
+    private static final Participant JEREMY = new Participant(10L, "Jeremy");
+    private static final Participant SRINI = new Participant(8L, "Srini");
+    private static final Participant BALAJI = new Participant(8L, "Balaji");
+
+    private List<Participant> activeParticipants;
+    private List<Participant> inActiveParticipants;
+
+    @Before
+    public void setup() {
+        activeParticipants = newArrayList();
+        inActiveParticipants = newArrayList();
+
+        activeParticipants.add(ALEX);
+        activeParticipants.add(BEN);
+        activeParticipants.add(CHARLIE);
+        activeParticipants.add(DAN);
+        activeParticipants.add(EMILY);
+        activeParticipants.add(FRANK);
+
+        inActiveParticipants.add(SRINI);
+        inActiveParticipants.add(BALAJI);
+    }
+
+    @Test
+    public void shouldDistributeEvenNumberOfStudentsCorrectlyWhenGroupsAreOfEvenSizes() {
+        CountOffDetails countOffDetails = new CountOffDetails();
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 2);
+
+        final Map<Integer,List<Long>> participantGroups = countOffDetails.getParticipantGroups();
+
+        assertThat(participantGroups.keySet().size(), is(2));
+
+        assertThat(participantGroups.get(1).size(), is(4));
+        assertThat(participantGroups.get(2).size(), is(4));
+    }
+
+    @Test
+    public void shouldDistributeEvenNumberOfStudentsCorrectlyWhenGroupsAreNotOfEvenSizes() {
+        CountOffDetails countOffDetails = new CountOffDetails();
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 4);
+        final Map<Integer,List<Long>> participantGroups = countOffDetails.getParticipantGroups();
+
+        assertThat(participantGroups.keySet().size(), is(4));
+
+        assertThat(participantGroups.get(1).size(), is(2));
+        assertThat(participantGroups.get(2).size(), is(2));
+        assertThat(participantGroups.get(3).size(), is(2));
+        assertThat(participantGroups.get(4).size(), is(2));
+    }
+
+    @Test
+    public void shouldDistributeOffNumberOfStudentsCorrectly() {
+        activeParticipants.remove(FRANK);
+
+        CountOffDetails countOffDetails = new CountOffDetails();
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 2);
+        final Map<Integer,List<Long>> participantGroups = countOffDetails.getParticipantGroups();
+
+        assertThat(participantGroups.keySet().size(), is(2));
+
+        assertThat(participantGroups.get(1).size(), is(4));
+        assertThat(participantGroups.get(2).size(), is(3));
+    }
+
+    @Test
+    public void shouldReturnCorrectGroupIds() {
+        final CountOffDetails countOffDetails = new CountOffDetails() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void shuffle(List<Long> participantIds) {
+
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 3);
+
+        assertThat(countOffDetails.groupOf(ALEX.getId()), is("1"));
+        assertThat(countOffDetails.groupOf(BEN.getId()), is("2"));
+        assertThat(countOffDetails.groupOf(CHARLIE.getId()), is("3"));
+        assertThat(countOffDetails.groupOf(DAN.getId()), is("1"));
+        assertThat(countOffDetails.groupOf(EMILY.getId()), is("2"));
+        assertThat(countOffDetails.groupOf(FRANK.getId()), is("3"));
+    }
+
+    @Test
+    public void shouldReturnNullWhenStudentIsNotInAGroup() {
+        CountOffDetails countOffDetails = new CountOffDetails();
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 3);
+
+        boolean nullGroup = countOffDetails.groupOf(GEORGE.getId()) == null;
+
+        assertThat(nullGroup, is(true));
+    }
+
+    @Test
+    public void shouldRotateBackgroundColor() {
+        final CountOffDetails countOffDetails = new CountOffDetails() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void shuffle(List<Long> participantIds) {
+
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        countOffDetails.divideIntoGroups(activeParticipants, inActiveParticipants, 2);
+
+        assertThat(countOffDetails.getBackgroudColor(ALEX.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(0)));
+        assertThat(countOffDetails.getBackgroudColor(BEN.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(1)));
+        assertThat(countOffDetails.getBackgroudColor(CHARLIE.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(0)));
+        assertThat(countOffDetails.getBackgroudColor(DAN.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(1)));
+        assertThat(countOffDetails.getBackgroudColor(EMILY.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(0)));
+        assertThat(countOffDetails.getBackgroudColor(FRANK.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(1)));
+    }
+
+    @Test
+    public void shouldCorrectlySetBackgroundColorWhenNumberOfParticipatnsIsEvenlyDvisibleByTheNumberOfColors() {
+        activeParticipants.add(GEORGE);
+        activeParticipants.add(HARRY);
+        activeParticipants.add(IRIS);
+        activeParticipants.add(JEREMY);
+
+        final CountOffDetails countOffDetails = new CountOffDetails() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void shuffle(List<Long> participantIds) {
+
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        countOffDetails.divideIntoGroups(activeParticipants, Collections.EMPTY_LIST, 5);
+
+        assertThat(countOffDetails.getBackgroudColor(ALEX.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(0)));
+        assertThat(countOffDetails.getBackgroudColor(BEN.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(1)));
+        assertThat(countOffDetails.getBackgroudColor(CHARLIE.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(2)));
+        assertThat(countOffDetails.getBackgroudColor(DAN.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(3)));
+        assertThat(countOffDetails.getBackgroudColor(EMILY.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(4)));
+        assertThat(countOffDetails.getBackgroudColor(FRANK.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(0)));
+        assertThat(countOffDetails.getBackgroudColor(GEORGE.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(1)));
+        assertThat(countOffDetails.getBackgroudColor(HARRY.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(2)));
+        assertThat(countOffDetails.getBackgroudColor(IRIS.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(3)));
+        assertThat(countOffDetails.getBackgroudColor(JEREMY.getId()), is(CountOffDetails.BACKGROUND_COLORS.get(4)));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

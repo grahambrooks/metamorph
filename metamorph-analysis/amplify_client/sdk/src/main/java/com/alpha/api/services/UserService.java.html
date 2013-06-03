@@ -1,0 +1,110 @@
+<html><head><title>UserService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UserService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/UserService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+
+import java.util.Date;
+
+/**
+ * Interface/API to manage all retrieval for user related information
+ */
+public interface UserService {
+
+    /**
+     * Checks to see if a user has registered
+     * @return TRUE if user has, FALSE otherwise
+     */
+    boolean hasUserRegistered();
+
+    /**
+     * Registers a user that is retrieved from services, i.e. an existing users. OR
+     * Registers a user with the given username and role. Implementations should only accept names with numbers and letters or
+     * letters only. Symbol/Number only names should be rejected.
+     *
+     * @param userToRegister user retrieved from backend or new instance with username supplied
+     * @param callback The callback instance to process the result of the registration
+     */
+    void registerUser(User userToRegister, ControlServerRegistrationCallback callback);
+
+    /**
+     * Return the user that has been registered
+     *
+     * @return user thats been registered, NULL otherwise
+     */
+    <T extends User> T getUser();
+
+    Section getCurrentUserSection();
+
+    ClassSession session();
+
+    boolean isTeacher();
+
+    boolean isStudent();
+
+    void saveAccountName(String accountName);
+
+    String getAccountName();
+
+    void syncAllStudentsForAllSections(User user);
+
+    void refreshUser(User newUser);
+
+    boolean isSessionOngoingForCurrentSection();
+
+    boolean isSessionOngoingFor(Section section);
+
+    String getCalledOnStudentName();
+
+    void updateMostRecentPostTime(Date modifiedOn);
+
+    Date getLastModifiedPostTime();
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

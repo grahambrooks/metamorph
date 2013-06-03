@@ -1,0 +1,323 @@
+<html><head><title>EnvironmentTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EnvironmentTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/properties/amplify_client/EnvironmentTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">27</span>
+    <progress max="100" value="27"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.properties;
+
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+
+import static com.alpha.api.properties.Environment.Property.API_ACCESS_KEY;
+import static com.alpha.api.properties.Environment.Property.API_KEY;
+import static com.alpha.api.properties.Environment.Property.AUTH_DOMAIN;
+import static com.alpha.api.properties.Environment.Property.CONSOLE_ANALYTICS;
+import static com.alpha.api.properties.Environment.Property.HOCKEYAPP_KEY;
+import static com.alpha.api.properties.Environment.Property.MULTICHAT_DOMAIN;
+import static com.alpha.api.properties.Environment.Property.NAME;
+import static com.alpha.api.properties.Environment.Property.REQUIRE_ADAM;
+import static com.alpha.api.properties.Environment.Property.REQUIRE_NETNANNY;
+import static com.alpha.api.properties.Environment.Property.URI_SCHEME;
+import static com.alpha.api.properties.Environment.Property.VALIDATE_HTTP_CERTS;
+import static com.alpha.api.properties.Environment.Property.VALIDATE_XMPP_CERTS;
+import static com.alpha.api.properties.Environment.Property.WEB_HOST;
+import static com.alpha.api.properties.Environment.Property.WEB_PORT;
+import static com.alpha.api.properties.Environment.Property.XMPP_DEBUGGING;
+import static com.alpha.api.properties.Environment.Property.XMPP_HOST;
+import static com.alpha.api.properties.Environment.Property.XMPP_PORT;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
+@SuppressWarnings("PMD.TooManyMethods")
+public class EnvironmentTest {
+
+    public static final long USER_ID = 1L;
+    private Environment environment;
+    public static final String TEST_AUTH_DOMAIN = "AUTH_DOMAIN";
+    private static final String TEST_ENVIRONMENT_NAME = "unittest";
+    private static final String DEFAULT_HOST_STRING = "www.yahoo.com";
+    private static final String DEFAULT_PORT_STRING = "9999";
+    private static final String DEBUGGING_ON = Boolean.TRUE.toString();
+    private Map<Environment.Property,String> propertyMap;
+    private static final String PROPERTY_STRUCTURE = "%s=%s\n";
+    private static final String DEFAULT_HOCKEYAPP_KEY = "1972";
+    private static final String DEFAULT_VALIDATE_XMPP_CERTS = "false";
+    private static final String DEFAULT_API_KEY = "omgkey";
+    private static final String DEFAULT_API_ACCESS_KEY = "some_api_access_key";
+    private static final String DEFAULT_URI_SCHEME = "newscheme";
+    private static final String DEFAULT_VALIDATE_HTTP_CERTS = "false";
+    private static final String CONSOLE_OFF = Boolean.FALSE.toString();
+    private static final String DEFAULT_REQUIRE_ADAM = Boolean.FALSE.toString();
+    private static final String DEFAULT_REQUIRE_NETNANNY = Boolean.FALSE.toString();
+
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        propertyMap = new HashMap<Environment.Property, String>();
+        propertyMap.put(NAME, TEST_ENVIRONMENT_NAME);
+        propertyMap.put(WEB_HOST, DEFAULT_HOST_STRING);
+        propertyMap.put(URI_SCHEME, DEFAULT_URI_SCHEME);
+        propertyMap.put(WEB_PORT, DEFAULT_PORT_STRING);
+        propertyMap.put(XMPP_HOST, DEFAULT_HOST_STRING);
+        propertyMap.put(XMPP_PORT, DEFAULT_PORT_STRING);
+        propertyMap.put(MULTICHAT_DOMAIN, DEFAULT_HOST_STRING);
+        propertyMap.put(XMPP_DEBUGGING, DEBUGGING_ON);
+        propertyMap.put(HOCKEYAPP_KEY, DEFAULT_HOCKEYAPP_KEY);
+        propertyMap.put(VALIDATE_XMPP_CERTS, DEFAULT_VALIDATE_XMPP_CERTS);
+        propertyMap.put(API_KEY, DEFAULT_API_KEY);
+        propertyMap.put(VALIDATE_HTTP_CERTS, DEFAULT_VALIDATE_HTTP_CERTS);
+        propertyMap.put(AUTH_DOMAIN, TEST_AUTH_DOMAIN);
+        propertyMap.put(CONSOLE_ANALYTICS, CONSOLE_OFF);
+        propertyMap.put(API_ACCESS_KEY,DEFAULT_API_ACCESS_KEY);
+        propertyMap.put(REQUIRE_ADAM,DEFAULT_REQUIRE_ADAM);
+        propertyMap.put(REQUIRE_NETNANNY, DEFAULT_REQUIRE_NETNANNY);
+    }
+
+    private ResourceBundle createResourceBundle() throws IOException {
+        Reader reader = new StringReader(createPropertyStringAsFileFormat());
+        return new PropertyResourceBundle(reader);
+    }
+
+    private String createPropertyStringAsFileFormat() {
+        StringBuilder builder = new StringBuilder();
+        for (Entry<Environment.Property, String> property : propertyMap.entrySet()) {
+            builder.append(String.format(PROPERTY_STRUCTURE, property.getKey().key(), property.getValue()));
+        }
+        return builder.toString();
+    }
+
+    @Test
+    public void shouldGetEnvironmentName() throws IOException {
+        environment = new Environment(createResourceBundle());
+        String name = environment.getName();
+        assertThat(name, is(TEST_ENVIRONMENT_NAME));
+    }
+
+    @Test
+    public void shouldBuildResponsesURIUsingPostIdAndType() throws IOException {
+        environment = new Environment(createResourceBundle());
+        String responseURI = environment.getResponseURI(99l);
+        assertThat(responseURI, is("newscheme://www.yahoo.com:9999/posts/99/responses"));
+    }
+
+    @Test
+    public void shouldGetTheEventLogsURI() throws IOException {
+        propertyMap.put(URI_SCHEME, "somescheme");
+        propertyMap.put(WEB_HOST, "somehost");
+        propertyMap.put(WEB_PORT, "someport");
+        final ResourceBundle resourceBundle = createResourceBundle();
+        environment = new Environment(resourceBundle);
+        assertThat(environment.getEventLogsURI(), is("somescheme://somehost:someport/event_logs"));
+    }
+
+    @Test
+    public void shouldGetTheApiKey() throws IOException {
+        propertyMap.put(API_KEY, "secretkey");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getApiKey(), is("secretkey"));
+    }
+
+    @Test
+    public void shouldReturnExpectedValueForValidatingHttpCerts() throws IOException {
+        propertyMap.put(VALIDATE_HTTP_CERTS, Boolean.TRUE.toString());
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.validateHttpCerts(), is(true));
+    }
+
+    @Test
+    public void shouldReturnTheXmppHost() throws IOException {
+        propertyMap.put(XMPP_HOST, "xmpphost");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getXmppHost(), is("xmpphost"));
+    }
+
+    @Test
+    public void shouldReturnTheXmppPort() throws IOException {
+        propertyMap.put(XMPP_PORT, "12345");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getMessagingPort(), is(12345));
+    }
+
+    @Test
+    public void shouldReturnTheExpectedXmppDebuggingState() throws IOException {
+        propertyMap.put(XMPP_DEBUGGING, Boolean.FALSE.toString());
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.isXmppDebuggingEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldReturnTheExpectedConsoleAnalyticsState() throws IOException {
+        propertyMap.put(CONSOLE_ANALYTICS, Boolean.TRUE.toString());
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getConsoleAnalytics(), is(true));
+    }
+
+    @Test
+    public void shouldReturnTrueForTrueValueForXmppValidateCertsState() throws IOException {
+        propertyMap.put(VALIDATE_XMPP_CERTS, Boolean.TRUE.toString());
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.isValidatingXmppCertificates(), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseForFalseValueForXmppValidateCertsState() throws IOException {
+        propertyMap.put(VALIDATE_XMPP_CERTS, Boolean.FALSE.toString());
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.isValidatingXmppCertificates(), is(false));
+    }
+
+    @Test
+    public void shouldGetTheMessagingConferenceURI() throws IOException {
+        propertyMap.put(MULTICHAT_DOMAIN, "multichat.domain");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getMultichatDomain(), is("multichat.domain"));
+    }
+
+    @Test
+    public void shouldGetTheHockeyappKey() throws IOException {
+        propertyMap.put(HOCKEYAPP_KEY, "GRETZKY");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getHockeyappKey(), is("GRETZKY"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldRaiseExceptionIfAnyPropertyBlank() throws IOException {
+        propertyMap.put(WEB_HOST, "");
+        environment = new Environment(createResourceBundle());
+    }
+
+    @Test
+    public void shouldReturnPostsURI() throws Exception {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getPostsURI();
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/posts"));
+    }
+
+    @Test
+    public void shouldReturnPostURI() throws Exception {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getPostURI(123L);
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/posts/123"));
+    }
+
+    @Test
+    public void shouldReturnCallOnSomeoneURI() throws Exception {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getCallOnSomeOneURI(345L, 321L);
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/posts/345/calledOnStudents/321"));
+    }
+
+    @Test
+    public void shouldReturnCourseRetrievalURI() throws Exception {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getCourseByIdURI(1L);
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/course/1"));
+    }
+
+    @Test
+    public void shouldReturnFormattedPostsForSectionURI() throws IOException {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getPostsForUserURI(USER_ID);
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/posts/user/" + USER_ID));
+    }
+
+    @Test
+    public void shouldReturnFormattedDeleteRegistrationIdURI() throws IOException {
+        environment = new Environment(createResourceBundle());
+        String uri = environment.getDeleteRegistrationIdURI("registrationId");
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/delete_user_registration/registrationId"));
+    }
+
+    @Test
+    public void shouldGetCommentByCommentIdURI() throws IOException {
+        environment = new Environment(createResourceBundle());
+        Long postId = 1l;
+        Long commentId = 10L;
+        String uri = environment.getCommentByCommentIdURI(postId, commentId);
+
+        assertThat(uri, is("newscheme://www.yahoo.com:9999/posts/1/comments/10"));
+    }
+    @Test
+    public void shouldGetTheApiAccessKey() throws IOException {
+        propertyMap.put(API_ACCESS_KEY, "api_access_key_9999");
+        environment = new Environment(createResourceBundle());
+        assertThat(environment.getApiAccesskey(), is("api_access_key_9999"));
+    }
+    @Test
+    public void shouldGetTheRequireAdamProperty() throws IOException {
+        propertyMap.put(REQUIRE_ADAM, "true");
+        environment = new Environment(createResourceBundle());
+
+        assertThat(environment.isAdamRequired(), is(true));
+    }
+    @Test
+    public void shouldGetTheRequireNetNannyProperty() throws IOException {
+        propertyMap.put(REQUIRE_NETNANNY, "true");
+        environment = new Environment(createResourceBundle());
+
+        assertThat(environment.isNetNannyRequired(), is(true));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

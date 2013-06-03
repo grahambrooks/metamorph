@@ -1,0 +1,146 @@
+<html><head><title>ParticipantDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/ParticipantDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.domains.SectionUser;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.PARTICIPANTS;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ParticipantDataStoreTest {
+
+    public static final Long SECTION_ID = 1l;
+    private ParticipantDataStore participantDataStore;
+
+    @Mock
+    private ContentResolver contentResolver;
+    @Mock
+    private Context context;
+    @Mock
+    private Section section;
+    @Mock
+    private Cursor cursor;
+    public static final Long PARTICIPANT_ID = 100l;
+    public static final String PARTICIPANT_NAME = "participantOne";
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        participantDataStore = new ParticipantDataStore(context);
+        given(context.getContentResolver()).willReturn(contentResolver);
+        given(section.getId()).willReturn(SECTION_ID);
+    }
+
+    @Test
+    public void shouldDeleteAllPartipipantsForAllSectionsWhenReplacingSectionUsers() throws Exception {
+        SectionUser sectionUser = mock(SectionUser.class);
+        given(sectionUser.asContentValues()).willReturn(newArrayList(new ContentValues()));
+        Collection<SectionUser> sectionUsers = newArrayList(sectionUser);
+        participantDataStore.replaceAll(sectionUsers);
+
+        verify(contentResolver).delete(PARTICIPANTS.uri(), "1 = 1", null);
+
+    }
+
+    @Test
+    public void shouldInsertAllPartipipantsForAllSectionsWhenReplacingSectionUsers() throws Exception {
+        SectionUser sectionUser = mock(SectionUser.class);
+        ArrayList<ContentValues> allValues = newArrayList(new ContentValues());
+        given(sectionUser.asContentValues()).willReturn(allValues);
+        Collection<SectionUser> sectionUsers = newArrayList(sectionUser);
+        participantDataStore.replaceAll(sectionUsers);
+
+        verify(contentResolver).bulkInsert(PARTICIPANTS.uri(), allValues.toArray(new ContentValues[allValues.size()]));
+    }
+
+    @Test
+    public void shouldLoadAllParticipantsForAGivenSection() throws Exception {
+        when(contentResolver.query(PARTICIPANTS.uri(), new String[]{"participant_id", "name"},
+                "section_id = ?", new String[]{SECTION_ID.toString()}, null)).thenReturn(cursor);
+
+        when(cursor.getColumnIndex(anyString())).thenReturn(1,2);
+        when(cursor.moveToNext()).thenReturn(true, false);
+        when(cursor.getLong(anyInt())).thenReturn(PARTICIPANT_ID);
+        when(cursor.getString(anyInt())).thenReturn(PARTICIPANT_NAME);
+
+        final List<Participant> users = participantDataStore.getAllParticipantsFor(section);
+        assertThat(users.size(),is(1));
+        assertThat(users.get(0).getId(),is(PARTICIPANT_ID));
+        assertThat(users.get(0).getName(),is(PARTICIPANT_NAME));
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

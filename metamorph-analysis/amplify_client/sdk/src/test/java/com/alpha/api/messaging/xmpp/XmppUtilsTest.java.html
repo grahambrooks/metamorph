@@ -1,0 +1,120 @@
+<html><head><title>XmppUtilsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppUtilsTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/amplify_client/XmppUtilsTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.runners.Parameterized.Parameters;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+@RunWith(Parameterized.class)
+public class XmppUtilsTest {
+
+    private final String inputName;
+    private final String sanitizedName;
+    private AmplifyXmppConnection connection;
+
+    public XmppUtilsTest(String inputName, String sanitizedName) {
+        this.inputName = inputName;
+        this.sanitizedName = sanitizedName;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][]{
+                {"Aimé", "amp_aim_"},
+                {"Françis", "amp_fran_is"},
+                {"@$%#$%  ", "amp_______"},
+        };
+        return Arrays.asList(data);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        connection = mock(AmplifyXmppConnection.class);
+
+    }
+
+    @Test
+    public void shouldSanitizeName() throws Exception {
+        assertThat(XmppUtils.addPrefixAndSanitize(inputName), is(sanitizedName));
+    }
+
+    @Test
+    public void shouldTurnOnReconnectionWhenConnecting() throws Exception {
+        XmppUtils.connectIfNecessary(connection);
+
+        verify(connection).turnOnAutoReconnection();
+    }
+
+    @Test
+    public void shouldTurnOnReconnectionWhenConnectAndAuthenticateIfNecessary() throws Exception {
+        XmppUtils.connectAndAuthenticateIfNecessary(connection, "", "");
+
+        verify(connection).turnOnAutoReconnection();
+    }
+
+    @Test
+    public void shouldTurnOnReconnectionWhenDisconnecting() throws Exception {
+        XmppUtils.disconnectIfNecessary(connection);
+
+        verify(connection).turnOffAutoReconnection();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

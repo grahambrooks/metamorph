@@ -1,0 +1,80 @@
+<html><head><title>CoursePlaylistsCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CoursePlaylistsCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/CoursePlaylistsCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.widget.CursorAdapter;
+import android.widget.SimpleCursorAdapter;
+import com.alpha.api.repository.sqlite.Order;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.amplify.R;
+
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.asStrings;
+import static com.alpha.api.repository.sqlite.TableColumn.name;
+
+public class CoursePlaylistsCursorAdapter extends SimpleCursorAdapter {
+
+    private static final String[] FROM = asStrings(TableColumn.name);
+    private static final int[] TO = new int[]{R.id.library_course_name};
+
+    public CoursePlaylistsCursorAdapter(Context context) {
+        super(context, R.layout.library_course_row, getCursor(context.getContentResolver()), FROM, TO, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+    }
+
+    private static Cursor getCursor(ContentResolver contentResolver) {
+        return contentResolver.query(Table.COURSES.uri(), asStrings(_id, name), "", new String[]{}, Order.ASC.by(name));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

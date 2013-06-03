@@ -1,0 +1,98 @@
+<html><head><title>DiscussionCommentsCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DiscussionCommentsCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/DiscussionCommentsCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.adapters.ContentJsonCursorAdapter;
+import com.alpha.api.domains.Comment;
+import com.alpha.date.DateFormats;
+import com.amplify.R;
+import com.google.inject.Inject;
+
+public class DiscussionCommentsCursorAdapter extends ContentJsonCursorAdapter<Comment> {
+
+    private static final int[] AUTHOR_COLOR_LIST = new int[]{
+            R.color.convo_color_green,
+            R.color.convo_color_light_blue,
+            R.color.convo_color_purple,
+            R.color.convo_color_light_orange
+    };
+
+    @Inject
+    public DiscussionCommentsCursorAdapter(Context context) {
+        super(context, R.layout.discussion_comment_row);
+    }
+
+    @Override
+    protected void populateView(View view, Comment comment) {
+        final int position = getCursor().getPosition();
+
+        final boolean isEvenRow = (position % 2) == 0;
+        view.setBackgroundResource(isEvenRow ?
+                R.drawable.discussion_comment_row_background_selector :
+                R.drawable.discussion_comment_row_alternate_background_selector
+        );
+
+        final int colorIndex = position % AUTHOR_COLOR_LIST.length;
+        final int color = getContext().getResources().getColor(AUTHOR_COLOR_LIST[colorIndex]);
+        TextView authorText = (TextView) view.findViewById(R.id.comment_author);
+        authorText.setTextColor(color);
+        authorText.setText(comment.getAuthor().getName());
+
+        TextView commentText = (TextView) view.findViewById(R.id.comment_content);
+        commentText.setText(comment.getText());
+
+        TextView createdDate = (TextView) view.findViewById(R.id.comment_timestamp);
+        createdDate.setText(DateFormats.formatPastDateToDefaultStyle(comment.getCreatedOn()));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

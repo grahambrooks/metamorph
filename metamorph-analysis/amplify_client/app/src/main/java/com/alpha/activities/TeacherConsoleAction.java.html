@@ -1,0 +1,143 @@
+<html><head><title>TeacherConsoleAction.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleAction.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/TeacherConsoleAction.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.activities.actions.ActionContext;
+import com.alpha.activities.actions.PostActionContext;
+import com.alpha.activities.events.TeacherConsoleActivityChangeEvent;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.services.StartGoResearchTask;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import roboguice.util.SafeAsyncTask;
+
+import static com.alpha.api.utilities.ReflectionUtils.newInstanceOf;
+
+public class TeacherConsoleAction {
+
+    private final SessionTaskFactory sessionTaskFactory;
+    private final SectionTaskFactory sectionTaskFactory;
+    private final UserService userService;
+    private final Context context;
+    private final EventBus eventBus;
+    private ActionContext actionContext;
+
+    @Inject
+    public TeacherConsoleAction(SessionTaskFactory sessionTaskFactory, SectionTaskFactory sectionTaskFactory, UserService userService, Context context, EventBus eventBus) {
+        this.sessionTaskFactory = sessionTaskFactory;
+        this.sectionTaskFactory = sectionTaskFactory;
+        this.userService = userService;
+        this.context = context;
+        this.eventBus = eventBus;
+        this.actionContext = ActionContext.NO_ACTION_CONTEXT;
+    }
+
+    public void resetState() {
+        actionContext = ActionContext.NO_ACTION_CONTEXT;
+    }
+
+    public void startGoResearch() {
+        StartGoResearchTask goResearchTask = sessionTaskFactory.createGoResearchTask();
+        goResearchTask.execute();
+    }
+
+    public void start(Class<? extends ActionContext> type) {
+        actionContext = newInstanceOf(type, context, sessionTaskFactory, sectionTaskFactory, userService);
+    }
+
+    public void startAndLaunch(Context context, Class<? extends ActionContext> type) {
+        start(type);
+        context.startActivity(new Intent(context, actionContext.activityType()));
+    }
+
+    public boolean isRunning(Class<? extends ActionContext> type) {
+        return actionContext.isOfType(type);
+    }
+
+    public void finishInClassActivity(boolean endingSession) {
+        if (!endingSession) {
+            SafeAsyncTask taskToCompleteAction = actionContext.getTaskToCompleteAction();
+
+            if (taskToCompleteAction != null) {
+                taskToCompleteAction.execute();
+            }
+            updateParticipants();
+        }
+        actionContext = ActionContext.NO_ACTION_CONTEXT;
+        eventBus.post(new TeacherConsoleActivityChangeEvent());
+    }
+
+    public void updateParticipants() {
+        if (PostActionContext.class.isInstance(actionContext)) {
+            PostActionContext postActionContext = (PostActionContext) actionContext;
+            QuickActivitySettings activitySettings = postActionContext.getActivitySettings();
+            activitySettings.addParticipants(userService.getUser().getLiveSection().getActiveParticipants());
+            postActionContext.getTaskToUpdatePostParticipants(activitySettings.getPostId(), activitySettings.getActiveParticipantsIds()).execute();
+        }
+    }
+
+    public String getName() {
+        return actionContext.getActionName();
+    }
+
+    public boolean isActive() {
+        return !ActionContext.NO_ACTION_CONTEXT.equals(actionContext);
+    }
+
+    public void relaunch() {
+        actionContext.relaunch();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

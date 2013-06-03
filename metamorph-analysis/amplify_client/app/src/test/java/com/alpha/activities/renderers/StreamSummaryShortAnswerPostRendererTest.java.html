@@ -1,0 +1,174 @@
+<html><head><title>StreamSummaryShortAnswerPostRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummaryShortAnswerPostRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummaryShortAnswerPostRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamSummaryShortAnswerPostRendererTest {
+
+    private StreamSummaryShortAnswerPostRenderer renderer;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private Post post;
+
+    private ViewGroup postView;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        Resources resources = Robolectric.application.getResources();
+
+        postView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+        renderer = new StreamSummaryShortAnswerPostRenderer(userService, resources, post);
+    }
+
+    @Test
+    public void shouldUseShortAnswerIconAsPostIcon() {
+        View renderedPostView = renderer.renderView(postView);
+
+        ImageView imageView = (ImageView) renderedPostView.findViewById(R.id.notebook_post_icon);
+        Drawable drawable = postView.getContext().getResources().getDrawable(R.drawable.icn_stream_shortanswer);
+
+        assertThat(imageView.getDrawable(), is(drawable));
+    }
+
+    @Test
+    public void shouldRenderStudentHasNotAnswered() {
+        when(userService.isStudent()).thenReturn(true);
+
+        View renderedPostView = renderer.renderView(postView);
+
+        assertThat(((TextView) renderedPostView.findViewById(R.id.notebook_post_title)).getText().toString(),
+                is("You have not responded to a Short Answer"));
+    }
+
+    @Test
+    public void shouldRenderStudentAnswerAsPostContent() {
+        setUpStudent();
+
+        View renderedPostView = renderer.renderView(postView);
+
+        ViewGroup postContentContainer = (ViewGroup) renderedPostView.findViewById(R.id.notebook_post_content);
+        assertThat(((TextView) renderedPostView.findViewById(R.id.notebook_post_title)).getText().toString(),
+                is("You responded to a Short Answer"));
+        assertThat(((TextView) postContentContainer.getChildAt(0)).getText().toString(), is("Yay, no classes today!"));
+    }
+
+    @Test
+    public void shouldSetStudentPostContentToVisible() {
+        setUpStudent();
+
+        View renderedPostView = renderer.renderView(postView);
+
+        assertThat(renderedPostView.findViewById(R.id.notebook_post_content).getVisibility(), is(View.VISIBLE));
+    }
+
+    private void setUpStudent() {
+        PostAuthor postAuthor = mock(PostAuthor.class);
+        User user = mock(User.class);
+
+        Long userId = 100L;
+        when(postAuthor.getId()).thenReturn(userId);
+        when(user.getId()).thenReturn(userId);
+        when(user.asAuthor()).thenReturn(postAuthor);
+        when(userService.getUser()).thenReturn(user);
+        when(post.getQuickShortAnswerResponses()).thenReturn(asList(new QuickShortAnswerResponse("Yay, no classes today!", postAuthor)));
+        when(userService.isStudent()).thenReturn(true);
+    }
+
+    @Test
+    public void shouldRenderTitleAsShortAnswerWasIssuedForTeacher() {
+        when(userService.isTeacher()).thenReturn(true);
+
+        View renderedPostView = renderer.renderView(postView);
+
+
+        assertThat(((TextView) renderedPostView.findViewById(R.id.notebook_post_title)).getText().toString(),
+                is("You issued a Short Answer"));
+    }
+
+    @Test
+    public void shouldSetTeacherPostContentToGone() {
+        when(userService.isTeacher()).thenReturn(true);
+        View renderedPostView = renderer.renderView(postView);
+
+        assertThat(renderedPostView.findViewById(R.id.notebook_post_content).getVisibility(), is(View.GONE));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

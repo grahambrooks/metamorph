@@ -1,0 +1,108 @@
+<html><head><title>AppDrawerAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AppDrawerAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/AppDrawerAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.app.Activity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import org.slf4j.Logger;
+
+import javax.inject.Inject;
+
+public class AppDrawerAdapter extends AppInfoResolvingAdapter {
+    private final Activity context;
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    @Inject
+    public AppDrawerAdapter(Activity context) {
+        super(context, R.layout.app_drawer_icon, R.id.app_icon_text_view);
+        this.context = context;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+        if (view == null) {
+            view = super.getView(position, convertView, parent); //NOSONAR
+        }
+        SundaeAppInfo sundaeAppInfo = getItem(position);
+
+        TextView iconView = (TextView) view.findViewById(R.id.app_icon_text_view);
+
+        loadLabel(sundaeAppInfo, iconView);
+        loadIcon(sundaeAppInfo, iconView);
+        setupClickEvent(sundaeAppInfo, iconView);
+        return view;
+    }
+
+    private void loadIcon(SundaeAppInfo sundaeAppInfo, TextView iconView) {
+        iconView.setCompoundDrawables(null, sundaeAppInfo.getAppIcon(), null, null);
+    }
+
+    protected void setupClickEvent(final SundaeAppInfo sundaeAppInfo, TextView iconView) {
+        iconView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    context.startActivity(launchActivityForPackage(sundaeAppInfo.getAppPackage()));
+                } catch (Exception ex) {
+                    LOGGER.error("Exception while trying to launch " + sundaeAppInfo.getAppPackage() + ": ", ex);
+                }
+            }
+        });
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

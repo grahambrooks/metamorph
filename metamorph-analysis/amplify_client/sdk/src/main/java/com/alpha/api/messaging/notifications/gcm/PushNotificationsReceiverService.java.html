@@ -1,0 +1,200 @@
+<html><head><title>PushNotificationsReceiverService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PushNotificationsReceiverService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/notifications/gcm/amplify_client/PushNotificationsReceiverService.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.notifications.gcm;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.api.messaging.notifications.events.GCMRegisteredEvent;
+import com.alpha.api.messaging.notifications.events.GCMRegistrationErrorEvent;
+import com.alpha.api.messaging.notifications.events.GCMUnregisteredEvent;
+import com.alpha.api.messaging.notifications.events.SessionStartMessageEvent;
+import com.alpha.api.services.factory.GCMStatsTaskFactory;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.logging.LogUtils;
+import com.google.android.gcm.GCMBaseIntentService;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import org.slf4j.Logger;
+import roboguice.RoboGuice;
+import roboguice.util.RoboContext;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class PushNotificationsReceiverService extends GCMBaseIntentService implements RoboContext {
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final String COLLAPSE_KEY_POSTS_REFRESH = "posts_refresh";
+    public static final String COLLAPSE_KEY_ROSTER_REFRESH = "roster_refresh";
+    public static final String COLLAPSE_KEY_SESSION_STARTED = "session_started";
+    public static final String COLLAPSE_KEY = "collapse_key";
+    public static final String DATA_KEY_SECTION_ID = "section_id";
+    public static final String DATA_KEY_TEACHER_NAME = "teacher_name";
+    public static final String AMPLIFY_MESSAGE_ID = "amplify_message_id";
+
+    private final Map<Key<?>,Object> scopedObjects = new HashMap<Key<?>, Object>();
+
+    @Inject
+    private UserTaskFactory userTaskFactory;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private GCMStatsTaskFactory gcmStatsTaskFactory;
+    @Inject
+    private PushNotificationsFacade pushNotificationFacade;
+
+    public PushNotificationsReceiverService() {
+        super(PushNotificationsFacade.GOOGLE_PROJECT_NUMBER);
+    }
+
+    @Override
+    public void onCreate() {
+        final Injector injector = RoboGuice.getInjector(this);
+        injector.injectMembers(this);
+        super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        try {
+            RoboGuice.destroyInjector(this);
+        } finally {
+            super.onDestroy();
+        }
+    }
+
+    @Override
+    protected void onMessage(final Context context, Intent intent) {
+        Bundle bundleExtras = intent.getExtras();
+        String collapse_key = bundleExtras.getString(COLLAPSE_KEY);
+
+        gcmStatsTaskFactory.updateDeliveredTimeTask(pushNotificationFacade.getCurrentRegistrationId(),
+                bundleExtras.getString(AMPLIFY_MESSAGE_ID)).execute();
+
+        if (collapse_key.equals(COLLAPSE_KEY_POSTS_REFRESH)) {
+            LOGGER.info("Received message to refresh posts");
+            retrievePosts();
+        } else if (collapse_key.equals(COLLAPSE_KEY_ROSTER_REFRESH)) {
+            LOGGER.info("Received message to refresh user information");
+            refreshUserInformation();
+        } else if (collapse_key.equals(COLLAPSE_KEY_SESSION_STARTED)) {
+            LOGGER.info("Received message to start session");
+            fireStartSessionEvent(bundleExtras);
+        } else {
+            throw new IllegalArgumentException("Unknown collapse_key value in push notification");
+        }
+    }
+
+    @Override
+    protected void onDeletedMessages(Context context, int total) {
+        LOGGER.info("%d messages were deleted while the device was idle", total);
+    }
+
+    private void fireStartSessionEvent(Bundle bundleExtras) {
+        LOGGER.info("Received push notification for start session");
+        if (!bundleExtras.containsKey(DATA_KEY_SECTION_ID) || !bundleExtras.containsKey(DATA_KEY_TEACHER_NAME)) {
+            LOGGER.error("Push notification did not contain a section Id or teacher name, ignoring");
+            return;
+        }
+        Long sectionId = Long.parseLong(bundleExtras.getString(DATA_KEY_SECTION_ID));
+        String teacherName = bundleExtras.getString(DATA_KEY_TEACHER_NAME);
+        LOGGER.info("Starting session for section {}", sectionId);
+        eventBus.post(new SessionStartMessageEvent(sectionId, teacherName));
+
+    }
+
+    private void refreshUserInformation() {
+        LOGGER.info("Retrieved the roster refresh message");
+        userTaskFactory.createUserRefreshTask().execute();
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void retrievePosts() {
+        startService(new Intent(this, RetrievePostsService.class));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onError(Context context, String errorId) {
+        LOGGER.error("GCM registration return error: " + errorId);
+        eventBus.post(new GCMRegistrationErrorEvent(errorId));
+    }
+
+    @Override
+    protected void onRegistered(Context context, String registrationId) {
+        LOGGER.info("Successfully registered with GCM with registration id: "
+                + registrationId);
+        eventBus.post(new GCMRegisteredEvent(registrationId));
+    }
+
+    @Override
+    protected void onUnregistered(Context context, String registrationId) {
+        LOGGER.info("Successfully unregistered from GCM for registration id: "
+                + registrationId);
+        eventBus.post(new GCMUnregisteredEvent(registrationId));
+    }
+
+    @Override
+    public Map<Key<?>, Object> getScopedObjectMap() {
+        return scopedObjects;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

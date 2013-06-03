@@ -1,0 +1,148 @@
+<html><head><title>SundaeAppInfoTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SundaeAppInfoTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/domains/amplify_client/SundaeAppInfoTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import android.graphics.drawable.Drawable;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Course;
+import com.alpha.api.services.Section;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class SundaeAppInfoTest {
+
+    public static final String APP_NAME = "appName";
+
+    @Before</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setup(){
+        initMocks(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldPopulateContentValuesCorrectly() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "appPackage", true, "");
+        Section section = new Section(new Course(1L), 1L, "section_name", "amplifydev@amplifydev.net");
+        ContentValues values = appInfo.asValues(section);
+
+        assertThat(values.getAsString(TableColumn.app_name.name()), is(appInfo.getAppName()));
+        assertThat(values.getAsString(TableColumn.app_package.name()), is(appInfo.getAppPackage()));
+        assertThat(values.getAsLong(TableColumn.section_id.name()), is(1L));
+    }
+
+    @Test
+    public void shouldMarkAmplifyAppForAmplifyDomain() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.amplify", true, "");
+        assertThat(appInfo.isAmplifyApp(), is(true));
+    }
+
+    @Test
+    public void shouldMarkAmplifyAppForAlphaDomain() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.alpha", true, "");
+        assertThat(appInfo.isAmplifyApp(), is(true));
+    }
+
+    @Test
+    public void shouldNotMarkAmplifyAppForGeneralDomain() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.google", true, "");
+        assertThat(appInfo.isAmplifyApp(), is(false));
+    }
+
+    @Test
+    public void shouldMarkOpeakPackagesAsSector() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.opeak.test", false, "");
+        assertThat(appInfo.isSectorApp(), is(true));
+    }
+
+    @Test
+    public void shouldMarkOpeanPeakPackagesAsSector() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.openpeak.test", false, "");
+        assertThat(appInfo.isSectorApp(), is(true));
+    }
+
+    @Test
+    public void shouldNotMarkNonOpenPeakPackagesAsSector() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.go.away", true, "", null);
+        assertThat(appInfo.isSectorApp(), is(false));
+    }
+
+    @Test
+    public void shouldSetBoundsOfIcon() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "appPackage", true, "", mock(Drawable.class));
+        Drawable drawable = appInfo.getAppIcon();
+        verify(drawable).setBounds(0, 0, SundaeAppInfo.ICON_WIDTH, SundaeAppInfo.ICON_HEIGHT);
+    }
+
+    @Test
+    public void shouldNotMarkBrittannicaAsAmplifyApp() {
+        SundaeAppInfo appInfo = new SundaeAppInfo(APP_NAME, "com.amplify.eb.tablet", true, "");
+        assertThat(appInfo.isAmplifyApp(), is(false));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

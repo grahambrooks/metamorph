@@ -1,0 +1,230 @@
+<html><head><title>ApiRequestTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ApiRequestTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/authentication/amplify_client/ApiRequestTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
+import org.junit.Test;
+
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+public class ApiRequestTest {
+
+    private static final String POST_BODY = "PostBody";
+    private static final String BASE_URL = "http://localhost:8080";
+    private static final String KEY = "name1";
+    private static final String VALUE = "value1";
+    private static final String GOOGLE = "http://www.google.com";
+    private static final String YAHOO = "http://www.yahoo.com";
+
+    @Test
+    public void shouldCreatePostRequest() {
+        ApiRequest request = ApiRequest.createPostRequest(BASE_URL, POST_BODY);
+
+        assertThat(request.hasPostBody(), is(true));
+        assertThat(request.postBody(), is(POST_BODY));
+        assertThat(request.url(), is(BASE_URL));
+        assertThat(request.headers(), hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+
+    }
+
+    @Test
+    public void shouldCreateGetRequest() {
+        ApiRequest request = ApiRequest.createGetRequest(BASE_URL);
+
+        assertThat(request.isGet(), is(true));
+        assertThat(request.postBody(), is(nullValue()));
+        assertThat(request.url(), is(BASE_URL));
+        assertThat(request.headers(), hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+    }
+
+    @Test
+    public void shouldAllowAddingHeaderValues() {
+        ApiRequest request = ApiRequest.createGetRequest(BASE_URL);
+        request.addHeader("headerName1", "headerValue1");
+
+        Map<String,String> headers = request.headers();
+        assertThat(headers.size(), is(2));
+        assertThat(headers, hasEntry("headerName1", "headerValue1"));
+
+        request.addHeader("headerName2", "headerValue2");
+        assertThat(headers.size(), is(3));
+        assertThat(headers, hasEntry("headerName2", "headerValue2"));
+    }
+
+    @Test
+    public void shouldAppendRequestParametersToUrl() {
+        ApiRequest request = ApiRequest.createGetRequest(BASE_URL);
+        request.addParameter(KEY, VALUE);
+        request.addParameter("name2", "value2");
+
+        assertThat(request.url(), is("http://localhost:8080?name1=value1&name2=value2"));
+    }
+
+    @Test
+    public void requestsWithSameUrlShouldBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+
+        assertEquality(request1, request2);
+    }
+
+    @Test
+    public void requestWithSameParametersAndBaseUrlShouldBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        request1.addParameter(KEY, VALUE);
+
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+        request2.addParameter(KEY, VALUE);
+
+        assertEquality(request1, request2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowBlankBodyInPostRequest() {
+        ApiRequest.createPostRequest(BASE_URL, null);
+        ApiRequest.createPostRequest(BASE_URL, "");
+        ApiRequest.createPostRequest(BASE_URL, "  ");
+        ApiRequest.createPostRequest(BASE_URL, "\t ");
+    }
+
+    @Test
+    public void requestWithSameHeadersAndBaseUrlShouldBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        request1.addHeader(KEY, VALUE);
+
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+        request2.addHeader(KEY, VALUE);
+
+        assertEquality(request1, request2);
+    }
+
+    @Test
+    public void requestsWithSameUrlAndParametersAndHeadersShouldBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        request1.addHeader(KEY, VALUE);
+        request1.addParameter(KEY, VALUE);
+
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+        request2.addHeader(KEY, VALUE);
+        request2.addParameter(KEY, VALUE);
+
+        assertEquality(request1, request2);
+    }
+
+    @Test
+    public void requestsWithSameUrlButDifferentParametersShouldNotBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        request1.addParameter("name", "value");
+
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+
+        assertInequality(request1, request2);
+    }
+
+    @Test
+    public void requestsWithSameUrlButDifferentHeadersShouldNotBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(BASE_URL);
+        request1.addHeader("name", "value");
+
+        ApiRequest request2 = ApiRequest.createGetRequest(BASE_URL);
+
+        assertInequality(request1, request2);
+    }
+
+    @Test
+    public void requestsWithDifferentUrlShouldNotBeEqual() {
+        ApiRequest request1 = ApiRequest.createGetRequest(GOOGLE);
+        ApiRequest request2 = ApiRequest.createGetRequest(YAHOO);
+
+        assertInequality(request1, request2);
+    }
+
+    @Test
+    public void shouldIncludeHeaderValuesInToString() {
+        ApiRequest request = ApiRequest.createGetRequest(GOOGLE);
+
+        assertThat(request.toString(), containsString(GOOGLE));
+        assertThat(request.toString(), containsString(HttpHeaders.CONTENT_TYPE + "=" + MediaType.JSON_UTF_8));
+    }
+
+    @Test
+    public void shouldIncludeBodyInToString() {
+        final String body = "the body is hello";
+        final ApiRequest request = ApiRequest.createPostRequest(GOOGLE, body);
+
+        assertThat(request.toString(), containsString(body));
+    }
+
+    @Test
+    public void shouldCreatePutRequest() {
+        ApiRequest request = ApiRequest.createPutRequest(BASE_URL, POST_BODY);
+
+        assertThat(request.hasPostBody(), is(true));
+        assertThat(request.postBody(), is(POST_BODY));
+        assertThat(request.url(), is(BASE_URL));
+        assertThat(request.headers(), hasEntry(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString()));
+
+    }
+    private void assertInequality(ApiRequest request1, ApiRequest request2) {
+        assertThat(request1, is(not(sameInstance(request2))));
+        assertThat(request1, is(not(equalTo(request2))));
+    }
+
+    private void assertEquality(ApiRequest request1, ApiRequest request2) {
+        assertThat(request1, is(not(sameInstance(request2))));
+        assertThat(request1, is(equalTo(request2)));
+        assertThat(request1.hashCode(), is(equalTo(request2.hashCode())));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

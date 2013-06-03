@@ -1,0 +1,204 @@
+<html><head><title>QuickPollTeacherActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollTeacherActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollTeacherActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.services.ModeratorSessionService;
+import com.alpha.api.services.ModeratorSessionServiceConnection;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.builders.PostBuilder;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollTeacherActivityTest {
+
+    private static final Long POST_ID = 33L;
+
+    @Inject
+    private QuickPollTeacherActivity activity;
+
+    @Mock
+    private Teacher user;
+
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private PostService postService;
+
+    @Mock
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+
+    @Mock
+    private Toaster toaster;
+
+    private View twoAnswersButton;
+    private View threeAnswersButton;
+    private View fourAnswersButton;
+    private View submitButton;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        given(moderatorSessionServiceConnection.getService()).willReturn(moderatorSessionService);
+
+        ActivityTestInjector.newInjector(this, QuickPollTeacherActivity.class)
+                .bindInstance(ModeratorSessionServiceConnection.class, moderatorSessionServiceConnection)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .bindInstance(Toaster.class, toaster)
+                .configureActivity();
+
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.isLocked()).willReturn(false);
+        given(networkConnectivity.isConnected()).willReturn(true);
+
+        activity.onCreate(null);
+        activity.onResume();
+
+        twoAnswersButton = activity.findViewById(R.id.two_responses_btn);
+        threeAnswersButton = activity.findViewById(R.id.three_responses_btn);
+        fourAnswersButton = activity.findViewById(R.id.four_responses_btn);
+        submitButton = activity.findViewById(R.id.submit_button);
+    }
+
+    @Test
+    public void shouldLaunchNextActivityAfterSelectingNumberOfAnswers() {
+        Post post = new PostBuilder().withPostType(PostType.QUICKPOLL).build();
+        post.setId(POST_ID);
+        post.setNumberOfQuickPollAnswers(4);
+
+        twoAnswersButton.performClick();
+        submitButton.performClick();
+
+        assertThat(Robolectric.getShadowApplication().getNextStartedActivity().getComponent().getClassName(),
+                is(QuickPollGraphActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldDisableAllAnswersButtonWhenClickedToPreventSendingMultipleRequests() {
+        twoAnswersButton.performClick();
+        submitButton.performClick();
+
+        assertThat(twoAnswersButton.isEnabled(), is(false));
+        assertThat(threeAnswersButton.isEnabled(), is(false));
+        assertThat(fourAnswersButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldToastIfNoNetworkAvailableWhenLaunchingQuickPoll() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+
+        twoAnswersButton.performClick();
+        submitButton.performClick();
+
+        verify(toaster).makeToast(R.string.network_not_connected);
+    }
+
+    @Test
+    public void shouldToastStudentUnlockMessageIfSettingsIsLockedWhenLaunchingQuickPoll() {
+        when(controlSettingsModel.isLocked()).thenReturn(true);
+
+        twoAnswersButton.performClick();
+        submitButton.performClick();
+
+        verify(toaster).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldNotToastStudentUnlockMessageIfSettingsIsNotLockedWhenLaunchingQuickPoll() {
+        when(controlSettingsModel.isLocked()).thenReturn(false);
+
+        twoAnswersButton.performClick();
+        submitButton.performClick();
+
+        verify(toaster, never()).makeToast(R.string.student_tablets_unlocked);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

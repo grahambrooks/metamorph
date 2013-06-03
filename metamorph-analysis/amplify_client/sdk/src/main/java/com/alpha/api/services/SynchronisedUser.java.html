@@ -1,0 +1,162 @@
+<html><head><title>SynchronisedUser.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SynchronisedUser.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/SynchronisedUser.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.lock.GlobalInformationLock;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Any information for the user that is updated in the
+ * UserRefreshTask should be put in here and wrapped in a try/finally block
+ * while requesting permission from the global informaiton lock.
+ * If you add any methods here that directly access any of the fields here,
+ * then also wrap it in a try/finally block.
+ *
+ * And dont change the spelling of Synchronised to use the American spelling >_>
+ */
+public abstract class SynchronisedUser {
+    private static final Section NO_SECTION = null;
+
+    private Section currentSection;
+    private final List<Section> sections;
+    private final String name;
+    private final transient GlobalInformationLock globalInformationLock;
+
+    public SynchronisedUser(List<Section> sections, String name, GlobalInformationLock globalInformationLock) {
+        this.sections = sections;
+        this.name = name;
+        this.globalInformationLock = globalInformationLock;
+    }
+
+    public Collection<Section> getSections() {
+        return callWithReadLock(new AmplifyCallable<Collection<Section>>() {
+            @Override
+            public Collection<Section> call() {
+                return Collections.unmodifiableCollection(sections);
+            }
+        });
+    }
+
+    public Section getCurrentSection() {
+        return callWithReadLock(new AmplifyCallable<Section>() {
+            @Override
+            public Section call() {
+                return currentSection;
+            }
+        });
+    }
+
+    public void setCurrentSection(final Long sectionId) {
+        callWithReadLock(new AmplifyCallable<Void>() {
+            @Override
+            public Void call() {
+                currentSection = Iterables.find(sections, new Predicate<Section>() {
+                    @Override
+                    public boolean apply(Section section) {
+                        return section.getId().equals(sectionId);
+                    }
+                });
+                return null;
+            }
+        });
+    }
+
+    public String getName() {
+        return callWithReadLock(new AmplifyCallable<String>() {
+            @Override
+            public String call() {
+                return name;
+            }
+        });
+    }
+
+    public Section getSectionWithId(final Long sectionId) {
+        return callWithReadLock(new AmplifyCallable<Section>() {
+
+            @Override
+            public Section call() {
+                for (Section section : sections) {
+                    if (section.getId().equals(sectionId)) {
+                        return section;
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    public void setCurrentSectionToNone() {
+        callWithReadLock(new AmplifyCallable<Void>() {
+            @Override
+            public Void call() {
+                currentSection = NO_SECTION;
+                return null;
+            }
+        });
+    }
+
+    /**
+     * We need the this check as the User object we get when registering is
+     * from unmarshalling JSON. As a result, the transient global lock object is null
+     */
+    protected <T> T callWithReadLock(AmplifyCallable<T> callable) {
+        if (globalInformationLock != null) {
+            return globalInformationLock.callWithReadLock(callable);
+        }
+        return callable.call();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

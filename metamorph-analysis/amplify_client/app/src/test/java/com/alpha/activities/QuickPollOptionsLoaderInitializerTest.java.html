@@ -1,0 +1,292 @@
+<html><head><title>QuickPollOptionsLoaderInitializerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollOptionsLoaderInitializerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollOptionsLoaderInitializerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">19</span>
+    <progress max="100" value="19"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.database.Cursor;
+import com.alpha.activities.adapters.QuickPollOptionsCursorAdapter;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.activities.QuickPollOptionsLoaderInitializer.OPTION_A_LOADER_ID;
+import static com.alpha.activities.QuickPollOptionsLoaderInitializer.OPTION_B_LOADER_ID;
+import static com.alpha.activities.QuickPollOptionsLoaderInitializer.OPTION_C_LOADER_ID;
+import static com.alpha.activities.QuickPollOptionsLoaderInitializer.OPTION_D_LOADER_ID;
+import static com.alpha.api.domains.QuickPollResponseOptions.A;
+import static com.alpha.api.domains.QuickPollResponseOptions.B;
+import static com.alpha.api.domains.QuickPollResponseOptions.C;
+import static com.alpha.api.domains.QuickPollResponseOptions.D;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollOptionsLoaderInitializerTest {
+    @Mock
+    private QuickPollOptionsCursorAdapter cursorAdapterForOptionsA;
+    @Mock
+    private QuickPollOptionsCursorAdapter cursorAdapterForOptionsB;
+    @Mock
+    private QuickPollOptionsCursorAdapter cursorAdapterForOptionsC;
+    @Mock
+    private QuickPollOptionsCursorAdapter cursorAdapterForOptionsD;
+    @Mock
+    private CursorLoader cursorLoader;
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private LoaderManager loaderManager;
+    private QuickPollOptionsLoaderInitializer loaderInitializer;
+    private static final Long POST_ID = 1l;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        loaderInitializer = new QuickPollOptionsLoaderInitializer(Robolectric.application, POST_ID);
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderForOptionA() {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(OPTION_A_LOADER_ID, null);
+
+        assertCursorLoaderUri(cursorLoader);
+        assertCursorLoaderSelection(cursorLoader);
+        assertThat(cursorLoader.getSelectionArgs()[1], is(A.name()));
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderForOptionB() {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(OPTION_B_LOADER_ID, null);
+
+        assertCursorLoaderUri(cursorLoader);
+        assertCursorLoaderSelection(cursorLoader);
+        assertThat(cursorLoader.getSelectionArgs()[1], is(B.name()));
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderForOptionC() {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(OPTION_C_LOADER_ID, null);
+
+        assertCursorLoaderUri(cursorLoader);
+        assertCursorLoaderSelection(cursorLoader);
+        assertThat(cursorLoader.getSelectionArgs()[1], is(C.name()));
+    }
+
+    @Test
+    public void shouldReturnCursorLoaderForOptionD() {
+        CursorLoader cursorLoader = (CursorLoader) loaderInitializer.onCreateLoader(OPTION_D_LOADER_ID, null);
+
+        assertCursorLoaderUri(cursorLoader);
+        assertCursorLoaderSelection(cursorLoader);
+        assertThat(cursorLoader.getSelectionArgs()[1], is(D.name()));
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadFinishedForOptionA() {
+        when(cursorLoader.getId()).thenReturn(OPTION_A_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsA, OPTION_A_LOADER_ID);
+        loaderInitializer.onLoadFinished(cursorLoader, cursor);
+
+        verify(cursorAdapterForOptionsA).swapCursor(cursor);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadFinishedForOptionB() {
+        when(cursorLoader.getId()).thenReturn(OPTION_B_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsB, OPTION_B_LOADER_ID);
+        loaderInitializer.onLoadFinished(cursorLoader, cursor);
+
+        verify(cursorAdapterForOptionsB).swapCursor(cursor);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadFinishedForOptionC() {
+        when(cursorLoader.getId()).thenReturn(OPTION_C_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsC, OPTION_C_LOADER_ID);
+        loaderInitializer.onLoadFinished(cursorLoader, cursor);
+
+        verify(cursorAdapterForOptionsC).swapCursor(cursor);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldSwapCursorOnLoadFinishedForOptionD() {
+        when(cursorLoader.getId()).thenReturn(OPTION_D_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsD, OPTION_D_LOADER_ID);
+        loaderInitializer.onLoadFinished(cursorLoader, cursor);
+
+        verify(cursorAdapterForOptionsD).swapCursor(cursor);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldInitialiazeCursorLoaderForOptionA() {
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsA, OPTION_A_LOADER_ID);
+
+        verify(loaderManager).initLoader(OPTION_A_LOADER_ID, null, loaderInitializer);
+    }
+
+    @Test
+    public void shouldInitialiazeCursorLoaderForOptionB() {
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsB, OPTION_B_LOADER_ID);
+
+        verify(loaderManager).initLoader(OPTION_B_LOADER_ID, null, loaderInitializer);
+    }
+
+    @Test
+    public void shouldInitialiazeCursorLoaderForOptionC() {
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsC, OPTION_C_LOADER_ID);
+
+        verify(loaderManager).initLoader(OPTION_C_LOADER_ID, null, loaderInitializer);
+    }
+
+    @Test
+    public void shouldInitialiazeCursorLoaderForOptionD() {
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsD, OPTION_D_LOADER_ID);
+
+        verify(loaderManager).initLoader(OPTION_D_LOADER_ID, null, loaderInitializer);
+    }
+
+    @Test
+    public void shouldResetCursorForOptionA() {
+        when(cursorLoader.getId()).thenReturn(OPTION_A_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsA, OPTION_A_LOADER_ID);
+        loaderInitializer.onLoaderReset(cursorLoader);
+
+        verify(cursorAdapterForOptionsA).swapCursor(null);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldResetCursorForOptionB() {
+        when(cursorLoader.getId()).thenReturn(OPTION_B_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsB, OPTION_B_LOADER_ID);
+        loaderInitializer.onLoaderReset(cursorLoader);
+
+        verify(cursorAdapterForOptionsB).swapCursor(null);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+
+    @Test
+    public void shouldResetCursorForOptionC() {
+        when(cursorLoader.getId()).thenReturn(OPTION_C_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsC, OPTION_C_LOADER_ID);
+        loaderInitializer.onLoaderReset(cursorLoader);
+
+        verify(cursorAdapterForOptionsC).swapCursor(null);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsD, never()).swapCursor(cursor);
+    }
+
+    @Test
+    public void shouldResetCursorForOptionD() {
+        when(cursorLoader.getId()).thenReturn(OPTION_D_LOADER_ID);
+
+        loaderInitializer.register(loaderManager, cursorAdapterForOptionsD, OPTION_D_LOADER_ID);
+        loaderInitializer.onLoaderReset(cursorLoader);
+
+        verify(cursorAdapterForOptionsD).swapCursor(null);
+        verify(cursorAdapterForOptionsA, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsB, never()).swapCursor(cursor);
+        verify(cursorAdapterForOptionsC, never()).swapCursor(cursor);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void assertCursorLoaderUri(CursorLoader cursorLoader) {
+        assertThat(cursorLoader.getUri().toString(), is("content://com.alpha.api.Sundae/posts/" +
+                POST_ID + "/responses"));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void assertCursorLoaderSelection(CursorLoader cursorLoader) {
+        assertThat(cursorLoader.getSelection(), is("post_id = ? AND quick_poll_answer = ?"));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

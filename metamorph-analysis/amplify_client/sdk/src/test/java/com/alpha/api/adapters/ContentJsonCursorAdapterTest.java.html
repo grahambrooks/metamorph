@@ -1,0 +1,240 @@
+<html><head><title>ContentJsonCursorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ContentJsonCursorAdapterTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/adapters/amplify_client/ContentJsonCursorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.adapters;
+
+import android.R;
+import android.content.Context;
+import android.database.Cursor;
+import android.view.View;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.adapters.ContentJsonCursorAdapter.DEFAULT_CONTENT_COLUMN_NAME;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ContentJsonCursorAdapterTest {
+
+    private static final String NAME = "Woo";
+    private static final String JSON = "{\"name\": \"" + NAME + "\"}";
+    @Mock
+    private Context context;
+    @Mock
+    private View view;
+    @Mock
+    private Cursor cursor;
+    private StubModelContentJsonCursorAdapter adapter;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        adapter = new StubModelContentJsonCursorAdapter(context);
+        given(cursor.getColumnIndex(DEFAULT_CONTENT_COLUMN_NAME)).willReturn(0);
+        given(cursor.getString(0)).willReturn(JSON);
+    }
+
+    @Test
+    public void shouldSetModelObjectOnViewAsTag() throws Exception {
+        adapter.bindView(view, context, cursor);
+        verify(view).setTag(new TestModel(NAME));
+    }
+
+    @Test
+    public void shouldInvokeCreateView() throws Exception {
+        adapter.bindView(view, context, cursor);
+        assertThat(adapter.createViewCalled, is(true));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldReturnTheSameModelInstanceFromGetItemThatWasPassedToTheViewEarlier() {
+        StubModelContentJsonCursorAdapter adapterSpy = spy(adapter);
+        when(adapterSpy.getItemFromSuperToAllowSpyingDuringTests(0)).thenReturn(cursor);
+
+        View v = new View(null);
+        adapterSpy.bindView(v, null, cursor);
+        TestModel modelGivenToView = (TestModel) v.getTag();
+        TestModel modelFromGetItem = adapterSpy.getItem(0);
+
+        assertThat(modelFromGetItem, sameInstance(modelGivenToView));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldPasseTheSameModelInstanceToTheViewAsWasReturnedFromGetItemEarlier() {
+        StubModelContentJsonCursorAdapter adapterSpy = spy(adapter);
+        when(adapterSpy.getItemFromSuperToAllowSpyingDuringTests(0)).thenReturn(cursor);
+
+        TestModel modelFromGetItem = adapterSpy.getItem(0);
+        View v = new View(null);
+        adapterSpy.bindView(v, null, cursor);
+        TestModel modelGivenToView = (TestModel) v.getTag();
+
+        assertThat(modelFromGetItem, sameInstance(modelGivenToView));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldClearModelCacheWhenDataChanged() {
+        StubModelContentJsonCursorAdapter adapterSpy = spy(adapter);
+        when(adapterSpy.getItemFromSuperToAllowSpyingDuringTests(0)).thenReturn(cursor);
+
+        TestModel modelFromGetItem = adapterSpy.getItem(0);
+        adapterSpy.notifyDataSetChanged();
+        TestModel newModelFromGetItem = adapterSpy.getItem(0);
+
+        assertThat(modelFromGetItem, not(sameInstance(newModelFromGetItem)));
+    }
+
+    @Test
+    public void shouldClearModelCacheWhenDataInvalidated() {
+        StubModelContentJsonCursorAdapter adapterSpy = spy(adapter);
+        when(adapterSpy.getItemFromSuperToAllowSpyingDuringTests(0)).thenReturn(cursor);
+
+        TestModel modelFromGetItem = adapterSpy.getItem(0);
+        adapterSpy.notifyDataSetInvalidated();
+        TestModel newModelFromGetItem = adapterSpy.getItem(0);
+
+        assertThat(modelFromGetItem, not(sameInstance(newModelFromGetItem)));
+    }
+
+    @Test
+    public void shouldClearModelCacheWhenContentChanged() {
+        StubModelContentJsonCursorAdapter adapterSpy = spy(adapter);
+        when(adapterSpy.getItemFromSuperToAllowSpyingDuringTests(0)).thenReturn(cursor);
+
+        TestModel modelFromGetItem = adapterSpy.getItem(0);
+        adapterSpy.onContentChanged();
+        TestModel newModelFromGetItem = adapterSpy.getItem(0);
+
+        assertThat(modelFromGetItem, not(sameInstance(newModelFromGetItem)));
+    }
+
+    private static class TestModel {
+        public final String name;
+
+        public TestModel(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object o) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            TestModel testModel = (TestModel) o;
+
+            return name.equals(testModel.name);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
+    }
+
+    private static class StubModelContentJsonCursorAdapter extends ContentJsonCursorAdapter<TestModel> {
+        public boolean createViewCalled;
+
+        public StubModelContentJsonCursorAdapter(Context context) {
+            super(context, R.layout.simple_list_item_1);
+        }
+
+        @Override
+        protected void populateView(View view, TestModel model) {
+            createViewCalled = true;
+        }
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

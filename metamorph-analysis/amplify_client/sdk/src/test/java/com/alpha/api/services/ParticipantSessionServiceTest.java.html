@@ -1,0 +1,234 @@
+<html><head><title>ParticipantSessionServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantSessionServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ParticipantSessionServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.JoinSessionFailureEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+
+import static com.alpha.api.services.ApiErrorReason.NO_NETWORK_CONNECTION_AVAILABLE;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ParticipantSessionServiceTest {
+
+    private ParticipantSessionService service;
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private JoinSessionTask joinSessionTask;
+    @Mock
+    private RaiseLowerHandTask raiseHandTask;
+    @Mock
+    private UserService userService;
+    @Mock
+    private Student student;
+    @Mock
+    private SendRaiseLowerHandCallbacks raiseHandCallbacks;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private UpdateStudentWhereaboutsTask updateStudentWhereaboutsTask;
+    @Mock
+    private Section section;
+    @Mock
+    private ClassSession classSession;
+
+    private static final Boolean NOT_CONNECTED = false;
+    private static final Boolean CONNECTED = true;
+
+    @Before
+    public void setUp() throws Exception {
+        Robolectric.getBackgroundScheduler().pause();
+        initMocks(this);
+        internetIs(CONNECTED);
+        Optional<Section> sectionOptional = Optional.absent();
+        given(student.getSession()).willReturn(classSession);
+        given(student.getLiveSectionOld()).willReturn(sectionOptional);
+        service = new ParticipantSessionService(sessionTaskFactory, networkConnectivity, eventBus, userService);
+    }
+
+    @Test
+    public void shouldNotExecuteTaskIfNoNetworkConnectionAvailableWhenJoiningSession() {
+        internetIs(NOT_CONNECTED);
+        service.joinSession(student, section, progressBar);
+        verifyZeroInteractions(sessionTaskFactory);
+        verifyZeroInteractions(joinSessionTask);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfNetworkIsNotConnectedWhenJoiningSession() throws Exception {
+        internetIs(NOT_CONNECTED);
+        service.joinSession(student, section, progressBar);
+        ArgumentCaptor<JoinSessionFailureEvent> eventCaptor = ArgumentCaptor.forClass(JoinSessionFailureEvent.class);
+        verify(eventBus).post(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getReasonForFailure(), is(NO_NETWORK_CONNECTION_AVAILABLE));
+    }
+
+    @Test
+    public void shouldExecuteTaskIfNetworkIsAvailableWhenJoiningSession() throws Exception {
+        internetIs(CONNECTED);
+        when(student.getXmppUsername()).thenReturn("amp_1");
+        when(student.getId()).thenReturn(1L);
+        when(sessionTaskFactory.createJoinSessionTask(student, section, progressBar)).thenReturn(joinSessionTask);
+        service.joinSession(student, section, progressBar);
+        verify(joinSessionTask).execute();
+    }
+
+    @Test
+    public void shouldResetStudentXMPPNameIfStudentHasNotBeenUpdated() {
+        internetIs(CONNECTED);
+        when(userService.getUser()).thenReturn(student);
+        when(student.getXmppUsername()).thenReturn("amp_coolio");
+        when(student.getId()).thenReturn(1L);
+        service.joinSession(student, section, progressBar);
+        verify(student).resetXmppUsername();
+        verify(userService).registerUser(eq(student), Matchers.any(ControlServerRegistrationCallback.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenAttemptingToJoinASessionIfAlreadyPartOfOne() {
+        when(classSession.isOngoing()).thenReturn(true);
+        service.joinSession(student, section, progressBar);
+    }
+
+    @Test
+    public void shouldCreateRaiseHandTask() {
+        Optional<ProgressBar> progress = Optional.of(progressBar);
+        when(sessionTaskFactory.createRaiseLowerHandTask(student, raiseHandCallbacks, progress)).thenReturn(raiseHandTask);
+
+        service.toggleHand(student, raiseHandCallbacks, progress);
+
+        verify(raiseHandTask).execute();
+    }
+
+    @Test
+    public void shouldCallFailureCallbackWhenNetworkNotConnected() {
+        Optional<ProgressBar> progress = Optional.of(progressBar);
+        when(sessionTaskFactory.createRaiseLowerHandTask(student, raiseHandCallbacks, progress)).thenReturn(raiseHandTask);
+
+        internetIs(NOT_CONNECTED);
+
+        service.toggleHand(student, raiseHandCallbacks, progress);
+
+        verifyZeroInteractions(raiseHandTask);
+        verify(raiseHandCallbacks).onFailure(NO_NETWORK_CONNECTION_AVAILABLE);
+    }
+
+    @Test
+    public void shouldNotUpdateStudentWhereaboutsIfNetworkNotConnected() {
+        when(userService.getUser()).thenReturn(student);
+        when(student.hasLiveSection()).thenReturn(true);
+        internetIs(NOT_CONNECTED);
+        service.updateStudentWhereabouts(student);
+        verifyZeroInteractions(sessionTaskFactory);
+        verifyZeroInteractions(updateStudentWhereaboutsTask);
+    }
+
+    @Test
+    public void shouldNotUpdateStudentWhereaboutsWhenNotConnectedToASessionNotConnectedToSession() {
+        when(userService.getUser()).thenReturn(student);
+        when(student.hasLiveSection()).thenReturn(false);
+        service.updateStudentWhereabouts(student);
+
+        verify(sessionTaskFactory, never()).createUpdateStudentWhereaboutsTask(student);
+    }
+
+    @Test
+    public void shouldUpdateStudentWhereaboutsIfConnectedToASession() {
+        when(userService.getUser()).thenReturn(student);
+        when(sessionTaskFactory.createUpdateStudentWhereaboutsTask(student)).thenReturn(updateStudentWhereaboutsTask);
+        internetIs(CONNECTED);
+        when(student.hasLiveSection()).thenReturn(true);
+        service.updateStudentWhereabouts(student);
+        verify(updateStudentWhereaboutsTask).execute();
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void internetIs(boolean connected) {
+        when(networkConnectivity.isConnected()).thenReturn(connected);
+        when(networkConnectivity.isNotConnected()).thenReturn(!connected);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

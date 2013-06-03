@@ -1,0 +1,91 @@
+<html><head><title>TimeTickerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TimeTickerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/utils/amplify_client/TimeTickerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import com.alpha.api.services.events.TimeTickerEndEvent;
+import com.alpha.api.services.events.TimeTickerEvent;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD")
+@RunWith(SundaeRobolectricTestRunner.class)
+public class TimeTickerTest {
+
+    @Mock
+    private EventBus eventBus;
+    private TimeTicker timeTicker;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        timeTicker = new TimeTicker(30000l, 1000l, eventBus);
+    }
+
+    @Test
+    public void shouldPostEventOnTick() {
+        timeTicker.onTick(1L);
+        verify(eventBus).post(isA(TimeTickerEvent.class));
+    }
+
+    @Test
+    public void shouldPostEventOnFinish() {
+        timeTicker.onFinish();
+        verify(eventBus).post(isA(TimeTickerEndEvent.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<html><head><title>MigrationEnabledSQLiteOpenHelper.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MigrationEnabledSQLiteOpenHelper.java</h1>
+<p>Scanned path = core-utils/src/main/java/com/amplify/db/amplify_client/MigrationEnabledSQLiteOpenHelper.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.db;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import com.amplify.log.LogUtils;
+import com.amplify.tasks.TaskFactory;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import roboguice.RoboGuice;
+
+import static com.amplify.db.MigrationReader.MigrationType;
+import static com.amplify.log.LogUtils.error;
+import static com.amplify.log.LogUtils.info;
+
+public abstract class MigrationEnabledSQLiteOpenHelper extends SQLiteOpenHelper {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final Context context;
+    private String name;
+    private final int version;
+    private MigrationReader migrationReader;
+
+    public MigrationEnabledSQLiteOpenHelper(Context context, String name, int version) {
+        this(context, name, version, new MigrationReader());
+    }
+
+    protected MigrationEnabledSQLiteOpenHelper(Context context, String name, int version,
+                                               MigrationReader migrationReader) {
+        super(context, name, null, version);
+        this.context = context;
+        this.name = name;
+        this.version = version;
+        this.migrationReader = migrationReader;
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int fromVersion, int toVersion) {
+        info(LOG, "Performing up migration from version %d to %d", fromVersion, toVersion);
+        for(int nextVersion = fromVersion+1; nextVersion <= toVersion; nextVersion++){
+
+            String migrationSql = migrationReader.getMigration(nextVersion, MigrationType.UP);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if(StringUtils.isBlank(migrationSql)){
+                throw new MigrationFileFormatException(nextVersion);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            info(LOG, "Executing query %s", migrationSql);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            for(String sql : migrationSql.split(";")){
+                db.execSQL(sql);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int fromVersion, int toVersion) {
+        info(LOG, "Performing down migration from version %d to %d", fromVersion, toVersion);
+        for(int nextVersion = fromVersion; nextVersion > toVersion; nextVersion--){
+            String migrationSql = migrationReader.getMigration(nextVersion, MigrationType.DOWN);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if(StringUtils.isBlank(migrationSql)){
+                throw new MigrationFileFormatException(nextVersion);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            for(String sql : migrationSql.split(";")){
+                db.execSQL(sql);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+    }
+
+    public boolean requiresMigration(){
+        //If we dont have a database file then onUpgrade/onDowngrade will not get called.
+        //Android will just call the onCreate method for completely new db's</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(ArrayUtils.isEmpty(context.databaseList())){
+            return false;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        SQLiteDatabase db = null;
+        try{
+            db = context.openOrCreateDatabase(name, Context.MODE_PRIVATE, null);
+            return db.getVersion() != version;
+        } catch(SQLiteException e){
+            error(LOG, "Cannot open db file to check for version",e);
+            return false;
+        } finally {
+            if(db != null){
+                db.close();
+            }
+        }
+
+    }
+
+    /**
+     * Cant inject the task factory as the content provider gets instantiated prior to the
+     * roboguice modules being configured after app install.
+     */
+    public void performMigration(){
+        TaskFactory taskFactory = RoboGuice.getInjector(context).getInstance(TaskFactory.class);
+        taskFactory.createDBMigrationTask(this).execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

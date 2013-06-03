@@ -1,0 +1,93 @@
+<html><head><title>BrowserUtil.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BrowserUtil.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/utilities/amplify_client/BrowserUtil.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.utilities;
+
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.provider.Browser;
+import android.util.Log;
+import com.alpha.logging.LogUtils;
+import org.slf4j.Logger;
+
+// http://stackoverflow.com/questions/5730587/how-to-get-url-string-from-browser
+public class BrowserUtil {
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    public String getRecentlyOpenedUri(ContentResolver contentResolver) {
+        Cursor webLinksCursor = contentResolver.query(Browser.BOOKMARKS_URI, Browser.HISTORY_PROJECTION, null, null, Browser.BookmarkColumns.DATE + " DESC");
+        int row_count = webLinksCursor.getCount();
+
+        Cursor allVisitedUrls = Browser.getAllVisitedUrls(contentResolver);
+        allVisitedUrls.moveToFirst();
+        while (!allVisitedUrls.isAfterLast()) {
+            LOGGER.error("Tests: ", allVisitedUrls.getString(allVisitedUrls.getColumnIndex("url")));
+            allVisitedUrls.moveToNext();
+        }
+
+        int title_column_index = webLinksCursor.getColumnIndexOrThrow(Browser.BookmarkColumns.TITLE);
+        int url_column_index = webLinksCursor.getColumnIndexOrThrow(Browser.BookmarkColumns.URL);
+
+        if ((title_column_index > -1) && (url_column_index > -1) && (row_count > 0)) {
+            webLinksCursor.moveToFirst();
+            while (!webLinksCursor.isAfterLast()) {
+                if (webLinksCursor.getInt(Browser.HISTORY_PROJECTION_BOOKMARK_INDEX) != 1
+                        && !webLinksCursor.isNull(url_column_index)) {
+                    String lastOpenedUrl = webLinksCursor.getString(url_column_index);
+                    Log.i("History", "Last page browsed " + lastOpenedUrl);
+                    return lastOpenedUrl;
+                }
+                webLinksCursor.moveToNext();
+            }
+        }
+        webLinksCursor.close();
+        return null;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

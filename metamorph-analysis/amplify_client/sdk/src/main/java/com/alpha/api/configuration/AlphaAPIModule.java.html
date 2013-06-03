@@ -1,0 +1,114 @@
+<html><head><title>AlphaAPIModule.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AlphaAPIModule.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/configuration/amplify_client/AlphaAPIModule.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.configuration;
+
+
+import com.alpha.api.authentication.AuthTokenCache;
+import com.alpha.api.messaging.ControlServerRegistrar;
+import com.alpha.api.messaging.StudentSession;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.messaging.notifications.tasks.PushNotificationsRegistrationFactory;
+import com.alpha.api.messaging.xmpp.*;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.properties.FeatureManager;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.SharedPreferenceUserService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.GCMStatsTaskFactory;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.AnalyticsAgentProvider;
+import com.amplify.tasks.TaskFactory;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import org.jivesoftware.smack.ConnectionConfiguration;
+
+import static com.google.inject.name.Names.named;
+
+@SuppressWarnings("PMD.CouplingBetweenObjects")
+public class AlphaAPIModule extends AbstractModule {
+
+    public static final String AUTH_DOMAIN = "AUTH_DOMAIN";
+    private final Environment environment;
+    private final FeatureManager featureManager; //NOPMD
+
+    public AlphaAPIModule(Environment environment, FeatureManager featureManager) {
+        this.environment = environment;
+        this.featureManager = featureManager;
+    }
+
+    @Override
+    protected void configure() {
+        bind(Integer.class).annotatedWith(named(AuthTokenCache.AUTH_TOKEN_CACHE_INTERVAL)).toInstance(30);
+        bind(String.class).annotatedWith(named(AUTH_DOMAIN)).toInstance(environment.getAuthDomain());
+        bind(Environment.class).toInstance(environment);
+        bind(UserService.class).to(SharedPreferenceUserService.class).in(Singleton.class);
+        install(new FactoryModuleBuilder().build(SessionTaskFactory.class));
+        install(new FactoryModuleBuilder().build(SectionTaskFactory.class));
+        install(new FactoryModuleBuilder().build(UserTaskFactory.class));
+        install(new FactoryModuleBuilder().build(PushNotificationsRegistrationFactory.class));
+        install(new FactoryModuleBuilder().build(GCMStatsTaskFactory.class));
+        install(new FactoryModuleBuilder().build(TaskFactory.class));
+        bind(ControlServerRegistrar.class).to(XmppServerRegistrar.class).in(Singleton.class);
+        bind(TeacherSession.class).to(XmppTeacherSession.class).in(Singleton.class);
+        bind(StudentSession.class).to(XmppStudentSession.class).in(Singleton.class);
+        bind(MultiUserChatAdapter.class).toProvider(MultiUserChatAdapterProvider.class).in(Singleton.class);
+        bind(AmplifyXmppConnection.class).toProvider(XmppConnectionProvider.class).in(Singleton.class);
+        bind(ConnectionConfiguration.class).toProvider(XmppConnectionConfigurationProvider.class).in(Singleton.class);
+        bind(EventBus.class).in(Singleton.class);
+        bind(DeviceLockingService.class).in(Singleton.class);
+        bind(AnalyticsAgent.class).toProvider(AnalyticsAgentProvider.class).asEagerSingleton();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

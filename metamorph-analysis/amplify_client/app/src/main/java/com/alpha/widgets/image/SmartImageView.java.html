@@ -1,0 +1,247 @@
+<html><head><title>SmartImageView.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SmartImageView.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/image/amplify_client/SmartImageView.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.image;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+import com.alpha.logging.LogUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+
+import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class SmartImageView extends ImageView {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private static final int LOADING_THREADS = 4;
+    private static ExecutorService threadPool = Executors.newFixedThreadPool(LOADING_THREADS);
+
+    private SmartImageTask currentTask;
+
+
+    public SmartImageView(Context context) {
+        super(context);
+    }
+
+    public SmartImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public SmartImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    // Helpers to set image by URL
+    public void setImageUrl(String url) {
+        setImage(new WebImage(url));
+    }
+
+    public void setImageUrl(String url, final Integer fallbackResource) {
+        setImage(new WebImage(url), fallbackResource);
+    }
+
+    public void setImageUrl(String url, final Integer fallbackResource, final Integer loadingResource) {
+        setImage(new WebImage(url), fallbackResource, loadingResource);
+    }
+
+    // Set file uri image
+    public void setFileImageUri(Uri uri, final Integer fallbackResource) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if(uri == null){
+            setImageResource(fallbackResource);
+        } else{</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            InputStream is = null;
+            try {
+                is = getContext().getContentResolver().openInputStream(uri);
+                Drawable d = Drawable.createFromStream(is, null);
+                setImageDrawable(d);
+            } catch (Exception e) {
+                LOG.error("Unable to set ImageView from URI: " + e.toString());
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (getDrawable() == null) {
+            setImageResource(fallbackResource);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    // Set image using SmartImage object</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setImage(final SmartImage image) {
+        setImage(image, null, null);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setImage(final SmartImage image, final Integer fallbackResource) {
+        setImage(image, fallbackResource, fallbackResource);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void setImageBitmap(final Bitmap imageBitmap, final Integer fallbackResource) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (imageBitmap == null) {
+            setImageResource(fallbackResource);
+        } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            setImageBitmap(imageBitmap);
+        }
+    }
+
+    public void setImage(final SmartImage image, final Integer fallbackResource, final Integer loadingResource) {
+        // Set a loading resource
+        if (loadingResource != null) {
+            setImageResource(loadingResource);
+        }
+
+        // Cancel any existing tasks for this image view
+        if (currentTask != null) {
+            currentTask.cancel();
+            currentTask = null; // NOPMD
+        }
+
+        // Set up the new task
+        currentTask = new SmartImageTask(getContext(), image);
+        currentTask.setOnCompleteHandler(new OnCompleteHandler(this, fallbackResource));
+
+        // Run the task in a threadpool
+        threadPool.execute(currentTask);
+    }
+
+    public static void cancelAllTasks() {
+        threadPool.shutdownNow();
+        threadPool = Executors.newFixedThreadPool(LOADING_THREADS);
+    }
+
+
+    static class OnCompleteHandler extends Handler {
+        private final ImageView view;
+        private final Integer fallbackResource;
+
+        //TODO(srini) we should hold weak references to view
+        // And handle the view being already GC'ed (weakRef.get() returning null) when the callback returns.
+        public OnCompleteHandler(ImageView view, Integer fallbackResource) {
+            this.view = view;
+            this.fallbackResource = fallbackResource;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Bitmap bitmap = (Bitmap) msg.obj;
+            onComplete(bitmap);
+        }
+
+        public void onComplete(Bitmap bitmap) {
+            if (isNotNull(bitmap)) {
+                view.setImageBitmap(bitmap);
+            } else if (isNotNull(fallbackResource)) {
+                view.setImageResource(fallbackResource);
+            }
+        }
+
+        private boolean isNotNull(Object object) {
+            return object != null;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

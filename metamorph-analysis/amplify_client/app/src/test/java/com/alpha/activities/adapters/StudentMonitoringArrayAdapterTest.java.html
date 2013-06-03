@@ -1,0 +1,308 @@
+<html><head><title>StudentMonitoringArrayAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentMonitoringArrayAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/StudentMonitoringArrayAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.services.Participant;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.amplify.R.id;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowActivity;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import roboguice.activity.RoboActivity;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentMonitoringArrayAdapterTest {
+
+    public static final String MY_SECTION = "MySection";
+    public static final String THIRD_PARTY_APP_PACKAGE_NAME = "third.party.app";
+    @Inject
+    private StudentMonitoringArrayAdapter adapter;
+    @Mock
+    private Participant participant;
+    @Mock
+    private NotebooksCoverMappings notebooksCoverMappings;
+    @Mock
+    private ParticipantPresenceModel presenceModel;
+    @Mock
+    private PackageManager packageManager;
+    private RoboActivity roboActivity;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        roboActivity = new RoboActivity();
+
+        adapter = new StudentMonitoringArrayAdapter(roboActivity, notebooksCoverMappings);
+        when(participant.getParticipantPresence()).thenReturn(presenceModel);
+
+    }
+
+    @Test
+    public void shouldSetTheHandAsVisibleWhenTheStudentRaisesHand() throws Exception {
+        when(participant.hasHandRaised()).thenReturn(true);
+        adapter.add(participant);
+        ImageView studentHandRaised = (ImageView) adapter.getView(0, null, null).findViewById(id.student_raised_hand);
+
+        assertThat(studentHandRaised.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldSetTheHandInvisibleWhenTheStudentLowersHand() throws Exception {
+        when(participant.hasHandRaised()).thenReturn(false);
+        adapter.add(participant);
+        ImageView studentHandRaised = (ImageView) adapter.getView(0, null, null).findViewById(id.student_raised_hand);
+
+        assertThat(studentHandRaised.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldSetViewToDisplayStudentAsPresent() {
+        when(participant.isPresent()).thenReturn(true);
+
+        adapter.add(participant);
+
+        assertBackGroundOf(adapter.getView(0, null, null), R.drawable.student_background_present);
+    }
+
+
+    @Test
+    public void shouldSetViewToDisplayStudentAsAbsent() {
+        when(participant.isPresent()).thenReturn(false);
+
+        adapter.add(participant);
+
+        assertBackGroundOf(adapter.getView(0, null, null), R.drawable.student_background_default);
+    }
+
+    private void assertBackGroundOf(View view, int backgroundId) {
+        assertThat(view.getBackground(), is(drawable(backgroundId)));
+    }
+
+    @Test
+    public void shouldSetStudentName() {
+        String sampleName = "SampleName";
+        when(participant.getName()).thenReturn(sampleName);
+        adapter.add(participant);
+
+        TextView studentName = (TextView) adapter.getView(0, null, null).findViewById(R.id.student_name_text);
+
+        assertThat(studentName.getText().toString(), is(sampleName));
+    }
+
+    @Test
+    public void shouldSetTheSectionNameIfParticipantIsInASection() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.getDisplayName()).thenReturn(MY_SECTION);
+        when(presenceModel.isInASection()).thenReturn(true);
+        adapter.add(participant);
+
+        TextView studentWhereabouts = (TextView) adapter.getView(0, null, null).findViewById(R.id.student_location_text);
+
+        assertThat(studentWhereabouts.getText().toString(), is(MY_SECTION));
+    }
+
+    @Test
+    public void shouldSetTheSectionIconIfParticipantIsInASection() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.getDisplayName()).thenReturn(MY_SECTION);
+        when(presenceModel.isInASection()).thenReturn(true);
+        when(notebooksCoverMappings.getMonitorCoverImage(MY_SECTION)).thenReturn(R.drawable.icon);
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(drawable(R.drawable.icon)));
+    }
+
+    @Test
+    public void shouldSetLocationToThirdPartyAppWhenSpecified() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInASection()).thenReturn(false);
+        when(presenceModel.isInHomeScreen()).thenReturn(false);
+        when(presenceModel.getDisplayName()).thenReturn("ThirdPartyApp");
+        adapter.add(participant);
+
+        TextView studentWhereabouts = (TextView) adapter.getView(0, null, null).findViewById(R.id.student_location_text);
+
+        assertThat(studentWhereabouts.getText().toString(), is("ThirdPartyApp"));
+    }
+
+    @Test
+    public void shouldSetLocationToHomeScreenWhenSpecified() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInASection()).thenReturn(false);
+        when(presenceModel.isInHomeScreen()).thenReturn(true);
+        adapter.add(participant);
+
+        TextView studentWhereabouts = (TextView) adapter.getView(0, null, null).findViewById(R.id.student_location_text);
+
+        assertThat(studentWhereabouts.getText().toString(), is(text(R.string.homescreen)));
+    }
+
+    @Test
+    public void shouldSetTheHomeScreenIconIfParticipantIsInHomeScreen() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInASection()).thenReturn(false);
+        when(presenceModel.isInHomeScreen()).thenReturn(true);
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(drawable(R.drawable.icn_watch_home)));
+    }
+
+    @Test
+    public void shouldSetEyesOnTeacherIconIfParticipantIsInLockScreen() {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInLockScreen()).thenReturn(true);
+        when(presenceModel.isInHomeScreen()).thenReturn(false);
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(drawable(R.drawable.icn_eyesonteach)));
+    }
+
+    @Test
+    public void shouldSetTheThirdPartyAppIconIfParticipantIsInAnotherapp() throws NameNotFoundException {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInASection()).thenReturn(false);
+        when(presenceModel.isInHomeScreen()).thenReturn(false);
+        when(presenceModel.getPackageName()).thenReturn(THIRD_PARTY_APP_PACKAGE_NAME);
+        when(packageManager.getApplicationIcon(THIRD_PARTY_APP_PACKAGE_NAME)).thenReturn(drawable(R.drawable.icn_watch_apps));
+
+        ShadowActivity context = (ShadowActivity) shadowOf(roboActivity);
+        context.setPackageManager(packageManager);
+
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(drawable(R.drawable.icn_watch_apps)));
+    }
+
+    @Test
+    public void shouldSetTheDefaultThirdPartyAppIconIfParticipantIsInAnotherappThatIsNotInstalled() throws NameNotFoundException {
+        when(participant.isPresent()).thenReturn(true);
+        when(presenceModel.isInASection()).thenReturn(false);
+        when(presenceModel.isInHomeScreen()).thenReturn(false);
+        when(presenceModel.getPackageName()).thenReturn(THIRD_PARTY_APP_PACKAGE_NAME);
+        when(packageManager.getApplicationIcon(THIRD_PARTY_APP_PACKAGE_NAME)).thenThrow(NameNotFoundException.class);
+
+        ShadowActivity context = (ShadowActivity) shadowOf(roboActivity);
+        context.setPackageManager(packageManager);
+
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(drawable(R.drawable.icn_watch_apps)));
+    }
+
+    @Test
+    public void shouldSetTheStudentLocationToEmptyWhenParticipantNotInSession() {
+        when(participant.isPresent()).thenReturn(false);
+        adapter.add(participant);
+
+        TextView studentWhereabouts = (TextView) adapter.getView(0, null, null).findViewById(R.id.student_location_text);
+
+        assertThat(studentWhereabouts.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldSetTheStudentLocationIconToDefaultWhenParticipantNotInSession() {
+        when(participant.isPresent()).thenReturn(false);
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getDrawable(), is(adapter.getContext().getResources().getDrawable(R.drawable.icn_student_absent)));
+    }
+
+    @Test
+    public void shouldMakeStudentLocationIconVisibleIfStudentIsPresent() {
+        when(participant.isPresent()).thenReturn(true);
+        adapter.add(participant);
+
+        ImageView studentLocationIcon = (ImageView) adapter.getView(0, null, null).findViewById(R.id.student_location_icon);
+
+        assertThat(studentLocationIcon.getVisibility(), is(View.VISIBLE));
+    }
+
+    private Drawable drawable(int drawableId) {
+        return Robolectric.application.getResources().getDrawable(drawableId);
+    }
+
+    private CharSequence text(int textId) {
+        return Robolectric.application.getResources().getText(textId);
+    }
+
+}
+</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

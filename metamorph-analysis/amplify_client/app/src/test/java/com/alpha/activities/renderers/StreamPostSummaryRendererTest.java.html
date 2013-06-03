@@ -1,0 +1,348 @@
+<html><head><title>StreamPostSummaryRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamPostSummaryRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamPostSummaryRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.app.Activity;
+import android.graphics.drawable.Drawable;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowTextView;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamPostSummaryRendererTest {
+
+    public StreamPostSummaryRenderer streamPostSummaryRenderer;
+
+    @Mock
+    private Post post;
+
+    @Mock
+    private RendererFactory rendererFactory;
+
+    @Mock
+    private StreamSummaryCallOnPostRenderer callOnPostRenderer;
+    @Mock
+    private StreamSummarySharedLearningElementRenderer sharedLearningElementRenderer;
+    @Mock
+    private StreamSummaryDiscussionPostRenderer discussionPostRenderer;
+    @Mock
+    private StreamSummaryCountOffActionPostRenderer countOffPostRenderer;
+    @Mock
+    private StreamSummaryShortAnswerPostRenderer shortAnswerPostRenderer;
+    @Mock
+    private StreamSummarySpotCheckPostRenderer spotCheckPostRenderer;
+    @Mock
+    private StreamSummaryGoResearchPostRenderer goResearchPostRenderer;
+    @Mock
+    private StreamSummaryTimerPostRenderer timerPostRenderer;
+    @Mock
+    private StreamSummaryQuickPollPostRenderer quickPollPostRenderer;
+    @Mock
+    private LearningElement learningElement;
+    private ViewGroup rowView;
+    @Mock
+    private Activity activity;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        given(post.getPostType()).willReturn(PostType.SHARE);
+        given(rendererFactory.createStreamSummaryCallOnPostRenderer(post)).willReturn(callOnPostRenderer);
+        given(rendererFactory.createStreamSummaryQuickPollPostRenderer(post)).willReturn(quickPollPostRenderer);
+        given(rendererFactory.createStreamSummarySharedLearningElementRenderer(eq(post))).willReturn(sharedLearningElementRenderer);
+
+        streamPostSummaryRenderer = new StreamPostSummaryRenderer(rendererFactory, new CollapsibleViewStateHolder());
+
+        rowView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+    }
+
+    @Test
+    public void shouldClearPostIcon() {
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        ShadowTextView title = shadowOf((TextView) rowView.findViewById(R.id.notebook_post_title));
+        assertThat(title.getCompoundDrawables()[0], is(nullValue()));
+    }
+
+    @Test
+    public void shouldClearPostTitle() {
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        TextView title = (TextView) rowView.findViewById(R.id.notebook_post_title);
+        assertThat(title.getText().toString(), is(""));
+    }
+
+    @Test
+    public void shouldSetTimeStampToMomentsAgoForVeryRecentPost() {
+        Date date = Calendar.getInstance().getTime();
+        when(post.getCreatedOn()).thenReturn(date);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        final String expected = "moments ago";
+        TextView timestampView = (TextView) rowView.findViewById(R.id.notebook_post_timestamp);
+        assertThat(timestampView.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldResetTextViewPropertiesResetView() {
+
+        String title = "title";
+        String expectedTitle = "";
+        LinkMovementMethod linkMovementMethod = mock(LinkMovementMethod.class);
+        Drawable left = mock(Drawable.class);
+        Drawable right = mock(Drawable.class);
+        Drawable top = mock(Drawable.class);
+        Drawable botton = mock(Drawable.class);
+
+        TextView titleViewBefore = (TextView) rowView.findViewById(R.id.notebook_post_title);
+        titleViewBefore.setText(title);
+        titleViewBefore.setMovementMethod(linkMovementMethod);
+        titleViewBefore.setCompoundDrawables(left, top, right, botton);
+
+        streamPostSummaryRenderer.resetView(rowView);
+
+        TextView titleViewAfter = (TextView) rowView.findViewById(R.id.notebook_post_title);
+
+        Assert.assertEquals(expectedTitle, titleViewAfter.getText());
+        Assert.assertNull(titleViewAfter.getMovementMethod());
+        Assert.assertNull(titleViewAfter.getCompoundDrawables()[0]);
+        Assert.assertNull(titleViewAfter.getCompoundDrawables()[1]);
+        Assert.assertNull(titleViewAfter.getCompoundDrawables()[2]);
+        Assert.assertNull(titleViewAfter.getCompoundDrawables()[3]);
+    }
+
+    @Test
+    public void shouldSetTimestampToDaysAgoForWeekOldPost() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, -7);
+        Date date = c.getTime();
+
+        when(post.getCreatedOn()).thenReturn(date);
+        when(post.getPostType()).thenReturn(PostType.QUICKPOLL);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        final String expected = "1 week ago";
+        TextView timestampView = (TextView) rowView.findViewById(R.id.notebook_post_timestamp);
+        assertThat(timestampView.getText().toString(), is(expected));
+    }
+
+    @Test
+    public void shouldClearAllViewsFromPostContentView() {
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        ViewGroup postContent = (ViewGroup) rowView.findViewById(R.id.notebook_post_content);
+        assertThat(postContent.getChildCount(), is(0));
+    }
+
+    @Test
+    public void shouldSetPostContentViewVisible() {
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        ViewGroup postContent = (ViewGroup) rowView.findViewById(R.id.notebook_post_content);
+        assertThat(postContent.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldRenderAsAnActionPostWhenPostTypeIsQuickPoll() {
+        when(post.getPostType()).thenReturn(PostType.QUICKPOLL);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(quickPollPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldRenderAsSharePostWhenPostTypeIsShare() {
+        when(post.getPostType()).thenReturn(PostType.SHARE);
+        when(post.getFirstLearningElement()).thenReturn(learningElement);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(sharedLearningElementRenderer).get(learningElement, rowView);
+    }
+
+    @Test
+    public void shouldRenderAsDiscussionPostWhenPostTypeIsDiscussion() {
+        when(rendererFactory.createStreamSummaryDiscussionPostRenderer(eq(post), any(CollapsibleViewStateHolder.class), eq(activity))).thenReturn(discussionPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.DISCUSSION);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(discussionPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldRenderAsShortAnswerPostWhenPostTypeIsShortAnswer() {
+        when(rendererFactory.createStreamSummaryShortAnswerPostRenderer(eq(post))).thenReturn(shortAnswerPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.SHORT_ANSWER);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(shortAnswerPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldRenderCountOffPost() {
+        when(rendererFactory.createStreamSummaryCountOffPostRenderer(eq(post))).thenReturn(countOffPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.COUNT_OFF);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(countOffPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldRenderSpotCheckPost() {
+        when(rendererFactory.createStreamSummarySpotCheckPostRenderer(eq(post))).thenReturn(spotCheckPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.SPOT_CHECK);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(spotCheckPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldRenderGoResearchPost() {
+        when(rendererFactory.createStreamSummaryGoResearchPostRenderer(eq(post))).thenReturn(goResearchPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.GO_RESEARCH);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(goResearchPostRenderer).renderView(rowView);
+    }
+
+
+    @Test
+    public void shouldRenderAsTimerPostWhenPostTypeIsAction() {
+        when(rendererFactory.createStreamSummaryTimerPostRenderer(post)).thenReturn(timerPostRenderer);
+        when(post.getPostType()).thenReturn(PostType.TIMER);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        verify(timerPostRenderer).renderView(rowView);
+    }
+
+    @Test
+    public void shouldShowDateDividerWhenFlagIsTrue() {
+        when(post.getCreatedOn()).thenReturn(Calendar.getInstance().getTime());
+        View dateDivider = rowView.findViewById(R.id.post_divider);
+        dateDivider.setVisibility(View.GONE);
+
+        streamPostSummaryRenderer.populateView(rowView, post, true, activity);
+
+        assertThat(dateDivider.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldHideDateDividerWhenFlagIsFalse() {
+        when(post.getCreatedOn()).thenReturn(Calendar.getInstance().getTime());
+        View dateDivider = rowView.findViewById(R.id.post_divider);
+        dateDivider.setVisibility(View.VISIBLE);
+
+        streamPostSummaryRenderer.populateView(rowView, post, false, activity);
+
+        assertThat(dateDivider.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldSetDateTextWhenFlagIsTrue() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(2012, 10, 16);
+        when(post.getCreatedOn()).thenReturn(cal.getTime());
+
+        streamPostSummaryRenderer.populateView(rowView, post, true, activity);
+
+        TextView dateDivider = (TextView) rowView.findViewById(R.id.post_divider);
+        assertThat(dateDivider.getText().toString(), is("November 16, 2012"));
+    }
+
+    @Test
+    public void shouldSetDateTextToTodayWhenDateIsToday() {
+        Calendar cal = Calendar.getInstance();
+        when(post.getCreatedOn()).thenReturn(cal.getTime());
+
+        streamPostSummaryRenderer.populateView(rowView, post, true, activity);
+
+        TextView dateDivider = (TextView) rowView.findViewById(R.id.post_divider);
+        assertThat(dateDivider.getText().toString(), is("Today"));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

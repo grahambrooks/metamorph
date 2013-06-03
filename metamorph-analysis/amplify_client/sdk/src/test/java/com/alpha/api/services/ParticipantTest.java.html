@@ -1,0 +1,156 @@
+<html><head><title>ParticipantTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ParticipantTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ParticipantTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.ContentValues;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ParticipantTest {
+
+    public static final String NAME = "Name";
+    public static final long ID = 1L;
+    private final ParticipantPresenceModel presenceModel = mock(ParticipantPresenceModel.class);
+
+    @Test
+    public void shouldCopyParticipant() {
+        Participant original = new Participant(ID, NAME);
+        Participant copy = new Participant(original);
+
+        assertThat(copy.getId(), is(ID));
+        assertThat(copy.getName(), is(NAME));
+    }
+
+    @Test
+    public void shouldReturnNameInToString() throws Exception {
+        Participant participant = new Participant(ID, NAME);
+        assertThat(participant.toString(), is(NAME));
+    }
+
+    @Test
+    public void shouldSelect() throws Exception {
+        Participant participant = new Participant(ID, NAME, false);
+        participant.select();
+        assertThat(participant.isSelected(), is(true));
+
+    }
+
+    @Test
+    public void shouldDeselect() throws Exception {
+        Participant participant = new Participant(ID, NAME, true);
+        participant.deselect();
+        assertThat(participant.isSelected(), is(false));
+    }
+
+    @Test
+    public void shouldToggleSelection() throws Exception {
+        Participant participant = new Participant(ID, NAME, true);
+        participant.toggleSelection();
+        assertThat(participant.isSelected(), is(false));
+        participant.toggleSelection();
+        assertThat(participant.isSelected(), is(true));
+    }
+
+    @Test
+    public void shouldIncludeIdNameAndSectionIdWhenConvertingToContentValues() throws Exception {
+        Participant participant = new Participant(ID, NAME);
+
+        long sectionId = 10L;
+        ContentValues contentValues = participant.asContentValues(sectionId);
+        assertThat(contentValues.getAsLong("participant_id"), is(ID));
+        assertThat(contentValues.getAsLong("section_id"), is(sectionId));
+        assertThat(contentValues.getAsString("name"), is(NAME));
+
+    }
+
+    @Test
+    public void shouldReturnFalseIfParticipantPresenceDoesNotExist(){
+        Participant participant = new Participant(ID, NAME);
+        assertThat(participant.hasHandRaised(), is(false));
+    }
+
+    @Test
+    public void shouldReturnFalseIfHandIsNotRaised(){
+        Participant participant = new Participant(ID, NAME);
+        participant.setParticipantPresence(presenceModel);
+        when(presenceModel.isHandRaised()).thenReturn(false);
+        assertThat(participant.hasHandRaised(), is(false));
+    }
+
+    @Test
+    public void shouldReturnTrueIfHandIsRaised(){
+        Participant participant = new Participant(ID, NAME);
+        participant.setParticipantPresence(presenceModel);
+        when(presenceModel.isHandRaised()).thenReturn(true);
+        assertThat(participant.hasHandRaised(), is(true));
+    }
+
+    @Test
+    public void shouldCreateNewPresenceModelWhenJoiningSession(){
+        Participant participant = new Participant(ID, NAME);
+        assertThat(participant.getParticipantPresence(), is(nullValue()));
+        participant.joinSession("section");
+        assertThat(participant.getParticipantPresence().isHandRaised(), is(false));
+        assertThat(participant.getParticipantPresence().getCurrentLocation(), is(StudentLocation.SECTION));
+        assertThat(participant.getParticipantPresence().getDisplayName(), is("section"));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

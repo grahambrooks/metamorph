@@ -1,0 +1,161 @@
+<html><head><title>AddPostForAllSectionsTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AddPostForAllSectionsTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/AddPostForAllSectionsTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.services.web.WebServicesException;
+import com.alpha.logging.AnalyticsAgent;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.services.ApiErrorReason.INTERNAL_ERROR;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class AddPostForAllSectionsTaskTest {
+
+    private static final String POST_JSON = "{}";
+    private static final String POSTS_URL = "url";
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Post post;
+    @Mock
+    private PostResponseCallback callback;
+    @Mock
+    private HttpClient.Response response;
+    @Mock
+    private Environment environment;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    private AddPostForAllSectionsTask task;
+    private ApiRequest request;
+    private final List<Long> sectionIds = newArrayList(1L, 2L, 3L);
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        given(environment.getPostsURI()).willReturn(POSTS_URL);
+
+        request = ApiRequest.createPostRequest(POSTS_URL, POST_JSON);
+
+        task = new AddPostForAllSectionsTask(webServices, environment, analyticsAgent, post, sectionIds, callback);
+    }
+
+    @Test
+    public void shouldPostToWebServiceEndpointAndReturnTrueIfRequestSucceeds() throws Exception {
+        when(webServices.post(request)).thenReturn(response);
+        when(post.asRequestJson(sectionIds)).thenReturn(POST_JSON);
+        when(response.getBodyAs(Post.class)).thenReturn(post);
+
+        Post postFromServer = task.call();
+
+        assertThat(postFromServer, is(post));
+    }
+
+    @Test(expected = WebServicesException.class)
+    public void shouldThrowExceptionWhenHttpPostFails() throws Exception {
+        when(webServices.post(request)).thenThrow(WebServicesException.class);
+        when(post.asRequestJson(sectionIds)).thenReturn(POST_JSON);
+        task.call();
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldInvokeFailureCallbackWhenExceptionIsThrown() throws Exception {
+        task.onException(new Exception());
+
+        verify(callback).onFailure(INTERNAL_ERROR);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldInvokeSuccessCallbackWhenResponseIsSuccess() throws Exception {
+        task.onSuccess(post);
+
+        verify(callback).onSuccess(post);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

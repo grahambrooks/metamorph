@@ -1,0 +1,97 @@
+<html><head><title>CountdownFormatterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountdownFormatterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/utils/amplify_client/CountdownFormatterTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static com.alpha.utils.CountdownFormatter.formatRemainingTimeForStudent;
+import static com.alpha.utils.CountdownFormatter.formatRemainingTimeForTeacher;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(RobolectricTestRunner.class)
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+public class CountdownFormatterTest {
+
+    @Test
+    public void shouldConvertMillisecondsToMinutesAndSecondsForTeacher() {
+        assertThat(formatRemainingTimeForTeacher(50000l), is("00:50"));
+    }
+
+    @Test
+    public void shouldConvertMillisecondsToSecondsWithTwoDigitsForTeacher() {
+        assertThat(formatRemainingTimeForTeacher(9000l), is("00:09"));
+    }
+
+    @Test
+    public void shouldConvertMillisecondsToMinutesWithTwoDigitsForTeacher() {
+        assertThat(formatRemainingTimeForTeacher(110000l), is("01:50"));
+    }
+
+    @Test
+    public void shouldReturnMinuteWhenRemainingTimeIsAMinuteForStudent() {
+        assertThat(formatRemainingTimeForStudent(110000l), is("1 min"));
+    }
+
+    @Test
+    public void shouldReturnMinutesWhenRemainingTimeIsMoreThanOneMinuteForStudent() {
+        assertThat(formatRemainingTimeForStudent(130000l), is("2 mins"));
+    }
+
+    @Test
+    public void shouldReturnSecondsWhenRemainingTimeIsLessThanAMinuteForStudent() {
+        assertThat(formatRemainingTimeForStudent(20000l), is("20 sec"));
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

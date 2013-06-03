@@ -1,0 +1,182 @@
+<html><head><title>BaseNotebookActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BaseNotebookActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/BaseNotebookActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class BaseNotebookActivityTest {
+
+    private BaseNotebookActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private Section section;
+    @Mock
+    private EventBus eventBus;
+    private static final long SECTION_ID = 3;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        activity = new BaseNotebookActivity() {
+        };
+
+        ActivityTestInjector<SundaeTimedActivity> activityTestInjector =
+                new ActivityTestInjector<SundaeTimedActivity>(this, SundaeTimedActivity.class);
+        activityTestInjector
+                .bindInstance(UserService.class, userService)
+                .bindInstance(EventBus.class, eventBus);
+        activityTestInjector.configureActivity(activity);
+        when(userService.getUser()).thenReturn(user);
+
+    }
+
+
+    @Test
+    public void shouldSetCurrentSectionFromBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putLong(BaseNotebookActivity.SECTION_ID_KEY, SECTION_ID);
+
+        activity.onCreate(bundle);
+        verify(user).setCurrentSection(SECTION_ID);
+    }
+
+    @Test
+    public void shouldSetCurrentSectionFromIntent() {
+        setCurrentSectionIntent();
+
+        activity.onCreate(null);
+        verify(user).setCurrentSection(SECTION_ID);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionIfCurrentSectionIsNotSetOnUser() {
+        when(user.getCurrentSection()).thenReturn(null);
+        activity.onCreate(null);
+    }
+
+    @Test
+    public void shouldSaveSectionIdToBundleWhenSavingInstanceState() {
+        setCurrentSectionIntent();
+        activity.onCreate(null);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.getId()).thenReturn(SECTION_ID);
+        Bundle bundle = mock(Bundle.class);
+
+        activity.onSaveInstanceState(bundle);
+        verify(bundle).putLong(BaseNotebookActivity.SECTION_ID_KEY, SECTION_ID);
+    }
+
+    @Test
+    public void shouldRegisterListenerOnResume(){
+        setCurrentSectionIntent();
+        activity.onCreate(null);
+        activity.onResume();
+        verify(eventBus).register(activity.baseListeners);
+    }
+
+    @Test
+    public void shouldUnregisterListenerOnPause(){
+        setCurrentSectionIntent();
+        activity.onCreate(null);
+        activity.onPause();
+        verify(eventBus).unregister(activity.baseListeners);
+    }
+
+    @Test
+    public void shouldNotSaveSectionIdIfRestartHappening(){
+        activity.baseListeners.userInformationRefreshed(new UserInformationRefreshedEvent(true));
+        Bundle bundle = mock(Bundle.class);
+        activity.onSaveInstanceState(bundle);
+        verify(bundle, never()).putLong(anyString(), anyLong());
+    }
+
+    @Test
+    public void shouldSaveSectionIdIfRestartNotHappening(){
+        setCurrentSectionIntent();
+        activity.onCreate(null);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.getId()).thenReturn(1L);
+        activity.baseListeners.userInformationRefreshed(new UserInformationRefreshedEvent(false));
+        Bundle bundle = mock(Bundle.class);
+        activity.onSaveInstanceState(bundle);
+        verify(bundle).putLong(anyString(), anyLong());
+    }
+
+    private void setCurrentSectionIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(BaseNotebookActivity.SECTION_ID_KEY, SECTION_ID);
+        activity.setIntent(intent);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

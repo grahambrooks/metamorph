@@ -1,0 +1,86 @@
+<html><head><title>EventProcessor.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EventProcessor.java</h1>
+<p>Scanned path = platform/src/main/java/com/amplify/platform/processor/amplify_client/EventProcessor.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.platform.processor;
+
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.logging.LogUtils;
+import com.amplify.platform.domain.AmplifyEvent;
+import com.amplify.platform.domain.LinkLessonComponent;
+import com.amplify.platform.repository.LessonComponentDataStore;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+public class EventProcessor {
+
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final LessonComponentDataStore lessonComponentDataStore;
+
+    @Inject
+    public EventProcessor(LessonComponentDataStore lessonComponentDataStore) {
+        this.lessonComponentDataStore = lessonComponentDataStore;
+    }
+
+    public void process(List<AmplifyEvent> events) {
+        lessonComponentDataStore.deleteAll();
+        for (AmplifyEvent event : events) {
+            if ("LINK".equals(event.type())) {
+                LOGGER.info("Event payload "+ event.payload());
+                LinkLessonComponent lessonComponent = (LinkLessonComponent) AmplifyJsonHelper.fromJson(event.payload(), LinkLessonComponent.class);
+                lessonComponentDataStore.save(lessonComponent);
+            }
+            else {
+                LOGGER.warn("Unknown event type "+event.type());
+            }
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<html><head><title>GoogleDriveUtils.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleDriveUtils.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/utils/amplify_client/GoogleDriveUtils.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import com.google.inject.Singleton;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+@Singleton
+public class GoogleDriveUtils {
+    public static final Pattern DOCUMENT_PATTERN = Pattern.compile(".*\\/d\\/(.*)\\/.*");
+    private static final Pattern SPREADSHEET_PATTERN = Pattern.compile(".*key=(.*)#.*");
+    private static final Pattern SPREADSHEET_PATTERN_WITHOUT_GID = Pattern.compile(".*key=(.*)");
+
+    private static final List<Pattern> PATTERNS = newArrayList(DOCUMENT_PATTERN, SPREADSHEET_PATTERN, SPREADSHEET_PATTERN_WITHOUT_GID);
+    public static final int MATCHED_GROUP = 1;
+
+    public String getFileId(String url) {
+        for (Pattern pattern : PATTERNS) {
+            final Matcher matcher = pattern.matcher(url);
+        if (matcher.matches()) {
+                return matcher.group(MATCHED_GROUP);
+            }
+        }
+        return null;
+    }
+
+    public boolean isGDoc(String url){
+        return url != null && getFileId(url) != null;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

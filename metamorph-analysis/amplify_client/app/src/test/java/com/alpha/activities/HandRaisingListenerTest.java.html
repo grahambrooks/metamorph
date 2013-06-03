@@ -1,0 +1,173 @@
+<html><head><title>HandRaisingListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HandRaisingListenerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/HandRaisingListenerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.widget.ProgressBar;
+import com.alpha.api.services.*;
+import com.google.common.base.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class HandRaisingListenerTest {
+
+    @Mock
+    private Student student;
+    @Mock
+    private View handIcon;
+    @Mock
+    private ParticipantSessionService participantSessionService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private ClassSession session;
+
+    private final Optional<ProgressBar> progressBar = Optional.absent();
+    private HandRaisingListener listener;
+
+    @Before
+    public void setUp() throws Exception {
+        listener = new HandRaisingListener(participantSessionService, userService, toaster);
+        listener.setHandView(handIcon);
+
+        given(userService.getUser()).willReturn(student);
+        given(userService.session()).willReturn(session);
+    }
+
+    @Test
+    public void shouldSendRaiseHandEventToService() {
+        when(session.isOngoing()).thenReturn(true);
+        listener.onClick(null);
+        verify(participantSessionService).toggleHand(eq(student), eq(listener), eq(progressBar));
+    }
+
+    @Test
+    public void shouldDisableButtonFromFurtherClickingWhileAwaitingCallbacks() {
+        when(session.isOngoing()).thenReturn(true);
+        listener.onClick(null);
+        verify(handIcon).setEnabled(false);
+    }
+
+    @Test
+    public void shouldUpdateStudentHandImageOnRaiseHandSuccess() {
+        listener.onRaiseHandSuccess();
+        verify(handIcon).setActivated(true);
+    }
+
+    @Test
+    public void shouldUpdateStudentHandImageOnLowerHandSuccess() {
+        listener.onLowerHandSuccess();
+        verify(handIcon).setActivated(false);
+    }
+
+    @Test
+    public void shouldEnableStudentHandForClickingWhenOnHandRaiseSuccess() {
+        listener.onRaiseHandSuccess();
+        verify(handIcon).setEnabled(true);
+    }
+
+    @Test
+    public void shouldEnableStudentHandForClickingWhenOnHandLowerSuccess() {
+        listener.onLowerHandSuccess();
+        verify(handIcon).setEnabled(true);
+    }
+
+    @Test
+    public void shouldEnableStudentHandForClickingWhenOnFailure() {
+        listener.onFailure(ApiErrorReason.RAISE_LOWER_HAND_FAILED);
+        verify(handIcon).setEnabled(true);
+    }
+
+    @Test
+    public void shouldMakeHandIconAvailableIfSessionIsIsProgressForCurrentSection() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+        listener.updateVisibilityState();
+        verify(handIcon).setEnabled(true);
+        verify(handIcon).setVisibility(View.VISIBLE);
+
+    }
+
+    @Test
+    public void shouldShowHandAsRaisedIfHandIsRaisedWhenMakingHandIconAvailable() {
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(true);
+        when(student.hasHandRaised()).thenReturn(true);
+        listener.updateVisibilityState();
+        verify(handIcon).setActivated(true);
+    }
+
+    @Test
+    public void shouldShowHandAsLoweredIfHandIsNotRaisedWhenMakingHandIconAvailable() {
+        when(session.isOngoing()).thenReturn(true);
+        when(student.hasHandRaised()).thenReturn(false);
+        listener.updateVisibilityState();
+        verify(handIcon).setActivated(false);
+    }
+
+    @Test
+    public void shouldMakeHandIconUnavailableIfNotAssociatedWithSession() {
+        listener.updateVisibilityState();
+        verify(handIcon).setEnabled(false);
+        verify(handIcon).setVisibility(View.GONE);
+
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

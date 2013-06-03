@@ -1,0 +1,104 @@
+<html><head><title>AndroidApplicationUtils.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AndroidApplicationUtils.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/utils/amplify_client/AndroidApplicationUtils.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import com.alpha.logging.LogUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+public class AndroidApplicationUtils {
+
+    private static final Logger LOG = LogUtils.getLogger();
+    private ActivityManager activityManager;
+
+    private ActivityManager getActivityManager(Context context) {
+
+        if (activityManager == null) {
+            activityManager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
+        }
+
+        return activityManager;
+
+    }
+
+    public void bringApplicationTaskToForeground(Context context, String packageNameToBringToFront) {
+
+        ActivityManager.RunningTaskInfo runningTaskInfo = getRunningTaskInfobyPackageName(context, packageNameToBringToFront);
+
+        if (runningTaskInfo == null) {
+            LOG.error(String.format("Invalid package name %s - Could not bring application task to foreground", packageNameToBringToFront));
+        } else {
+            getActivityManager(context).moveTaskToFront(runningTaskInfo.id, ActivityManager.MOVE_TASK_NO_USER_ACTION);
+        }
+    }
+
+    public ComponentName getComponentNameOfTopActivity(Context context, String packageNameToBringToFront) {
+        return getRunningTaskInfobyPackageName(context, packageNameToBringToFront).topActivity;
+    }
+
+    private ActivityManager.RunningTaskInfo getRunningTaskInfobyPackageName(Context context, String packageNameToBringToFront) {
+        for (ActivityManager.RunningTaskInfo runningTaskInfo : getActivityManager(context).getRunningTasks(Integer.MAX_VALUE)) {
+            ComponentName topActivity = runningTaskInfo.topActivity;
+            if (isTopActivityExpectedPackage(packageNameToBringToFront, topActivity)) {
+                return runningTaskInfo;
+            }
+        }
+        return null;
+    }
+
+    private boolean isTopActivityExpectedPackage(String packageNameToBringToFront, ComponentName topActivity) {
+        return StringUtils.equalsIgnoreCase(topActivity.getPackageName(), packageNameToBringToFront);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

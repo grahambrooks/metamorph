@@ -1,0 +1,287 @@
+<html><head><title>ClassSession.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ClassSession.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ClassSession.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.messaging.StudentsControlSettings;
+import com.alpha.api.messaging.xmpp.XmppUtils;
+import com.alpha.logging.LogUtils;
+import org.slf4j.Logger;
+
+@SuppressWarnings("PMD.TooManyMethods")
+public class ClassSession {
+
+    private Section section;
+    private Status status;
+    private boolean isEyesOnTeacherEngaged;
+    private QuickPollSettings quickPollSettings;
+    private QuickShortAnswerSettings quickShortAnswerSettings;
+    private SpotCheckSettings spotCheckSettings;
+    private CallOnSomeoneSettings callOnSomeoneSettings;
+    private CountdownTimerSettings countdownTimerSettings;
+    private CountOffSettings countOffSettings;
+    private static final Logger LOG = LogUtils.getLogger();
+
+
+    public ClassSession() {
+        resetAllSettings();
+    }
+
+    private void resetAllSettings() {
+        status = Status.NOT_STARTED;
+        spotCheckSettings = new SpotCheckSettings();
+        quickPollSettings = new QuickPollSettings();
+        quickShortAnswerSettings = new QuickShortAnswerSettings();
+        callOnSomeoneSettings = new CallOnSomeoneSettings();
+        countOffSettings = new CountOffSettings();
+        countdownTimerSettings = new CountdownTimerSettings();
+    }
+
+    public boolean isSpotCheckRunning() {
+        return spotCheckSettings.isRunning();
+    }
+
+    public boolean isQuickPollRunning() {
+        return quickPollSettings.isRunning();
+    }
+
+    public boolean isQuickShortAnswerRunning() {
+        return quickShortAnswerSettings.isRunning();
+    }
+
+    public boolean isCallOnSomeoneRunning() {
+        return callOnSomeoneSettings.isRunning();
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isCountOffRunning() {
+        return countOffSettings.isRunning();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public boolean isCountdownTimerRunning() {
+        return countdownTimerSettings.isRunning();
+    }
+
+    /**
+     * NOT_STARTED --> NOT_STARTED
+     * NOT_STARTED --> STARTING
+     * STARTING --> STARTED
+     * STARTING --> NOT_STARTED
+     * STARTED --> NOT_STARTED
+     * STARTED --> RESTARTING
+     * RESTARTING --> STARTED
+     * RESTARTING --> NOT_STARTED
+     */
+    public static enum Status {
+        NOT_STARTED, STARTING, STARTED, RESTARTING
+    }
+
+    public String id() {
+        return section == null ? null : XmppUtils.addPrefixAndSanitize(section.getId() + "_" + section.getName());
+    }
+
+    public boolean isOngoing() {
+        return section != null;
+    }
+
+    public boolean isOngoingFor(Section section) {
+        return this.section != null && this.section.equals(section);
+    }
+
+    public void tryRestart() {
+        LOG.info("Session is RESTARTING");
+        this.status = Status.RESTARTING;
+    }
+
+    public void tryStart(Section section) {
+        LOG.info("Session is STARTING");
+        this.section = section;
+        this.status = Status.STARTING;
+    }
+
+    public void start() {
+        LOG.info("Session is STARTED");
+        this.status = Status.STARTED;
+    }
+
+    public void rejoin() {
+        LOG.info("Session is STARTED");
+        this.status = Status.STARTED;
+    }
+
+    public void end() {
+        LOG.info("Session is NOT_STARTED");
+        if (section != null) {
+            section.resetParticipantStatus();
+            section = null; // NOPMD
+        }
+        resetAllSettings();
+    }
+
+    public Section section() {
+        return section;
+    }
+
+    public boolean isStarting() {
+        return Status.STARTING == status;
+    }
+
+    public boolean isStarted() {
+        return Status.STARTED == status;
+    }
+
+    public boolean isRestarting() {
+        return Status.RESTARTING == status;
+    }
+
+    public boolean isNotStarted() {
+        return Status.NOT_STARTED == status;
+    }
+
+    public void engageEyesOnTeacher() {
+        this.isEyesOnTeacherEngaged = true;
+    }
+
+    public void disengageEyesOnTeacher() {
+        this.isEyesOnTeacherEngaged = false;
+    }
+
+    public boolean isEyesOnTeacherActive() {
+        return isEyesOnTeacherEngaged;
+    }
+
+    public StudentsControlSettings studentsControlSettings() {
+        StudentsControlSettings settings = new StudentsControlSettings();
+        if (isEyesOnTeacherActive()) {
+            settings.setAsLocked();
+        } else {
+            settings.setAsUnlocked();
+        }
+        return settings;
+    }
+
+    public CountOffSettings getCountOffSettings() {
+        return countOffSettings;
+    }
+
+    public QuickPollSettings getQuickPollSettings() {
+        return quickPollSettings;
+    }
+
+    public SpotCheckSettings getSpotCheckSettings() {
+        return spotCheckSettings;
+    }
+
+    public QuickShortAnswerSettings getQuickShortAnswerSettings() {
+        return quickShortAnswerSettings;
+    }
+
+    public CallOnSomeoneSettings getCallOnSomeoneSettings() {
+        return callOnSomeoneSettings;
+    }
+
+    public Long getCalledOnParticipantId() {
+        return callOnSomeoneSettings.getCalledOnParticipantId();
+    }
+
+    public String getCalledOnStudentName() {
+        Participant participant = section.getParticipant(getCalledOnParticipantId());
+        return participant.getName();
+    }
+
+    public CountdownTimerSettings getCountdownTimerSettings() {
+        return countdownTimerSettings;
+    }
+
+    public void saveCountOffSettings(CountOffSettings countOffSettings) {
+        this.countOffSettings = countOffSettings;
+    }
+
+    public void saveCallOnSomeoneSettings(CallOnSomeoneSettings callOnSomeoneSettings) {
+        this.callOnSomeoneSettings = callOnSomeoneSettings;
+    }
+
+    public void saveQuickPollSettings(QuickPollSettings quickPollSettings) {
+        this.quickPollSettings = quickPollSettings;
+    }
+
+    public void saveQuickShortAnswerSettings(QuickShortAnswerSettings quickShortAnswerSettings) {
+        this.quickShortAnswerSettings = quickShortAnswerSettings;
+    }
+
+    public void saveSpotCheckSettings(SpotCheckSettings spotCheckSettings) {
+        this.spotCheckSettings = spotCheckSettings;
+    }
+
+    public void saveCountdownTimerSettings(CountdownTimerSettings countdownTimerSettings) {
+        this.countdownTimerSettings = countdownTimerSettings;
+    }
+
+    public void updateSection(Section updatedOngoingSection) {
+        if (this.isOngoing() && this.section.getId().equals(updatedOngoingSection.getId())) {
+            this.section = updatedOngoingSection;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

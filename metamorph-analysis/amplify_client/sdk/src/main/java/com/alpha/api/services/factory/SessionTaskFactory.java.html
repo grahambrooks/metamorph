@@ -1,0 +1,134 @@
+<html><head><title>SessionTaskFactory.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SessionTaskFactory.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/factory/amplify_client/SessionTaskFactory.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.factory;
+
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.services.CallOnSomeoneTask;
+import com.alpha.api.services.EndCallOnSomeoneTask;
+import com.alpha.api.services.EndQuickPollTask;
+import com.alpha.api.services.EndQuickShortAnswerTask;
+import com.alpha.api.services.EndSessionTask;
+import com.alpha.api.services.EndSpotCheckTask;
+import com.alpha.api.services.ForceFieldDisengagedTask;
+import com.alpha.api.services.ForceFieldEngagedTask;
+import com.alpha.api.services.JoinSessionTask;
+import com.alpha.api.services.QuickPollTask;
+import com.alpha.api.services.QuickShortAnswerTask;
+import com.alpha.api.services.RaiseLowerHandTask;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.SendLockDevicesTask;
+import com.alpha.api.services.SendUnlockDevicesTask;
+import com.alpha.api.services.SpotCheckTask;
+import com.alpha.api.services.StartGoResearchTask;
+import com.alpha.api.services.StartSessionTask;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UpdateStudentWhereaboutsTask;
+import com.alpha.api.services.tasks.CountOffTask;
+import com.alpha.api.services.tasks.EndCountOffTask;
+import com.alpha.api.services.tasks.EndCountdownTimerTask;
+import com.alpha.api.services.tasks.StartCountdownTimerTask;
+import com.google.common.base.Optional;
+
+import java.util.Collection;
+
+public interface SessionTaskFactory {
+
+    StartSessionTask createStartSessionTask(Teacher teacher,
+                                            ProgressBar progressBar);
+
+    JoinSessionTask createJoinSessionTask(Student student,
+                                          Section section,
+                                          ProgressBar progressBar);
+
+    EndSessionTask createEndSessionTask(Teacher teacher, ProgressBar progressBar);
+
+    SendLockDevicesTask createLockDeviceTask(Teacher teacher);
+
+    SendUnlockDevicesTask createUnlockDevicesTask(Teacher teacher);
+
+    RaiseLowerHandTask createRaiseLowerHandTask(Student student, SendRaiseLowerHandCallbacks raiseHandCallbacks,
+                                                Optional<ProgressBar> progressBar);
+
+    ForceFieldEngagedTask createForceFieldEngagedTask(Collection<SundaeAppInfo> whiteListApps, Teacher teacher, Section section, ProgressBar progressBar);
+
+    ForceFieldDisengagedTask createForceFieldDisengagedTask(Teacher teacher, ProgressBar progressBar);
+
+    EndCallOnSomeoneTask createEndCallOnSomeoneTask();
+
+    CallOnSomeoneTask createCallOnSomeoneTask();
+
+    QuickPollTask createQuickPollTask(Integer numberOfAnswers);
+
+    EndQuickPollTask createEndQuickPollTask();
+
+    QuickShortAnswerTask createQuickShortAnswerTask();
+
+    EndQuickShortAnswerTask createEndQuickShortAnswerTask();
+
+    UpdateStudentWhereaboutsTask createUpdateStudentWhereaboutsTask(Student student);
+
+    SpotCheckTask createSpotCheckTask();
+
+    EndSpotCheckTask createEndSpotCheckTask();
+
+    StartGoResearchTask createGoResearchTask();
+
+    CountOffTask createCountOffTask();
+
+    EndCountOffTask createEndCountOffTask();
+
+    StartCountdownTimerTask createStartCountdownTimerTask();
+
+    EndCountdownTimerTask createEndCountdownTimerTask();
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

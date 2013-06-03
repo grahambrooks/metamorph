@@ -1,0 +1,304 @@
+<html><head><title>QuickPollGraphDetailsActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollGraphDetailsActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/QuickPollGraphDetailsActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.Intent;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.QuickPollOptionsCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.QuickPollResponseEvent;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.services.UserRole.STUDENT;
+import static com.alpha.api.services.events.UserSessionChangeEvent.Type.JOIN;
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class QuickPollGraphDetailsActivityTest extends BaseQuickActivityTest {
+
+    public static final int QUICK_POLL_ANSWERS = 3;
+    @Inject
+    private QuickPollGraphDetailsActivity activity;
+
+    @Mock
+    private QuickPollOptionsLoaderInitializer loaderInitializer;
+    @Mock
+    private QuickPollSettings quickPollSettings;
+    @Mock
+    private ArrayAdapter<Participant> participantArrayAdapter;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        newInjector(this, QuickPollGraphDetailsActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(CursorLoaderFactory.class, cursorLoaderFactory)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(PostsDataStore.class, postsDataStore)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(PostsDataStore.class, postsDataStore)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .configureActivity();
+
+        given(controlSettingsModel.getQuickPollSettings()).willReturn(quickPollSettings);
+        given(quickPollSettings.isRunning()).willReturn(true);
+        given(quickPollSettings.activityPostCreated()).willReturn(false);
+        given(cursorLoaderFactory.createQuickPollOptionsLoaderInitializer(eq(POST_ID))).willReturn(loaderInitializer);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(quickPollSettings.getPostId()).willReturn(POST_ID);
+        given(postsDataStore.fetch(POST_ID)).willReturn(post);
+        given(post.getId()).willReturn(POST_ID);
+        given(post.getActiveParticipants()).willReturn(participants);
+        given(post.getNumberOfQuickPollAnswers()).willReturn(QUICK_POLL_ANSWERS);
+        given(section.getActiveParticipants()).willReturn(participants);
+        given(quickPollSettings.getActiveParticipantsIds()).willReturn(participantIds);
+        given(section.getParticipantsFromIds(participantIds)).willReturn(participants);
+    }
+
+    @Test
+    public void shouldDisplayNumberOfAnswerColumnsAccordingToQuickPollOptions() {
+        setupQuickPollAnswers();
+
+        assertThat(activity.findViewById(R.id.list_view_a).getVisibility(), is(View.VISIBLE));
+        assertThat(activity.findViewById(R.id.list_view_b).getVisibility(), is(View.VISIBLE));
+        assertThat(activity.findViewById(R.id.list_view_c).getVisibility(), is(View.VISIBLE));
+        assertThat(activity.findViewById(R.id.list_view_d).getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldSetAdaptersForThreeQuickPollOptions() {
+        setupQuickPollAnswers();
+
+        ListView list_view_a = (ListView) activity.findViewById(R.id.list_view_a);
+        ListView list_view_b = (ListView) activity.findViewById(R.id.list_view_b);
+        ListView list_view_c = (ListView) activity.findViewById(R.id.list_view_c);
+        ListView list_view_d = (ListView) activity.findViewById(R.id.list_view_d);
+        assertNotNull(list_view_a.getAdapter());
+        assertNotNull(list_view_b.getAdapter());
+        assertNotNull(list_view_c.getAdapter());
+        assertNull(list_view_d.getAdapter());
+    }
+
+    @Test
+    public void shouldInitialiazeLoaderForThreeQuickPollOptions() {
+        setupQuickPollAnswers();
+
+        verify(loaderInitializer).register(any(LoaderManager.class), any(QuickPollOptionsCursorAdapter.class), eq(QuickPollOptionsLoaderInitializer.OPTION_A_LOADER_ID));
+        verify(loaderInitializer).register(any(LoaderManager.class), any(QuickPollOptionsCursorAdapter.class), eq(QuickPollOptionsLoaderInitializer.OPTION_B_LOADER_ID));
+        verify(loaderInitializer).register(any(LoaderManager.class), any(QuickPollOptionsCursorAdapter.class), eq(QuickPollOptionsLoaderInitializer.OPTION_C_LOADER_ID));
+
+    }
+
+    @Test
+    public void shouldInitializeQuickPollCursorLoader() {
+        Intent intent = new Intent();
+        intent.putExtra(POST_ID_KEY, POST_ID);
+
+        activity.setIntent(intent);
+        activity.onCreate(null);
+        activity.onResume();
+
+        verify(cursorLoaderFactory).createQuickPollOptionsLoaderInitializer(eq(POST_ID));
+    }
+
+    @Test
+    public void shouldRemoveRespondedParticipantFromDefaulters() {
+        Participant participantOne = new Participant(1l, "participantOne");
+        Participant participantTwo = new Participant(2l, "participantTwo");
+
+        participants = asList(participantOne, participantTwo);
+        when(section.getParticipantsFromIds(participantIds)).thenReturn(participants);
+        setupQuickPollAnswers();
+
+        assertThat(activity.participantArrayAdapter.getCount(), is(2));
+
+        activity.setStudentAsResponded(new PostAuthor(participantOne.getId(), participantOne.getName(), STUDENT));
+        assertThat(activity.participantArrayAdapter.getCount(), is(1));
+        assertThat(activity.participantArrayAdapter.getItem(0), is(participantTwo));
+    }
+
+    @Test
+    public void shouldUpdateResponseStatWhenParticipantsRespond() {
+        activity.participantArrayAdapter = participantArrayAdapter;
+        PostAuthor student1 = new PostAuthor(1L, "Arvind", STUDENT);
+        PostAuthor student2 = new PostAuthor(2L, "Dahlia", STUDENT);
+        participants = asList(asParticipant(student1), asParticipant(student2));
+
+        when(section.getInSessionParticipantsCount()).thenReturn(2);
+        when(section.getParticipantsFromIds(participantIds)).thenReturn(participants);
+        when(section.getActiveParticipants()).thenReturn(participants);
+
+        setupQuickPollAnswers();
+
+        activity.listener.onQuickPollResponse(new QuickPollResponseEvent(student2));
+
+        TextView responseStatTextView = (TextView) activity.findViewById(R.id.response_stat);
+        assertThat(responseStatTextView.getText().toString(), is("1/2 students have responded"));
+
+    }
+
+    @Test
+    public void shouldAddDefaultersWhenNewStudentJoinSession() {
+        Participant participantOne = new Participant(1l, "participantOne");
+        Participant participantTwo = new Participant(2l, "participantTwo");
+        List<Participant> activeParticipantList = asList(participantOne);
+
+        when(section.getInSessionParticipantsCount()).thenReturn(1);
+        when(section.getParticipantsFromIds(participantIds)).thenReturn(activeParticipantList);
+
+        setupQuickPollAnswers();
+
+        assertThat(activity.participantArrayAdapter.getCount(), is(1));
+
+        activity.listeners.notifyParticipantChanges(new UserSessionChangeEvent(participantTwo, JOIN));
+
+        assertThat(activity.participantArrayAdapter.getCount(), is(2));
+        assertThat(activity.participantArrayAdapter.getItem(1), is(participantTwo));
+    }
+
+    @Test
+    public void shouldSetResponseRatioStatsWithActiveParticipants() {
+        PostAuthor firstStudent = new PostAuthor(1L, "Arvind", STUDENT);
+        PostAuthor secondStudent = new PostAuthor(2L, "Dahlia", STUDENT);
+
+        participants = asList(asParticipant(firstStudent), asParticipant(secondStudent));
+
+        when(section.getParticipantsFromIds(participantIds)).thenReturn(participants);
+
+        setupQuickPollAnswers();
+
+        TextView responseStatTextView = (TextView) activity.findViewById(R.id.response_stat);
+        assertThat(responseStatTextView.getText().toString(), is("0/2 students have responded"));
+    }
+
+    private Participant asParticipant(PostAuthor student) {
+        return new Participant(student.getId(), student.getName());
+    }
+
+    private void setupQuickPollAnswers() {
+        when(quickPollSettings.isRunning()).thenReturn(true);
+        when(quickPollSettings.activityPostCreated()).thenReturn(true);
+        when(quickPollSettings.getNumberOfOptions()).thenReturn(QUICK_POLL_ANSWERS);
+
+        Intent intent = new Intent();
+        intent.putExtra(POST_ID_KEY, POST_ID);
+
+        activity.setIntent(intent);
+        activity.onCreate(null);
+        activity.onResume();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getQuickActivitySettings() {
+        return quickPollSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected BaseQuickActivity getQuickActivity() {
+        return activity;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<html><head><title>ControlMessageListeningService.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlMessageListeningService.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/services/amplify_client/ControlMessageListeningService.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">40</span>
+    <progress max="100" value="40"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.services;
+
+
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.IBinder;
+import com.alpha.activities.*;
+import com.alpha.api.messaging.*;
+import com.alpha.api.messaging.notifications.events.SessionStartMessageEvent;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.*;
+import com.alpha.api.services.events.ForceFieldEvent.EngageFailed;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.AndroidApplicationUtils;
+import com.alpha.utils.ApplicationUtils;
+import com.alpha.utils.NotificationUtils;
+import com.alpha.utils.TimeTickerProvider;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.service.RoboService;
+
+
+@SuppressWarnings("PMD.TooManyMethods")
+public class ControlMessageListeningService extends RoboService {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final int FOREGROUND_SERVICE_ID = 1;
+
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private Context context;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+    @Inject
+    private AndroidApplicationUtils androidApplicationUtils;
+    @Inject
+    private TimeTickerProvider timerTickerProvider;
+    @Inject
+    private ApplicationUtils applicationUtils;
+    @Inject
+    private NotificationUtils notificationUtils;
+
+    private static final String GOORU_PACKAGE = "org.ednovo";
+    private boolean hasStarted;
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        LOG.info("Request to start received");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!hasStarted) {
+            //Can be called multiple times, guard against multiple registrations
+            eventBus.register(this);
+            hasStarted = true;
+            moderatorSessionServiceConnection.open();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        return START_REDELIVER_INTENT;
+    }
+
+    @Override
+    public void onDestroy() {
+        LOG.info("Service being destroyed");
+        eventBus.unregister(this);
+        moderatorSessionServiceConnection.close();
+        super.onDestroy();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        LOG.info("Bind request received, service starting, registering to event bus");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!hasStarted) {
+            eventBus.register(this);
+            hasStarted = true;
+            moderatorSessionServiceConnection.open();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        return new ControlMessageListeningServiceBinder();
+    }
+
+    @Subscribe
+    public void onGoResearchActivation(GoResearchStartEvent event) {
+        if (event.succeeded()) {
+            if (applicationUtils.isAppInstalled(context, GOORU_PACKAGE)) {
+                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(GOORU_PACKAGE);
+                context.startActivity(launchIntent);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } else {
+                toaster.makeToast(R.string.gooru_not_installed);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+    }
+
+    private class ControlMessageListeningServiceBinder extends BaseServiceBinder<ControlMessageListeningService> {
+        @Override
+        public ControlMessageListeningService getService() {
+            return ControlMessageListeningService.this;
+        }
+    }
+
+    @Subscribe
+    public void onLockDevice(ActivateDeviceLockEvent deviceLockEvent) {
+        LOG.info("Lock message has been received, locking device");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.isTeacher()) {
+            LOG.info("User logged in is a teacher, ignoring lock");
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        androidApplicationUtils.bringApplicationTaskToForeground(this, getPackageName());
+        Intent intent = new Intent(context, EyesOnTeacherActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+    }
+
+    @Subscribe
+    public void onUnlockDevice(DeactivateDeviceLockEvent event) {
+        LOG.info("Unlock message received, unlocking device");
+        unlockDevice();
+    }
+
+    private void unlockDevice() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.isTeacher()) {
+            LOG.info("User logged in is a teacher, ignoring lock");
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        deviceLockingService.unlock(EyesOnTeacherActivity.class);
+    }
+
+    private void endCountDownTimer() {
+        CountdownFloatingWindow.close(context);
+        timerTickerProvider.cancel();
+    }
+
+    @Subscribe
+    public void onStudentSessionEnded(StudentSessionEndedEvent event) {
+        if (event.isTeacherInitiated()) {
+            toaster.makeToast(R.string.session_ended_successfully_message);
+        } else {
+            if (event.isConnectionLost()) {
+                toaster.makeToast(R.string.disconnected_from_session_message);
+            }
+        }
+
+        LOG.info("Session has ended, unlocking device");
+
+        if (deviceLockingService.isLocked()) {
+            deviceLockingService.resetLocks();
+        }
+        endCountDownTimer();
+        unlockSessionServiceFromForeground();
+    }
+
+    @Subscribe
+    public void onTeacherSessionEnded(TeacherSessionEndedEvent event) {
+        if (event.isConnectionLost()) {
+            endCountDownTimer();
+            toaster.makeToast(R.string.disconnected_from_session_message);
+        }
+        endCountDownTimer();
+        unlockSessionServiceFromForeground();
+    }
+
+    @Subscribe
+    public void onForceFieldEngaged(ForceFieldEvent.Engaged event) {
+        toaster.makeToast(R.string.force_field_engaged);
+    }
+
+    @Subscribe
+    public void onForceFieldChanged(ForceFieldEvent.Changed event) {
+        toaster.makeToast(R.string.force_field_changed);
+    }
+
+    @Subscribe
+    public void onForceFieldDisengaged(ForceFieldEvent.Disengaged event) {
+        toaster.makeToast(R.string.force_field_disengaged);
+    }
+
+    @Subscribe
+    public void onForceFieldEnagageFailure(EngageFailed engageFailedEvent) {
+        toaster.errorToast(engageFailedEvent.reason);
+    }
+
+    @Subscribe
+    public void onSessionStart(SessionStartEvent event) {
+        if (event.succeeded()) {
+            toastSessionJoinMsg();
+            lockSessionServiceToForeground();
+        } else {
+            toaster.errorToast(event.reason);
+        }
+    }
+
+    @Subscribe
+    public void sessionJoinedSuccessfully(JoinSessionEvent event) {
+        toaster.makeToast(R.string.joined_lesson);
+        lockSessionServiceToForeground();
+    }
+
+    @Subscribe
+    public void onReconnectEvent(SessionReconnectEvent event) {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        manager.notify(FOREGROUND_SERVICE_ID,
+                notificationUtils.getNotification(context, getString(R.string.reconnecting)));
+
+    }
+
+    private void lockSessionServiceToForeground() {
+        moderatorSessionServiceConnection.getService()
+                .startForeground(FOREGROUND_SERVICE_ID,
+                           notificationUtils.getNotification(context, getString(R.string.in_session)));
+
+        LOG.info("Moderator Session is locked in foreground");
+    }
+
+    private void unlockSessionServiceFromForeground() {
+        moderatorSessionServiceConnection.getService().stopForeground(true);
+        LOG.info("Moderator Session is unlocked from foreground");
+    }
+
+    @Subscribe
+    public void onSessionEndFailed(EndSessionFailureEvent endSessionEvent) {
+        toaster.errorToast(endSessionEvent.getReasonForFailure(), R.string.end_session_failure);
+    }
+
+    @Subscribe
+    public void onCalledOn(CallOnSomeoneEvent event) {
+        CallOnSomeoneSettings callOnSomeoneSettings = event.getCallOnSomeoneSettings();
+        userService.session().saveCallOnSomeoneSettings(callOnSomeoneSettings);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!callOnSomeoneSettings.isCallOnSomeoneEnabled()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        dispatchCalledOnActivity();
+    }
+
+    @Subscribe
+    public void onQuickPoll(QuickPollEvent event) {
+        QuickPollSettings eventQuickPollSettings = event.getQuickPollSettings();
+        userService.session().saveQuickPollSettings(eventQuickPollSettings);
+
+        if (eventQuickPollSettings.isRunning()) {
+            dispatchQuickPollActivityForStudents();
+        }
+    }
+
+    @Subscribe
+    public void onQuickShortAnswer(QuickShortAnswerEvent event) {
+        QuickShortAnswerSettings quickShortAnswerSettings = event.getQuickShortAnswerSettings();
+        userService.session().saveQuickShortAnswerSettings(quickShortAnswerSettings);
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!quickShortAnswerSettings.isRunning()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        dispatchQuickShortAnswerActivity();
+    }
+
+    @Subscribe
+    public void onSessionStartMessage(SessionStartMessageEvent event) {
+
+        User user = userService.getUser();
+        Section section = user.getSectionWithId(event.getSectionId());
+        if (userService.isStudent() && !userService.isSessionOngoingFor(section)) {
+            androidApplicationUtils.bringApplicationTaskToForeground(context, context.getPackageName());
+            Intent intent = new Intent(context, JoinSessionActivity.class);
+            intent.putExtra(JoinSessionActivity.SECTION_ID, event.getSectionId());
+            intent.putExtra(JoinSessionActivity.TEACHER_NAME, event.getTeacherName());
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    @Subscribe
+    public void onSpotCheckEvent(SpotCheckEvent spotCheckEvent) {
+        LOG.error("************* 1. onSpotCheckEvent " + spotCheckEvent.getSpotCheckSettings().isRunning());
+        SpotCheckSettings spotCheckSettings = spotCheckEvent.getSpotCheckSettings();
+        userService.session().saveSpotCheckSettings(spotCheckSettings);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!spotCheckSettings.isRunning()) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        dispatchSpotCheckActivity();
+    }
+
+    @Subscribe
+    public void onCountdownTimerEvent(CountdownTimerEvent countdownTimerEvent) {
+        CountdownTimerSettings countdownTimerSettings = countdownTimerEvent.getCountdownTimerSettings();
+        userService.session().saveCountdownTimerSettings(countdownTimerSettings);
+        if (countdownTimerSettings.isRunning()) {
+            dispatchCountdownTimerFloatingWindow(countdownTimerSettings);
+        } else {
+            endCountDownTimer();
+            toaster.makeToast(context.getString(R.string.timer_stopped));
+        }
+    }
+
+    private void dispatchCountdownTimerFloatingWindow(CountdownTimerSettings countdownTimerSettings) {
+        Long millisToExpire = countdownTimerSettings.getMillisToExpire();
+        if (millisToExpire > 0) {
+            CountdownFloatingWindow.open(context, userService.getUser().getRole());
+            timerTickerProvider.startWithMillis(millisToExpire);
+            toaster.makeToast(context.getString(R.string.timer_started));
+        }
+    }
+
+    @Subscribe
+    public void userInformationRefreshed(UserInformationRefreshedEvent event) {
+        if (event.requiresRestart()) {
+            Intent intent = new Intent(context, ApplicationRestartActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } else {
+            startService(new Intent(this, RetrievePostsService.class));
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+
+    @Subscribe
+    public void onCountdownTimerFinish(TimeTickerEndEvent timerTickerEndEvent) {
+        userService.session().getCountdownTimerSettings().setRunning(false);
+    }
+
+    @Subscribe
+    public void onCountOff(CountOffEvent event) {
+        CountOffSettings countOffSettings = event.getCountOffSettings();
+        userService.session().saveCountOffSettings(countOffSettings);
+        if (event.isRunning()) {
+            dispatchCountOffActivity();
+        }
+    }
+
+    private void dispatchCountOffActivity() {
+        if (userService.isStudent()) {
+            Intent intent = new Intent(context, CountedOffStudentActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
+    }
+
+    private void dispatchSpotCheckActivity() {
+        if (userService.isStudent()) {
+            Intent intent = new Intent(context, SplashActivity.class);
+            intent.putExtra(SplashActivity.SPLASH_TARGET, SpotCheckStudentActivity.class.getName());
+            intent.putExtra(SplashActivity.SPLASH_TEXT, context.getString(R.string.spot_check));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+
+    private void dispatchQuickShortAnswerActivity() {
+        if (userService.isStudent()) {
+            Intent intent = new Intent(context, SplashActivity.class);
+            intent.putExtra(SplashActivity.SPLASH_TARGET, QuickShortAnswerStudentActivity.class.getName());
+            intent.putExtra(SplashActivity.SPLASH_TEXT, context.getString(R.string.short_answer));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    private void dispatchCalledOnActivity() {
+        if (userService.isStudent()) {
+            Intent intent = new Intent(context, CalledOnStudentActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    private void dispatchQuickPollActivityForStudents() {
+        if (userService.isStudent()) {
+            Intent intent = new Intent(context, SplashActivity.class);
+            intent.putExtra(SplashActivity.SPLASH_TARGET, QuickPollStudentActivity.class.getName());
+            intent.putExtra(SplashActivity.SPLASH_TEXT, context.getString(R.string.quick_poll));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    private void toastSessionJoinMsg() {
+        ClassSession classSession = userService.session();
+        int msgId = classSession.isStarted()
+                ? R.string.session_started_successfully_message
+                : R.string.session_rejoined_successfully_message;
+        toaster.makeToast(msgId);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

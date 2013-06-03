@@ -1,0 +1,150 @@
+<html><head><title>PushNotificationsRegistrationTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PushNotificationsRegistrationTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/notifications/tasks/amplify_client/PushNotificationsRegistrationTask.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.notifications.tasks;
+
+import com.alpha.api.messaging.notifications.gcm.PushNotificationsFacade;
+import com.alpha.api.messaging.notifications.events.*;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.User;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+public class PushNotificationsRegistrationTask implements ServerNotificationsRegistrationCallback {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    private final PushNotificationsFacade facade;
+    private final EventBus eventBus;
+    private final UserTaskFactory userTaskFactory;
+    private String oldRegistrationId;
+
+    @Inject
+    public PushNotificationsRegistrationTask(PushNotificationsFacade facade, EventBus eventBus, UserTaskFactory userTaskFactory) {
+        this.facade = facade;
+        this.eventBus = eventBus;
+        this.userTaskFactory = userTaskFactory;
+    }
+
+    public void register() {
+        try {
+            eventBus.register(this);
+            facade.unregister();
+            LOGGER.info("Sent intent to unregister with GCM in case we were registered before.");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (Exception ex) {
+            eventBus.unregister(this);
+            throw new RuntimeException(ex);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Subscribe
+    public void onGCMUnregisteredEvent(GCMUnregisteredEvent event) {
+        try {
+            oldRegistrationId = event.getRegistrationId();
+            LOGGER.info("GCM unregistration completed. Old registration id: " + oldRegistrationId);
+            facade.register();
+            LOGGER.info("Sent intent to register with GCM.");</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (Exception ex) {
+            eventBus.unregister(this);
+            throw new RuntimeException(ex);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Subscribe
+    public void onGCMRegistrationEvent(GCMRegisteredEvent event) {
+        eventBus.unregister(this);
+        String newRegistrationId = event.getRegistrationId();
+        LOGGER.info("Obtaining GCM id completed. New registration id: " + newRegistrationId);
+        ServerNotificationsRegistrationTask serverNotificationsRegistrationTask = userTaskFactory.createServerNotificationsRegistrationTask(this, oldRegistrationId);
+        serverNotificationsRegistrationTask.execute();
+    }
+
+    @Subscribe
+    public void onGCMRegistrationError(GCMRegistrationErrorEvent event) {
+        eventBus.unregister(this);
+        String error = event.getError();
+        LOGGER.error("GCM registration/unregistration returned error: " + error);
+        eventBus.post(new PushNotificationsRegistrationErrorEvent(ApiErrorReason.PUSH_REGISTRATION_FAILED));
+    }
+
+    @Override
+    public void onNotificationsRegistrationFailed(ApiErrorReason errorReason) {
+        eventBus.post(new PushNotificationsRegistrationErrorEvent(errorReason));
+    }
+
+    @Override
+    public void onNotificationsRegistrationSuccess(User userInfo) {
+        eventBus.post(new PushNotificationsRegisteredEvent(userInfo));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

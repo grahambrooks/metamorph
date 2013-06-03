@@ -1,0 +1,124 @@
+<html><head><title>HttpClientFactoryTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HttpClientFactoryTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/http/amplify_client/HttpClientFactoryTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.http;
+
+import com.alpha.api.properties.Environment;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class HttpClientFactoryTest {
+    @Mock
+    private Environment environment;
+    private HttpClientFactory factory;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        factory = new HttpClientFactory(environment);
+    }
+
+    @Test
+    public void shouldCreateClientWithSSLSocketFactoryWhenEnvironmentIsProduction() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        when(environment.validateHttpCerts()).thenReturn(true);
+
+        Scheme httpsScheme = createClientAndGetSchemeForName("https");
+        SSLSocketFactory socketFactory = (SSLSocketFactory) httpsScheme.getSocketFactory();
+
+        assertThat(socketFactory, equalTo(SSLSocketFactory.getSocketFactory()));
+    }
+
+    @Test
+    public void shouldCreateClientWithCustomSSLSocketFactoryWhenEnvironmentIsNotProduction() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        when(environment.validateHttpCerts()).thenReturn(false);
+
+        Scheme httpsScheme = createClientAndGetSchemeForName("https");
+        SSLSocketFactory socketFactory = (SSLSocketFactory) httpsScheme.getSocketFactory();
+
+        assertThat(socketFactory, instanceOf(CertificateIgnoringSSLSocketFactory.class));
+    }
+
+    @Test
+    public void shouldCreateHTTPSSchemeWithDefaultHTTPSPort() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        Scheme httpsScheme = createClientAndGetSchemeForName("https");
+        assertThat(httpsScheme.getDefaultPort(), is(HttpClientFactory.DEFAULT_HTTPS_PORT));
+    }
+
+    @Test
+    public void shouldCreateHTTPSchemeWithDefaultHTTPPort() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        Scheme httpsScheme = createClientAndGetSchemeForName("http");
+        assertThat(httpsScheme.getDefaultPort(), is(HttpClientFactory.DEFAULT_HTTP_PORT));
+    }
+
+
+    private Scheme createClientAndGetSchemeForName(String name) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        ClientConnectionManager connectionManager = factory.createClient().getConnectionManager();
+        return connectionManager.getSchemeRegistry().get(name);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

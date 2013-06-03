@@ -1,0 +1,123 @@
+<html><head><title>GoogleDriveProvider.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleDriveProvider.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/googledrive/amplify_client/GoogleDriveProvider.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.googledrive;
+
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.properties.Environment;
+import com.alpha.logging.LogUtils;
+import com.google.api.client.extensions.android3.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.services.drive.Drive;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Singleton
+public class GoogleDriveProvider implements Provider<Drive> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    public enum PermissionRole {
+        OWNER,
+        READER,
+        WRITER
+    }
+
+    public enum PermissionType {
+        USER,
+        GROUP,
+        DOMAIN,
+        ANYONE
+    }
+
+    public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(5);
+
+    Environment  environment;
+
+    GoogleAuthenticationService authenticationService;
+
+    @Inject
+    public GoogleDriveProvider(Environment environment, GoogleAuthenticationService authenticationService) {
+        this.environment = environment;
+        this.authenticationService = authenticationService;
+    }
+
+    @Override
+    public Drive get() {
+        GoogleCredential credential = new GoogleCredential();
+        credential.setAccessToken(getAuthToken());
+        return new Drive.Builder(new NetHttpTransport(), new AndroidJsonFactory(), credential)
+                .build();
+    }
+
+    private String getAuthToken() {
+        String authToken = null;
+        try {
+            authToken = EXECUTOR_SERVICE.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    return authenticationService.getGDriveToken();}
+            }).get();
+        } catch (InterruptedException e) {
+            LOG.error("could not authenticate user for Google Drive", e);
+        } catch (ExecutionException e) {
+            LOG.error("could not authenticate user for Google Drive", e);
+        }
+        return authToken;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

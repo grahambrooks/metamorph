@@ -1,0 +1,293 @@
+<html><head><title>CountOffActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountOffActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/CountOffActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.domains.CountOffDetails;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.CountOffGroupChangeEvent;
+import com.alpha.api.services.events.UserSessionChangeEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.text.AmplifyButton;
+import com.alpha.widgets.text.AmplifyTextView;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class CountOffActivityTest {
+
+    @Inject
+    private CountOffActivity activity;
+    @Mock
+    private UserService userService;
+    @Mock
+    private Section section;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private CountOffDetails countOffDetails;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private ControlSettingsModel controlSettings;
+    @Mock
+    private TeacherConsoleAction teacherConsoleAction;
+    @Mock
+    private CountOffSettings countOffSettings;
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+    @Mock
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+    @Mock
+    private SessionTaskFactory sessionTaskFactory;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private EventBus eventBus;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        newInjector(this, CountOffActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(Toaster.class, toaster)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(ModeratorSessionService.class, moderatorSessionService)
+                .bindInstance(ModeratorSessionServiceConnection.class, moderatorSessionServiceConnection)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .bindInstance(EventBus.class, eventBus)
+                .configureActivity();
+
+        given(userService.getUser()).willReturn(teacher);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(teacher.getLiveSection()).willReturn(section);
+        given(teacher.getCurrentControlSettingsModel()).willReturn(controlSettings);
+        given(controlSettings.getCountOffSettings()).willReturn(countOffSettings);
+        given(countOffSettings.getCountOffDetails()).willReturn(countOffDetails);
+        given(moderatorSessionServiceConnection.getService()).willReturn(moderatorSessionService);
+        given(controlSettings.isLocked()).willReturn(false);
+        given(networkConnectivity.isConnected()).willReturn(true);
+    }
+
+    @Test
+    public void shouldReturn2MaxGroupsWhen2StudentsInSession() {
+        when(section.getInSessionParticipantsCount()).thenReturn(2);
+
+        assertThat(activity.getMaxCountOffGroups(), is(2));
+    }
+
+    @Test
+    public void shouldReturnNDividedBy2MaxGroupsWhenEvenNumberOfStudentsInSession() {
+        when(section.getInSessionParticipantsCount()).thenReturn(20);
+
+        assertThat(activity.getMaxCountOffGroups(), is(10));
+    }
+
+    @Test
+    public void shouldReturnNDividedBy2FlooredMaxGroupsWhenOddNumberOfStudentsInSession() {
+        when(section.getInSessionParticipantsCount()).thenReturn(25);
+
+        assertThat(activity.getMaxCountOffGroups(), is(12));
+    }
+
+    @Test
+    public void shouldToastIfNoNetworkAvailableWhenLaunchingCountOff() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        activity.onCreate(null);
+
+        AmplifyButton startCountOffButton = (AmplifyButton) activity.findViewById(R.id.count_off);
+        startCountOffButton.performClick();
+
+        verify(toaster).makeToast(R.string.network_not_connected);
+    }
+
+    @Test
+    public void shouldToastIfSettingsWasLockedWhenLaunchingCountOff() {
+        when(controlSettings.isLocked()).thenReturn(true);
+        activity.onCreate(null);
+
+        AmplifyButton startCountOffButton = (AmplifyButton) activity.findViewById(R.id.count_off);
+        startCountOffButton.performClick();
+
+        verify(toaster).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldDisplayNumberOfStudentsInSessionOnCreate() {
+        when(section.getInSessionParticipantsCount()).thenReturn(23);
+
+        activity.onCreate(null);
+
+        AmplifyTextView numberOfStudentsInSession = (AmplifyTextView) activity.findViewById(R.id.number_of_students_in_session);
+        assertThat(numberOfStudentsInSession.getText().toString(), is("There are 23 students in session"));
+    }
+
+    @Test
+    public void shouldUpdateNumberOfStudentsInSessionWhenStudentLeavesOrJoinsSession() {
+        activity.onCreate(null);
+        when(section.getInSessionParticipantsCount()).thenReturn(32);
+
+        activity.listeners.participantChanges(new UserSessionChangeEvent(null, null));
+
+        TextView numberOfStudentsInSession = (TextView) activity.findViewById(R.id.number_of_students_in_session);
+        assertThat(numberOfStudentsInSession.getText().toString(), is("There are 32 students in session"));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldRegisterListenersOnResume() {
+        activity.onCreate(null);
+
+        activity.onResume();
+
+        verify(eventBus).register(activity.listeners);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldUnregisterListenersOnPause() {
+        activity.onCreate(null);
+
+        activity.onPause();
+
+        verify(eventBus).unregister(activity.listeners);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldDisplayTheNumberOfStudentsPerGroupOnCreate() {
+        when(section.getInSessionParticipantsCount()).thenReturn(2);
+
+        activity.onCreate(null);
+
+        TextView numberOfStudentsPerGroup = (TextView) activity.findViewById(R.id.number_of_students_per_group);
+        assertThat(numberOfStudentsPerGroup.getText().toString(), is("1 student per group"));
+    }
+
+    @Test
+    public void shouldUpdateNumberOfStudentsPerGroupWhenStudentLeavesOrJoinsSession() {
+        when(section.getInSessionParticipantsCount()).thenReturn(32);
+        activity.onCreate(null);
+        activity.numberPicker.setCurrent(3);
+
+        activity.listeners.participantChanges(new UserSessionChangeEvent(null, null));
+
+        TextView numberOfStudentsPerGroup = (TextView) activity.findViewById(R.id.number_of_students_per_group);
+        assertThat(numberOfStudentsPerGroup.getText().toString(), is("10 students per group"));
+    }
+
+    @Test
+    public void shouldPostEventToEventBusWhenCountUpIsClicked() {
+        activity.onCreate(null);
+        View countUpButton = activity.findViewById(R.id.number_picker_up_button);
+
+        countUpButton.performClick();
+
+        verify(eventBus).post(any(CountOffGroupChangeEvent.class));
+    }
+
+    @Test
+    public void shouldPostEventToEventBusWhenCountDownIsClicked() {
+        activity.onCreate(null);
+        View countDownButton = activity.findViewById(R.id.number_picker_down_button);
+
+        countDownButton.performClick();
+
+        verify(eventBus).post(any(CountOffGroupChangeEvent.class));
+    }
+
+    @Test
+    public void shouldUpdateNumberOfStudentsPerGroupWhenNumberOfGroupsChanges() {
+        when(section.getInSessionParticipantsCount()).thenReturn(32);
+        activity.onCreate(null);
+        activity.numberPicker.setCurrent(3);
+
+        activity.listeners.countOffGroupChanges(new CountOffGroupChangeEvent());
+
+        TextView numberOfStudentsPerGroup = (TextView) activity.findViewById(R.id.number_of_students_per_group);
+        assertThat(numberOfStudentsPerGroup.getText().toString(), is("10 students per group"));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

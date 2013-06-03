@@ -1,0 +1,133 @@
+<html><head><title>ResetStateTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ResetStateTaskTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/receivers/tasks/amplify_client/ResetStateTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.receivers.tasks;
+
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver.PendingResult;
+import android.content.Context;
+import android.os.Bundle;
+import com.alpha.api.AlphaSDK;
+import com.alpha.api.AlphaSDK.SDKResetSteps;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.ShadowProcess;
+import com.google.common.collect.Lists;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Collections;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ResetStateTaskTest {
+    private ResetStateTask resetStateTask;
+    @Mock
+    private PendingResult pendingResult;
+    @Mock
+    private AlphaSDK alphaSDK;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        ActivityTestInjector<ResetStateTask> activityTestInjector = new ActivityTestInjector<ResetStateTask>(this, ResetStateTask.class);
+        activityTestInjector.bindInstance(AlphaSDK.class, alphaSDK).bindMocksToContext();
+        resetStateTask = new ResetStateTask(Robolectric.application, alphaSDK, pendingResult);
+
+        given(alphaSDK.reset()).willReturn(Collections.<SDKResetSteps>emptyList());
+    }
+
+    @Test
+    public void shouldKillBackgroundProcessesForItselfAfterFinishingResult() throws Exception {
+        resetStateTask.onSuccess(Collections.<SDKResetSteps>emptyList());
+        ActivityManager activityManager = (ActivityManager)Robolectric.application.getSystemService(Context.ACTIVITY_SERVICE);
+        assertThat(shadowOf(activityManager).getBackgroundPackage(), is(Robolectric.application.getPackageName()));
+    }
+
+    @Test
+    public void shouldCommitSuicide() throws Exception {
+        resetStateTask.execute();
+        assertThat(ShadowProcess.KILLED_PROCESS_ID, is(ShadowProcess.PROCESS_ID));
+    }
+
+    @Test
+    public void shouldTellTheAlphaSDKToShutdown() throws Exception {
+        resetStateTask.call();
+        verify(alphaSDK).reset();
+    }
+
+    @Test
+    public void shouldFinishPendingResultOnSuccess() throws Exception {
+        resetStateTask.onSuccess(Collections.<SDKResetSteps>emptyList());
+        verify(pendingResult).finish();
+    }
+
+    @Test
+    public void shouldSetAnyFailuresIntoTheResponseBundle() throws Exception {
+        Bundle expectedBundle = new Bundle();
+        expectedBundle.putStringArrayList(ResetStateTask.FAILURES_KEY,
+                Lists.newArrayList(SDKResetSteps.DELETING_DATA.name(), SDKResetSteps.REMOVING_ACCOUNTS.name()));
+        expectedBundle.putBoolean(ResetStateTask.RESULT_KEY, false);
+
+        resetStateTask.onSuccess(Lists.newArrayList(SDKResetSteps.DELETING_DATA,
+                SDKResetSteps.REMOVING_ACCOUNTS));
+
+        verify(pendingResult).setResultExtras(expectedBundle);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

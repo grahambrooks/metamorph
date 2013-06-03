@@ -1,0 +1,269 @@
+<html><head><title>Environment.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Environment.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/properties/amplify_client/Environment.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.properties;
+
+import com.alpha.api.http.RestfulEndpoints;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ResourceBundle;
+
+import static com.alpha.api.properties.Environment.Property.*;
+import static com.google.common.base.Preconditions.checkArgument;
+
+@SuppressWarnings("PMD.TooManyFields")
+public class Environment {
+
+    private final ResourceBundle resources;
+
+    public enum Property {
+        NAME,
+        VALIDATE_XMPP_CERTS,
+        VALIDATE_HTTP_CERTS,
+        XMPP_DEBUGGING,
+        MULTICHAT_DOMAIN,
+        XMPP_PORT,
+        XMPP_HOST,
+        WEB_HOST,
+        WEB_PORT,
+        HOCKEYAPP_KEY,
+        URI_SCHEME,
+        API_KEY,
+        AUTH_DOMAIN,
+        CONSOLE_ANALYTICS,
+        API_ACCESS_KEY,
+        REQUIRE_ADAM,
+        REQUIRE_NETNANNY;
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public String key() {
+            return name().toLowerCase();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    }
+    private final String webServicesBaseUri;
+
+    private final String xmppHost;
+    private final Integer xmppPort;
+    private final String multichatDomain;
+    private final boolean xmppDebuggingEnabled;
+    private final String hockeyappKey;
+    private final boolean validateXmppCerts;
+    private final boolean validateHttpCerts;
+    private final String apiKey;
+    private final boolean consoleAnalytics;
+    private final String authDomain;
+    private final String apiAccesskey;
+    private final boolean requireAdam;
+    private final boolean requireNetNanny;
+
+    public Environment(ResourceBundle resources) {
+        this.resources = resources;
+        validatePropertiesExistence();
+        webServicesBaseUri = valueOf(URI_SCHEME) + "://" + valueOf(WEB_HOST) + ":" + valueOf(WEB_PORT);
+        xmppHost = valueOf(XMPP_HOST);
+        xmppPort = Integer.parseInt(valueOf(XMPP_PORT));
+        multichatDomain = valueOf(MULTICHAT_DOMAIN);
+        xmppDebuggingEnabled = Boolean.valueOf(valueOf(XMPP_DEBUGGING));
+        hockeyappKey = valueOf(HOCKEYAPP_KEY);
+        validateXmppCerts = Boolean.valueOf(valueOf(VALIDATE_XMPP_CERTS));
+        validateHttpCerts = Boolean.valueOf(valueOf(VALIDATE_HTTP_CERTS));
+        apiKey = valueOf(API_KEY);
+        authDomain = valueOf(AUTH_DOMAIN);
+        consoleAnalytics = Boolean.valueOf(valueOf(CONSOLE_ANALYTICS));
+        apiAccesskey = valueOf(API_ACCESS_KEY);
+        requireAdam = Boolean.valueOf(valueOf(REQUIRE_ADAM));
+        requireNetNanny = Boolean.valueOf(valueOf(REQUIRE_NETNANNY));
+    }
+
+    private String valueOf(Property property) {
+        return resources.getString(property.key());
+    }
+
+    private void validatePropertiesExistence() {
+        for (Property property : Property.values()) {
+            checkArgument(StringUtils.isNotBlank(valueOf(property)), property.name() + " property does not exist");
+        }
+    }
+
+    public String getName () {
+        return  valueOf(NAME);
+    }
+
+    public String getXmppHost() {
+        return xmppHost;
+    }
+
+    public Integer getMessagingPort() {
+        return xmppPort;
+    }
+
+    public String getMultichatDomain() {
+        return multichatDomain;
+    }
+
+    public String getEventLogsURI() {
+        return webServicesBaseUri + RestfulEndpoints.EVENT_LOGS.endpointPath();
+    }
+
+    public String getEventsURI() {
+        return webServicesBaseUri + RestfulEndpoints.EVENTS.endpointPath();
+
+    }
+
+    public boolean isXmppDebuggingEnabled() {
+        return xmppDebuggingEnabled;
+    }
+
+    public boolean isValidatingXmppCertificates() {
+        return validateXmppCerts;
+    }
+
+    public String getPostsForUserURI(Long userId) {
+        return webServicesBaseUri + RestfulEndpoints.POSTS_FOR_USER.endpointPath(userId);
+    }
+
+    public String getPostsURI() {
+        return webServicesBaseUri + RestfulEndpoints.POSTS.endpointPath();
+    }
+
+    public String getPostURI(Long postId) {
+        return webServicesBaseUri + RestfulEndpoints.POST.endpointPath(postId);
+    }
+
+    public String getAddParticipantsToPostUri(Long postId) {
+        return webServicesBaseUri + RestfulEndpoints.ADD_POST_PARTICPANTS.endpointPath(postId);
+    }
+
+    public String getCommentsURI(Long postId) {
+        return webServicesBaseUri + RestfulEndpoints.POST_COMMENTS.endpointPath(postId);
+    }
+
+    public String getCommentByCommentIdURI(Long postId, Long commentId) {
+        return webServicesBaseUri + RestfulEndpoints.COMMENT.endpointPath(postId, commentId);
+    }
+
+    public String getResponseURI(Long postId) {
+        return webServicesBaseUri + RestfulEndpoints.RESPONSES.endpointPath(postId);
+    }
+
+    public String getCallOnSomeOneURI(Long postId, Long userId) {
+        return webServicesBaseUri + RestfulEndpoints.ADD_CALL_ON_SOMONE.endpointPath(postId, userId);
+    }
+
+    public String getPushMessageReceivedURI(String registrationId, String messageId) {
+        return webServicesBaseUri + RestfulEndpoints.PUSH_MESSAGE_RECEIVED.endpointPath(registrationId, messageId);
+    }
+
+    public String getHockeyappKey() {
+        return hockeyappKey;
+    }
+
+    public boolean isAdamRequired() {
+        return requireAdam;
+    }
+
+    public boolean isNetNannyRequired() {
+        return requireNetNanny;
+    }
+
+    public String getAddRegistrationIdURI() {
+        return webServicesBaseUri + RestfulEndpoints.ADD_USER_REGISTRATION_ID.endpointPath();
+    }
+
+    public String getDeleteRegistrationIdURI(String registrationId) {
+        return webServicesBaseUri + RestfulEndpoints.DELETE_USER_REGISTRATION_ID.endpointPath(registrationId);
+    }
+
+    public String getCurrentUserURI() {
+        return webServicesBaseUri + RestfulEndpoints.CURRENT_USER.endpointPath();
+    }
+
+    public String getCourseByIdURI(Long courseId) {
+        return webServicesBaseUri + RestfulEndpoints.COURSE.endpointPath(courseId);
+    }
+
+    public String getSectionUsersURI(Long userId) {
+        return webServicesBaseUri + RestfulEndpoints.PARTICIPANTS_BY_SECTION_FOR_USER.endpointPath(userId);
+    }
+
+    public String getVersionURI(int versionNumber) {
+        return webServicesBaseUri + RestfulEndpoints.VERSION.endpointPath(versionNumber);
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public Boolean validateHttpCerts() {
+        return validateHttpCerts;
+    }
+
+    public String getAuthDomain() {
+        return authDomain;
+    }
+
+    public boolean getConsoleAnalytics() {
+        return consoleAnalytics;
+    }
+
+    public String getApiAccesskey() {
+        return apiAccesskey;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

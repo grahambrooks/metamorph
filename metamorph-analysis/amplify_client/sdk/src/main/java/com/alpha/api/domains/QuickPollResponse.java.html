@@ -1,0 +1,168 @@
+<html><head><title>QuickPollResponse.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickPollResponse.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/QuickPollResponse.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.google.gson.JsonObject;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import static com.alpha.api.domains.ResponseType.*;
+
+public class QuickPollResponse implements Response, Serializable {
+
+    public static final String ANSWER_JSON_ELEMENT_NAME = "quickPollAnswer";
+    private Long id;
+    private final String quickPollAnswer;
+    private final PostAuthor author;
+    private final Date createdOn;
+
+    public QuickPollResponse(String quickPollAnswer, PostAuthor author) {
+        this.quickPollAnswer = quickPollAnswer;
+        this.author = author;
+        this.createdOn = new Date();
+    }
+
+    public String getQuickPollAnswer() {
+        return quickPollAnswer;
+    }
+
+    @Override
+    public JsonObject asRequestJsonObject() {
+        JsonObject object = new JsonObject();
+        object.addProperty(ANSWER_JSON_ELEMENT_NAME, quickPollAnswer);
+        object.addProperty("authorId", author.getId());
+        object.addProperty("responseType", getType().name());
+        return object;
+    }
+
+    @Override
+    public ResponseType getType() {
+        return QUICK_POLL;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Date getCreatedOn() {
+        return createdOn;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public ContentValues asValues(Long postId) {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), id);
+        values.put(TableColumn.content.name(), asJson());
+        values.put(TableColumn.post_id.name(), postId);
+        values.put(TableColumn.created_on.name(), createdOn.getTime());
+        values.put(TableColumn.author_id.name(), author.getId());
+        values.put(TableColumn.quick_poll_answer.name(), quickPollAnswer);
+        values.put(TableColumn.response_type.name(), getType().name());
+        return values;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asJson() {
+        return AmplifyJsonHelper.toJson(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public PostAuthor getAuthor() {
+        return author;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

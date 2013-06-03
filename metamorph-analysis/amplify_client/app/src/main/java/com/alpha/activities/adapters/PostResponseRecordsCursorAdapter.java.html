@@ -1,0 +1,110 @@
+<html><head><title>PostResponseRecordsCursorAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostResponseRecordsCursorAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/PostResponseRecordsCursorAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.view.View;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.date.DateFormats;
+import com.amplify.R;
+import com.google.inject.Inject;
+
+import java.util.Date;
+
+public class PostResponseRecordsCursorAdapter extends SimpleCursorAdapter {
+
+    public static final String RESPONSE_TIMESTAMP = "_response_timestamp";
+    public static final String RESPONSE_NAME = "_response_name";
+
+    @Inject
+    public PostResponseRecordsCursorAdapter(Context context) {
+        super(context, R.layout.response_name_and_timestamp_item, null, new String[] {}, new int[] {}, 0);
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        view.setTag(retrieveLongValue(cursor, TableColumn.author_id));
+        TextView authorText = (TextView) view.findViewById(R.id.response_author_column);
+        String name = retrieveStringValue(cursor, TableColumn.author_name);
+        authorText.setText(name);
+        authorText.setContentDescription(name + RESPONSE_NAME);
+
+        TextView createdDate = (TextView) view.findViewById(R.id.response_timestamp_column);
+        createdDate.setText(retrieveDateValue(cursor, TableColumn.created_on));
+        createdDate.setContentDescription(name + RESPONSE_TIMESTAMP);
+    }
+
+    private long retrieveLongValue(Cursor cursor, TableColumn column) {
+        return cursor.getLong(cursor.getColumnIndex(column.name()));
+    }
+
+    private String retrieveDateValue(Cursor cursor, TableColumn tableColumn) {
+        return DateFormats.formatPastDateToDefaultStyle(new Date(cursor.getLong(cursor.getColumnIndex(tableColumn.name()))));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private String retrieveStringValue(Cursor cursor, TableColumn tableColumn) {
+        return cursor.getString(cursor.getColumnIndex(tableColumn.name()));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

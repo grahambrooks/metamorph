@@ -1,0 +1,119 @@
+<html><head><title>FeatureMapTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>FeatureMapTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/properties/amplify_client/FeatureMapTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.properties;
+
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class FeatureMapTest {
+
+    private static final String FEATURE_KEY_ONE_NAME = "key_one";
+    private static final String FEATURE_KEY_TWO_NAME = "key_two";
+
+    private FeatureMap featureMap;
+
+    private Map<String, FeatureInfo> featureInfoMap;
+    @Mock
+    private FeatureManager.FeatureKey featureKeyOne;
+    @Mock
+    private FeatureManager.FeatureKey featureKeyTwo;
+
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        given(featureKeyOne.getKey()).willReturn(FEATURE_KEY_ONE_NAME);
+        given(featureKeyTwo.getKey()).willReturn(FEATURE_KEY_TWO_NAME);
+
+        featureInfoMap = newHashMap();
+
+        featureMap = new FeatureMap();
+        featureMap.setFeatures(featureInfoMap);
+    }
+
+    @Test (expected = RuntimeException.class)
+    public void shouldThrowExceptionIfExtraKeysExist() {
+        FeatureManager.FeatureKey[] featureKeys = {featureKeyOne, featureKeyTwo};
+
+        featureMap.validateKeys(featureKeys);
+    }
+
+    @Test (expected = RuntimeException.class)
+    public void shouldThrowExceptionIfKeysAreMissing() {
+        FeatureManager.FeatureKey[] featureKeys = {featureKeyOne};
+
+        featureInfoMap.put(FEATURE_KEY_ONE_NAME, null);
+        featureInfoMap.put(FEATURE_KEY_TWO_NAME, null);
+
+        featureMap.validateKeys(featureKeys);
+    }
+
+    @Test
+    public void shouldNotThrowExceptionIfThereAreNoExtraneousOrMissingKeys() {
+        FeatureManager.FeatureKey[] featureKeys = {featureKeyOne, featureKeyTwo};
+
+        featureInfoMap.put(FEATURE_KEY_ONE_NAME, null);
+        featureInfoMap.put(FEATURE_KEY_TWO_NAME, null);
+
+        featureMap.validateKeys(featureKeys);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<html><head><title>SharedPreferenceUserService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SharedPreferenceUserService.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/SharedPreferenceUserService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">28</span>
+    <progress max="100" value="28"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.lock.GlobalInformationLock;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+import java.util.Date;
+import java.util.List;
+
+import static android.accounts.AccountManager.KEY_ACCOUNT_NAME;
+import static com.alpha.api.services.User.Keys.ID;
+import static com.alpha.api.services.User.Keys.LOGIN_ID;
+import static com.alpha.api.services.User.Keys.NAME;
+import static com.alpha.api.services.User.Keys.PASSWORD;
+import static com.alpha.api.services.User.Keys.ROLE;
+import static com.alpha.api.services.User.Keys.SCHOOL;
+
+public class SharedPreferenceUserService implements UserService {
+    public static final String USER_INFORMATION = "USER_INFORMATION";
+    public static final String HAS_USER_REGISTERED_KEY = "hasUserRegistered";
+
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final String MODIFIED_ON = "MODIFIED_ON";
+
+    private final UserTaskFactory userTaskFactory;
+    private final GlobalInformationLock globalInformationLock;
+    private User user;
+
+    private final SharedPreferences preferences;
+    private final SectionsDataStore sectionsDataStore;
+
+    @Inject
+    public SharedPreferenceUserService(Context ctx, SectionsDataStore sectionsDataStore,
+                                       UserTaskFactory userTaskFactory, GlobalInformationLock globalInformationLock) {
+        this.sectionsDataStore = sectionsDataStore;
+        this.userTaskFactory = userTaskFactory;
+        this.globalInformationLock = globalInformationLock;
+        preferences = ctx.getSharedPreferences(USER_INFORMATION, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    public <T extends User> T getUser() {
+        if (!hasUserRegistered()) {
+            throw new IllegalStateException("user has not registered");
+        }
+        if (userHasNotBeenCreated()) {
+            createUserFromStoredData();
+        }
+
+        //noinspection unchecked
+        return (T) globalInformationLock.callWithReadLock(new AmplifyCallable<User>() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public User call() {
+                return user;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+
+    private boolean userHasNotBeenCreated() {
+        return user == null;
+    }
+
+    private void createUserFromStoredData() {
+        globalInformationLock.callWithWriteLock(new AmplifyCallable<Void>() {
+            @Override
+            public Void call() {
+                String name = preferences.getString(NAME.name(), null);
+                String roleString = preferences.getString(ROLE.name(), null);
+                String schoolName = preferences.getString(SCHOOL.name(), null);
+                String loginId = preferences.getString(LOGIN_ID.name(), null);
+                String password = preferences.getString(PASSWORD.name(), null);
+                Long id = preferences.getLong(ID.name(), -1);
+
+                UserRole role = UserRole.valueOf(roleString);
+                List<Section> sections = sectionsDataStore.getSections();
+
+                user = role.createUser(id, name, schoolName, loginId, password, sections, globalInformationLock);
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public boolean hasUserRegistered() {
+        return preferences.getBoolean(HAS_USER_REGISTERED_KEY, false);
+    }
+
+    @Override
+    public void registerUser(User userToRegister, ControlServerRegistrationCallback callback) {
+        userTaskFactory.createControlServerRegistrationTask(userToRegister, callback, preferences).execute();
+    }
+
+    @Override
+    public Section getCurrentUserSection() {
+        return getUser().getCurrentSection();
+    }
+
+    @Override
+    public ClassSession session() {
+        return getUser().getSession();
+    }
+
+    @Override
+    public boolean isTeacher() {
+        return getUser().getRole() == UserRole.TEACHER;
+    }
+
+    @Override
+    public boolean isStudent() {
+        return getUser().getRole() == UserRole.STUDENT;
+    }
+
+    @Override
+    public void saveAccountName(String accountName) {
+        Editor edit = preferences.edit();
+        edit.putString(KEY_ACCOUNT_NAME, accountName);
+        edit.commit();
+    }
+
+    @Override
+    public String getAccountName() {
+        return preferences.getString(KEY_ACCOUNT_NAME, "");
+    }
+
+    @Override
+    public void syncAllStudentsForAllSections(User user) {
+        userTaskFactory.createRetrieveSectionUserTask(user).execute();
+    }
+
+    @Override
+    public void refreshUser(final User newUser) {
+        if (!hasUserRegistered()) {
+            throw new IllegalStateException("user has not been set up or has not registered ");
+        }
+
+
+        globalInformationLock.callWithWriteLock(new AmplifyCallable<Void>() {
+            @Override
+            public Void call() {
+                Section currentSection = getCurrentUserSection();
+
+                updateUsersName(newUser);
+                createUserFromStoredData();
+                if (currentSection != null && user.getSections().contains(currentSection)) {
+                    user.setCurrentSection(currentSection.getId());
+                }
+                return null;
+            }
+        });
+    }
+
+    private void updateUsersName(User newUser) {
+        LOG.info("Updating users name to " + newUser.getName());
+        Editor editor = preferences.edit();
+        editor.putString(NAME.name(), newUser.getName());
+        if (!editor.commit()) {
+            LOG.info("Could not update name");
+        }
+    }
+
+    @Override
+    public boolean isSessionOngoingForCurrentSection() {
+        return isSessionOngoingFor(getCurrentUserSection());
+    }
+
+    @Override
+    public boolean isSessionOngoingFor(Section section) {
+        return user.getSession().isOngoingFor(section);
+    }
+
+    @Override
+    public String getCalledOnStudentName() {
+        return getUser().getSession().getCalledOnStudentName();
+    }
+
+    @Override
+    public void updateMostRecentPostTime(Date modifiedOn) {
+        preferences.edit().putLong(MODIFIED_ON, modifiedOn.getTime()).commit();
+    }
+
+    @Override
+    public Date getLastModifiedPostTime() {
+        long lastModifiedTime = preferences.getLong(MODIFIED_ON, 0);
+        if(lastModifiedTime > 0){
+            return new Date(lastModifiedTime);
+        }
+        return null;
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

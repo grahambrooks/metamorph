@@ -1,0 +1,266 @@
+<html><head><title>MonitoringActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MonitoringActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/MonitoringActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.widget.GridView;
+import com.alpha.activities.actionbar.TeacherActionBarMiddleContentConfiguration;
+import com.alpha.activities.adapters.StudentMonitoringArrayAdapter;
+import com.alpha.activities.factories.PresenterFactory;
+import com.alpha.activities.presenters.MonitorViewPresenter;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.events.*;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+public class MonitoringActivity extends SundaeTimedActivity {
+
+    @InjectView(R.id.active_student_list)
+    private GridView activeStudents;
+    @Inject
+    private PresenterFactory presenterFactory;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private StudentMonitoringArrayAdapter adapter;
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    @Inject
+    private TeacherActionBarMiddleContentConfiguration configuration;
+
+    private MonitorViewPresenter monitorViewPresenter;
+
+    @VisibleForTesting
+    protected final Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.monitoring_view_teacher);
+        monitorViewPresenter = presenterFactory.createMonitorViewPresenter(findViewById(R.id.teacher_monitoring_view));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+        setViewInOrOutOfSession();
+        initializeAdapter();
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.teacher_notebook_stream_menu, menu);
+        return true;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onPause() {
+        eventBus.unregister(listeners);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void setViewInOrOutOfSession() {
+        if (inSession()) {
+            monitorViewPresenter.setViewToInSession();
+        } else {
+            monitorViewPresenter.setViewToOutOfSession();
+        }
+    }
+
+    private boolean inSession() {
+        return userService.session().isOngoing();
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private Teacher teacher() {
+        return userService.getUser();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void initializeAdapter() {
+        loadParticipantsIntoAdapter();
+        activeStudents.setAdapter(adapter);
+        adapter.sort(Participant.NAME_COMPARATOR);
+    }
+
+    @VisibleForTesting
+    protected void loadParticipantsIntoAdapter() {
+        adapter.clear();
+        for (Participant participant : currentUserSection().getAllParticipants()) {
+            adapter.add(participant);
+        }
+        updateMonitorViews();
+    }
+
+    private Section currentUserSection() {
+        return teacher().getCurrentSection();
+    }
+
+    private void updateMonitorViews() {
+        adapter.notifyDataSetChanged();
+        monitorViewPresenter.updateSessionCounts(inSession());
+    }
+
+    private void sessionEnded() {
+        monitorViewPresenter.setViewToOutOfSession();
+        adapter.notifyDataSetChanged();
+    }
+
+    public class Listeners {
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void notifyParticipantChanges(UserSessionChangeEvent userSessionChangeEvent) {
+            updateMonitorViews();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void participantStatusChanged(ParticipantLocationChangedEvent participantLocationChangedEvent) {
+            updateMonitorViews();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onHandRaiseStatusChanged(HandRaiseStatusChangeEvent event) {
+            updateMonitorViews();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Subscribe
+        public void onSessionConnectionDropped(ConnectionClosedEvent event) {
+            sessionEnded();
+        }
+
+        @Subscribe
+        public void onRefreshStudentRosterInformation(UserInformationRefreshedEvent event) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (event.requiresRestart()) {
+                return;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            loadParticipantsIntoAdapter();
+        }
+    }
+
+    public void doneButtonClicked(View view) {
+        this.finish();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

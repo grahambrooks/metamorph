@@ -1,0 +1,156 @@
+<html><head><title>CountedOffTeacherActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountedOffTeacherActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/CountedOffTeacherActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import com.alpha.api.domains.CountOffDetails;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.amplify.R;
+import com.google.inject.Inject;
+
+import java.util.Date;
+
+public class CountedOffTeacherActivity extends BaseQuickActivity<CountOffSettings> {
+
+    protected static final String NUMBER_OF_GROUPS_EXTRA = "numberOfGroups";
+
+    @Inject
+    private CountOffDetails countOffDetails;
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.counted_off_teacher_view);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int numberOfGroups = getActivitySettings().getCountOffDetails().getNumberOfGroups();
+        TextView numberOfGroupsView = (TextView) findViewById(R.id.count_off_number_of_groups);
+        numberOfGroupsView.setText(Integer.toString(numberOfGroups));
+    }
+
+    @Override
+    protected Post getNewPost() {
+        final int numberOfGroups = getIntent().getExtras().getInt(NUMBER_OF_GROUPS_EXTRA);
+        User teacher = userService.getUser();
+        Section section = teacher.getLiveSection();
+        Post post = new Post(PostType.COUNT_OFF,
+                teacher.asAuthor(),
+                new Date(),
+                teacher.createPostSectionFromCurrentSection(),
+                getResources().getString(R.string.count_off),
+                getResources().getString(R.string.count_off));
+
+        countOffDetails.divideIntoGroups(section.getActiveParticipants(), section.getInactiveParticipants(), numberOfGroups);
+        post.setCountOffDetails(countOffDetails);
+        getActivitySettings().setCountOffDetails(countOffDetails);
+        return post;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected CountOffSettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getCountOffSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void sessionParticipantAdded(Participant participant) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void updateUI(Long postId) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void startQuickActivityTask(Post post) {
+        sessionTaskFactory.createCountOffTask().execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

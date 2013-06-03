@@ -1,0 +1,310 @@
+<html><head><title>EventPredicatesTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EventPredicatesTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/events/amplify_client/EventPredicatesTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.events;
+
+import com.alpha.api.domains.Post;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.HandRaiseStatus;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.messaging.QuickPollSettings;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.messaging.xmpp.events.EventPredicates.CallOnSomeonePredicate;
+import com.alpha.api.messaging.xmpp.events.EventPredicates.QuickPollPredicate;
+import com.alpha.api.messaging.xmpp.events.EventPredicates.QuickShortAnswerPredicate;
+import com.alpha.api.messaging.xmpp.events.EventPredicates.StudentLocationPredicate;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class EventPredicatesTest {
+
+    private static final Long PARTICIPANT_ID = 456L;
+
+    @Mock
+    private ControlSettingsModel originalControlSettingsModel;
+    @Mock
+    private ControlSettingsModel newControlSettingsModel;
+    @Mock
+    private Post originalPost;
+    @Mock
+    private Post newPost;
+
+    @Before</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setUp() throws Exception {
+        initMocks(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldNotMatchIfStudentLocationIsTheSame () {
+        ParticipantPresenceModel originalSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.SECTION,
+                "Section",
+                null);
+        ParticipantPresenceModel newSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.SECTION,
+                "Section",
+                null);
+        StudentLocationPredicate predicate = new StudentLocationPredicate(originalSettings, newSettings);
+        assertThat(predicate.matches(), is(false));
+    }
+
+    @Test
+    public void shouldMatchIfStudentLocationIsDifferent () {
+        ParticipantPresenceModel originalSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.HOME_SCREEN,
+                null,
+                null);
+        ParticipantPresenceModel newSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.SECTION,
+                null,
+                null);
+        StudentLocationPredicate predicate = new StudentLocationPredicate(originalSettings, newSettings);
+        assertThat(predicate.matches(), is(true));
+    }
+
+    @Test
+    public void shouldMatchIfStudentLocationIsTheSameButDisplayNameIsDifferent () {
+        ParticipantPresenceModel originalSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.ANOTHER_APPLICATION,
+                "One Application",
+                null);
+        ParticipantPresenceModel newSettings = new ParticipantPresenceModel(HandRaiseStatus.HAND_LOWER,
+                StudentLocation.ANOTHER_APPLICATION,
+                "Another Application",
+                null);
+        StudentLocationPredicate predicate = new StudentLocationPredicate(originalSettings, newSettings);
+        assertThat(predicate.matches(), is(true));
+    }
+
+    @Test
+    public void shouldDetectThatQuickPollSettingIsDifferentIfPostIdIsDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(2L);
+
+        QuickPollSettings originalSettings = new QuickPollSettings();
+        originalSettings.setPost(originalPost);
+
+        QuickPollSettings newSettings = new QuickPollSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getQuickPollSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getQuickPollSettings()).thenReturn(newSettings);
+        assertThat(new QuickPollPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(true));
+
+    }
+
+    @Test
+    public void shouldDetectThatQuickPollSettingIsNotDifferentIfPostIdIsSame(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(1L);
+        QuickPollSettings originalSettings = new QuickPollSettings();
+        originalSettings.setPost(originalPost);
+
+        QuickPollSettings newSettings = new QuickPollSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getQuickPollSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getQuickPollSettings()).thenReturn(newSettings);
+        assertThat(new QuickPollPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(false));
+
+    }
+
+
+    @Test
+    public void shouldDetectThatShortAnswerSettingsIsDifferentIfPostIdIsDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(2L);
+        QuickShortAnswerSettings originalSettings = new QuickShortAnswerSettings();
+        originalSettings.setPost(originalPost);
+
+        QuickShortAnswerSettings newSettings = new QuickShortAnswerSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getQuickShortAnswerSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getQuickShortAnswerSettings()).thenReturn(newSettings);
+        assertThat(new QuickShortAnswerPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(true));
+
+    }
+
+    @Test
+    public void shouldDetectThatShortAnswerSettingsIsNotDifferentIfPostIdIsNotDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(1L);
+        QuickShortAnswerSettings originalSettings = new QuickShortAnswerSettings();
+        originalSettings.setPost(originalPost);
+
+        QuickShortAnswerSettings newSettings = new QuickShortAnswerSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getQuickShortAnswerSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getQuickShortAnswerSettings()).thenReturn(newSettings);
+        assertThat(new QuickShortAnswerPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(false));
+
+    }
+
+    @Test
+    public void shouldDetectThatSpotCheckAnswerSettingsIsDifferentIfPostIdIsDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(2L);
+        SpotCheckSettings originalSettings = new SpotCheckSettings();
+        originalSettings.setPost(originalPost);
+
+        SpotCheckSettings newSettings = new SpotCheckSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getSpotCheckSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getSpotCheckSettings()).thenReturn(newSettings);
+        assertThat(new SpotCheckPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(true));
+
+    }
+
+    @Test
+    public void shouldDetectThatSpotCheckAnswerSettingsIsNotDifferentIfPostIdIsNotDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(1L);
+        SpotCheckSettings originalSettings = new SpotCheckSettings();
+        originalSettings.setPost(originalPost);
+
+        SpotCheckSettings newSettings = new SpotCheckSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+
+
+        when(originalControlSettingsModel.getSpotCheckSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getSpotCheckSettings()).thenReturn(newSettings);
+        assertThat(new SpotCheckPredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(false));
+
+    }
+
+    @Test
+    public void shouldDetectThatCallOnSomeoneSettingsIsDifferentIfPostIdIsDifferent(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(2L);
+        CallOnSomeoneSettings originalSettings = new CallOnSomeoneSettings();
+        originalSettings.setPost(originalPost);
+
+        CallOnSomeoneSettings newSettings = new CallOnSomeoneSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+        newSettings.callOnParticipant(PARTICIPANT_ID);
+        originalSettings.callOnParticipant(PARTICIPANT_ID);
+
+        when(originalControlSettingsModel.getCallOnSomeoneSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getCallOnSomeoneSettings()).thenReturn(newSettings);
+        assertThat(new CallOnSomeonePredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(true));
+
+    }
+
+    @Test
+    public void shouldDetectThatCallOnSomeoneSettingsIsNotDifferentIfPostIdIsSame(){
+        when(originalPost.getId()).thenReturn(1L);
+        when(newPost.getId()).thenReturn(1L);
+        CallOnSomeoneSettings originalSettings = new CallOnSomeoneSettings();
+        originalSettings.setPost(originalPost);
+
+        CallOnSomeoneSettings newSettings = new CallOnSomeoneSettings();
+        newSettings.setPost(newPost);
+
+        originalSettings.setRunning(true);
+        newSettings.setRunning(true);
+        newSettings.callOnParticipant(PARTICIPANT_ID);
+        originalSettings.callOnParticipant(PARTICIPANT_ID);
+
+        when(originalControlSettingsModel.getCallOnSomeoneSettings()).thenReturn(originalSettings);
+        when(newControlSettingsModel.getCallOnSomeoneSettings()).thenReturn(newSettings);
+        assertThat(new CallOnSomeonePredicate(originalControlSettingsModel, newControlSettingsModel).matches(), is(false));
+
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

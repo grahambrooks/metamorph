@@ -1,0 +1,184 @@
+<html><head><title>ProvisioningActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ProvisioningActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/ProvisioningActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
+import com.alpha.logging.LogUtils;
+import com.alpha.services.PackageServiceManager.PackageServiceCallback;
+import com.alpha.services.PackageServiceManager.PackageServiceFactory;
+import com.alpha.services.PackageServiceManager.PackageServiceManager;
+import com.alpha.utils.FileUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+@SuppressWarnings("PMD")
+public class ProvisioningActivity extends SundaeTimedActivity {
+
+    public static final Logger LOGGER = LogUtils.getLogger();
+    protected static final int PROVISIONING_APK_REQUEST_CODE = 10;
+    protected static final String PROVISION_APK_DIR = "/Removable/MicroSD/";
+    protected static final String PROVISION_APK_FILENAME = "ProvisioningInstaller.apk";
+    protected static final String PROVISION_APK_PATH =PROVISION_APK_DIR+PROVISION_APK_FILENAME;
+    protected final static ComponentName PROVISIONING_COMPONENT = new ComponentName(
+            "com.caribou.app.provisioninginstaller",
+            "com.caribou.app.provisioninginstaller.MainActivity");
+
+
+    @Inject
+    FileUtils fileUtils;
+
+    PackageServiceManager packageServiceManager;
+
+    @Inject
+    PackageServiceFactory packageServiceFactory;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(!fileUtils.fileExists(PROVISION_APK_DIR, PROVISION_APK_FILENAME)){
+            LOGGER.info("Provisioning APK does not exist ");
+            setResult(RESULT_OK);
+            finish();
+        } else {
+            packageServiceManager = packageServiceFactory.getPackageServiceManager();
+            packageServiceManager.init(this, packageServiceCallback);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(packageServiceManager != null)
+            packageServiceManager.shutDown();
+
+    }
+
+    protected PackageServiceCallback packageServiceCallback = new PackageServiceCallback(){
+
+        @Override
+        public void onInstalled(boolean success, String packageName) {
+            if(success){
+                launchProvisionApk();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } else {
+                setResult(RESULT_OK);
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+
+        @Override
+        public void onInitSuccess() {
+            packageServiceManager.silentInstall(PROVISION_APK_PATH);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onInitFailed(String message) {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onEnablePackage(boolean success, String packageName) {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    };
+
+    protected void launchProvisionApk() {
+        LOGGER.info("Provisioning APK installed ");
+        Intent intent = new Intent();
+
+        intent.setComponent(PROVISIONING_COMPONENT);
+        intent.setAction(Intent.ACTION_MAIN);
+        try {
+            startActivityForResult(intent, PROVISIONING_APK_REQUEST_CODE);
+        } catch (Exception e) {
+            LOGGER.error("Provisioning APK not installed on this tablet" + e.getMessage());
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        setResult(RESULT_OK);
+        finish();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<html><head><title>LockedActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LockedActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/LockedActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+public abstract class LockedActivity extends SundaeTimedActivity {
+    @Inject
+    Toaster toaster;
+    @Inject
+    DeviceLockingService deviceLockingService;
+    @Inject
+    EventBus eventBus;
+
+    LockListeners lockListeners = new LockListeners();
+
+    @Override
+    public void onBackPressed() {
+       toaster.makeToast(getString(R.string.back_button_disabled));
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        deviceLockingService.lock(this);
+        eventBus.register(lockListeners);
+    }
+
+    @Override
+    public void finish() {
+        deviceLockingService.unlock(this);
+        super.finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        eventBus.unregister(lockListeners);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (userService.session().isNotStarted() && getNetworkStatus().isPresent()) {
+            getNetworkStatus().get().enableUnlock();
+        }
+    }
+
+    protected class LockListeners {
+        @Subscribe
+        public void onSessionEnded(StudentSessionEndedEvent event){</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (event.isTeacherInitiated()) {
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+    }
+
+    protected abstract Optional<NetworkStatusFragment> getNetworkStatus();
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<html><head><title>MDMPackageServiceManager.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MDMPackageServiceManager.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/services/PackageServiceManager/amplify_client/MDMPackageServiceManager.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.services.PackageServiceManager;
+
+import android.content.Context;
+import com.alpha.logging.LogUtils;
+import com.caribou.lib.mdm.IMDMServiceCallback;
+import com.caribou.lib.mdm.MDMServiceController;
+import com.caribou.lib.mdm.MDMServiceManager;
+import org.slf4j.Logger;
+
+public class MDMPackageServiceManager implements PackageServiceManager, IMDMServiceCallback{
+
+    MDMServiceManager mdmServiceManager;
+    MDMServiceController mdmServiceController;
+    PackageServiceCallback callBack;
+    Logger logger = LogUtils.getLogger();
+
+    @Override
+    public void onBindComplete(MDMServiceController mdmServiceController) {
+        MDMPackageServiceManager.this.mdmServiceController = mdmServiceController;
+        callBack.onInitSuccess();
+    }
+
+    @Override
+    public void onBindFailed(String s) {
+        callBack.onInitFailed(s);
+    }
+
+    @Override
+    public void onInstall(boolean b, String s) {
+        callBack.onInstalled(b,s);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onUninstall(boolean b, String s) {}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSetDefaultApp(boolean b, String s) {}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void init(Context context, PackageServiceCallback callBack) {
+        this.callBack = callBack;
+        mdmServiceManager = new MDMServiceManager(context, this);
+    }
+
+    @Override
+    public void shutDown() {
+        if(mdmServiceManager != null) {
+             mdmServiceManager.unbindFromService();
+        }
+    }
+
+    @Override
+    public void silentInstall(String filePath) {
+        try{
+            mdmServiceController.silentInstall(filePath);
+        } catch(Exception e){
+            logger.error(e.getMessage());
+            callBack.onInstalled(false, null);
+        }
+    }
+
+    @Override
+    public void enablePackage(String packageName, boolean doEnable) {
+        try{
+            mdmServiceController.enableApplication(packageName, doEnable);
+            callBack.onEnablePackage(true, packageName);
+        } catch(Exception e){
+            logger.error(String.format("%s %s failed: %s", doEnable?"Enabling ":"Disabling ", packageName, e.getMessage()));
+            callBack.onEnablePackage(false, packageName);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

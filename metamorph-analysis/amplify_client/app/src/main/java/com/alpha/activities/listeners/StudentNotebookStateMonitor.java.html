@@ -1,0 +1,266 @@
+<html><head><title>StudentNotebookStateMonitor.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentNotebookStateMonitor.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/listeners/amplify_client/StudentNotebookStateMonitor.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.listeners;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import com.alpha.activities.EyesOnTeacherActivity;
+import com.alpha.activities.LockedActivity;
+import com.alpha.activities.NotebooksActivity;
+import com.alpha.activities.StudentNotebookActivity;
+import com.alpha.api.messaging.StudentLocation;
+import com.alpha.api.services.ApplicationMonitoringService;
+import com.alpha.api.services.ApplicationMonitoringServiceConnection;
+import com.alpha.api.services.events.ConnectionClosedEvent;
+import com.alpha.api.services.events.JoinSessionEvent;
+import com.alpha.api.services.events.StudentSessionEndedEvent;
+import com.alpha.logging.LogUtils;
+import com.alpha.utils.ApplicationUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+
+public class StudentNotebookStateMonitor implements Application.ActivityLifecycleCallbacks, ServiceConnection {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final ApplicationUtils applicationUtils;
+    private final ApplicationMonitoringServiceConnection serviceConnection;
+
+    Listeners listeners = new Listeners();
+
+    protected StudentLocation lastKnownLocation = StudentLocation.HOME_SCREEN;
+
+    @Inject
+    public StudentNotebookStateMonitor(Application application, ApplicationUtils applicationUtils, EventBus eventBus, ApplicationMonitoringServiceConnection serviceConnection) {
+        this.applicationUtils = applicationUtils;
+        this.serviceConnection = serviceConnection;
+
+        serviceConnection.setConnectionListener(this);
+        // We always need lifecycle callbacks so we can send an
+        // accurate location when student eventually joins session
+        application.registerActivityLifecycleCallbacks(this);
+        // Doesn't need to be unregistered, assuming that this class is a
+        // singleton that exists throughout the application's lifetime
+        eventBus.register(listeners);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onActivityStarted(Activity activity) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+        if (activity instanceof NotebooksActivity) {
+            lastKnownLocation = StudentLocation.HOME_SCREEN;
+        } else if (activity instanceof EyesOnTeacherActivity) {
+            lastKnownLocation = StudentLocation.EYES_ON_TEACHER;
+        } else if ((activity instanceof StudentNotebookActivity) || (activity instanceof LockedActivity)) {
+            lastKnownLocation = StudentLocation.SECTION;
+        }
+
+        tryUpdateServiceLocation(lastKnownLocation);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onActivityPaused(Activity activity) {
+
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onActivityStopped(Activity activity) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (!applicationUtils.isApplicationSentToBackground(activity)) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        lastKnownLocation = StudentLocation.ANOTHER_APPLICATION;
+        tryUpdateServiceLocation(lastKnownLocation);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onActivityDestroyed(Activity activity) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void tryUpdateServiceLocation(StudentLocation location) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if( !serviceConnection.stillBoundToService() ) {
+            return;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        ApplicationMonitoringService service = serviceConnection.getService();
+        service.updateLocation(location);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        tryUpdateServiceLocation(lastKnownLocation);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onServiceDisconnected(ComponentName name) {
+        // Do nothing
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    class Listeners {
+        @Subscribe
+        public void onSessionJoinEvent(JoinSessionEvent event) {
+            LOG.info("Joined a session, opening connection to monitoring service");
+            serviceConnection.open();
+        }
+
+        @Subscribe
+        public void onSessionEndEvent(StudentSessionEndedEvent event) {
+            LOG.info("Session ended, closing connection to monitoring service");
+            serviceConnection.close();
+        }
+
+        @Subscribe
+        public void onConnectionClosedEvent(ConnectionClosedEvent e){
+            LOG.info("Connection closed, closing connection to monitoring service");
+            serviceConnection.close();
+        }
+
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

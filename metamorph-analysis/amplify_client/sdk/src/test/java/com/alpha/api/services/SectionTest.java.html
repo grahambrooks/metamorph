@@ -1,0 +1,340 @@
+<html><head><title>SectionTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/SectionTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">22</span>
+    <progress max="100" value="22"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.ContentValues;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.course_id;
+import static com.alpha.api.repository.sqlite.TableColumn.group_email;
+import static com.alpha.api.repository.sqlite.TableColumn.name;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(AmplifySDKTestRunner.class)
+@SuppressWarnings({"PMD.TooManyMethods", "ClassWithTooManyMethods"})
+public class SectionTest {
+
+    private static final String HARRY = "Harry";
+    private static final String SALLY = "Sally";
+
+    private static final String JAMES_THOMPSON = "James Thompson";
+    private static final String ALEX_FERNANDEZ = "Alex Fernandez";
+    private static final String ALEX_NAVIS = "Alex Navis";
+
+    public static final String MATH_SECTION_NAME = "Math";
+    public static final long ID_1 = 1L;
+    public static final Course COURSE = new Course(ID_1);
+
+    public static final String GROUP_EMAIL = "amplifytest@amplifydev.net";
+    public static final Section MATH = new Section(COURSE, SectionTest.ID_1, MATH_SECTION_NAME, GROUP_EMAIL);
+    private static final String SECTION_NAME = "section";
+    private static final Long SECTION_ID = 10L;
+    public static final long ID_2 = 2L;
+
+    @Mock private Participant participant1;
+    @Mock private Participant participant2;
+
+    private Section section;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        section = new Section(COURSE, SECTION_ID, SECTION_NAME, GROUP_EMAIL);
+        given(participant1.getName()).willReturn(HARRY);
+        given(participant2.getName()).willReturn(SALLY);
+        given(participant1.getId()).willReturn(ID_1);
+        given(participant2.getId()).willReturn(ID_2);
+    }
+
+    @Test
+    public void shouldResetParticipantsNotPresentWhenSessionEnds() {
+        participant1.joinSession(SECTION_NAME);
+        section.addParticipantToSession(participant1);
+        section.resetParticipantStatus();
+        assertFalse(section.getParticipant(participant1.getId()).isPresent());
+    }
+
+    private void addTwoParticipants() {
+        when(participant1.getId()).thenReturn(ID_1);
+        when(participant2.getId()).thenReturn(ID_2);
+        section.addParticipantToSession(participant1);
+        section.addParticipantToSession(participant2);
+    }
+
+    @Test
+    public void shouldUpdateSessionParticipantListWhenSomeoneJoins() {
+        addTwoParticipants();
+
+        assertThat(section.getAllParticipants(), hasItem(participant1));
+        assertThat(section.getAllParticipants(), hasItem(participant2));
+        assertThat(section.getAllParticipants().size(), is(2));
+    }
+
+    @Test
+    public void shouldReturnParticipantWithGivenName() {
+        addTwoParticipants();
+
+        assertThat(section.getParticipant(participant1.getId()), sameInstance(participant1));
+    }
+
+    @Test
+    public void shouldReturnNumberOfParticipantsWhichAreInSession() {
+        addTwoParticipants();
+
+        when(participant1.isPresent()).thenReturn(true);
+        when(participant2.isPresent()).thenReturn(false);
+        assertThat(section.getInSessionParticipantsCount(), is(1));
+    }
+
+    @Test
+    public void shouldReturnTrueIfParticipantExists() {
+        long ID = 1l;
+
+        when(participant1.getId()).thenReturn(ID);
+        section.addParticipantToSession(participant1);
+        assertThat(section.participantExistsInSession(ID), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfParticipantDoesNotExist() {
+        when(participant1.getId()).thenReturn(1l);
+        section.addParticipantToSession(participant1);
+        assertThat(section.participantExistsInSession(2l), is(false));
+    }
+
+    @Test
+    public void shouldIncludeIdAndNameWhenConvertingToContentValues() throws Exception {
+        ContentValues values = section.asValues();
+
+        assertThat(values.size(), is(4));
+
+        assertThat(values.getAsString(name.name()), is(SECTION_NAME));
+        assertThat(values.getAsLong(_id.name()), is(SECTION_ID));
+        assertThat(values.getAsLong(course_id.name()), is(COURSE.getId()));
+        assertThat(values.getAsString(group_email.name()), is(GROUP_EMAIL));
+    }
+
+    @Test
+    public void shouldLoadParticipantsFromStudents() throws Exception {
+        Participant student = mock(Participant.class);
+        when(student.getId()).thenReturn(1l);
+        when(student.getName()).thenReturn("Johnny");
+
+        section.loadParticipantsFromStudents(asList(student));
+
+        assertThat(section.getAllParticipants().size(), is(1));
+        assertThat(section.getParticipant(1l).getName(), is("Johnny"));
+    }
+
+    @Test
+    public void shouldSortPartipants() {
+        Participant student1 = new Participant(ID_1, JAMES_THOMPSON);
+        Participant student2 = new Participant(ID_2, ALEX_NAVIS);
+        Participant student3 = new Participant(3L, ALEX_FERNANDEZ);
+
+        section.loadParticipantsFromStudents(asList(student1, student2, student3));
+
+        Function<Participant, String> nameExtractor = new Function<Participant, String>() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public String apply(Participant participant) {
+                return participant.getName();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+        List<String> actualNames = Lists.transform(section.getAllParticipants(), nameExtractor);
+        assertThat(actualNames, is(asList(student3.getName(), student2.getName(), student1.getName())));
+    }
+
+    @Test
+    public void shouldReturnTrueIfAllParticipantsAreSelected() {
+        Participant harry = new Participant(ID_1, HARRY);
+        Participant sally = new Participant(ID_2, SALLY);
+        ArrayList<Participant> students = newArrayList(harry, sally);
+
+        section.addParticipantToSession(harry);
+        section.addParticipantToSession(sally);
+        assertThat(section.areAllStudentsSelected(students), is(true));
+    }
+
+    @Test
+    public void shouldReturnZeroForRaisedHandCountWithoutAnyParticipants() {
+        assertThat(section.countRaisedHands(), is(0));
+    }
+
+    @Test
+    public void shouldReturnZeroForRaisedHandCountWhenAllParticipantsHaveLoweredHands() {
+
+        section.addParticipantToSession(participant1);
+        section.addParticipantToSession(participant2);
+        when(participant1.hasHandRaised()).thenReturn(false);
+        when(participant2.hasHandRaised()).thenReturn(false);
+
+        assertThat(section.countRaisedHands(), is(0));
+    }
+
+    @Test
+    public void shouldReturnOneForRaisedHandCountWhenOneParticipantHasRaisedHand() {
+        section.addParticipantToSession(participant1);
+        section.addParticipantToSession(participant2);
+        when(participant1.hasHandRaised()).thenReturn(true);
+
+        assertThat(section.countRaisedHands(), is(1));
+    }
+
+    @Test
+    public void shouldReportThatAllPaticipantsHaveRaisedTheirHands() {
+        section.addParticipantToSession(participant1);
+        section.addParticipantToSession(participant2);
+
+        when(participant1.hasHandRaised()).thenReturn(true);
+        when(participant2.hasHandRaised()).thenReturn(true);
+
+
+        assertThat(section.countRaisedHands(), is(2));
+    }
+
+    @Test
+    public void shouldFailToRandomlyPickStudentInSectionWitoutActiveParticipants() {
+        Participant student1 = new Participant(ID_1, JAMES_THOMPSON);
+        Participant student2 = new Participant(ID_2, ALEX_NAVIS);
+        Participant student3 = new Participant(3L, ALEX_FERNANDEZ);
+
+        section.loadParticipantsFromStudents(asList(student1, student2, student3));
+
+        Optional<Participant> selection = section.selectRandomActiveParticipant();
+        assertFalse("Should fail to pick student", selection.isPresent());
+    }
+
+    @Test
+    public void shouldPickSameStudentWhenOnlyOneActiveParticipantInSection() {
+        Participant student1 = new Participant(ID_1, JAMES_THOMPSON);
+        Participant student2 = new Participant(ID_2, ALEX_NAVIS);
+        Participant student3 = new Participant(3L, ALEX_FERNANDEZ);
+
+        section.loadParticipantsFromStudents(asList(student1, student2, student3));
+        section.getParticipant(student1.getId()).joinSession(SECTION_NAME);
+
+        Optional<Participant> selection = section.selectRandomActiveParticipant();
+        assertTrue("Should pick a student", selection.isPresent());
+        assertThat(selection.get().getName(), equalTo(student1.getName()));
+    }
+
+    @Test
+    public void shouldNotPickSameStudentWhenMoreThanOneActiveParticipantInSection() {
+        Participant student1 = new Participant(ID_1, JAMES_THOMPSON);
+        Participant student2 = new Participant(ID_2, ALEX_NAVIS);
+        Participant student3 = new Participant(3L, ALEX_FERNANDEZ);
+
+        section.loadParticipantsFromStudents(asList(student1, student2, student3));
+        section.getParticipant(student1.getId()).joinSession(SECTION_NAME);
+        section.getParticipant(student2.getId()).joinSession(SECTION_NAME);
+        section.getParticipant(student3.getId()).joinSession(SECTION_NAME);
+
+        Optional<Participant> selection = section.selectRandomActiveParticipant(student1.getId());
+        assertTrue("Should pick a student", selection.isPresent());
+        assertThat(selection.get().getName(), not(equalTo(student1.getName())));
+    }
+
+    @Test
+    public void shouldReturnInactiveParticipantsInSession() {
+        Participant student1 = new Participant(ID_1, JAMES_THOMPSON);
+        Participant student2 = new Participant(ID_2, ALEX_NAVIS);
+
+        section.loadParticipantsFromStudents(asList(student1, student2));
+        section.getParticipant(student2.getId()).joinSession(SECTION_NAME);
+
+        List<Participant> inactiveParticipants = section.getInactiveParticipants();
+        assertThat(inactiveParticipants.size(), is(1));
+        assertThat(inactiveParticipants.get(0), is(student1));
+    }
+
+    @Test
+    public void shouldClearParticipantsBeforeLoadingNewOnes(){
+        section.loadParticipantsFromStudents(newArrayList(participant1, participant2));
+        assertThat(section.getAllParticipantsCount(), is(2));
+        section.loadParticipantsFromStudents(newArrayList(participant1));
+        assertThat(section.getAllParticipantsCount(), is(1));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

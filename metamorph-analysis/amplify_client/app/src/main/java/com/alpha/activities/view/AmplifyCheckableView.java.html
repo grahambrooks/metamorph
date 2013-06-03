@@ -1,0 +1,108 @@
+<html><head><title>AmplifyCheckableView.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AmplifyCheckableView.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/view/amplify_client/AmplifyCheckableView.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.view;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.Checkable;
+import android.widget.LinearLayout;
+import com.amplify.R;
+
+public class AmplifyCheckableView extends LinearLayout implements Checkable {
+    public static final int[] STATE_CHECKED = new int[]{android.R.attr.state_checked};
+    public static final int SPACE_FOR_NEW_FLAGS = 1;
+    private Checkable checkable;
+
+    public AmplifyCheckableView(Context context) {
+        super(context);
+    }
+
+    public AmplifyCheckableView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public AmplifyCheckableView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        checkable = (Checkable) findViewById(R.id.selector);
+    }
+
+    @Override
+    protected int[] onCreateDrawableState(int extraSpace) {
+        int[] state = super.onCreateDrawableState(extraSpace + SPACE_FOR_NEW_FLAGS);
+
+        if (checkable != null && isChecked()) {
+            mergeDrawableStates(state, STATE_CHECKED);
+        }
+
+        return state;
+    }
+
+    @Override
+    public void setChecked(boolean b) {
+        checkable.setChecked(b);
+    }
+
+    @Override
+    public boolean isChecked() {
+        return checkable.isChecked();
+    }
+
+    @Override
+    public void toggle() {
+        checkable.toggle();
+        refreshDrawableState();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

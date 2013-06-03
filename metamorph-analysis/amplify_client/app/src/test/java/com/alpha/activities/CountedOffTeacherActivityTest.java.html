@@ -1,0 +1,144 @@
+<html><head><title>CountedOffTeacherActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CountedOffTeacherActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/CountedOffTeacherActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import com.alpha.api.domains.CountOffDetails;
+import com.alpha.api.messaging.CountOffSettings;
+import com.alpha.api.messaging.QuickActivitySettings;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.services.tasks.CountOffTask;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class CountedOffTeacherActivityTest extends BaseQuickActivityTest {
+
+    public static final int NUMBER_OF_GROUPS = 5;
+    @Inject
+    private CountedOffTeacherActivity activity;
+    @Mock
+    private CountOffSettings countOffSettings;
+    @Mock
+    private CountOffDetails countOffDetails;
+    @Mock
+    private CountOffTask countOffTask;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        newInjector(this, CountedOffTeacherActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(SessionTaskFactory.class, sessionTaskFactory)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .configureActivity();
+
+        given(controlSettingsModel.getCountOffSettings()).willReturn(countOffSettings);
+        given(countOffSettings.getCountOffDetails()).willReturn(countOffDetails);
+        given(countOffSettings.getActiveParticipantsIds()).willReturn(participantIds);
+        given(countOffDetails.getNumberOfGroups()).willReturn(NUMBER_OF_GROUPS);
+        given(sessionTaskFactory.createCountOffTask()).willReturn(countOffTask);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickActivitySettings getQuickActivitySettings() {
+        return countOffSettings;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected BaseQuickActivity getQuickActivity() {
+        return activity;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldExecuteTaskWhenStartingActivity() {
+        activity.setIntent(new Intent());
+        activity.onCreate(null);
+
+        activity.startQuickActivityTask(post);
+
+        verify(countOffTask).execute();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

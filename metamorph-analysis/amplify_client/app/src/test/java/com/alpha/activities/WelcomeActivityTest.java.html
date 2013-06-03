@@ -1,0 +1,140 @@
+<html><head><title>WelcomeActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>WelcomeActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/WelcomeActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.shadows.ShadowActivity.IntentForResult;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class WelcomeActivityTest {
+    @Inject
+    public WelcomeActivity activity;
+    @Inject
+    private GoogleAuthenticationService authenticationService;
+
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        ActivityTestInjector<WelcomeActivity> testInjector = new ActivityTestInjector<WelcomeActivity>(this, WelcomeActivity.class);
+        testInjector.configureTestSubject();
+        activity.onCreate(null);
+    }
+
+    @Test
+    public void shouldOpenQRScannerWhenScanQRIsClicked() {
+        TextView scanQRButton = (TextView) activity.findViewById(R.id.scan_qr_button);
+        scanQRButton.performClick();
+        IntentForResult intent = shadowOf(activity).getNextStartedActivityForResult();
+        assertThat(intent.intent.getAction(), is(WelcomeActivity.QR_CODE_APPLICATION_ACTION));
+        assertThat(intent.requestCode, is(WelcomeActivity.REQUEST_CODE_SCANNER));
+    }
+
+    @Test
+    public void shouldOpenRegistrationActivityWhenManualButtonClicked() {
+        TextView manualButton = (TextView) activity.findViewById(R.id.manual_login_button);
+        manualButton.performClick();
+        verify(authenticationService).authenticate(activity, activity);
+    }
+
+    @Test
+    public void shouldShowBusyViewWhenAuthenticating(){
+        activity.onManualRegistration(mock(View.class));
+
+        Assert.assertEquals(View.INVISIBLE, activity.launchOptionsView.getVisibility());
+        Assert.assertEquals(View.VISIBLE, activity.busyView.getVisibility());
+    }
+
+    @Test
+    public void shouldStartTheRegistrationActivityIfResultFromScannerAppIsSuccess() {
+        activity.onActivityResult(WelcomeActivity.REQUEST_CODE_SCANNER, Activity.RESULT_OK, null);
+        verify(authenticationService).authenticate(activity, activity);
+    }
+
+    @Test
+    public void shouldStartWelcomeActivityIfResultFromScannerIsFailure() {
+        activity.onActivityResult(WelcomeActivity.REQUEST_CODE_SCANNER, Activity.RESULT_CANCELED, null);
+        Intent intent = shadowOf(activity).getNextStartedActivity();
+        assertThat(intent, is(nullValue()));
+    }
+
+    @Test
+    public void shouldAuthenticateAndShowBusyViewIfUserHasGoogleAccountRegistered() {
+        when(authenticationService.isAccountRegistered()).thenReturn(true);
+
+        activity.onCreate(null);
+
+        Assert.assertEquals(View.INVISIBLE, activity.launchOptionsView.getVisibility());
+        Assert.assertEquals(View.VISIBLE, activity.busyView.getVisibility());
+        verify(authenticationService).authenticate(activity, activity);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

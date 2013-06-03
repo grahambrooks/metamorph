@@ -1,0 +1,334 @@
+<html><head><title>DeviceLockingServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DeviceLockingServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/DeviceLockingServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">26</span>
+    <progress max="100" value="26"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.android.DeviceLockingBackgroundService;
+import com.alpha.api.services.web.WebServices;
+import com.google.inject.Inject;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import roboguice.activity.RoboActivity;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class DeviceLockingServiceTest {
+    @Inject
+    private DeviceLockingService deviceLockingService;
+
+    @Mock
+    private Context context;
+    @Mock
+    private UserService userService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private ControlSettingsModel settingsModel;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private Event event;
+
+    private final Activity activity = new RoboActivity();
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        deviceLockingService = new DeviceLockingService(context, teacherSession, webServices);
+
+        given(userService.getUser()).willReturn(teacher);
+        given(teacher.getCurrentControlSettingsModel()).willReturn(settingsModel);
+        given(teacher.hasLiveSection()).willReturn(true);
+
+    }
+
+    @Test
+    public void shouldReturnTrueWhenLocked() {
+        deviceLockingService.lock(activity.getClass());
+        assertThat(deviceLockingService.isLocked(), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseWhenNoActivityIsLocked() {
+        assertThat(deviceLockingService.isLocked(), is(false));
+    }
+
+    @Test
+    public void shouldLogUnlockMessage() {
+        when(teacher.unlockDevicesEvent()).thenReturn(event);
+        deviceLockingService.sendUnlockDevicesMessage(teacher);
+        verify(webServices).send(event);
+    }
+
+    @Test
+    public void shouldReturnTrueIfTaskCompletesSuccessfully() throws Exception {
+        when(webServices.send(any(Event.class))).thenReturn(true);
+        assertThat(deviceLockingService.sendUnlockDevicesMessage(teacher), Matchers.is(true));
+    }
+
+    @Test
+    public void shouldReturnTrueIrrespectiveOfWebserviceResponse() throws Exception {
+        when(webServices.send(any(Event.class))).thenReturn(false);
+        assertThat(deviceLockingService.sendUnlockDevicesMessage(teacher), Matchers.is(true));
+    }
+
+
+    @Test
+    public void shouldLockIfServerFails() {
+        when(webServices.send(mock(Event.class))).thenReturn(false);
+        Boolean result = deviceLockingService.sendLockDevicesMessage(teacher);
+        assertThat(result, is(true));
+
+    }
+
+    @Test
+    public void shouldLockIfServerSucceeds() {
+        when(webServices.send(mock(Event.class))).thenReturn(true);
+        Boolean result = deviceLockingService.sendLockDevicesMessage(teacher);
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldUnlockIfServerFails() {
+        when(webServices.send(mock(Event.class))).thenReturn(false);
+        Boolean result = deviceLockingService.sendUnlockDevicesMessage(teacher);
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldUnlockIfServerSucceeds() {
+        when(webServices.send(mock(Event.class))).thenReturn(true);
+        Boolean result = deviceLockingService.sendUnlockDevicesMessage(teacher);
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldRemovePreviouslyLockedActivityWhenUnlockingWithKeepInForeground() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.unlock(FullScreenActivity.class);
+
+        assertNull(deviceLockingService.getPrevLockedActivity());
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(EyesOnTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldRemovePreviouslyLockedActivityWhenUnlockingBehindForeground() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.lock(AnotherFullScreenActivity.class);
+
+        deviceLockingService.unlock(FullScreenActivity.class);
+
+        assertNull(deviceLockingService.getPrevLockedActivity());
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(AnotherFullScreenActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldNotUnlockWhenActivityIsNotLockedOn() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.lock(AnotherFullScreenActivity.class);
+        deviceLockingService.unlock(EyesOnTeacherActivity.class);
+
+        assertThat(deviceLockingService.getPrevLockedActivity().getName(), is(FullScreenActivity.class.getName()));
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(AnotherFullScreenActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldSetEyesOnTeacherAsNewLockedActivityIfFullScreenActivityIsCurrentlyLocked() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.lock(EyesOnTeacherActivity.class);
+
+        Class<? extends Activity> activity = deviceLockingService.getLockedActivity();
+        boolean result = activity == EyesOnTeacherActivity.class;
+        assertThat(result, is(true));
+
+        activity = deviceLockingService.getPrevLockedActivity();
+        result = activity == FullScreenActivity.class;
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldSetPreviouslyLockedActivityToCurrentlyLockedActivityAfterEyesOnTeacherUnlocked() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.lock(EyesOnTeacherActivity.class);
+
+        deviceLockingService.unlock(EyesOnTeacherActivity.class);
+
+        Class<? extends Activity> activity = deviceLockingService.getLockedActivity();
+        assertThat(activity.getName(), is(FullScreenActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldSetPreviouslyLockedActivityToCurrentlyLockedWhenUnlocking() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+        deviceLockingService.lock(FullScreenActivity.class);
+
+        deviceLockingService.unlock(EyesOnTeacherActivity.class);
+
+        Class<? extends Activity> activity = deviceLockingService.getLockedActivity();
+        assertThat(activity.getName(), is(FullScreenActivity.class.getName()));
+        assertThat(deviceLockingService.getPrevLockedActivity(), nullValue());
+
+        verify(context, times(3)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void shouldAlwaysKeepEyesOnTeacherLockedIfFullScreenActivityIsLockedAfter() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+        deviceLockingService.lock(FullScreenActivity.class);
+
+        Class<? extends Activity> lockedActivity = deviceLockingService.getLockedActivity();
+        assertThat(lockedActivity.getName(), is(EyesOnTeacherActivity.class.getName()));
+
+        Class<? extends Activity> prevLockedActivity = deviceLockingService.getPrevLockedActivity();
+        assertThat(prevLockedActivity.getName(), is(FullScreenActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldAlwaysKeepFlaggedForegroundActivityInForeground() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+        deviceLockingService.lock(FullScreenActivity.class);
+
+        verify(context, atLeastOnce()).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void shouldNotSetPrevLockedActivityWhenLockingTheSameActivityTwice() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class);
+        deviceLockingService.lock(EyesOnTeacherActivity.class);
+
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(EyesOnTeacherActivity.class.getName()));
+        assertNull(deviceLockingService.getPrevLockedActivity());
+    }
+
+    @Test
+    public void shouldStopBackgroundLockingServiceIfStartedWhenResettingState(){
+        ArgumentCaptor<Intent> argumentCaptor = ArgumentCaptor.forClass(Intent.class);
+        deviceLockingService.lock(Activity.class);
+
+        verify(context).startService(argumentCaptor.capture());
+        Intent intent = argumentCaptor.getValue();
+        assertThat(intent.getComponent().getClassName(), is(DeviceLockingBackgroundService.class.getName()));
+
+        deviceLockingService.resetLocks();
+        verify(context).stopService(intent);
+    }
+
+    @Test
+    public void shouldSetStateAsNotRunningWhenReset(){
+        deviceLockingService.lock(Activity.class);
+        assertThat(deviceLockingService.isLocked(), is(true));
+        deviceLockingService.resetLocks();
+        assertThat(deviceLockingService.isLocked(), is(false));
+    }
+
+    @Test
+    public void shouldSetNewActivityInForegroundWhenLockingANewForegroundActivity() {
+        deviceLockingService.lock(EyesOnTeacherActivity.class, true);
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(EyesOnTeacherActivity.class.getName()));
+
+        deviceLockingService.lock(FullScreenActivity.class, true);
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(FullScreenActivity.class.getName()));
+        assertThat(deviceLockingService.getPrevLockedActivity().getName(), is(EyesOnTeacherActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldNotLockWhenLockingSameActivityWithForegroundFlagSet() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(FullScreenActivity.class.getName()));
+
+        deviceLockingService.lock(FullScreenActivity.class, true);
+        assertThat(deviceLockingService.getLockedActivity().getName(), is(FullScreenActivity.class.getName()));
+        assertNull(deviceLockingService.getActivityInForeground());
+    }
+
+    @Test
+    public void shouldNotAttemptToBringActivityToFrontWhenLockedActivityIsNotSet() {
+        deviceLockingService.lock(FullScreenActivity.class);
+        deviceLockingService.unlock(FullScreenActivity.class);
+
+        assertNull(deviceLockingService.getLockedActivity());
+    }
+
+    private class FullScreenActivity extends Activity {
+    }
+
+    private class AnotherFullScreenActivity extends Activity {
+    }
+
+    private class EyesOnTeacherActivity extends Activity {
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

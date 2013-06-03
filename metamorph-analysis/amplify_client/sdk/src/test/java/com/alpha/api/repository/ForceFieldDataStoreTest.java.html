@@ -1,0 +1,196 @@
+<html><head><title>ForceFieldDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/ForceFieldDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ComponentName;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.repository.contentprovider.SundaeContentProvider;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Course;
+import com.alpha.api.services.Section;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.res.RobolectricPackageManager;
+import com.xtremelabs.robolectric.shadows.ShadowContentResolver;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ForceFieldDataStoreTest {
+
+    @Mock
+    private SundaeDatabase dbHelper;
+    @Mock
+    private SQLiteDatabase db;
+    @Mock
+    private Cursor cursor;
+    @Mock
+    private ResolveInfo resolveInfo;
+
+    private ForceFieldDataStore dataStore;
+
+    private static String APP_PACKAGE = "appPackage";
+    private static String APP_NAME = "appName";
+    private static String APP_LABEL = "label";
+
+    private final SundaeAppInfo appInfo = new SundaeAppInfo("settingsApp", "com.android", false, "");
+
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        RobolectricPackageManager packageManager = (RobolectricPackageManager) Robolectric.application.getPackageManager();
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN);
+        mainIntent.setComponent(new ComponentName(APP_PACKAGE, APP_NAME));
+        packageManager.addResolveInfoForIntent(mainIntent, resolveInfo);
+
+        SundaeContentProvider provider = new SundaeContentProvider();
+        provider.onCreate();
+        provider.dbHelper = dbHelper;
+        ShadowContentResolver.registerProvider("com.alpha.api.Sundae",
+                provider);
+        dataStore = new ForceFieldDataStore(Robolectric.application);
+        given(dbHelper.getWritableDatabase()).willReturn(db);
+        given(dbHelper.getReadableDatabase()).willReturn(db);
+    }
+
+    @Test
+    public void shouldCallQueryMethodWithValidSectionId() {
+        Section section = setupDBQueryToReturnCursor();
+
+        when(cursor.moveToNext()).thenReturn(true, false);
+        when(cursor.getString(anyInt())).thenReturn(APP_NAME, APP_PACKAGE);
+        when(resolveInfo.loadLabel(any(PackageManager.class))).thenReturn(APP_LABEL);
+
+
+        Set<SundaeAppInfo> whiteListedApps = dataStore.getWhitelistApps(section);
+
+        assertThat(whiteListedApps.size(), is(1));
+        SundaeAppInfo first = (SundaeAppInfo) whiteListedApps.toArray()[0];
+        assertThat(first.getAppName(),is(APP_NAME));
+        assertThat(first.getAppPackage(), is(APP_PACKAGE));
+        assertThat(first.getAppLabel(), is(APP_LABEL));
+    }
+
+    private Section setupDBQueryToReturnCursor() {
+        Section section = new Section(new Course(1L), 1L, "test_section", "amplifydev@amplifydev.net");
+        when(db.query(Table.FORCE_FIELD_WHITELIST.name(), new String[] {
+            TableColumn.app_name.name(),
+            TableColumn.app_package.name(),
+        }, TableColumn.section_id.equalTo(), new String[] {section.getId().toString()}, null, null, null, null)).thenReturn(cursor);
+
+
+
+        return section;
+    }
+
+    @Test
+    public void shouldSaveAllWhitelistedAppInfos() {
+
+        List<SundaeAppInfo> appInfos = asList(appInfo);
+
+        Section section = mock(Section.class);
+        when(section.getId()).thenReturn(100L);
+        dataStore.saveOrUpdate(appInfos, section);
+
+        ArgumentCaptor<ContentValues> sundaeAppCator = ArgumentCaptor.forClass(ContentValues.class);
+        verify(db).delete(Table.FORCE_FIELD_WHITELIST.name(), TableColumn.section_id.equalTo(), new String[] {section.getId().toString()});
+        verify(db, times(1)).insertOrThrow(eq(Table.FORCE_FIELD_WHITELIST.name()), (String) isNull(), sundaeAppCator.capture());
+
+        ContentValues actualValues = sundaeAppCator.getValue();
+        assertThat(actualValues.getAsString(TableColumn.app_name.name()), is(appInfo.getAppName()));
+        assertThat(actualValues.getAsString(TableColumn.app_package.name()), is(appInfo.getAppPackage()));
+        verifyNoMoreInteractions(db);
+    }
+
+    @Test
+    public void shouldIgnoreAnyAppsInWhitelistWhichHaveBeenUninstalled(){
+        Section section = setupDBQueryToReturnCursor();
+        when(cursor.moveToNext()).thenReturn(true, true, false);
+        when(cursor.getString(anyInt())).thenReturn(APP_NAME, APP_PACKAGE, "uninstallName", "uninstallLabel");
+        when(resolveInfo.loadLabel(any(PackageManager.class))).thenReturn(APP_LABEL);
+
+        Set<SundaeAppInfo> whiteListedApps = dataStore.getWhitelistApps(section);
+        assertThat(whiteListedApps.size(), is(1));
+        assertThat((SundaeAppInfo) whiteListedApps.toArray()[0], is(new SundaeAppInfo(APP_NAME, APP_PACKAGE, false, APP_LABEL)));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

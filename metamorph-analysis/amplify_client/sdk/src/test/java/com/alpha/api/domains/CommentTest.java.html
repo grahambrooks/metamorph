@@ -1,0 +1,131 @@
+<html><head><title>CommentTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CommentTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/domains/amplify_client/CommentTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.UserRole;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.Date;
+
+import static com.alpha.api.utilities.DateTestHelper.now;
+import static com.alpha.api.utilities.DateTestHelper.tomorrow;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class CommentTest {
+
+    private static final long COMMENT_ID = 2L;
+    private static final long POST_ID = 3L;
+    private static final long USER_ID = 1L;
+    private static final String COMMENT_TEXT = "comment content ";
+    private Comment comment;
+
+    @Before
+    public void setUp() throws Exception {
+        comment = new Comment(COMMENT_ID, new PostAuthor(USER_ID, "author", UserRole.STUDENT), COMMENT_TEXT, new Date());
+    }
+
+    @Test
+    public void shouldCreateContentValuesForComment() {
+        ContentValues contentValues = comment.asValues(POST_ID);
+
+        assertThat(contentValues.getAsString(TableColumn.content.name()), is(comment.asJson()));
+        assertThat(contentValues.getAsLong(TableColumn._id.name()), is(COMMENT_ID));
+        assertThat(contentValues.getAsLong(TableColumn.post_id.name()), is(POST_ID));
+        assertThat(contentValues.getAsLong(TableColumn.created_on.name()), is(comment.getCreatedOn().getTime()));
+    }
+
+    @Test
+    public void shouldCreateJsonWithAllRequiredAttributes() {
+        JsonObject request = toJson(comment.asRequestJson());
+
+        assertThat(request.get("authorId").getAsLong(), Matchers.is(USER_ID));
+        assertThat(request.get("text").getAsString(), Matchers.is(COMMENT_TEXT));
+    }
+
+    @Test
+    public void shouldReturnTrueIfCommentIsCreatedAfterInputDate() {
+        comment = new Comment(COMMENT_ID, new PostAuthor(USER_ID, "author", UserRole.STUDENT), COMMENT_TEXT, tomorrow());
+
+        assertThat(comment.isCreatedAfter(now()), is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfCommentIsCreatedOnSameInstantAsInputDate() {
+        Date now = now();
+        comment = new Comment(COMMENT_ID, new PostAuthor(USER_ID, "author", UserRole.STUDENT), COMMENT_TEXT, now);
+
+        assertThat(comment.isCreatedAfter(now), is(false));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private JsonObject toJson(String json) {
+        return new JsonParser().parse(json).getAsJsonObject();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

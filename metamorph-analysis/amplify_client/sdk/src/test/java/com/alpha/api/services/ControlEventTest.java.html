@@ -1,0 +1,258 @@
+<html><head><title>ControlEventTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlEventTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ControlEventTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.services.events.ActivateDeviceLockEvent;
+import com.alpha.api.services.events.CountOffEvent;
+import com.alpha.api.services.events.CountdownTimerEvent;
+import com.alpha.api.services.events.DeactivateDeviceLockEvent;
+import com.alpha.api.services.events.ForceFieldEvent;
+import com.alpha.api.services.events.QuickPollEvent;
+import com.alpha.api.services.events.SpotCheckEvent;
+import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.Set;
+
+import static com.alpha.api.services.ControlEvent.COUNTDOWN_TIMER;
+import static com.alpha.api.services.ControlEvent.COUNT_OFF;
+import static com.alpha.api.services.ControlEvent.FORCE_FIELD_DISENGAGED;
+import static com.alpha.api.services.ControlEvent.FORCE_FIELD_ENGAGED;
+import static com.alpha.api.services.ControlEvent.FORCE_FIELD_WHITELIST_UPDATED;
+import static com.alpha.api.services.ControlEvent.LOCK;
+import static com.alpha.api.services.ControlEvent.QUICK_POLL;
+import static com.alpha.api.services.ControlEvent.SPOT_CHECK;
+import static com.alpha.api.services.ControlEvent.UNLOCK;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class ControlEventTest {
+
+    private static final Long PARTICIPANT_ID = 88l;
+    private Optional<Section> optional;
+    @Mock
+    private Teacher user;
+    @Mock
+    private Section section;
+    @Mock
+    public Participant participant;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ControlSettingsModel controlSetting;
+    @Mock
+    private ClassSession classSession;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        optional = Optional.of(section);
+        given(user.getSession()).willReturn(classSession);
+    }
+
+    @Test
+    public void shouldDelegateToCallbackOnLock() throws Exception {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(classSession.isEyesOnTeacherActive()).thenReturn(false);
+
+        LOCK.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(ActivateDeviceLockEvent.class));
+    }
+
+    @Test
+    public void shouldDelegateToCallbackOnUnlock() throws Exception {
+        setupSectionToContainAndReturnParticipant();
+        when(classSession.isEyesOnTeacherActive()).thenReturn(true);
+
+        UNLOCK.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(DeactivateDeviceLockEvent.class));
+    }
+
+    @Test
+    public void shouldSetSessionLockStateOnLock() throws Exception {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(classSession.isEyesOnTeacherActive()).thenReturn(false);
+
+        LOCK.handle(controlSetting, user, eventBus);
+
+        verify(classSession).engageEyesOnTeacher();
+    }
+
+    @Test
+    public void shouldSetSessionLockStateOnUnlock() throws Exception {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(classSession.isEyesOnTeacherActive()).thenReturn(true);
+
+        UNLOCK.handle(controlSetting, user, eventBus);
+
+        verify(classSession).disengageEyesOnTeacher();
+    }
+
+    @Test
+    public void shouldPublishEventWhenReceivingForceFieldEngaged() {
+        when(controlSetting.getAllowedApps()).thenReturn(Sets.<String>newHashSet());
+
+        FORCE_FIELD_ENGAGED.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(ForceFieldEvent.Engaged.class));
+    }
+
+    @Test
+    public void shouldPublishEventWhenReceivedForceFieldDisengaged() {
+        FORCE_FIELD_DISENGAGED.handle(controlSetting, user, eventBus);
+        verify(eventBus).post(isA(ForceFieldEvent.Disengaged.class));
+    }
+
+    @Test
+    public void shouldEngageInForceFieldIfFFApplied() {
+        Set<String> whiteList = newHashSet();
+        when(controlSetting.getAllowedApps()).thenReturn(whiteList);
+
+        FORCE_FIELD_ENGAGED.handle(controlSetting, user, eventBus);
+
+        verify(user).engageForceField(whiteList);
+    }
+
+    @Test
+    public void shouldDisengageFromForceFieldIfFFReleased() {
+        FORCE_FIELD_DISENGAGED.handle(controlSetting, user, eventBus);
+        verify(user).disengageForceField();
+    }
+
+    @Test
+    public void shouldPostFFChangeEventOnWhitelistChange() {
+        Set<String> allowedList = newHashSet();
+        when(controlSetting.getAllowedApps()).thenReturn(allowedList);
+
+        FORCE_FIELD_WHITELIST_UPDATED.handle(controlSetting, user, eventBus);
+        verify(eventBus).post(isA(ForceFieldEvent.Changed.class));
+    }
+
+    @Test
+    public void shouldUpdateForceFieldAllowedAppsListWhenReceivingForceFieldChange() {
+        Set<String> allowedList = newHashSet();
+        when(controlSetting.getAllowedApps()).thenReturn(allowedList);
+
+        FORCE_FIELD_WHITELIST_UPDATED.handle(controlSetting, user, eventBus);
+        verify(user).updateWhiteList(allowedList);
+    }
+
+    @Test
+    public void shouldPostQuickPollEventOnQuickPollMessage() {
+        when(user.getSession()).thenReturn(classSession);
+        when(classSession.isOngoing()).thenReturn(true);
+
+        QUICK_POLL.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(QuickPollEvent.class));
+        verifyNoMoreInteractions(eventBus);
+
+    }
+
+    @Test
+    public void shouldPostSpotCheckEventOnSpotCheckMessage() {
+        when(user.getSession()).thenReturn(classSession);
+        when(classSession.isOngoing()).thenReturn(true);
+
+        SPOT_CHECK.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(SpotCheckEvent.class));
+        verifyNoMoreInteractions(eventBus);
+    }
+
+    @Test
+    public void shouldPostCountOffEventOnCountOffMessage() {
+        COUNT_OFF.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(CountOffEvent.class));
+        verifyNoMoreInteractions(eventBus);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void setupSectionToContainAndReturnParticipant() {
+        when(user.getLiveSectionOld()).thenReturn(optional);
+        when(section.participantExistsInSession(PARTICIPANT_ID)).thenReturn(true);
+        when(section.getParticipant(PARTICIPANT_ID)).thenReturn(participant);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldPostCountdownTimerEventOnCountdownTimerMessage() {
+        when(user.getSession()).thenReturn(classSession);
+        when(classSession.isOngoing()).thenReturn(true);
+
+        COUNTDOWN_TIMER.handle(controlSetting, user, eventBus);
+
+        verify(eventBus).post(isA(CountdownTimerEvent.class));
+        verifyNoMoreInteractions(eventBus);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

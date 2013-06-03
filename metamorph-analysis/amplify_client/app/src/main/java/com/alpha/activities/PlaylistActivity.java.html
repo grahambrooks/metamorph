@@ -1,0 +1,261 @@
+<html><head><title>PlaylistActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/PlaylistActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.actionbar.TeacherActionBarMiddleContentConfiguration;
+import com.alpha.activities.adapters.PlaylistCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.repository.PlaylistDataStore;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.PlaylistRetrievedEvent;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.util.List;
+
+import static com.alpha.utils.CharSequences.highlight;
+
+@SuppressWarnings({"PMD.TooManyFields"})
+public class PlaylistActivity extends SundaeTimedActivity {
+
+    private static final String BROWSER_PACKAGE = "com.android.browser";
+    private static final String GOOGLE_DRIVE_PACKAGE = "com.google.android.apps.docs";
+    private static final String EREADER_PACKAGE = "com.kaldorgroup.amplify";
+    private static final String GALLERY_PACKAGE = "com.android.gallery3d";
+
+    public static final String EXTRA_NOTES = "playlist_notes";
+    public static final String EXTRA_ID = "playlist_element_id";
+
+    @InjectView(R.id.done_button)
+    private Button doneButton;
+    @InjectView(R.id.browser_button)
+    private Button browserButton;
+    @InjectView(R.id.ereader_button)
+    private Button eReaderButton;
+    @InjectView(R.id.gdrive_button)
+    private Button googleDriveButton;
+    @InjectView(R.id.gallery_button)
+    private Button galleryButton;
+    @InjectView(R.id.playlist_items)
+    private ListView playlistItems;
+
+    @Inject
+    private ApplicationUtils applicationUtils;
+
+    @Inject
+    private PlaylistCursorAdapter playlistCursorAdapter;
+
+    @Inject
+    private CursorLoaderFactory cursorLoaderFactory;
+
+    @Inject
+    private PlaylistDataStore playlistDataStore;
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private EventBus eventBus;
+
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    @Inject
+    private TeacherActionBarMiddleContentConfiguration configuration;
+
+    private Context context;
+    protected Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.playlist);
+
+        context = this;
+
+        doneButton.setOnClickListener(new OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+
+        List<Playlist> playlists = playlistDataStore.getPlaylistFor(userService.getUser());
+
+        playlistCursorAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                setupPlaylistStats();
+            }
+        });
+
+        if (!playlists.isEmpty()) {
+            setupCursorAdapter(playlists.get(0));
+        }
+
+        setUpAppButton(GOOGLE_DRIVE_PACKAGE, googleDriveButton);
+        setUpAppButton(BROWSER_PACKAGE, browserButton);
+        setUpAppButton(EREADER_PACKAGE, eReaderButton);
+        setUpAppButton(GALLERY_PACKAGE, galleryButton);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(listeners);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void setupPlaylistStats() {
+        TextView stats = (TextView) findViewById(R.id.playlist_items_stats);
+        String text = getString(R.string.playlist_stats, playlistCursorAdapter.getCount());
+        stats.setText(highlight(text, getResources(), R.color.primary_orange));
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        super.onPause();
+        eventBus.unregister(listeners);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    protected void setUpAppButton(final String packageName, Button appButton) {
+        if (applicationUtils.isAppInstalled(this, packageName)) {
+            appButton.setVisibility(View.VISIBLE);
+            appButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+                    context.startActivity(launchIntent);
+                }
+            });
+        } else {
+            appButton.setVisibility(View.GONE);
+        }
+    }
+
+    protected class Listeners {
+        @Subscribe
+        public void onPlaylistRetrieved(PlaylistRetrievedEvent event) {
+            setupCursorAdapter(playlistDataStore.getPlaylistFor(userService.getUser()).get(0));
+        }
+    }
+
+    private void setupCursorAdapter(Playlist playlist) {
+        playlistItems.setAdapter(playlistCursorAdapter);
+
+        setupCursorLoader(playlist.getId());
+
+        setupPlaylistStats();
+    }
+
+    private void setupCursorLoader(Long playlistId) {
+        PlaylistCursorLoaderInitializer loaderInitializer = cursorLoaderFactory.createPlaylistCursorLoaderInitializer(playlistId, playlistCursorAdapter);
+        loaderInitializer.register(getLoaderManager());
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.teacher_notebook_stream_menu, menu);
+        return true;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

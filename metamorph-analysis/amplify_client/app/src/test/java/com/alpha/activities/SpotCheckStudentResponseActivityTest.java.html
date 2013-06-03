@@ -1,0 +1,136 @@
+<html><head><title>SpotCheckStudentResponseActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SpotCheckStudentResponseActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/SpotCheckStudentResponseActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import com.alpha.api.domains.SpotCheckResponseOption;
+import com.alpha.api.messaging.SpotCheckSettings;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class SpotCheckStudentResponseActivityTest {
+
+    @Inject
+    private SpotCheckStudentResponseActivity activity;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private UserService userService;
+    @Mock
+    private SpotCheckSettings spotCheckSettings;
+
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        newInjector(this, SpotCheckStudentResponseActivity.class)
+                .bindInstance(UserService.class, userService)
+                .configureActivity();
+        given(userService.getUser().getCurrentControlSettingsModel().getSpotCheckSettings()).willReturn(spotCheckSettings);
+    }
+
+    @Test
+    public void shouldDisplayGotItStudentSelectedResponse() {
+        when(spotCheckSettings.isRunning()).thenReturn(true);
+        when(spotCheckSettings.getStudentChoice()).thenReturn(SpotCheckResponseOption.GOT_IT);
+        activity.onCreate(null);
+
+        assertThat(activity.findViewById(R.id.got_it_option).getVisibility(), is(View.VISIBLE));
+        assertThat(activity.findViewById(R.id.not_sure_option).getVisibility(), is(View.GONE));
+        assertThat(activity.findViewById(R.id.confused_option).getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldDisplayNotSureStudentSelectedResponse() {
+        when(spotCheckSettings.isRunning()).thenReturn(true);
+        when(spotCheckSettings.getStudentChoice()).thenReturn(SpotCheckResponseOption.NOT_SURE);
+        activity.onCreate(null);
+
+        assertThat(activity.findViewById(R.id.got_it_option).getVisibility(), is(View.GONE));
+        assertThat(activity.findViewById(R.id.not_sure_option).getVisibility(), is(View.VISIBLE));
+        assertThat(activity.findViewById(R.id.confused_option).getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void shouldDisplayConfusedStudentSelectedResponse() {
+        when(spotCheckSettings.isRunning()).thenReturn(true);
+        when(spotCheckSettings.getStudentChoice()).thenReturn(SpotCheckResponseOption.CONFUSED);
+        activity.onCreate(null);
+
+        assertThat(activity.findViewById(R.id.got_it_option).getVisibility(), is(View.GONE));
+        assertThat(activity.findViewById(R.id.not_sure_option).getVisibility(), is(View.GONE));
+        assertThat(activity.findViewById(R.id.confused_option).getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldFinishActivityOnDisplayingStudentResponseWhenSpotCheckHasEnded() {
+        when(spotCheckSettings.isRunning()).thenReturn(false);
+        when(spotCheckSettings.getStudentChoice()).thenReturn(null);
+
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

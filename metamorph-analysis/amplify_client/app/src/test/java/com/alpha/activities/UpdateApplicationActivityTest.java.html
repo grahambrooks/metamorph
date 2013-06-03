@@ -1,0 +1,269 @@
+<html><head><title>UpdateApplicationActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UpdateApplicationActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/UpdateApplicationActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask.DetermineNeedToUpdateCallback;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.api.domains.VersionCheckResponse;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.services.PackageServiceManager.PackageServiceFactory;
+import com.alpha.services.PackageServiceManager.PackageServiceManager;
+import com.alpha.utils.ProcessUtils;
+import com.amplify.R;
+import com.caribou.lib.mdm.MDMServiceController;
+import com.caribou.lib.mdm.MDMServiceManager;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.io.File;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class UpdateApplicationActivityTest {
+    @Inject
+    private UpdateApplicationActivity updateApplicationActivity;
+
+    private final Context context = Robolectric.application;
+    private ProgressBar progressBar;
+    private Button actionButton;
+    private TextView title;
+    private TextView subTitle;
+    private ProgressBar progressBarDeterminate;
+
+    @Mock
+    private BackgroundTaskFactory backgroundTaskFactory;
+    @Mock
+    private VersionCheckResponse versionCheckResponse;
+    @Mock
+    private MDMServiceController mdmServiceController;
+    @Mock
+    private MDMServiceManager mdmServiceManager;
+    @Mock
+    private ProcessUtils processUtils;
+    @Mock
+    private PackageServiceManager packageServiceManager;
+    @Mock
+    private PackageServiceFactory packageServiceFactory;
+
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        new ActivityTestInjector<UpdateApplicationActivity>(this, UpdateApplicationActivity.class)
+                .bindInstance(BackgroundTaskFactory.class, backgroundTaskFactory)
+                .bindInstance(MDMServiceController.class, mdmServiceController)
+                .bindInstance(MDMServiceManager.class, mdmServiceManager)
+                .bindInstance(ProcessUtils.class, processUtils)
+                .bindInstance(PackageServiceFactory.class, packageServiceFactory)
+                .configureActivity();
+        given(packageServiceFactory.getPackageServiceManager()).willReturn(packageServiceManager);
+        given(backgroundTaskFactory.createDetermineNeedToUpdateTask(any(DetermineNeedToUpdateCallback.class))).willReturn(mock(DetermineNeedToUpdateTask.class));
+    }
+
+    @Test
+    public void shouldCheckForUpdatesOnCreate() {
+        updateApplicationActivity.onCreate(null);
+
+        verify(backgroundTaskFactory).createDetermineNeedToUpdateTask(updateApplicationActivity.needToUpdateCallback);
+    }
+
+    @Test
+    public void shouldSwitchToUpdatingViewWhileCheckingForUpdates() {
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+
+        assertThat(progressBar.getVisibility(), is(View.VISIBLE));
+        assertThat(progressBarDeterminate.getVisibility(), is(View.GONE));
+        assertThat(actionButton.getVisibility(), is(View.GONE));
+        assertThat(subTitle.getText().toString(), is(Robolectric.application.getString(R.string.please_wait)));
+        assertThat(title.getText().toString(), is(Robolectric.application.getString(R.string.update_check_title)));
+    }
+
+    @Test
+    public void shouldSwitchToUpdateViewIfNeedToUpdate() {
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+        when(versionCheckResponse.needToUpdate()).thenReturn(true);
+
+        updateApplicationActivity.needToUpdateCallback.onUpdateStatusDetermined(versionCheckResponse);
+
+        assertThat(progressBar.getVisibility(), is(View.GONE));
+        assertThat(actionButton.getVisibility(), is(View.VISIBLE));
+        assertThat(progressBarDeterminate.getVisibility(), is(View.GONE));
+        assertThat(subTitle.getText().toString(), is(Robolectric.application.getString(R.string.press_here)));
+        assertThat(title.getText().toString(), is(Robolectric.application.getString(R.string.update_header_title)));
+    }
+
+    @Test
+    public void shouldSwitchToRetryViewIfCheckingForUpdatesFails() {
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+        updateApplicationActivity.needToUpdateCallback.onNotDetermined();
+
+        assertThat(progressBar.getVisibility(), is(View.GONE));
+        assertThat(progressBarDeterminate.getVisibility(), is(View.GONE));
+        assertThat(actionButton.getVisibility(), is(View.VISIBLE));
+        assertThat(actionButton.getText().toString(), is(context.getString(R.string.retry)));
+        assertThat(subTitle.getText().toString(), is(context.getString(R.string.click_to_retry)));
+    }
+
+    @Test
+    public void shouldSwitchToProgressViewOnProgressUpdate() {
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+
+        updateApplicationActivity.needToUpdateCallback.onUpdateDownloadProgress(1);
+
+        assertThat(progressBar.getVisibility(), is(View.GONE));
+        assertThat(progressBarDeterminate.getVisibility(), is(View.VISIBLE));
+        assertThat(actionButton.getVisibility(), is(View.GONE));
+        assertThat(subTitle.getText().toString(), is(context.getString(R.string.downloading_latest_update)));
+    }
+
+    @Test
+    public void shouldSetResultAndFinishIfNoNeedToUpdate() {
+        updateApplicationActivity.onCreate(null);
+        when(versionCheckResponse.needToUpdate()).thenReturn(false);
+
+        updateApplicationActivity.needToUpdateCallback.onUpdateStatusDetermined(versionCheckResponse);
+
+        Assert.assertThat(shadowOf(updateApplicationActivity).isFinishing(), Matchers.is(true));
+        Assert.assertThat(shadowOf(updateApplicationActivity).getResultCode(), Matchers.is(Activity.RESULT_OK));
+    }
+
+    @Test
+    public void shouldCheckForUpdatesOnButtonClick() {
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+
+        actionButton.performClick();
+
+        verify(backgroundTaskFactory).createDetermineNeedToUpdateTask(updateApplicationActivity.needToUpdateCallback);
+    }
+
+    @Test
+    public void shouldInstallApkFromFileOnClick() {
+        File apkFile = setupVersionCheckResponse();
+
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+        updateApplicationActivity.needToUpdateCallback.onUpdateStatusDetermined(versionCheckResponse);
+        updateApplicationActivity.packageServiceCallback.onInitSuccess();
+        actionButton.performClick();
+
+        verify(packageServiceManager).silentInstall(apkFile.getAbsolutePath());
+    }
+
+    @Test
+    public void shouldExitApplicationAfterInstallingAPK() {
+        setupVersionCheckResponse();
+
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+        updateApplicationActivity.packageServiceCallback.onInitSuccess();
+        updateApplicationActivity.needToUpdateCallback.onUpdateStatusDetermined(versionCheckResponse);
+
+        actionButton.performClick();
+
+        verify(processUtils).commitSuicide();
+    }
+
+    @Test
+    public void shouldSetMDMControllerOnBind() {
+        updateApplicationActivity.isBoundToService = false;
+        updateApplicationActivity.onCreate(null);
+        setupViews();
+
+        updateApplicationActivity.packageServiceCallback.onInitSuccess();
+
+        Assert.assertTrue(updateApplicationActivity.isBoundToService);
+    }
+
+    private File setupVersionCheckResponse() {
+        String path = "path";
+        File apkFile = new File( path);
+        when(versionCheckResponse.needToUpdate()).thenReturn(true);
+        when(versionCheckResponse.getApkFile()).thenReturn(apkFile);
+        return apkFile;
+    }
+
+    private void setupViews() {
+        progressBar = (ProgressBar) updateApplicationActivity.findViewById(R.id.progress_bar);
+        actionButton = (Button) updateApplicationActivity.findViewById(R.id.update_button);
+        title = (TextView) updateApplicationActivity.findViewById(R.id.update_title_text);
+        subTitle = (TextView) updateApplicationActivity.findViewById(R.id.sub_text);
+        progressBarDeterminate = (ProgressBar) updateApplicationActivity.findViewById(R.id.progress_bar_determinate);
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

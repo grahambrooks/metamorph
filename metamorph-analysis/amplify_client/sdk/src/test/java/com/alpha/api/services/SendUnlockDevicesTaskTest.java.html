@@ -1,0 +1,128 @@
+<html><head><title>SendUnlockDevicesTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SendUnlockDevicesTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/SendUnlockDevicesTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.events.DeviceLockingRequestFailureEvent;
+import com.alpha.api.services.events.DeviceUnlockRequestSucceededEvent;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class SendUnlockDevicesTaskTest {
+
+    private SendUnlockDevicesTask task;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private DeviceLockingService deviceLockingService;
+    @Mock
+    private ClassSession classSection;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        task = new SendUnlockDevicesTask(teacher, eventBus, analyticsAgent, deviceLockingService);
+        when(teacher.getCurrentControlSettingsModel()).thenReturn(controlSettingsModel);
+        given(teacher.getSession()).willReturn(classSection);
+    }
+
+    @Test
+    public void shouldSendUnlockDeviceMessageIfLoggingAttemptSucceeds() throws Exception {
+        task.call();
+        verify(deviceLockingService).sendUnlockDevicesMessage(teacher);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfExceptionIsThrownDuringException() throws Exception {
+        doThrow(AmplifyException.class).when(deviceLockingService).sendUnlockDevicesMessage(teacher);
+        task.onException(new Exception());
+        verify(eventBus).post(any(DeviceLockingRequestFailureEvent.class));
+    }
+
+    @Test
+    public void shouldDisengageEyesOnTeacherAfterSuccessfullyExecutingTask() throws Exception {
+        task.onSuccess(true);
+        verify(classSection).disengageEyesOnTeacher();
+    }
+
+    @Test
+    public void shouldCallSuccessCallbackOnSuccess() throws Exception {
+        task.onSuccess(true);
+        verify(eventBus).post(any(DeviceUnlockRequestSucceededEvent.class));
+    }
+
+    @Test
+    public void shouldCallFailureCallbackOnFailure() throws Exception {
+        task.onSuccess(false);
+        verify(eventBus).post(any(DeviceLockingRequestFailureEvent.class));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

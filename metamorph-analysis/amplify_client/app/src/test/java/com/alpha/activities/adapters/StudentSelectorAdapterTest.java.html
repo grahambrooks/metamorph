@@ -1,0 +1,131 @@
+<html><head><title>StudentSelectorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentSelectorAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/StudentSelectorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentSelectorAdapterTest {
+
+    public static final String STUDENT_NAME = "Dahlia";
+    public static final long STUDENT_ID = 1L;
+    private StudentSelectorAdapter adapter;
+    private Participant student;
+
+    @Before
+    public void setUp() throws Exception {
+        adapter = new StudentSelectorAdapter(Robolectric.application);
+        User student = mock(User.class);
+        when(student.getName()).thenReturn(STUDENT_NAME);
+        this.student = new Participant(STUDENT_ID, STUDENT_NAME);
+    }
+
+    @Test
+    public void shouldActivateStudentIfSelected() {
+        View studentRow = LayoutInflater.from(Robolectric.application).inflate(R.layout.select_student_group_item, null);
+        adapter.add(new Participant(STUDENT_ID, STUDENT_NAME, true));
+
+        adapter.getView(0, studentRow, null);
+        assertThat(studentRow.isActivated(), is(true));
+    }
+
+    @Test
+    public void shouldRetrieveListOfSelectedStudents() {
+        adapter.add(student);
+        adapter.getItem(0).select();
+        assertThat(adapter.selectedStudents().size(), is(1));
+        assertThat(adapter.selectedStudents(), hasItem(student));
+    }
+
+    @Test
+    public void shouldFormatTheNumberOfSelectedStudentsText() {
+        adapter.add(student);
+        assertThat(adapter.getSelectedStudentText().toString(), is("0/1 students selected"));
+        adapter.getItem(0).select();
+        assertThat(adapter.getSelectedStudentText().toString(), is("1/1 students selected"));
+    }
+
+    @Test
+    public void shouldActivateStudentRowWhenClicked() {
+        adapter.add(student);
+        View studentRow = LayoutInflater.from(Robolectric.application).inflate(R.layout.select_student_group_item, null);
+        View returnedStudentRow = adapter.getView(0, studentRow, null);
+
+        assertThat(returnedStudentRow.isActivated(), is(false));
+        returnedStudentRow.performClick();
+        assertThat(returnedStudentRow.isActivated(), is(true));
+    }
+
+    @Test
+    public void shouldDeactivateStudentRowWhenClickedAndIsActivated() {
+        adapter.add(new Participant(STUDENT_ID, STUDENT_NAME, true));
+        View studentRow = LayoutInflater.from(Robolectric.application).inflate(R.layout.select_student_group_item, null);
+        View returnedStudentRow = adapter.getView(0, studentRow, null);
+
+        returnedStudentRow.performClick();
+        assertThat(returnedStudentRow.isActivated(), is(false));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

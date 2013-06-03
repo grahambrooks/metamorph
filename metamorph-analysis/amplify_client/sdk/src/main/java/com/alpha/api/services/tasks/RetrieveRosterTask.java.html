@@ -1,0 +1,94 @@
+<html><head><title>RetrieveRosterTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RetrieveRosterTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/tasks/amplify_client/RetrieveRosterTask.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services.tasks;
+
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.services.SafeAuthenticatedAsyncTask;
+import com.alpha.api.services.UserService;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+
+public class RetrieveRosterTask extends SafeAuthenticatedAsyncTask<Void> {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final UserService userService;
+
+    @Inject
+    public RetrieveRosterTask(UserService userService, AnalyticsAgent analyticsAgent) {
+        super(analyticsAgent);
+        this.userService = userService;
+    }
+
+    @Override
+    public Void call() throws Exception {
+        if (!userService.hasUserRegistered()) {
+            LOG.trace("RetrieveRosterTask called without registered user");
+            return null;
+        }
+
+        LOG.error("Retrieving updated student roster information");
+        return null;
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Unexpected authentication exception ", e);
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Unexpected exception occurred ", e);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

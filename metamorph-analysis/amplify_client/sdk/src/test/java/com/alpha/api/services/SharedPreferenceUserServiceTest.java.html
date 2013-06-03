@@ -1,0 +1,252 @@
+<html><head><title>SharedPreferenceUserServiceTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SharedPreferenceUserServiceTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/SharedPreferenceUserServiceTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.accounts.AccountManager;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.lock.GlobalInformationLock;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.services.User.Keys.ID;
+import static com.alpha.api.services.User.Keys.LOGIN_ID;
+import static com.alpha.api.services.User.Keys.NAME;
+import static com.alpha.api.services.User.Keys.PASSWORD;
+import static com.alpha.api.services.User.Keys.ROLE;
+import static com.alpha.api.services.User.Keys.SCHOOL;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class SharedPreferenceUserServiceTest {
+
+    private SharedPreferenceUserService service;
+    @Mock
+    private Context ctx;
+    @Mock
+    private SharedPreferences sharedPreferences;
+    @Mock
+    private SectionsDataStore sectionsDataStore;
+    @Mock
+    private User user;
+
+    private GlobalInformationLock globalInformationLock;
+    @Mock
+    private UserTaskFactory userTaskFactory;
+    @Mock
+    private Editor editor;
+
+    private static final String USERS_NAME = "What are you on about Julie";
+    private static final UserRole TEACHER = UserRole.TEACHER;
+    private static final String USER_SCHOOL = "mySchool";
+    private static final String USER_LOGIN_ID = "daasda";
+    private static final String USER_PASSWORD = "daasdasfdsdfs";
+    private static final Long USER_ID = 1L;
+
+    @Before
+    public void beforeTest() {
+        initMocks(this);
+        when(ctx.getSharedPreferences(SharedPreferenceUserService.USER_INFORMATION, Context.MODE_PRIVATE))
+                .thenReturn(sharedPreferences);
+        globalInformationLock = spy(new GlobalInformationLock());
+        service = new SharedPreferenceUserService(ctx, sectionsDataStore, userTaskFactory, globalInformationLock);
+        given(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).willReturn(true);
+
+
+    }
+
+    @Test
+    public void serviceShouldSpecifyUserAsRegistered() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(true);
+        assertThat(service.hasUserRegistered(), is(true));
+    }
+
+    @Test
+    public void serviceShouldSpecifyUserNotRegistered() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(false);
+        assertThat(service.hasUserRegistered(), is(false));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void serviceShouldThrowExceptionIfRetrievingUserBeforeRegistering() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(false);
+        service.getUser();
+    }
+
+    @Test
+    public void serviceShouldCreateUserIfUserHasNotBeenCreatedButRegistered() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(true);
+        setupSharedPreferenceDataForTeacher();
+        User returnedUser = service.getUser();
+
+        assertThat(EqualsBuilder.reflectionEquals(returnedUser, new Teacher(USER_ID, USERS_NAME, USER_SCHOOL, USER_LOGIN_ID, USER_PASSWORD, Lists.<Section>newArrayList(), globalInformationLock), "sections", "classSession"), is(true));
+    }
+
+    @Test
+    public void shouldReturnAStudentIfTheUserPreferencesIsStoredAsStudent() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(true);
+        setupSharedPreferenceDataForStudent();
+
+        assertThat(Student.class.isInstance(service.getUser()), is(true));
+    }
+
+    @Test
+    public void shouldRecordAdamRegistrationInSharedPreferences() {
+
+        when(sharedPreferences.edit()).thenReturn(editor);
+    }
+
+    @Test
+    public void shouldReturnATeacherIfTheUserPreferencesIsStoredAsTeacher() {
+        setupSharedPreferenceDataForTeacher();
+
+        assertThat(Teacher.class.isInstance(service.getUser()), is(true));
+    }
+
+    @Test
+    public void shouldReadUserSectionsFromLocal() {
+        setupSharedPreferenceDataForTeacher();
+
+        service.getUser();
+        verify(sectionsDataStore).getSections();
+    }
+
+    @Test
+    public void shouldRecordAccountNameInSharedPreferences() {
+        Editor editor = mock(Editor.class);
+        when(sharedPreferences.edit()).thenReturn(editor);
+        String value = "test@test.com";
+        service.saveAccountName(value);
+        verify(editor).putString(AccountManager.KEY_ACCOUNT_NAME, value);
+        verify(editor).commit();
+
+    }
+
+    @Test
+    public void shouldNotSetACurrentSectionIfThereIsNotOne(){
+        setupSharedPreferenceDataForStudent();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        service.refreshUser(user);
+        assertThat(service.getUser().getCurrentSection(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldSetTheCurrentSectionOfOldUserAfterRefreshingUser(){
+        Section section = mock(Section.class);
+        when(sectionsDataStore.getSections()).thenReturn(Lists.newArrayList(section));
+        when(section.getId()).thenReturn(1L);
+        when(sharedPreferences.edit()).thenReturn(editor);
+        setupSharedPreferenceDataForStudent();
+        service.getUser().setCurrentSection(1L);
+        service.refreshUser(user);
+        assertThat(service.getUser().getCurrentSection(), is(section));
+    }
+
+    @Test
+    public void shouldGetUserInReadLockState(){
+        setupSharedPreferenceDataForStudent();
+        service.getUser();
+        verify(globalInformationLock).callWithReadLock(isA(AmplifyCallable.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotRefreshUnregisteredUser() {
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(false);
+        service.refreshUser(user);
+    }
+
+    @Test
+    public void shouldRecreateTheUserIfThereIsOne(){
+        when(sharedPreferences.edit()).thenReturn(editor);
+        when(sharedPreferences.getBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, false)).thenReturn(true);
+        setupSharedPreferenceDataForStudent();
+        User oldUser = service.getUser();
+        service.refreshUser(user);
+        assertThat(service.getUser(), is(not(oldUser)));
+    }
+
+    private void setupSharedPreferenceDataForTeacher() {
+        when(sharedPreferences.getString(NAME.name(), null)).thenReturn(USERS_NAME);
+        when(sharedPreferences.getLong(ID.name(), -1)).thenReturn(USER_ID);
+        when(sharedPreferences.getString(ROLE.name(), null)).thenReturn(TEACHER.name());
+        when(sharedPreferences.getString(SCHOOL.name(), null)).thenReturn(USER_SCHOOL);
+        when(sharedPreferences.getString(LOGIN_ID.name(), null)).thenReturn(USER_LOGIN_ID);
+        when(sharedPreferences.getString(PASSWORD.name(), null)).thenReturn(USER_PASSWORD);
+    }
+
+    private void setupSharedPreferenceDataForStudent() {
+        when(sharedPreferences.getLong(ID.name(), -1)).thenReturn(USER_ID);
+        when(sharedPreferences.getString(NAME.name(), null)).thenReturn(USERS_NAME);
+        when(sharedPreferences.getString(ROLE.name(), null)).thenReturn(UserRole.STUDENT.name());
+        when(sharedPreferences.getString(SCHOOL.name(), null)).thenReturn(USER_SCHOOL);
+        when(sharedPreferences.getString(LOGIN_ID.name(), null)).thenReturn(USER_LOGIN_ID);
+        when(sharedPreferences.getString(PASSWORD.name(), null)).thenReturn(USER_PASSWORD);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

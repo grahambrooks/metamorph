@@ -1,0 +1,295 @@
+<html><head><title>ThirdPartyRegistrationActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ThirdPartyRegistrationActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ThirdPartyRegistrationActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.messaging.notifications.events.PushNotificationsRegisteredEvent;
+import com.alpha.api.messaging.notifications.events.PushNotificationsRegistrationErrorEvent;
+import com.alpha.api.messaging.notifications.tasks.PushNotificationsRegistrationFactory;
+import com.alpha.api.messaging.notifications.tasks.PushNotificationsRegistrationTask;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.ParticipantDataStore;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.UserRetrievalEvent;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.services.tasks.RetrieveGoogleTokenForAdamTask;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.api.services.tasks.RetrieveUserInfoTask;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import junit.framework.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings("PMD.TooManyFields")
+public class ThirdPartyRegistrationActivityTest {
+
+    public static final String ACCOUNT_NAME = "email@email.com";
+    public static final String TOKEN = "some_cool_token";
+    private static final String ACCOUNT_EMAIL = "email";
+
+    @Inject
+    private ThirdPartyRegistrationActivity activity;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private PushNotificationsRegistrationFactory pushNotificationsRegistrationFactory;
+    @Inject
+    private Toaster toaster;
+    @Mock
+    private AccountManagerFuture<Bundle> future;
+    @Mock
+    private User user;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ParticipantDataStore participantDataStore;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private UserTaskFactory userTaskFactory;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private RetrievePostsService retrievePostService;
+    @Mock
+    private RetrieveGoogleTokenForAdamTask retrieveGoogleTokenForAdamTask;
+    @Mock
+    private RetrieveUserInfoTask retriveUserInfoTask;
+    @Mock
+    private UserRetrievalEvent userRetrievalEvent;
+    @Mock
+    private PushNotificationsRegistrationTask registrationTask;
+    @Mock
+    private Intent intent;
+    @Inject
+    private Environment environment;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(AccountManager.KEY_ACCOUNT_NAME, ACCOUNT_EMAIL);
+
+        when(future.getResult()).thenReturn(bundle);
+
+        newInjector(this, ThirdPartyRegistrationActivity.class)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(ParticipantDataStore.class, participantDataStore)
+                .bindInstance(UserTaskFactory.class, userTaskFactory)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .bindInstance(PushNotificationsRegistrationFactory.class, pushNotificationsRegistrationFactory)
+                .bindInstance(RetrievePostsService.class, retrievePostService)
+                .configureActivity();
+
+        given(intent.hasExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA)).willReturn(true);
+        given(intent.getStringExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA)).willReturn(TOKEN);
+        activity.setIntent(intent);
+
+        given(userTaskFactory.createRetrieveGoogleTokenForAdamTask()).willReturn(retrieveGoogleTokenForAdamTask);
+        given(pushNotificationsRegistrationFactory.createRegistrationTask()).willReturn(registrationTask);
+        given(userRetrievalEvent.getUser()).willReturn(user);
+        activity.onCreate(null);
+
+        given(userService.getUser()).willReturn(user);
+        given(userTaskFactory.createRequestUserInfoTask(TOKEN)).willReturn(retriveUserInfoTask);
+    }
+
+    @Test
+    public void shouldRetrieveStudentsForAllSectionsAfterRegisteringWithControlServer() {
+        when(environment.isAdamRequired()).thenReturn(false);
+        when(user.getId()).thenReturn(1l);
+        when(userService.isStudent()).thenReturn(true);
+
+        activity.onControlServerRegistrationSuccess();
+
+        verify(userService).syncAllStudentsForAllSections(any(User.class));
+        assertThat(shadowOf(activity).isFinishing(), is(false));
+    }
+
+    @Test
+    public void shouldRetrievePostsOnSuccessfulRegistration() {
+        activity.onControlServerRegistrationSuccess();
+
+        assertThat(Robolectric.getShadowApplication().getNextStartedService().getComponent().getClassName(), is(RetrievePostsService.class.getName()));
+    }
+
+    @Test
+    public void shouldSyncAllStudentsForAllSectionOnRegistrationSuccessForTeachers() {
+        when(user.getId()).thenReturn(1l);
+        when(userService.isTeacher()).thenReturn(true);
+        when(userService.getUser()).thenReturn(teacher);
+        activity.onControlServerRegistrationSuccess();
+
+        verify(userService).syncAllStudentsForAllSections(teacher);
+    }
+
+    @Test
+    public void shouldSendWallpaperIntentAfterRetrievingStudentsForSections() {
+        when(environment.isAdamRequired()).thenReturn(true);
+        when(userService.getAccountName()).thenReturn(ACCOUNT_NAME);
+
+        activity.listeners.onRetrieveStudentsForAllSectionSuccess(null);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getAction(), is(ThirdPartyRegistrationActivity.SET_WALLPAPER_ACTION));
+        Bundle extras = intent.getExtras();
+        assertThat(extras.get("filepath").toString(), is(ThirdPartyRegistrationActivity.WALLPAPER_FILE_PATH));
+    }
+
+    @Test
+    public void shouldNotifyAdamAfterSuccessfulControlRegistrationAndAdamIsRequired() {
+        when(environment.isAdamRequired()).thenReturn(true);
+        when(userService.getAccountName()).thenReturn(ACCOUNT_NAME);
+
+        activity.onControlServerRegistrationSuccess();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getAction(), is(ThirdPartyRegistrationActivity.MDM_ACTION));
+        Bundle extras = intent.getExtras();
+        assertThat(extras.get(AccountManager.KEY_ACCOUNT_NAME).toString(), is(ACCOUNT_NAME));
+        assertThat(extras.get(AccountManager.KEY_AUTHTOKEN).toString(), is(TOKEN));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotGoBackIfEVERRRRR() {
+        activity.onBackPressed();
+        assertThat(shadowOf(activity).isFinishing(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldGetUserInfoOnCreate() {
+        verify(registrationTask).register();
+    }
+
+    @Test
+    public void shouldFailRegistrationIfAdamRequiredAndFails() {
+        when(environment.isAdamRequired()).thenReturn(true);
+        when(userService.getAccountName()).thenReturn(ACCOUNT_NAME);
+        activity.onControlServerRegistrationSuccess();
+
+        shadowOf(activity).receiveResult(buildAdamAssociationIntent(), Activity.RESULT_CANCELED, null);
+
+        verify(toaster).errorToast(ApiErrorReason.OPEN_PEAK_ASSOCIATION_FAILED, R.string.user_info_failed);
+        Assert.assertNotSame(Activity.RESULT_OK, shadowOf(activity).getResultCode());
+    }
+
+    @Test
+    public void shouldFailRegistrationIfPushNotificationRegistrationReturnedAnError() {
+        activity.listeners.onPushNotificationsRegistrationErrorEvent(new PushNotificationsRegistrationErrorEvent(ApiErrorReason.PUSH_REGISTRATION_FAILED));
+
+        verify(toaster).errorToast(ApiErrorReason.PUSH_REGISTRATION_FAILED, R.string.user_info_failed);
+        assertThat(activity.findViewById(R.id.registration_in_progress).getVisibility(), is(View.GONE));
+        assertThat((String) ((TextView) activity.findViewById(R.id.progress_text)).getText(), is(activity.getResources().getString(R.string.registration_failed_message)));
+    }
+
+
+    @Test
+    public void shouldPerformUserRegistrationAfterPushNotificationsRegistrationWasCompletedSuccessfully() {
+        activity.listeners.onPushNotificationsRegisteredEvent(new PushNotificationsRegisteredEvent(user));
+
+        verify(userService).registerUser(user, activity);
+    }
+
+    @Test
+    public void shouldFinishIfNoTokenReceived() {
+        when(intent.hasExtra(GetUserInfoActivity.GOOGLE_TOKEN_EXTRA)).thenReturn(false);
+        activity.onCreate(null);
+
+        Assert.assertTrue(shadowOf(activity).isFinishing());
+        assertThat(shadowOf(activity).getResultCode(), is(RegistrationActivity.REGISTRATION_STEP_FAILED));
+    }
+
+    private Intent buildAdamAssociationIntent() {
+        return new Intent().setAction(ThirdPartyRegistrationActivity.MDM_ACTION).setComponent(ThirdPartyRegistrationActivity.MDM_COMPONENT).putExtra(AccountManager.KEY_ACCOUNT_NAME, ACCOUNT_NAME).putExtra(AccountManager.KEY_AUTHTOKEN, TOKEN);
+
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

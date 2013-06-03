@@ -1,0 +1,81 @@
+<html><head><title>PostResponseRecordsCursorLoader.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostResponseRecordsCursorLoader.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/PostResponseRecordsCursorLoader.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.database.Cursor;
+import com.alpha.api.repository.sqlite.Order;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+
+import static com.alpha.api.repository.sqlite.TableColumn.*;
+
+public class PostResponseRecordsCursorLoader extends BaseCursorLoader {
+    private static final String[] PROJECTION = new String[]{_id.name(), author_name.name(), created_on.name(), author_id.name()};
+    private static final String SELECTION = TableColumn.post_id.equalTo();
+    private static final String SORT_ORDER = Order.ASC.by(created_on);
+
+    public PostResponseRecordsCursorLoader(Context context, PostCursorLoaderCallbacks callbacks, Long postId) {
+        super(context, Table.POST_RESPONSE_RECORDS.uri(postId), PROJECTION, SELECTION,  new String[]{String.valueOf(postId)}, SORT_ORDER, callbacks, postId);
+    }
+
+    @Override
+    public void onLoadFinished(Cursor cursor) {
+        callbacks.setResponsesCursor(cursor);
+        callbacks.updateResponseCount();
+    }
+
+    @Override
+    public void onLoaderReset() {
+        callbacks.setResponsesCursor(null);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

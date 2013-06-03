@@ -1,0 +1,381 @@
+<html><head><title>DiscussionDetailActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DiscussionDetailActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/DiscussionDetailActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">28</span>
+    <progress max="100" value="28"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.database.ContentObserver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.method.LinkMovementMethod;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.DiscussionCommentsCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.Comment;
+import com.alpha.api.domains.Post;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.CommentAddedEvent;
+import com.alpha.date.DateFormats;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.text.MessageFormat;
+
+import static java.lang.String.format;
+
+public class DiscussionDetailActivity extends SundaeTimedActivity implements PostCursorLoaderCallbacks, TextSharer {
+
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private Toaster toaster;
+    @Inject
+    private UserService userService;
+    @Inject
+    private CursorLoaderFactory cursorLoaderFactory;
+    @Inject
+    private DiscussionCommentsCursorAdapter commentsCursorAdapter;
+    @Inject
+    private PostService postService;
+    @Inject
+    private PostsDataStore postDataStore;
+
+    private EditTextAlertDialog commentDialog;
+
+    @InjectView(R.id.comment_list)
+    private ListView commentListView;
+
+    @InjectView(R.id.open_comment_dialog)
+    private View commentButton;
+
+    public static final String POST_ID_EXTRA = "POST_ID";
+    private Post post;
+
+    private ContentObserver postObserver;
+    Listeners listeners = new Listeners();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+
+        setContentView(R.layout.discussion_detail_layout);
+
+        Long postId = (Long) getIntent().getExtras().get(POST_ID_EXTRA);
+        registerPostContentObserver(postId);
+        post = postDataStore.fetch(postId);
+        if (post == null) {
+            handleDeletedPost();
+            return;
+        }
+
+        initializeListener();
+        initializeComments();
+        setupCursorLoader();
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    private void initializeListener() {
+        View doneButton = findViewById(R.id.discussion_detail_done_button);
+        doneButton.setOnClickListener(new OnClickListener() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public void onClick(View v) {
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle(R.string.comment_options);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.comment_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final Comment comment = commentsCursorAdapter.getItem(info.position);
+
+        switch (item.getItemId()) {
+            case R.id.delete_comment:
+                String title = format(getString(R.string.alert_comment_delete_confirm, comment.getAuthor().getName()));
+                new AlertDialog.Builder(this)
+                        .setTitle(title)
+                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                postService.deleteComment(getDomainObject().getId(), comment);
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create()
+                        .show();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void initializeComments() {
+        View dialogBox = getLayoutInflater().inflate(R.layout.comment_dialog_box, null);
+        commentDialog = new EditTextAlertDialog(dialogBox, this);
+
+        TextView authorText = (TextView) findViewById(R.id.discussion_author);
+        authorText.setText(post.getAuthor().getName());
+
+        TextView commentText = (TextView) findViewById(R.id.discussion_topic);
+        commentText.setText(post.getDescription());
+        commentText.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView createdDate = (TextView) findViewById(R.id.discussion_timestamp);
+        createdDate.setText(DateFormats.formatPastDateToDefaultStyle(post.getCreatedOn()));
+
+        TextView sharedWith = (TextView) findViewById(R.id.discussion_sharedwith);
+        sharedWith.setVisibility(userService.isTeacher() ? View.VISIBLE : View.GONE);
+        if (userService.isTeacher()) {
+            String messageFormat = getResources().getString(R.string.shared_with_student_message);
+            sharedWith.setText(MessageFormat.format(messageFormat, post.countOfStudentsSharedWith()));
+        }
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onResume() {
+        eventBus.register(listeners);
+        super.onResume();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onPause() {
+        eventBus.unregister(listeners);
+        super.onPause();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onDestroy() {
+        if (postObserver != null) {
+            getContentResolver().unregisterContentObserver(postObserver);
+        }
+        super.onDestroy();
+    }
+
+    private void handleDeletedPost() {
+        toaster.makeToast(R.string.this_post_was_deleted);
+        finish();
+    }
+
+    private void registerPostContentObserver(final Long postId) {
+        final Uri postIdUri = Table.POSTS.uriForSingleRow(postId);
+        postObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+            @Override
+            public void onChange(boolean selfChange) {
+                post = postDataStore.fetch(postId);
+                // If post gets deleted
+                if (post == null) {
+                    handleDeletedPost();
+                }
+            }
+        };
+        getContentResolver().registerContentObserver(postIdUri, false, postObserver);
+    }
+
+    private void setupCursorLoader() {
+        PostCursorLoaderInitializer loaderInitializer = cursorLoaderFactory.createPostCursorLoaderInitializer(this, getDomainObject());
+        loaderInitializer.register(getLoaderManager(), userService.getUser().getRole());
+
+        setupCommentArea();
+        if (userService.isTeacher()) {
+            registerForContextMenu(commentListView);
+        }
+    }
+
+    private void setupCommentArea() {
+        commentListView.setAdapter(commentsCursorAdapter);
+        commentListView.setStackFromBottom(false);
+        commentButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commentDialog.show();
+            }
+        });
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void updateResponseCount() {
+        // Do nothing
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setResponsesCursor(Cursor cursor) {
+        // Do nothing
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void setCommentsCursor(Cursor cursor) {
+        commentsCursorAdapter.swapCursor(cursor);
+        commentListView.post(new Runnable() {
+            @Override
+            public void run() {
+                int count = commentsCursorAdapter.getCount();
+                if (count > 0) {
+                    commentListView.setSelection(count - 1);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void shareText(String text) {
+
+        User user = userService.getUser();
+        Comment comment = new Comment(user, text);
+        postService.addComment(getDomainObject().getId(), comment);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private Post getDomainObject() {
+        return post;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public class Listeners {
+        @Subscribe
+        public void onAddComment(CommentAddedEvent event) {
+            if (event.succeeded()) {
+                toaster.makeToast(R.string.comment_shared);
+                commentDialog.clearText();
+                commentDialog.dismiss();
+            } else {
+                commentDialog.activateShareButton();
+                toaster.errorToast(event.failureReason, R.string.sharing_comment_failure);
+            }
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

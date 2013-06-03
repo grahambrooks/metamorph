@@ -1,0 +1,125 @@
+<html><head><title>OnContentLoaded.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>OnContentLoaded.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/googledrive/amplify_client/OnContentLoaded.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets.googledrive;
+
+import android.os.Handler;
+import android.os.Looper;
+import com.alpha.logging.LogUtils;
+import com.google.api.services.drive.model.File;
+import com.google.common.reflect.Reflection;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFutureTask;
+import org.slf4j.Logger;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * Loads @param on background thread, and the registered @{link LoadAction} are called when the @param is loaded.
+ */
+public class OnContentLoaded {
+
+    /**
+     * Instead of handler, we could just use view.post(Runnable).
+     * But post on view objects is sometimes not loaded until we navigate to a different fragment.
+     * Could possibly a bug due to way we are handling fragments?
+     */
+    private final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+    private static final ExecutorService BACKGROUND_EXECUTOR = Executors.newFixedThreadPool(5);
+    private final ListenableFutureTask<File> futureTask;
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    public OnContentLoaded(final Callable<File> callable) {
+        futureTask = ListenableFutureTask.create(callable);
+        MAIN_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                BACKGROUND_EXECUTOR.submit(futureTask);
+            }
+        });
+    }
+
+    /**
+     * register as much actions you would like.
+     * Invoked when the object is loaded
+     */
+    public void register(final LoadAction action) {
+        LoadAction loadAction = Reflection.newProxy(LoadAction.class, new RunOnGivenHandler(action, MAIN_HANDLER));
+        Futures.addCallback(futureTask, loadAction, BACKGROUND_EXECUTOR);
+    }
+
+    private static class RunOnGivenHandler implements InvocationHandler {
+        private final LoadAction action;
+        private final Handler handler;
+
+        public RunOnGivenHandler(LoadAction action, Handler handler) {
+            this.handler = handler;
+            this.action = action;
+        }
+
+        @Override
+        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+            return handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        method.invoke(action, args);
+                    } catch (Exception e) {
+                        LOGGER.error(LoadAction.class.getName(), "Error invoking callback. ");
+                    }
+                }
+            });
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

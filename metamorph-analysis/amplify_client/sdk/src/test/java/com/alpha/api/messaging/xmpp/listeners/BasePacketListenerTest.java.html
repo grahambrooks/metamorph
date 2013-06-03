@@ -1,0 +1,206 @@
+<html><head><title>BasePacketListenerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>BasePacketListenerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/listeners/amplify_client/BasePacketListenerTest.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.listeners;
+
+
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+public class BasePacketListenerTest {
+    private static final PacketFilter TRUE_FILTER = new PacketFilter() {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public boolean accept(Packet packet) {
+            return true;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    };
+
+    private static final String ROOMNAME = "RoomA";
+
+    @Test
+    public void shouldOnlyAcceptPacketFromSpecificRoom() throws Exception {
+        BasePacketListener<Message> messageBasePacketListener = new BasePacketListener<Message>(ROOMNAME) {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public PacketFilter filter() {
+                return TRUE_FILTER;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void process(Message packet) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        assertThat(messageBasePacketListener.allFilters().accept(getMessagePacket(ROOMNAME)), is(true));
+        assertThat(messageBasePacketListener.allFilters().accept(getMessagePacket("SomeOtherRoom")), is(false));
+    }
+
+    @Test
+    public void shouldOnlyAcceptPresencePacket() throws Exception {
+        BasePacketListener<Presence> presencePacketListener = new BasePacketListener<Presence>(ROOMNAME) {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public PacketFilter filter() {
+                return TRUE_FILTER;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void process(Presence packet) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        assertThat(presencePacketListener.allFilters().accept(getPresencePacket(ROOMNAME, Presence.Type.unavailable)), is(true));
+        assertThat(presencePacketListener.allFilters().accept(getMessagePacket(ROOMNAME)), is(false));
+    }
+
+    @Test
+    public void shouldOnlyAcceptMessagePacket() throws Exception {
+        BasePacketListener<Message> messagePacketListener = new BasePacketListener<Message>(ROOMNAME) {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public PacketFilter filter() {
+                return TRUE_FILTER;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void process(Message packet) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        };
+
+        assertThat(messagePacketListener.allFilters().accept(getMessagePacket(ROOMNAME)), is(true));
+        assertThat(messagePacketListener.allFilters().accept(getPresencePacket(ROOMNAME, Presence.Type.unavailable)), is(false));
+    }
+
+    private Presence getPresencePacket(String roomName, Presence.Type type) {
+        Presence presence = new Presence(type);
+        presence.setFrom(roomName);
+        return presence;
+    }
+
+    private Message getMessagePacket(String roomName) {
+        Message message = new Message();
+        message.setFrom(roomName);
+        return message;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<html><head><title>SectionsDataStoreTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionsDataStoreTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/amplify_client/SectionsDataStoreTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Section;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.alpha.api.repository.sqlite.Table.SECTIONS;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class SectionsDataStoreTest {
+    public static final ContentValues SECTION_VALUES = new ContentValues();
+    private List<Section> sections;
+
+    SectionsDataStore sectionsDataStore;
+    @Mock
+    private Section section;
+    @Mock(answer = RETURNS_DEEP_STUBS)
+    private Context context;
+    @Mock
+    private CoursesDataStore coursesDataStore;
+    @Mock
+    private ContentResolver contentResolver;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        sectionsDataStore = new SectionsDataStore(context, coursesDataStore);
+        given(section.asValues()).willReturn(SECTION_VALUES);
+        given(context.getContentResolver()).willReturn(contentResolver);
+
+        sections = newArrayList(section, section);
+    }
+
+    @Test
+    public void shouldSaveAllSections() {
+        sectionsDataStore.saveAll(sections);
+
+        verify(contentResolver).bulkInsert(SECTIONS.uri(), new ContentValues[]{SECTION_VALUES, SECTION_VALUES});
+    }
+
+    @Test
+    public void shouldDeleteAllSections(){
+        sectionsDataStore.deleteAll();
+        verify(contentResolver).delete(SECTIONS.uri(), "1=1",null);
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

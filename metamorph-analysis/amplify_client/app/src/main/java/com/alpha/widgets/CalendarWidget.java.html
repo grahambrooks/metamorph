@@ -1,0 +1,317 @@
+<html><head><title>CalendarWidget.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CalendarWidget.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/amplify_client/CalendarWidget.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">29</span>
+    <progress max="100" value="29"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.TextView;
+import com.alpha.date.DateFormats;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class CalendarWidget {
+
+    private static final int VISIBLE_WEEKS = 6;
+
+    private final AtomicLong selectionHolder;
+    private final AtomicLong currentMonthHolder;
+    private final DateArrayAdapter dateAdapter;
+    private final TextView calendarHeaderTitle;
+    private final GridView dateGrid;
+
+    public CalendarWidget(Context context, View container, final CalendarViewListener listener) {
+        long now = System.currentTimeMillis();
+        selectionHolder = new AtomicLong(now);
+        currentMonthHolder = new AtomicLong(now);
+
+        calendarHeaderTitle = (TextView) container.findViewById(R.id.calendar_header_title);
+        calendarHeaderTitle.setText(DateFormats.getCalendarMonthAndYear(midnight(now)));
+
+        View closeButton = container.findViewById(R.id.calendar_close_button);
+        closeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClosePressed();
+            }
+        });
+
+        GridView dayNamesGrid = (GridView) container.findViewById(R.id.day_names_grid);
+        dayNamesGrid.setAdapter(new ArrayAdapter<String>(context, R.layout.calendar_day_of_week, namesOfWeekDays(now)));
+
+        dateAdapter = new DateArrayAdapter(context, now, daysOfMonth(now));
+        dateGrid = (GridView) container.findViewById(R.id.date_grid);
+        dateGrid.setAdapter(dateAdapter);
+
+        dateGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Optional<Long> currentSelection = dateAdapter.getTimeAtPos(position);
+                if (currentSelection.isPresent()) {
+                    long previousSelection = selectionHolder.get();
+                    selectionHolder.set(currentSelection.get());
+                    listener.onDateChange(currentSelection.get(), previousSelection);
+                }
+            }
+        });
+
+        View prevMonthButton = container.findViewById(R.id.calendar_prev_month_button);
+        prevMonthButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPreviousMonth();
+            }
+        });
+
+        View nextMonthButton = container.findViewById(R.id.calendar_next_month_button);
+        nextMonthButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNextMonth();
+            }
+        });
+    }
+
+    public void resetDatesToNow() {
+        long now = System.currentTimeMillis();
+        currentMonthHolder.set(now);
+        selectionHolder.set(now);
+        updateGrid();
+
+        dateGrid.post(new Runnable() {
+            @Override
+            public void run() {
+                int index = dateAdapter.getIndexOfToday();
+                dateGrid.setItemChecked(index, true);
+            }
+        });
+    }
+
+    public Calendar getCurrentMonth() {
+        return midnight(currentMonthHolder.get());
+    }
+
+    public void showPreviousMonth() {
+        updateMonthBy(-1);
+    }
+
+    public void showNextMonth() {
+        updateMonthBy(1);
+    }
+
+    private void updateMonthBy(int offset) {
+        Calendar cal = midnight(currentMonthHolder.get());
+        cal.add(Calendar.MONTH, offset);
+        currentMonthHolder.set(cal.getTimeInMillis());
+        updateGrid();
+    }
+
+    private void updateGrid() {
+        dateGrid.clearChoices();
+        long month = currentMonthHolder.get();
+        calendarHeaderTitle.setText(DateFormats.getCalendarMonthAndYear(midnight(month)));
+        dateAdapter.update(System.currentTimeMillis(), month, daysOfMonth(month));
+    }
+
+    private static String[] namesOfWeekDays(long time) {
+        Calendar cal = midnight(time);
+        String[] dayNames = new String[cal.getActualMaximum(Calendar.DAY_OF_WEEK)];
+        for (int i = 0; i < dayNames.length; i++) {
+            cal.set(Calendar.DAY_OF_WEEK, i + 1);
+            dayNames[i] = DateFormats.getDayOfWeekLetter(cal);
+        }
+        return dayNames;
+    }
+
+    private static Integer[] daysOfMonth(long time) {
+        Calendar cal = midnight(time);
+        int numDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Integer[] days = new Integer[VISIBLE_WEEKS * cal.getActualMaximum(Calendar.DAY_OF_WEEK)];
+        Arrays.fill(days, 0);
+        int offset = firstWeekPadding(time);
+        for (int day = 1; day <= numDaysInMonth; day++) {
+            days[offset++] = day;
+        }
+        return days;
+    }
+
+    private static int firstWeekPadding(long time) {
+        Calendar cal = midnight(time);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        return cal.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
+    private static Calendar midnight(long time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    public interface CalendarViewListener {
+
+        void onDateChange(long newSelectedTime, long oldSelectedTime);
+
+        void onClosePressed();
+    }
+
+    private static class DateArrayAdapter extends ArrayAdapter<Integer> {
+
+        private Calendar today;
+        private Calendar currentMonth;
+
+        public DateArrayAdapter(Context context, long time, Integer[] daysOfMonth) {
+            super(context, R.layout.calendar_date);
+            this.currentMonth = midnight(time);
+            this.today = midnight(time);
+            addAll(daysOfMonth);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) super.getView(position, convertView, parent);
+            Integer dayOfMonth = getItem(position);
+            if (dayOfMonth > 0) {
+                setDayOfMonth(view, dayOfMonth);
+            } else {
+                view.setText(StringUtils.EMPTY);
+                view.setBackgroundColor(resources().getColor(R.color.background_grey));
+            }
+            return view;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            Integer dayOfMonth = getItem(position);
+            if (dayOfMonth > 0) {
+                Calendar date = dateInMonth(dayOfMonth);
+                return !date.after(today);
+            }
+            return false;
+        }
+
+        public Optional<Long> getTimeAtPos(int position) {
+            Integer dayOfMonth = getItem(position);
+            if (dayOfMonth > 0) {
+                Calendar date = dateInMonth(dayOfMonth);
+                date.set(Calendar.HOUR_OF_DAY, 23);
+                date.set(Calendar.MINUTE, 59);
+                date.set(Calendar.SECOND, 59);
+                date.set(Calendar.MILLISECOND, 999);
+                return Optional.of(date.getTimeInMillis());
+            }
+            return Optional.absent();
+        }
+
+        private void setDayOfMonth(TextView view, Integer dayOfMonth) {
+            view.setText(String.valueOf(dayOfMonth));
+
+            Calendar date = dateInMonth(dayOfMonth);
+
+            if (date.after(today)) {
+                view.setTextColor(resources().getColor(R.color.medium_grey));
+            } else {
+                view.setTextColor(resources().getColorStateList(R.color.calendar_date_colors));
+            }
+
+            if (date.equals(today)) {
+                view.setBackgroundResource(R.drawable.calendar_date_today_selector);
+            } else {
+                view.setBackgroundResource(R.drawable.calendar_date_selector);
+            }
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        private Resources resources() {
+            return getContext().getResources();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        private Calendar dateInMonth(Integer dayOfMonth) {
+            Calendar date = midnight(currentMonth.getTimeInMillis());
+            date.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            return date;
+        }
+
+        public void update(long today, long currentMonth, Integer[] daysOfMonth) {
+            this.today = midnight(today);
+            this.currentMonth = midnight(currentMonth);
+            clear(); // remove current
+            addAll(daysOfMonth);
+        }
+
+        public int getIndexOfToday() {
+            int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+            return getPosition(dayOfMonth);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

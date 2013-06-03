@@ -1,0 +1,131 @@
+<html><head><title>AddResponseTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AddResponseTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/AddResponseTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.domains.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.events.ResponseEvent;
+import com.alpha.api.services.events.ResponseFailureEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.eventbus.EventBus;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static com.alpha.api.services.ApiErrorReason.INVALID_RESPONSE_ATTEMPT;
+
+public class AddResponseTask extends SafeAuthenticatedAsyncTask<Response> {
+    private final WebServices webServices;
+    private final Environment environment;
+    private final Long postId;
+    private final List<? extends Response> responses;
+    private final EventBus eventBus;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public AddResponseTask(WebServices webServices, Environment environment, EventBus eventBus,
+                           AnalyticsAgent analyticsAgent,
+                           @Assisted Long postId,
+                           @Assisted List<? extends Response> responses) {
+        super(analyticsAgent);
+        this.webServices = webServices;
+        this.environment = environment;
+        this.eventBus = eventBus;
+        this.postId = postId;
+        this.responses = responses;
+    }
+
+    @Override
+    public Response call() throws InterruptedException {
+        Iterable<JsonObject> jsonObjects = Iterables.transform(responses, new Function<Response, JsonObject>() {
+            @Override
+            public JsonObject apply(@Nullable Response input) {
+                return input.asRequestJsonObject();
+            }
+        });
+
+        JsonArray responseArray = new JsonArray();
+        for (JsonObject jsonObject : jsonObjects) {
+            responseArray.add(jsonObject);
+        }
+
+        ApiRequest request = ApiRequest.createPostRequest(environment.getResponseURI(postId), responseArray.toString());
+        return webServices.post(request).getBodyAs(Response.class);
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Add response failed", e);
+        eventBus.post(new ResponseFailureEvent(e.getApiErrorReason()));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Add response failed", e);
+        eventBus.post(new ResponseFailureEvent(INVALID_RESPONSE_ATTEMPT));
+    }
+
+    @Override
+    protected void onSuccess(Response response) {
+        eventBus.post(new ResponseEvent(response));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

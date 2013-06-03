@@ -1,0 +1,272 @@
+<html><head><title>EventPredicates.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EventPredicates.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/events/amplify_client/EventPredicates.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">36</span>
+    <progress max="100" value="36"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.events;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.services.ControlEvent;
+import com.alpha.api.services.ParticipantStatusChangeEvent;
+import com.google.common.base.Objects;
+import org.apache.commons.lang3.ObjectUtils;
+
+public class EventPredicates {
+    static class LockPredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        LockPredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return newSettings.isLocked() ? ControlEvent.LOCK : ControlEvent.UNLOCK;
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public boolean matches() {
+            return true;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    static class ForceFieldPredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        ForceFieldPredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return newSettings.isForceFieldEngaged() ? ControlEvent.FORCE_FIELD_ENGAGED : ControlEvent.FORCE_FIELD_DISENGAGED;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(originalSettings.isForceFieldEngaged(), newSettings.isForceFieldEngaged());
+        }
+    }
+
+    static class ForceFieldChangePredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        ForceFieldChangePredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return ControlEvent.FORCE_FIELD_WHITELIST_UPDATED;
+        }
+
+        @Override
+        public boolean matches() {
+            return isSame(originalSettings.isForceFieldEngaged(), newSettings.isForceFieldEngaged()) &&
+                    not(Objects.equal(originalSettings.getAllowedApps(), newSettings.getAllowedApps()));
+        }
+    }
+
+    static class CallOnSomeonePredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        public CallOnSomeonePredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return ControlEvent.CALL_ON_SOMEONE;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(originalSettings.getCallOnSomeoneSettings().isCallOnSomeoneEnabled(), newSettings.getCallOnSomeoneSettings().isCallOnSomeoneEnabled())
+                    || (originalSettings.getCallOnSomeoneSettings().isCallOnSomeoneEnabled() && !(originalSettings.getCallOnSomeoneSettings().getCalledOnParticipantId().equals(newSettings.getCallOnSomeoneSettings().getCalledOnParticipantId())))
+                    || isDifferent(originalSettings.getCallOnSomeoneSettings().getPostId(), newSettings.getCallOnSomeoneSettings().getPostId());
+        }
+    }
+
+    static class QuickPollPredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        public QuickPollPredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return ControlEvent.QUICK_POLL;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(originalSettings.getQuickPollSettings().isRunning(), newSettings.getQuickPollSettings().isRunning())
+                    || isDifferent(originalSettings.getQuickPollSettings().getPostId(), newSettings.getQuickPollSettings().getPostId());
+        }
+    }
+
+    static class QuickShortAnswerPredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        public QuickShortAnswerPredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return ControlEvent.QUICK_SHORT_ANSWER;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(originalSettings.getQuickShortAnswerSettings().isRunning(), newSettings.getQuickShortAnswerSettings().isRunning())
+                    || isDifferent(originalSettings.getQuickShortAnswerSettings().getPostId(), newSettings.getQuickShortAnswerSettings().getPostId());
+        }
+    }
+
+    static class CountOffPredicate extends EventPredicate<ControlSettingsModel, ControlEvent> {
+        public CountOffPredicate(ControlSettingsModel originalSettings, ControlSettingsModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ControlEvent event() {
+            return ControlEvent.COUNT_OFF;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(originalSettings.getCountOffSettings().isRunning(), newSettings.getCountOffSettings().isRunning())
+                    || isDifferent(originalSettings.getCountOffSettings().getPostId(), newSettings.getCountOffSettings().getPostId());
+        }
+    }
+
+    public static class HandRaisedStatusPredicate extends EventPredicate<ParticipantPresenceModel, ParticipantStatusChangeEvent> {
+
+        public HandRaisedStatusPredicate(ParticipantPresenceModel originalSettings, ParticipantPresenceModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ParticipantStatusChangeEvent event() {
+            return newSettings.isHandRaised() ? ParticipantStatusChangeEvent.HAND_RAISED : ParticipantStatusChangeEvent.HAND_LOWERED;
+        }
+
+        @Override
+        public boolean matches() {
+            return isDifferent(newSettings.isHandRaised(), originalSettings.isHandRaised());
+        }
+    }
+
+    public static class StudentLocationPredicate extends EventPredicate<ParticipantPresenceModel, ParticipantStatusChangeEvent> {
+
+        public StudentLocationPredicate(ParticipantPresenceModel originalSettings, ParticipantPresenceModel newSettings) {
+            super(originalSettings, newSettings);
+        }
+
+        @Override
+        public ParticipantStatusChangeEvent event() {
+            return ParticipantStatusChangeEvent.LOCATION_CHANGED;
+        }
+
+        @Override
+        public boolean matches() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (isDifferent(newSettings.getCurrentLocation(), originalSettings.getCurrentLocation())) {
+                return true;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            return isDifferent(newSettings.getDisplayName(), originalSettings.getDisplayName());
+
+        }
+    }
+
+    public static abstract class EventPredicate<Model, EventType> {
+        protected final Model originalSettings;
+        protected final Model newSettings;
+
+        protected EventPredicate(Model originalSettings, Model newSettings) {
+            this.originalSettings = originalSettings;
+            this.newSettings = newSettings;
+        }
+
+        public abstract EventType event();
+
+        public abstract boolean matches();
+
+
+        protected boolean isDifferent(boolean one, boolean other) {
+            return not(isSame(one, other));
+        }
+
+        protected boolean isSame(boolean one, boolean other) {
+            return one == other;
+        }
+
+        protected <T extends Object> boolean isSame(T enumValOne, T enumValTwo) {
+            return ObjectUtils.equals(enumValOne, enumValTwo);
+        }
+
+        protected <T extends Object> boolean isDifferent(T enumValOne, T enumValTwo) {
+            return !isSame(enumValOne, enumValTwo);
+        }
+
+        protected boolean not(boolean condition) {
+            return !condition;
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

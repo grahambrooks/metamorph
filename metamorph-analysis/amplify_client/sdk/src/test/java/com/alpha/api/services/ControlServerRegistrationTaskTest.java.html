@@ -1,0 +1,287 @@
+<html><head><title>ControlServerRegistrationTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlServerRegistrationTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/ControlServerRegistrationTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">22</span>
+    <progress max="100" value="22"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import com.alpha.api.callbacks.ControlServerRegistrationCallback;
+import com.alpha.api.messaging.ControlServerRegistrar;
+import com.alpha.api.repository.CoursesDataStore;
+import com.alpha.api.repository.SectionsDataStore;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.AnalyticsAgent;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Collection;
+
+import static com.alpha.api.services.User.Keys.LOGIN_ID;
+import static com.alpha.api.services.User.Keys.NAME;
+import static com.alpha.api.services.User.Keys.PASSWORD;
+import static com.alpha.api.services.User.Keys.ROLE;
+import static com.alpha.api.services.User.Keys.SCHOOL;
+import static com.alpha.api.services.ControlServerRegistrationResult.NO_NAME_PROVIDED;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class ControlServerRegistrationTaskTest {
+
+    public static final Collection<Section> SECTIONS = newArrayList();
+    private ControlServerRegistrationTask task;
+    @Mock
+    private ControlServerRegistrar registrar;
+    @Mock
+    private User user;
+    @Mock
+    private ControlServerRegistrationCallback callback;
+    @Mock
+    private SharedPreferences sharedPreferences;
+    @Mock
+    private Editor editor;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private SectionsDataStore sectionsDataStore;
+    @Mock
+    private CoursesDataStore coursesDataStore;
+
+    private static final String USERS_NAME = "What are you on about Julie";
+    private static final UserRole USER_ROLE = UserRole.TEACHER;
+    private static final String USER_SCHOOL = "mySchool";
+    private static final Section USER_SECTION = new Section(new Course(1L), 10L, "mySection", "amplifydev@amplifydev.net");
+    private static final String USER_LOGIN_ID = "daasda";
+    private static final String USER_PASSWORD = "daasdasfdsdfs";
+    private static final Boolean NETWORK_IS_NOT_CONNECTED = false;
+    private static final boolean NETWORK_IS_CONNECTED = true;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        task = new ControlServerRegistrationTask(user, callback, sharedPreferences, sectionsDataStore, coursesDataStore, registrar, networkConnectivity, analyticsAgent);
+    }
+
+    @Test
+    public void shouldRegisterUserToMessagingBusWhenRegistering() throws Exception {
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        task.call();
+        verify(registrar).registerUser(user);
+    }
+
+    @Test
+    public void shouldNotRegisterUserIfMessagingBusRegistrationFails() throws Exception {
+        doThrow(AmplifyException.class).when(registrar).registerUser(user);
+        task.call();
+        verifyZeroInteractions(sharedPreferences);
+        verifyZeroInteractions(editor);
+    }
+
+    @Test
+    public void serviceShouldRegisterUserToSharedPreference() throws Exception {
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        task.call();
+        verify(editor).putString(LOGIN_ID.name(), USER_LOGIN_ID);
+        verify(editor).putString(PASSWORD.name(), USER_PASSWORD);
+        verify(editor).putString(SCHOOL.name(), USER_SCHOOL);
+        verify(editor).putString(ROLE.name(), USER_ROLE.name());
+        verify(editor).putString(NAME.name(), USERS_NAME);
+        verify(editor).commit();
+    }
+
+    @Test
+    public void shouldSetTheFlagToSpecifyThatUserHasBeenRegistered() throws Exception {
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        task.call();
+        verify(editor).putBoolean(SharedPreferenceUserService.HAS_USER_REGISTERED_KEY, NETWORK_IS_CONNECTED);
+    }
+
+    @Test
+    public void shouldCallSuccessCallbackIfRegistrationWasSuccessful() throws Exception {
+        task.onSuccess(ControlServerRegistrationResult.SUCCESS);
+        verify(callback).onControlServerRegistrationSuccess();
+        verifyNoMoreInteractions(callback);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfNameNotValid() throws Exception {
+        task.onSuccess(ControlServerRegistrationResult.NAME_NOT_VALID);
+        verify(callback).onControlServerRegistrationFailure(ControlServerRegistrationResult.NAME_NOT_VALID);
+        verifyNoMoreInteractions(callback);
+    }
+
+    @Test
+    public void shouldCallFailureCallbackIfNoNameProvided() throws Exception {
+        task.onSuccess(ControlServerRegistrationResult.NO_NAME_PROVIDED);
+        verify(callback).onControlServerRegistrationFailure(ControlServerRegistrationResult.NO_NAME_PROVIDED);
+        verifyNoMoreInteractions(callback);
+    }
+
+    @Test
+    public void shouldCallUserRegistrationFailureCallbackIfExceptionRaised() throws Exception {
+        task.onException(new Exception());
+        verify(callback).onControlServerRegistrationFailure(ControlServerRegistrationResult.REGISTRATION_FAILED);
+        verifyNoMoreInteractions(callback);
+    }
+
+    @Test
+    public void shouldRetrieveAndSaveSectionsListOnRegistration() {
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        task.call();
+        verify(sectionsDataStore).saveAll(SECTIONS);
+    }
+
+    @Test
+    public void shouldSaveCoursesFromUser() {
+        Collection<Course> courses = newArrayList();
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        when(user.createCoursesFromSections()).thenReturn(courses);
+        task.call();
+        verify(coursesDataStore).saveAll(courses);
+    }
+
+    @Test
+    public void shouldDeleteUsersSectionsBeforeRefreshing() {
+        Collection<Course> courses = newArrayList();
+        setupUserMocksForRegisteringUser();
+        when(sharedPreferences.edit()).thenReturn(editor);
+        when(user.createCoursesFromSections()).thenReturn(courses);
+
+        task.call();
+
+        verify(sectionsDataStore).deleteAll();
+    }
+
+    @Test
+    public void registrationShouldFailIfStudentRegisteredWithNullName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.STUDENT, null, NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfStudentRegisteredWithEmptyName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.STUDENT, "", NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfTeacherRegisteredWithNullName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.TEACHER, null, NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfTeacherRegisteredWithEmptyName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.TEACHER, "", NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfTeacherRegisteredWithSpaceOnlyName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.TEACHER, "   ", NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfStudentRegisteredWithSpaceOnlyName() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.STUDENT, "   ", NETWORK_IS_CONNECTED, NO_NAME_PROVIDED);
+    }
+
+    @Test
+    public void registrationShouldFailIfNetworkIsNotConnected() throws Exception {
+        performInvalidRegistrationTestWithValues(UserRole.STUDENT, "Roger", NETWORK_IS_NOT_CONNECTED, ControlServerRegistrationResult.NETWORK_NOT_CONNECTED);
+    }
+
+    @Test
+    public void shouldSaveSectionsDataForStudent() throws Exception {
+        setupUserMocksForRegisteringUser();
+        when(user.getRole()).thenReturn(UserRole.STUDENT);
+        when(sharedPreferences.edit()).thenReturn(editor);
+
+        task.call();
+        verify(sectionsDataStore).saveAll(SECTIONS);
+    }
+
+    private void performInvalidRegistrationTestWithValues(UserRole role, String name,
+                                                          Boolean networkIsConnected,
+                                                          ControlServerRegistrationResult expected) throws Exception {
+        when(user.getRole()).thenReturn(role);
+        when(user.getName()).thenReturn(name);
+        when(networkConnectivity.isConnected()).thenReturn(networkIsConnected);
+        when(networkConnectivity.isNotConnected()).thenReturn(!networkIsConnected);
+        ControlServerRegistrationResult actual = task.call();
+        assertThat(actual, equalTo(expected));
+    }
+
+    private void setupUserMocksForRegisteringUser() {
+        when(user.getXmppUsername()).thenReturn(USER_LOGIN_ID);
+        when(user.getSchoolName()).thenReturn(USER_SCHOOL);
+        when(user.currentSectionName()).thenReturn(USER_SECTION.getName());
+        when(user.getName()).thenReturn(USERS_NAME);
+        when(user.getXmppPassword()).thenReturn(USER_PASSWORD);
+        when(user.getRole()).thenReturn(USER_ROLE);
+        when(user.getSections()).thenReturn(SECTIONS);
+        when(networkConnectivity.isConnected()).thenReturn(true);
+        when(networkConnectivity.isNotConnected()).thenReturn(false);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

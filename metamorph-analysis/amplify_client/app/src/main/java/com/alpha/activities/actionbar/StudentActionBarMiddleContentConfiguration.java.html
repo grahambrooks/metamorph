@@ -1,0 +1,235 @@
+<html><head><title>StudentActionBarMiddleContentConfiguration.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentActionBarMiddleContentConfiguration.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/actionbar/amplify_client/StudentActionBarMiddleContentConfiguration.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionbar;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Context;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.events.ActivityEventListener;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.*;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+public class StudentActionBarMiddleContentConfiguration extends ActivityEventListener {
+
+    private final UserService userService;
+    private final Activity activity;
+    private final EventBus eventBus;
+
+    private TextView sectionName;
+    private TextView inSessionText;
+
+    @Inject
+    public StudentActionBarMiddleContentConfiguration(Context context, UserService userService,
+                                                      Activity activity, EventBus eventBus) {
+        super(context);
+        this.userService = userService;
+        this.activity = activity;
+        this.eventBus = eventBus;
+    }
+
+    protected void configure() {
+        ActionBar actionBar = activity.getActionBar();
+        View joinSessionView = LayoutInflater.from(activity).inflate(R.layout.student_action_bar_middle_component, null);
+
+        actionBar.setCustomView(joinSessionView, new ActionBar.LayoutParams(Gravity.LEFT));
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        initViews(joinSessionView);
+    }
+
+    private void updateState() {
+        boolean isLessonStarted = userService.isSessionOngoingForCurrentSection();
+        inSessionText.setVisibility(isLessonStarted ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void initViews(View view) {
+        sectionName = (TextView) view.findViewById(R.id.student_section_name);
+        inSessionText = (TextView) view.findViewById(R.id.in_session_text);
+    }
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionConnectionDropped(ConnectionClosedEvent event) {
+        updateState();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionEnded(StudentSessionEndedEvent event) {
+        updateState();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionJoin(JoinSessionEvent event) {
+        updateState();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onSessionJoinFailed(JoinSessionFailureEvent event) {
+        updateState();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void onCreate() {
+        super.onCreate();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (userService.isStudent()) {
+            configure();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    @Subscribe</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void userInformationRefreshed(UserInformationRefreshedEvent event) {
+        if (event.requiresRestart()) {
+            return;
+        }
+        setSectionName();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (userService.isStudent()) {
+            updateState();
+            eventBus.register(this);
+            setSectionName();
+        }
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void setSectionName() {
+        sectionName.setText(userService.getCurrentUserSection().getName());
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    public void onPause() {
+        if (userService.isStudent()) {
+            eventBus.unregister(this);
+        }
+        super.onPause();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<html><head><title>AddPostTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AddPostTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/AddPostTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.domains.Post;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.callbacks.PostResponseCallback;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+import static com.alpha.api.http.HttpClient.Response;
+import static com.alpha.api.services.ApiErrorReason.INTERNAL_ERROR;
+
+public class AddPostTask extends SafeAuthenticatedAsyncTask<Post> {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final Post post;
+    private final PostResponseCallback callback;
+    private final WebServices webServices;
+    private final Environment environment;
+
+    @Inject
+    public AddPostTask(WebServices webServices,
+                       Environment environment,
+                       AnalyticsAgent analyticsAgent,
+                       @Assisted Post post,
+                       @Assisted PostResponseCallback callback) {
+        super(analyticsAgent);
+        this.environment = environment;
+        this.post = post;
+        this.callback = callback;
+        this.webServices = webServices;
+    }
+
+    @Override
+    public Post call() {
+        ApiRequest request = ApiRequest.createPostRequest(environment.getPostsURI(), post.asRequestJson());
+        Response response = webServices.post(request);
+        return response.getBodyAs(Post.class);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Add post failed with authentication problem", e);
+        callback.onFailure(e.getApiErrorReason());
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onOtherException(Exception e) {
+        LOG.error("Add post failed", e);
+        callback.onFailure(INTERNAL_ERROR);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void onSuccess(Post post) {
+        callback.onSuccess(post);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

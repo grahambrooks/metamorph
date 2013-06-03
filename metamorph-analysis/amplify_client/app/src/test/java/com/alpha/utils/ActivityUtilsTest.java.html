@@ -1,0 +1,148 @@
+<html><head><title>ActivityUtilsTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ActivityUtilsTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/utils/amplify_client/ActivityUtilsTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.utils;
+
+import android.app.Activity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ActivityUtilsTest {
+
+    public static boolean  hideWindowCalled;
+    private static final int VIEW_LEFT = 100;
+    private static final int VIEW_RIGHT = 200;
+    private static final int VIEW_TOP = 100;
+    private static final int VIEW_BOTTOM = 200;
+
+    @Mock
+    private Activity activity;
+
+    @Mock
+    private View view;
+
+    private final View contentView = new View(Robolectric.application);
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        hideWindowCalled = false;
+
+        ActivityUtils.HideKeyboardOnTouch onTouchEventListener = new ActivityUtils.HideKeyboardOnTouch(activity) {
+            @Override
+            protected void hideWindow() {
+                hideWindowCalled = true;
+            }
+        };
+
+        contentView.setOnTouchListener(onTouchEventListener);
+
+        view = mock(EditText.class);
+        setupView(view, VIEW_LEFT, VIEW_RIGHT, VIEW_TOP, VIEW_BOTTOM);
+        when(activity.getCurrentFocus()).thenReturn(view);
+    }
+
+    @Test
+    public void shouldNotHideSoftInputFromWindowWhenActionUpEventFiredOutsideOfAnNonEditTextField() {
+        view = mock(Button.class);
+
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+        contentView.dispatchTouchEvent(motionEvent);
+
+        assertThat(hideWindowCalled, is(false));
+    }
+
+    @Test
+    public void shouldNotHideSoftInputFromWindowWhenActionDownEventFiredOutsideOfAnEditTextField() {
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        contentView.dispatchTouchEvent(motionEvent);
+
+        assertThat(hideWindowCalled, is(false));
+    }
+
+    @Test
+    public void shouldNotHideSoftInputFromWindowWhenActionUpEventFiredInsideOfAnEditTextField() {
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 50, 50, 0);
+        contentView.dispatchTouchEvent(motionEvent);
+
+        assertThat(hideWindowCalled, is(false));
+    }
+
+    @Test
+    public void shouldHideSoftInputFromWindowWhenActionUpEventFiredOutsideOfAnEditTextField() {
+        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, -10, -10, 0);
+        contentView.dispatchTouchEvent(motionEvent);
+
+        assertThat(hideWindowCalled, is(true));
+    }
+
+    private void setupView(View v, int left, int right, int top, int bottom) {
+        when(v.getLeft()).thenReturn(left);
+        when(v.getRight()).thenReturn(right);
+        when(v.getTop()).thenReturn(top);
+        when(v.getBottom()).thenReturn(bottom);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

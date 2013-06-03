@@ -1,0 +1,310 @@
+<html><head><title>StudentActionBarMiddleContentConfigurationTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentActionBarMiddleContentConfigurationTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/actionbar/amplify_client/StudentActionBarMiddleContentConfigurationTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.actionbar;
+
+import android.app.ActionBar;
+import android.app.Activity;
+import android.widget.TextView;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.UserInformationRefreshedEvent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.shadows.SundaeShadowActionBar;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings("PMD")
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StudentActionBarMiddleContentConfigurationTest {
+
+    private static final String MATH_SECTION_NAME = "Math";
+
+    @Inject
+    StudentActionBarMiddleContentConfiguration actionBarConfiguration;
+
+    @Mock
+    UserService userService;
+
+    @Mock
+    private Student student;
+
+    @Mock
+    private Section section;
+
+    @Mock
+    private EventBus eventBus;
+
+    private Activity activity;
+    private TextView sectionNameTextView;
+
+    @Before
+    @SuppressWarnings("unchecked")
+    public void setup() {
+        initMocks(this);
+
+        when(userService.getUser()).thenReturn(student);
+
+        ActivityTestInjector testInjector = newInjector(this, StudentActionBarMiddleContentConfiguration.class);
+        testInjector.bindInstance(UserService.class, userService);
+        testInjector.bindInstance(Section.class, section);
+        testInjector.bindInstance(EventBus.class, eventBus);
+        testInjector.configureTestSubject();
+
+        activity = testInjector.getCurrentActivityContext();
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldEnableDisplayShowCustom() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_CUSTOM, is(ActionBar.DISPLAY_SHOW_CUSTOM));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableDisplayShowHome() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_HOME, not(ActionBar.DISPLAY_SHOW_HOME));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableDisplayShowTitle() {
+        configureActionBar();
+        assertThat(getActionBar().getDisplayOptions() & ActionBar.DISPLAY_SHOW_TITLE, not(ActionBar.DISPLAY_SHOW_TITLE));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void configureSectionAssociation(boolean associated) {
+        configureActionBar();
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(associated);
+    }
+
+    @Test
+    public void shouldConfigureActionBarOnCreateIfUserIsStudent() {
+        when(userService.isStudent()).thenReturn(true);
+
+        actionBarConfiguration.onCreate();
+
+        assertThat(getActionBar().getCustomView(), not(nullValue()));
+    }
+
+    @Test
+    public void shouldNotConfigureActionBarOnCreateIfUserIsNotStudent() {
+        when(userService.isStudent()).thenReturn(false);
+
+        actionBarConfiguration.onCreate();
+
+        assertThat(getActionBar().getCustomView(), is(nullValue()));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotUpdateStatusOnResumeIfUserIsNotStudent() {
+        when(userService.isStudent()).thenReturn(false);
+
+        actionBarConfiguration.onResume();
+
+        verify(userService, never()).getCurrentUserSection();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldRegisterOnEventBusOnResumeIfStudent() {
+        configureSectionAssociation(true);
+        when(userService.isStudent()).thenReturn(true);
+
+        actionBarConfiguration.onResume();
+
+        verify(eventBus).register(actionBarConfiguration);
+    }
+
+    @Test
+    public void shouldNotRegisterOnEventBusOnResumeIfNotStudent() {
+        when(userService.isStudent()).thenReturn(false);
+
+        actionBarConfiguration.onResume();
+
+        verify(eventBus, never()).register(actionBarConfiguration);
+    }
+
+    @Test
+    public void shouldSetSectionNameOnResumeIfStudent() {
+        configureSectionAssociation(true);
+
+        when(userService.isStudent()).thenReturn(true);
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.getName()).thenReturn(MATH_SECTION_NAME);
+
+        actionBarConfiguration.onResume();
+
+        assertThat(sectionNameTextView.getText().toString(), is(MATH_SECTION_NAME));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotSetSectionNameOnResumeIfNotStudent() {
+        when(userService.isStudent()).thenReturn(false);
+
+        actionBarConfiguration.onResume();
+
+        verify(userService, never()).getCurrentUserSection();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldUnregisterOnEventBusOnPauseIfStudent() {
+        when(userService.isStudent()).thenReturn(true);
+
+        actionBarConfiguration.onPause();
+
+        verify(eventBus).unregister(eq(actionBarConfiguration));
+    }
+
+    @Test
+    public void shouldUnregisterOnEventBusOnPauseIfNotStudent() {
+        when(userService.isStudent()).thenReturn(false);
+
+        actionBarConfiguration.onPause();
+
+        verify(eventBus, never()).unregister(eq(actionBarConfiguration));
+    }
+
+    @Test
+    public void shouldUpdateSectionNameWhenUserInfoRefreshed(){
+        configureActionBar();
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(section.getName()).thenReturn("wat");
+        actionBarConfiguration.userInformationRefreshed(new UserInformationRefreshedEvent(false));
+        assertThat(sectionNameTextView.getText().toString(), is("wat"));
+
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private SundaeShadowActionBar getActionBar() {
+        return (SundaeShadowActionBar) activity.getActionBar();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void configureActionBar() {
+        actionBarConfiguration.configure();
+        sectionNameTextView = (TextView) getActionBar().getCustomView().findViewById(R.id.student_section_name);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

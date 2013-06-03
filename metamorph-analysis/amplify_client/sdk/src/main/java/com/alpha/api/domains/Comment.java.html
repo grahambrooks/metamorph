@@ -1,0 +1,212 @@
+<html><head><title>Comment.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Comment.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/Comment.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.services.User;
+import com.google.gson.JsonObject;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Comment implements Serializable {
+    private final Long id;
+    //TODO: rename to author, or use User
+    private final PostAuthor author;
+    private final String text;
+    private final Date createdOn;
+    private int removed;
+
+    public static final int NOT_REMOVED = 0;
+    public static final int REMOVED = 1;
+
+    protected Comment(Long id, PostAuthor author, String text, Date createdOn) {
+        this.id = id;
+        this.author = author;
+        this.text = text;
+        this.createdOn = createdOn;
+        this.removed = NOT_REMOVED;
+    }
+
+    public Comment(Long id, PostAuthor author, String text) {
+        this(id, author, text, new Date());
+    }
+
+    public Comment(User author, String text) {
+        this(null, author.asAuthor(), text, new Date());
+    }
+
+    public Comment(PostAuthor author, String text) {
+        this(null, author, text, new Date());
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Date getCreatedOn() {
+        return createdOn;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public PostAuthor getAuthor() {
+        return author;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getText() {
+        return text;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asJson() {
+        return AmplifyJsonHelper.toJson(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public ContentValues asValues(Long postId) {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), id);
+        values.put(TableColumn.created_on.name(), createdOn.getTime());
+        values.put(TableColumn.content.name(), asJson());
+        if (postId != null) {
+            values.put(TableColumn.post_id.name(), postId);
+        }
+        return values;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asRequestJson() {
+        return asJsonObject().toString();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private JsonObject asJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("authorId", author.getId());
+        jsonObject.addProperty("text", getText());
+        return jsonObject;
+    }
+
+    public boolean isCreatedAfter(Date since) {
+        return since != null && createdOn.after(since);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isRemoved() {
+        return removed == REMOVED;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

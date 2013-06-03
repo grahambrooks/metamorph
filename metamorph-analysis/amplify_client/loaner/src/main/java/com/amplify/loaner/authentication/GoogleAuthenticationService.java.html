@@ -1,0 +1,318 @@
+<html><head><title>GoogleAuthenticationService.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>GoogleAuthenticationService.java</h1>
+<p>Scanned path = loaner/src/main/java/com/amplify/loaner/authentication/amplify_client/GoogleAuthenticationService.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.loaner.authentication;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.OperationCanceledException;
+import android.app.Activity;
+import android.os.Bundle;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.apache.commons.lang3.StringUtils;
+
+import static com.google.common.collect.Iterables.tryFind;
+import static java.util.Arrays.asList;
+
+@Singleton
+public class GoogleAuthenticationService {
+    public static final String TAG = GoogleAuthenticationService.class.getSimpleName();
+
+    public static final String AUTH_USERINFO_EMAIL = "https://www.googleapis.com/auth/userinfo.email";
+    public static final String AUTH_DRIVE = "https://www.googleapis.com/auth/drive";
+
+    static final String GOOGLE_TOKEN_TYPE = oAuthScopes(AUTH_USERINFO_EMAIL, AUTH_DRIVE);
+    static final String GOOGLE_ACCOUNT_TYPE = "com.google";
+    public static final String EMAIL_REGEX_TEMPLATE = "^(\\S)+@(\\S)*%s$";
+
+    private final AccountManager accountManager;
+
+    @Inject
+    public GoogleAuthenticationService(AccountManager accountManager) {
+        this.accountManager = accountManager;
+    }
+
+    public void authenticate(Activity activity, GoogleAuthenticationCallback callback) {
+        new AuthenticationTask(activity, callback).execute();
+    }
+
+    public void authenticateEmail(Activity activity, GoogleAuthenticationCallback callback, String email) {
+        new ConfirmCredentialsTask(activity, callback, email).execute();
+    }
+
+    class ConfirmCredentialsTask implements AccountManagerCallback<Bundle> {
+
+        private final String email;
+        private final Activity activity;
+        private final GoogleAuthenticationCallback callback;
+
+        public ConfirmCredentialsTask(Activity activity, GoogleAuthenticationCallback callback, String email) {
+            this.email    = email;
+            this.activity = activity;
+            this.callback = callback;
+        }
+
+        public void execute() {
+            accountManager.confirmCredentials(new Account(email, GOOGLE_ACCOUNT_TYPE), null, activity, this, null);
+        }
+
+        @Override
+        public void run(AccountManagerFuture<Bundle> future) {
+            try {
+                Bundle result = future.getResult();
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (isValidCredentials(result)) {
+                    callback.onPasswordValidationSuccess(result);
+                    String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                    requestAuthToken(accountName);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                else if (hasValidAuthToken(result)) {
+                    callback.onAuthenticationSuccess(result, true);
+                }
+                else {
+                    callback.onPasswordValidationFailure(new RuntimeException("Password is invalid"));
+                }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } catch (Exception ex) {
+                callback.onAuthenticationFailure(ex);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+
+        private boolean hasValidAuthToken(Bundle result) {
+            return StringUtils.isNotEmpty(result.getString(AccountManager.KEY_AUTHTOKEN));
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        private void requestAuthToken(String accountName) {
+            accountManager.getAuthToken(new Account(accountName, GOOGLE_ACCOUNT_TYPE), GOOGLE_TOKEN_TYPE, null, activity, this, null);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        private boolean isValidCredentials(Bundle result) {
+            return result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT);
+        }
+    }
+
+    class AuthenticationTask implements AccountManagerCallback<Bundle> {
+
+        private final Activity activity;
+
+        private final GoogleAuthenticationCallback callback;
+
+        AuthenticationTask(Activity activity, GoogleAuthenticationCallback callback) {
+            this.activity = activity;
+            this.callback = callback;
+        }
+
+        public void execute() {
+            accountManager.addAccount(GOOGLE_ACCOUNT_TYPE, GOOGLE_TOKEN_TYPE, null, null, activity, this, null);
+        }
+
+        @Override
+        public void run(AccountManagerFuture<Bundle> future) {
+            try {
+                Bundle result = future.getResult();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                if (accountCreationSucceeded(result)) {
+                    callback.onPasswordValidationSuccess(result);
+                    String accountName = result.getString(AccountManager.KEY_ACCOUNT_NAME);
+                    requestAuthToken(accountName);
+                } else {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+                    callback.onAuthenticationSuccess(result, false);
+                }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            } catch (OperationCanceledException ex) {
+                // Do nothing; cancel action
+            } catch (Exception ex) {
+                callback.onAuthenticationFailure(ex);
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        private void requestAuthToken(String accountName) {
+            accountManager.getAuthToken(new Account(accountName, GOOGLE_ACCOUNT_TYPE), GOOGLE_TOKEN_TYPE, null, activity, this, null);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        private boolean accountCreationSucceeded(Bundle result) {
+            return StringUtils.isEmpty(result.getString(AccountManager.KEY_AUTHTOKEN));
+        }
+
+    }
+
+    public String[] getAccountNames() {
+        String[] accounts;
+        Account[] accountsByType = accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE);
+        accounts = new String[accountsByType.length];
+        for (int i=0; i < accounts.length; i++) {
+            accounts[i] = accountsByType[i].name;
+        }
+        return accounts;
+    }
+
+    Optional<Account> getAccountByName(final String accountName) {
+        Account[] accounts = accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE);
+        return tryFind(asList(accounts), accountByName(accountName));
+    }
+
+    private static Predicate<Account> accountByName(final String accountName) {
+        return new Predicate<Account>() {
+            @Override
+            public boolean apply(Account input) {
+                return input.name.equalsIgnoreCase(accountName);
+            }
+        };
+    }
+    private static String oAuthScopes(String... scopes){
+        return "oauth2:" + Joiner.on(' ').join(scopes);
+    }
+    public static class AuthenticationException extends RuntimeException {
+        private final String errorReason;
+        public AuthenticationException(String message, Exception cause) {
+            super(message, cause);
+
+            this.errorReason = null; //NOPMD
+        }
+
+        public AuthenticationException(String message, String errorReason) {
+            super(message);
+
+            this.errorReason = errorReason;
+        }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public String getErrorReason() {
+            return errorReason;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public interface GoogleAuthenticationCallback {
+
+        void onPasswordValidationSuccess(Bundle result);
+
+        void onAuthenticationSuccess(Bundle result, boolean accountAlreadyExists);
+
+        void onPasswordValidationFailure(Exception result);
+
+        void onAuthenticationFailure(Exception ex);
+
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

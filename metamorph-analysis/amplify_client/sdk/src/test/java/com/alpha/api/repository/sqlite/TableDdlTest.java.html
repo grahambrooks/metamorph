@@ -1,0 +1,89 @@
+<html><head><title>TableDdlTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TableDdlTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/repository/sqlite/amplify_client/TableDdlTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.repository.sqlite;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.runners.Parameterized.Parameters;
+
+@RunWith(Parameterized.class)
+public class TableDdlTest {
+
+    private final Table table;
+    private final String expectedDDL;
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][] {
+                {Table.POSTS, "CREATE TABLE POSTS (_id INTEGER PRIMARY KEY, created_on INTEGER NOT NULL, modified_on INTEGER NOT NULL, section_id INTEGER NOT NULL, post_type TEXT NOT NULL, content TEXT NOT NULL)"},
+                {Table.SECTIONS, "CREATE TABLE SECTIONS (_id INTEGER PRIMARY KEY, name TEXT NOT NULL, course_id INTEGER NOT NULL, group_email TEXT)"},
+                {Table.RESPONSES, "CREATE TABLE RESPONSES (_id INTEGER PRIMARY KEY, created_on INTEGER NOT NULL, post_id INTEGER NOT NULL, learning_element_id INTEGER, question_id INTEGER, selected_option_id INTEGER, response_type TEXT, answer TEXT, author_id INTEGER NOT NULL, quick_poll_answer TEXT, spot_check_answer TEXT, content TEXT NOT NULL)"},
+                {Table.COMMENTS, "CREATE TABLE COMMENTS (_id INTEGER PRIMARY KEY, post_id INTEGER NOT NULL, created_on INTEGER NOT NULL, content TEXT NOT NULL)"},
+                {Table.PARTICIPANTS, "CREATE TABLE PARTICIPANTS (_id INTEGER PRIMARY KEY, section_id INTEGER NOT NULL, participant_id INTEGER NOT NULL, name TEXT NOT NULL)"},
+        });
+    }
+    public TableDdlTest(Table table, String expectedDDL) {
+        this.table = table;
+        this.expectedDDL = expectedDDL;
+    }
+
+    @Test
+    public void shouldCreateCorrectDDLForTable() {
+        assertThat(table.ddl(), is(expectedDDL));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

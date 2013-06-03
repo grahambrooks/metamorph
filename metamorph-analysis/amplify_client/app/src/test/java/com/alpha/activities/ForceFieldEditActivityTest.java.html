@@ -1,0 +1,307 @@
+<html><head><title>ForceFieldEditActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ForceFieldEditActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ForceFieldEditActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.activities.adapters.ForceFieldEditAdapter;
+import com.alpha.activities.dialogs.AppDialogBasedTest;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.domains.SundaeAppInfoComparator;
+import com.alpha.api.domains.SundaePriorityAppInfoComparator;
+import com.alpha.api.repository.ForceFieldDataStore;
+import com.alpha.api.services.ModeratorSessionService;
+import com.alpha.api.services.ModeratorSessionServiceConnection;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.Teacher;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ForceFieldEditActivityTest extends AppDialogBasedTest {
+    @Inject
+    private ForceFieldDataStore forceFieldDataStore;
+    @Mock
+    private Section section;
+    @Inject
+    private UserService userService;
+    @Inject
+    private ForceFieldEditActivity forceFieldEditActivity;
+    @Inject
+    private ModeratorSessionServiceConnection sessionServiceConnection;
+    @Inject
+    private ModeratorSessionService moderatorSessionService;
+    @Inject
+    private ForceFieldEditAdapter adapter;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private EventBus eventBus;
+
+    private SundaeAppInfo lockedAppOne;
+    private SundaeAppInfo lockedAppTwo;
+
+    public static final String STUDENT_APPS_NAME = "StudentInstalledApps";
+    public static final String STUDENT_APPS_PACKAGE = "com.amplify.appcontrol.student_installed_apps";
+    public static final String STUDENT_APPS_LABEL = "All other apps";
+    private static final SundaeAppInfo SUNDAE_APP_ONE_INFO = new SundaeAppInfo(APP_ONE_NAME, APP_ONE_PACKAGE_NAME, false, APP_LABEL_1);
+    private static final SundaeAppInfo SUNDAE_APP_TWO_INFO = new SundaeAppInfo(APP_TWO_NAME, APP_TWO_PACKAGE_NAME, false, APP_LABEL_2);
+
+    @Before
+    @Override
+    public void setUp() {
+        initMocks(this);
+        super.setUp();
+        ActivityTestInjector<ForceFieldEditActivity> activityTestInjector = new ActivityTestInjector<ForceFieldEditActivity>(this, ForceFieldEditActivity.class);
+        activityTestInjector.bindInstance(EventBus.class, eventBus);
+        activityTestInjector.configureTestSubject();
+        lockedAppOne = new SundaeAppInfo(APP_ONE_NAME, APP_ONE_PACKAGE_NAME, true, APP_LABEL_1);
+        lockedAppTwo = new SundaeAppInfo(APP_TWO_NAME, APP_TWO_PACKAGE_NAME, true, APP_LABEL_2);
+
+        given(userService.getUser()).willReturn(teacher);
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(sessionServiceConnection.getService()).willReturn(moderatorSessionService);
+    }
+
+    @Test
+    public void shouldDisplayNoAppsAllowedIfAllAreLocked() {
+        when(adapter.getWhitelistAppsCount()).thenReturn(0);
+        forceFieldEditActivity.onCreate(null);
+        TextView textView = (TextView) forceFieldEditActivity.findViewById(R.id.force_field_allowed_apps_count);
+        assertThat(textView.getText().toString(), is("0 Apps Allowed"));
+    }
+
+    @Test
+    public void shouldDisplayTextSpecifyingAppropriateNumberOfAppsAllowed() {
+        when(adapter.getWhitelistAppsCount()).thenReturn(2);
+        forceFieldEditActivity.onCreate(null);
+        TextView textView = (TextView) forceFieldEditActivity.findViewById(R.id.force_field_allowed_apps_count);
+        assertThat(textView.getText().toString(), is("2 Apps Allowed"));
+    }
+
+    @Test
+    public void shouldUpdateNumberOfAllowedAppsWhenNotifiedOfChange() {
+        when(adapter.getWhitelistAppsCount()).thenReturn(0);
+        forceFieldEditActivity.onCreate(null);
+        when(adapter.getWhitelistAppsCount()).thenReturn(2);
+        forceFieldEditActivity.notifyAdapterChange();
+        TextView textView = (TextView) forceFieldEditActivity.findViewById(R.id.force_field_allowed_apps_count);
+        assertThat(textView.getText().toString(), is("2 Apps Allowed"));
+    }
+
+    @Test
+    public void shouldSetItselfAsAListenerOnAdapter() {
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter).setAdapterChangeListener(forceFieldEditActivity);
+    }
+
+    @Test
+    public void shouldAddWhitelistedAppsAsSpecifiedByDataStoreToAdapter() {
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(forceFieldDataStore.getWhitelistApps(section)).thenReturn(Sets.newHashSet(SUNDAE_APP_ONE_INFO, SUNDAE_APP_TWO_INFO));
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO, SUNDAE_APP_TWO_INFO)));
+    }
+
+    @Test
+    public void shouldAddAppsAsLockedToAdapterIfNoAppsOnWhiteList() {
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(forceFieldDataStore.getWhitelistApps(section)).thenReturn(Collections.<SundaeAppInfo>emptySet());
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter).addAll(argThat(matchAgainst(lockedAppOne, lockedAppTwo)));
+    }
+
+    @Test
+    public void shouldAddOnlyTheAppsOnTheWhiteListAsLockedToTheAdapter() {
+        when(userService.getCurrentUserSection()).thenReturn(section);
+        when(forceFieldDataStore.getWhitelistApps(section)).thenReturn(Sets.newHashSet(SUNDAE_APP_ONE_INFO));
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter).addAll(argThat(matchAgainst(SUNDAE_APP_ONE_INFO, lockedAppTwo)));
+    }
+
+    @Test
+    public void shouldFinishTheActivityWhenForceFieldTaskFinished() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.listeners.onForceFieldTaskFinishedEvent(null);
+        assertThat(shadowOf(forceFieldEditActivity).isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldNotDisplayDuplicateAppsIfActivityReshown() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.finish();
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter, times(2)).addAll(argThat(matchAgainst(lockedAppOne, lockedAppTwo)));
+    }
+
+    @Test
+    public void shouldSortAppsInDrawer() {
+        forceFieldEditActivity.onCreate(null);
+        verify(adapter).sort(isA(SundaeAppInfoComparator.class));
+    }
+
+    @Test
+    public void shouldOpenConnectionToSessionServiceOnStart() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.onStart();
+        verify(sessionServiceConnection).open();
+    }
+
+    @Test
+    public void shouldCloseConnectionOnFinish() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.onStart();
+        forceFieldEditActivity.onStop();
+        verify(sessionServiceConnection).close();
+    }
+
+    @Test
+    public void shouldClearAdapterToFreeDrawableMemoryOnFinish() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.onStart();
+        reset(adapter);
+
+        forceFieldEditActivity.onStop();
+
+        verify(adapter).clear();
+    }
+
+    @Test
+    public void shouldRegisterEventBusOnResume() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.onResume();
+
+        verify(eventBus).register(forceFieldEditActivity.listeners);
+    }
+
+    @Test
+    public void shouldUnregisterEventBusOnPause() {
+        forceFieldEditActivity.onCreate(null);
+        forceFieldEditActivity.onPause();
+
+        verify(eventBus).unregister(forceFieldEditActivity.listeners);
+    }
+
+    @Test
+    public void shouldSendForceFieldWhitelistOnClickingDone() {
+        forceFieldEditActivity.onCreate(null);
+        ProgressBarViewGroup applyButtonProgressBar = (ProgressBarViewGroup) forceFieldEditActivity.findViewById(R.id.force_field_edit_apply_button_progress_bar);
+        Set<SundaeAppInfo> whitelist = Sets.newHashSet(SUNDAE_APP_ONE_INFO);
+        when(adapter.getAllItems()).thenReturn(whitelist);
+        shadowOf(forceFieldEditActivity).findViewById(R.id.force_field_edit_apply_button).performClick();
+        verify(moderatorSessionService).engageForceField(whitelist, teacher, section, applyButtonProgressBar.getProgressBar());
+    }
+
+    @Test
+    public void shouldAddFakeStudentInstalledAppsInfoToAdapterOnCreate() {
+        forceFieldEditActivity.onCreate(null);
+
+        ArgumentCaptor<SundaeAppInfo> appInfoCaptor = ArgumentCaptor.forClass(SundaeAppInfo.class);
+        verify(adapter).add(appInfoCaptor.capture());
+        SundaeAppInfo appInfo = appInfoCaptor.getValue();
+
+        assertThat(appInfo.getAppPackage(), is(STUDENT_APPS_PACKAGE));
+        assertThat(appInfo.getAppName(), is(STUDENT_APPS_NAME));
+        assertThat(appInfo.getAppLabel(), is(STUDENT_APPS_LABEL));
+    }
+
+    @Test
+    public void shouldSortAppInfoWithPriorityOnCreate() {
+        forceFieldEditActivity.onCreate(null);
+
+        verify(adapter).sort(Matchers.any(SundaePriorityAppInfoComparator.class));
+    }
+
+    @Test
+    public void shouldDisableApplyButtonWhenClicked() {
+        forceFieldEditActivity.onCreate(null);
+
+        View applyButton = forceFieldEditActivity.findViewById(R.id.force_field_edit_apply_button);
+        applyButton.performClick();
+
+        assertThat(applyButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldReEnableApplyButtonWhenForceFieldEngagedTaskIsDone() {
+        forceFieldEditActivity.onCreate(null);
+
+        forceFieldEditActivity.listeners.onForceFieldTaskFinishedEvent(null);
+
+        View applyButton = forceFieldEditActivity.findViewById(R.id.force_field_edit_apply_button);
+        assertThat(applyButton.isEnabled(), is(true));
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

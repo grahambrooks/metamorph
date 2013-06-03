@@ -1,0 +1,291 @@
+<html><head><title>XmppSessionTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppSessionTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/messaging/xmpp/amplify_client/XmppSessionTest.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import android.net.wifi.WifiInfo;
+import com.alpha.api.messaging.xmpp.listeners.BasePacketListener;
+import com.alpha.api.messaging.xmpp.listeners.ConnectionCloseListener;
+import com.alpha.api.messaging.xmpp.listeners.ControlMessageListener;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.ClassSession;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.google.common.eventbus.EventBus;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class XmppSessionTest {
+    @Mock
+    AmplifyXmppConnection xmppConnection;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private MultiUserChat multiUserChat;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+
+    XmppSession session;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        given(userService.session()).willReturn(classSession);
+        session = new XmppSession(xmppConnection, mock(MultiUserChatAdapter.class), userService, mock(EventBus.class), networkConnectivity) {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected boolean isSessionToBeRecreated() {
+                return false;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            protected void addListeners(String roomName) {
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+            @Override
+            protected void onEndSession() {
+                super.endSession();
+            }
+        };
+    }
+
+    @Test
+    public void shouldRegisterConnectionListenerToConnectionWhenAdded() throws Exception {
+        session.addConnectionListenerIfNecessary();
+
+        verify(xmppConnection).addConnectionListener(isA(ConnectionCloseListener.class));
+    }
+
+    @Test
+    public void shouldNotRemoveConnectionListenerWhenCleared() throws Exception {
+        session.addConnectionListenerIfNecessary();
+
+        session.removeSessionListeners();
+        verify(xmppConnection, never()).removeConnectionListener(Mockito.any(ConnectionListener.class));
+    }
+
+    @Test
+    public void shouldRegisterListenerToConnectionWhenAdded() throws Exception {
+        PacketFilter filter = mock(PacketFilter.class);
+        BasePacketListener listener = createPacketListener(filter);
+        session.addSessionListeners(listener);
+
+        verify(xmppConnection).addPacketListener(eq(listener), eq(filter));
+    }
+
+    @Test
+    public void shouldRegisterListenerExtendingBaseListenerToConnectionWhenAdded() throws Exception {
+        ControlMessageListener controlMessageListener = mock(ControlMessageListener.class);
+        session.addSessionListeners(controlMessageListener);
+
+        verify(xmppConnection).addPacketListener(eq(controlMessageListener), (PacketFilter) anyObject());
+    }
+
+    @Test
+    public void shouldRemoveListenerExtendingBaseListenerWhenCleared() throws Exception {
+        ControlMessageListener controlMessageListener = mock(ControlMessageListener.class);
+        session.addSessionListeners(controlMessageListener);
+
+        session.removeSessionListeners();
+        verify(xmppConnection, atLeastOnce()).removePacketListener(eq(controlMessageListener));
+    }
+
+    @Test
+    public void shouldRemoveSpecificListenerWhenMultipleListenersAreRegistered() throws Exception {
+        session.addSessionListeners(createPacketListener(mock(PacketFilter.class)));
+
+        BasePacketListener listener = createPacketListener(mock(PacketFilter.class));
+        session.addSessionListeners(listener);
+
+        session.removeSessionListeners();
+        verify(xmppConnection, atLeastOnce()).removePacketListener(eq(listener));
+    }
+
+    @Test
+    public void shouldRemoveAllRegisteredListeners() throws Exception {
+        session.addSessionListeners(createPacketListener(mock(PacketFilter.class)),
+                createPacketListener(mock(PacketFilter.class)));
+
+        session.removeSessionListeners();
+        verify(xmppConnection, atLeast(2)).removePacketListener(isA(BasePacketListener.class));
+    }
+
+    @Test
+    public void shouldRemoveListenersOnCleanUp() throws Exception {
+        BasePacketListener listener = createPacketListener(mock(PacketFilter.class));
+        session.addSessionListeners(listener);
+
+        session.removeSessionListeners();
+        verify(xmppConnection).removePacketListener(eq(listener));
+    }
+
+    @Test
+    public void shouldClearListenersWhenCleaningUp() throws XMPPException {
+        BasePacketListener listener = createPacketListener(mock(PacketFilter.class));
+        session.addSessionListeners(listener);
+
+        session.removeSessionListeners();
+        assertThat(session.packetListeners.size(), is(0));
+    }
+
+    @Test
+    public void shouldSetClassSessionStatusWhenSessionEnded() throws Exception {
+        session.multiUserChat = mock(MultiUserChat.class);
+        session.endSession();
+
+        verify(classSession).end();
+    }
+
+    @Test
+    public void shouldClearMultiUserChatObjectWhenSessionEnded() throws Exception {
+        session.multiUserChat = mock(MultiUserChat.class);
+        session.endSession();
+
+        assertThat(session.multiUserChat, nullValue());
+    }
+
+    @Test
+    public void shouldShutdownSession() throws XMPPException {
+        when(xmppConnection.isConnected()).thenReturn(true);
+        session.multiUserChat = mock(MultiUserChat.class);
+        when(session.multiUserChat.isJoined()).thenReturn(true);
+
+        session.shutdown();
+
+        verify(xmppConnection).disconnect();
+        verify(session.multiUserChat).destroy(XmppSession.ENDING_SESSION_MSG, null);
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldNotCloseXmppConnectionIfItIsNotConnected() {
+        when(xmppConnection.isConnected()).thenReturn(false);
+        session.shutdown();
+        verify(xmppConnection, never()).disconnect();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void joinRoomShouldLockWifi() throws Exception{
+        User user = mock(User.class);
+        WifiInfo wifiInfo = mock(WifiInfo.class);
+        session.multiUserChat = mock(MultiUserChat.class);
+
+        when(user.getId()).thenReturn(0L);
+        when(networkConnectivity.getWifiConnectionInfo()).thenReturn(wifiInfo);
+
+        session.joinRoom(user, false);
+
+        verify(networkConnectivity).lockWifi();
+
+    }
+
+    @Test
+    public void endSessionShouldUnlockWifiLock(){
+        session.multiUserChat = mock(MultiUserChat.class);
+
+        session.endSession();
+
+        verify(networkConnectivity).unlockWifi();
+    }
+    private BasePacketListener createPacketListener(PacketFilter packetFilter) {
+        BasePacketListener listener = mock(BasePacketListener.class);
+        given(listener.allFilters()).willReturn(packetFilter);
+        return listener;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

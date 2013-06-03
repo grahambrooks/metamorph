@@ -1,0 +1,79 @@
+<html><head><title>TouchInfo.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TouchInfo.java</h1>
+<p>Scanned path = app/gen-external-apklibs/wei.mark_floating-window_1.0-SNAPSHOT/src/wei/mark/standout/ui/amplify_client/TouchInfo.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package wei.mark.standout.ui;
+
+/**
+ * This class holds temporal touch and gesture information. Mainly used to hold
+ * temporary data for onTouchEvent(MotionEvent).
+ * 
+ * @author Mark Wei <markwei@gmail.com>
+ * 
+ */
+public class TouchInfo {
+	/**
+	 * The state of the window.
+	 */
+	public int firstX, firstY, lastX, lastY;
+	public double dist, scale, firstWidth, firstHeight;
+	public float ratio;
+
+	/**
+	 * Whether we're past the move threshold already.
+	 */
+	public boolean moving;
+
+	@Override
+	public String toString() {
+		return String
+				.format("WindowTouchInfo { firstX=%d, firstY=%d,lastX=%d, lastY=%d, firstWidth=%d, firstHeight=%d }",
+						firstX, firstY, lastX, lastY, firstWidth, firstHeight);
+	}
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

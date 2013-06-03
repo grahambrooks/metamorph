@@ -1,0 +1,184 @@
+<html><head><title>UpdateActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><h1>UpdateActivity.java</h1>
+<p>Scanned path = loaner/gen-external-apklibs/net.hockeyapp.android_HockeySDK_2.0.2/src/net/hockeyapp/android/amplify_client/UpdateActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a><table>
+<tr><th class='duplicate'>amplify_client : UpdateActivity.java</th><th class='duplicate'>amplify_client : UpdateActivity.java</th></tr><tr><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+import android.app.ListActivity;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+public class UpdateActivity extends ListActivity implements UpdateActivityInterface, UpdateInfoListener {
+  private DownloadFileTask downloadTask;
+  private UpdateInfoAdapter adapter;
+  
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setTitle("App Update");
+    setContentView(getLayout());
+
+    adapter = new UpdateInfoAdapter(this, getIntent().getStringExtra("json"), this);
+    getListView().setDivider(null);
+    setListAdapter(adapter);
+    configureView();
+    
+    downloadTask = (DownloadFileTask)getLastNonConfigurationInstance();
+    if (downloadTask != null) {
+      downloadTask.attach(this);
+    }
+  }
+  
+  protected void configureView() {
+    TextView versionLabel = (TextView)findViewById(R.id.version_label);
+    versionLabel.setText("Version " + adapter.getVersionString() + "\n" + adapter.getFileInfoString());
+  }
+
+  @Override
+  public Object onRetainNonConfigurationInstance() {
+    if (downloadTask != null) {
+      downloadTask.detach();
+    }
+    return downloadTask;
+  }
+  
+  public void onClickUpdate(View v) {
+    startDownloadTask();
+    v.setEnabled(false);
+  }
+  
+  private void startDownloadTask() {
+    final String url = getIntent().getStringExtra("url");
+    downloadTask = new DownloadFileTask(this, url, new DownloadFileListener() {
+      public void downloadSuccessful(DownloadFileTask task) {
+        enableUpdateButton();
+      }
+      
+      public void downloadFailed(DownloadFileTask task, Boolean userWantsRetry) {
+        if (userWantsRetry) {
+          startDownloadTask();
+        }
+        else {
+          enableUpdateButton();
+        }
+      }
+    });
+    downloadTask.execute();
+  }
+  
+  public void enableUpdateButton() {
+    View updateButton = findViewById(R.id.update_button);
+    updateButton.setEnabled(true);
+  }
+  
+  public int getCurrentVersionCode() {
+    int currentVersionCode = -1;
+    
+    try {
+      currentVersionCode = getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_META_DATA).versionCode;
+    }
+    catch (NameNotFoundException e) {
+    }
+    
+    return currentVersionCode;
+  }
+  
+  public int getLayout() {
+    return R.layout.update_view;
+  }
+}</code></pre></td><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+import android.app.ListActivity;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
+public class UpdateActivity extends ListActivity implements UpdateActivityInterface, UpdateInfoListener {
+  private DownloadFileTask downloadTask;
+  private UpdateInfoAdapter adapter;
+  
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setTitle("App Update");
+    setContentView(getLayout());
+
+    adapter = new UpdateInfoAdapter(this, getIntent().getStringExtra("json"), this);
+    getListView().setDivider(null);
+    setListAdapter(adapter);
+    configureView();
+    
+    downloadTask = (DownloadFileTask)getLastNonConfigurationInstance();
+    if (downloadTask != null) {
+      downloadTask.attach(this);
+    }
+  }
+  
+  protected void configureView() {
+    TextView versionLabel = (TextView)findViewById(R.id.version_label);
+    versionLabel.setText("Version " + adapter.getVersionString() + "\n" + adapter.getFileInfoString());
+  }
+
+  @Override
+  public Object onRetainNonConfigurationInstance() {
+    if (downloadTask != null) {
+      downloadTask.detach();
+    }
+    return downloadTask;
+  }
+  
+  public void onClickUpdate(View v) {
+    startDownloadTask();
+    v.setEnabled(false);
+  }
+  
+  private void startDownloadTask() {
+    final String url = getIntent().getStringExtra("url");
+    downloadTask = new DownloadFileTask(this, url, new DownloadFileListener() {
+      public void downloadSuccessful(DownloadFileTask task) {
+        enableUpdateButton();
+      }
+      
+      public void downloadFailed(DownloadFileTask task, Boolean userWantsRetry) {
+        if (userWantsRetry) {
+          startDownloadTask();
+        }
+        else {
+          enableUpdateButton();
+        }
+      }
+    });
+    downloadTask.execute();
+  }
+  
+  public void enableUpdateButton() {
+    View updateButton = findViewById(R.id.update_button);
+    updateButton.setEnabled(true);
+  }
+  
+  public int getCurrentVersionCode() {
+    int currentVersionCode = -1;
+    
+    try {
+      currentVersionCode = getPackageManager().getPackageInfo(this.getPackageName(), PackageManager.GET_META_DATA).versionCode;
+    }
+    catch (NameNotFoundException e) {
+    }
+    
+    return currentVersionCode;
+  }
+  
+  public int getLayout() {
+    return R.layout.update_view;
+  }
+}</code></pre></td></tr></body>
+</html>

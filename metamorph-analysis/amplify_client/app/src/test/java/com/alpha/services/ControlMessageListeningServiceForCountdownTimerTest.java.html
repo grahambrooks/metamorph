@@ -1,0 +1,229 @@
+<html><head><title>ControlMessageListeningServiceForCountdownTimerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlMessageListeningServiceForCountdownTimerTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/services/amplify_client/ControlMessageListeningServiceForCountdownTimerTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.CountdownTimerEvent;
+import com.alpha.api.services.events.TimeTickerEndEvent;
+import com.alpha.api.services.factory.SectionTaskFactory;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.AndroidApplicationUtils;
+import com.alpha.utils.TimeTickerProvider;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+@SuppressWarnings({"PMD.TooManyFields", "PMD.CouplingBetweenObjects"})
+public class ControlMessageListeningServiceForCountdownTimerTest {
+    @Inject
+    private ControlMessageListeningService service;
+    @Inject
+    private UserService userService;
+    @Mock
+    private Section section;
+    @Mock
+    private AndroidApplicationUtils applicationUtils;
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+    @Inject
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+    @Mock
+    private User user;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private SectionTaskFactory sectionTaskFactory;
+    @Mock
+    private TimeTickerProvider timeTickerProvider;
+    @Mock
+    private PostsDataStore postsDataStore;
+    @Mock
+    private PostService postService;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ClassSession classSession;
+
+    private CountdownTimerSettings countdownTimerSettings;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        newInjector(this, ControlMessageListeningService.class)
+                .bindInstance(AndroidApplicationUtils.class, applicationUtils)
+                .bindInstance(ModeratorSessionService.class, moderatorSessionService)
+                .bindInstance(SectionTaskFactory.class, sectionTaskFactory)
+                .bindInstance(TimeTickerProvider.class, timeTickerProvider)
+                .bindInstance(PostsDataStore.class, postsDataStore)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(EventBus.class, eventBus)
+                .configureTestSubject();
+
+
+        countdownTimerSettings = new CountdownTimerSettings();
+        countdownTimerSettings.setRunning(false);
+
+        given(userService.getCurrentUserSection()).willReturn(section);
+        given(userService.session()).willReturn(classSession);
+        given(moderatorSessionServiceConnection.getService()).willReturn(moderatorSessionService);
+        given(userService.isStudent()).willReturn(true);
+        given(userService.getUser()).willReturn(user);
+        given(user.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(user.getRole()).willReturn(UserRole.STUDENT);
+
+        given(classSession.getCountdownTimerSettings()).willReturn(countdownTimerSettings);
+    }
+
+    @Test
+    public void shouldSetTimerToBeNotRunningOnFinishEvent() {
+        countdownTimerSettings.setRunning(true);
+        when(classSession.getCountdownTimerSettings()).thenReturn(countdownTimerSettings);
+
+        service.onCountdownTimerFinish(new TimeTickerEndEvent(10000L));
+
+        assertThat(classSession.getCountdownTimerSettings().isRunning(), is(false));
+    }
+
+    @Test
+    public void shouldStartCountdownTimer() {
+        prepareCountdownTimerTeacherSettings(countdownTimerSettings);
+
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettings);
+        service.onCountdownTimerEvent(event);
+
+        assertThat(
+                Robolectric.getShadowApplication().getNextStartedService().getComponent().getClassName(),
+                is("com.alpha.activities.CountdownFloatingWindow$CountdownStudentFloatingWindow"));
+    }
+
+    @Test
+    public void shouldStartTimeTickerWithTheAbsoluteTime() {
+        prepareCountdownTimerTeacherSettings(countdownTimerSettings);
+
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettings);
+        service.onCountdownTimerEvent(event);
+
+        verify(timeTickerProvider).startWithMillis(anyLong());
+    }
+
+    private void prepareCountdownTimerTeacherSettings(CountdownTimerSettings countdownTimerSettings) {
+        countdownTimerSettings.setCountdownTime(5);
+        countdownTimerSettings.setRunning(true);
+        countdownTimerSettings.convertToAbsoluteExpireTime();
+    }
+
+    @Test
+    public void shouldEndCountdownTimer() {
+        CountdownTimerSettings localTabletCountdownTimerSettings = new CountdownTimerSettings();
+        localTabletCountdownTimerSettings.setRunning(true);
+        when(userService.session()).thenReturn(classSession);
+        when(classSession.getCountdownTimerSettings()).thenReturn(localTabletCountdownTimerSettings);
+        when(userService.isStudent()).thenReturn(true);
+        countdownTimerSettings.setRunning(false);
+
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettings);
+        service.onCountdownTimerEvent(event);
+
+        verify(timeTickerProvider).cancel();
+    }
+
+    @Test
+    public void shouldSaveCountdownTimerSettingsToClassSession() {
+        CountdownTimerSettings countdownTimerSettingsFromTeacher = new CountdownTimerSettings();
+        prepareCountdownTimerTeacherSettings(countdownTimerSettingsFromTeacher);
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettingsFromTeacher);
+
+        service.onCountdownTimerEvent(event);
+
+        verify(classSession).saveCountdownTimerSettings(countdownTimerSettingsFromTeacher);
+    }
+
+    @Test
+    public void shouldNotStartTimerForStudentsIfTheMillisToExpireIsLessThanZero() {
+        CountdownTimerSettings countdownTimerSettingsFromTeacher = mock(CountdownTimerSettings.class);
+        when(countdownTimerSettingsFromTeacher.getMillisToExpire()).thenReturn(-4244728L);
+        when(countdownTimerSettingsFromTeacher.isRunning()).thenReturn(true);
+        prepareCountdownTimerTeacherSettings(countdownTimerSettingsFromTeacher);
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettingsFromTeacher);
+
+        service.onCountdownTimerEvent(event);
+
+        verify(timeTickerProvider, never()).startWithMillis(anyLong());
+    }
+
+    @Test
+    public void shouldNotStartTimerForStudentsIfTheMillisToExpireIsEqualToZero() {
+        CountdownTimerSettings countdownTimerSettingsFromTeacher = mock(CountdownTimerSettings.class);
+        when(countdownTimerSettingsFromTeacher.getMillisToExpire()).thenReturn(0L);
+        when(countdownTimerSettingsFromTeacher.isRunning()).thenReturn(true);
+        prepareCountdownTimerTeacherSettings(countdownTimerSettingsFromTeacher);
+        CountdownTimerEvent event = new CountdownTimerEvent(countdownTimerSettingsFromTeacher);
+
+        service.onCountdownTimerEvent(event);
+
+        verify(timeTickerProvider, never()).startWithMillis(anyLong());
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

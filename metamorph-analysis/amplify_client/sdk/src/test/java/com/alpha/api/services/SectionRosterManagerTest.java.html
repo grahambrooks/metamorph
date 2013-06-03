@@ -1,0 +1,143 @@
+<html><head><title>SectionRosterManagerTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionRosterManagerTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/SectionRosterManagerTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.SectionUser;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.ParticipantDataStore;
+import com.alpha.api.services.web.WebServices;
+import com.google.common.collect.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class SectionRosterManagerTest {
+
+    private SectionRosterManager sectionRosterManager;
+    @Mock
+    private Environment environment;
+    @Mock
+    private WebServices webservices;
+    @Mock
+    private ParticipantDataStore participantDataStore;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private APIRequestBuilder apiRequestBuilder;
+    @Mock
+    private ApiRequest apiRequest;
+    @Mock
+    private Response response;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        sectionRosterManager = new SectionRosterManager(environment,webservices, participantDataStore, apiRequestBuilder);
+        when(apiRequestBuilder.getRequest(anyString())).thenReturn(apiRequestBuilder);
+        when(apiRequestBuilder.build()).thenReturn(apiRequest);
+        when(webservices.get(any(ApiRequest.class))).thenReturn(response);
+        when(response.getBodyAs(SectionUser.LIST_TYPE)).thenReturn(Collections.emptyList());
+
+    }
+
+    @Test
+    public void shouldMakeRequestToWebServicesToRetrieveNewRosterInformation(){
+        when(teacher.getId()).thenReturn(2L);
+        when(environment.getSectionUsersURI(2L)).thenReturn("uri");
+        when(apiRequestBuilder.getRequest("uri")).thenReturn(apiRequestBuilder);
+
+        sectionRosterManager.updateUsersSectionParticipants(teacher);
+        verify(webservices).get(apiRequest);
+    }
+
+    @Test
+    public void shouldReplaceParticipantsInTheDataStoreWithSectionInformationReturnedFromWebServices(){
+        List<SectionUser> sectionUsers = Lists.newArrayList();
+        when(response.getBodyAs(SectionUser.LIST_TYPE)).thenReturn(sectionUsers);
+        sectionRosterManager.updateUsersSectionParticipants(teacher);
+        verify(participantDataStore).replaceAll(sectionUsers);
+    }
+
+    @Test
+    public void shouldLoadNewSectionParticipantsIntoTeachersSections(){
+        SectionUser sectionUserOne = mock(SectionUser.class);
+        SectionUser sectionUserTwo = mock(SectionUser.class);
+        Section sectionOne = mock(Section.class);
+        Section sectionTwo = mock(Section.class);
+        List<SectionUser> sectionUsers = Lists.newArrayList(sectionUserOne, sectionUserTwo);
+        List<Participant> sectionOneParticipants = mock(List.class);
+        List<Participant> sectionTwoParticipants = mock(List.class);
+
+        when(response.getBodyAs(SectionUser.LIST_TYPE)).thenReturn(sectionUsers);
+        when(teacher.getSectionWithId(anyLong())).thenReturn(sectionOne, sectionTwo);
+        when(sectionUserOne.getStudents()).thenReturn(sectionOneParticipants);
+        when(sectionUserTwo.getStudents()).thenReturn(sectionTwoParticipants);
+        sectionRosterManager.updateUsersSectionParticipants(teacher);
+        verify(sectionOne).loadParticipantsFromStudents(sectionOneParticipants);
+        verify(sectionTwo).loadParticipantsFromStudents(sectionTwoParticipants);
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

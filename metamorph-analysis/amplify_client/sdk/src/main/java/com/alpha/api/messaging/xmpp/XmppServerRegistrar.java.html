@@ -1,0 +1,94 @@
+<html><head><title>XmppServerRegistrar.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppServerRegistrar.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/amplify_client/XmppServerRegistrar.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import com.alpha.api.messaging.ControlServerRegistrar;
+import com.alpha.api.services.User;
+import com.alpha.api.utilities.AmplifyException;
+import com.alpha.logging.LogUtils;
+import com.google.inject.Inject;
+import org.jivesoftware.smack.XMPPException;
+import org.slf4j.Logger;
+
+public class XmppServerRegistrar implements ControlServerRegistrar {
+
+    public static final String NAME = "name";
+    public static final Logger LOGGER = LogUtils.getLogger();
+    private final AmplifyXmppConnection xmppConnection;
+
+    @Inject
+    public XmppServerRegistrar(AmplifyXmppConnection xmppConnection) {
+        this.xmppConnection = xmppConnection;
+    }
+
+    @Override
+    public void registerUser(User user) {
+        try {
+            XmppUtils.connectIfNecessary(xmppConnection);
+            LOGGER.debug("Attempting to register user with id: {}", user.getId());
+            xmppConnection.getAccountManager().createAccount(user.getXmppUsername(), user.getXmppPassword());</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        } catch (XMPPException e) {
+            throw new AmplifyException(e);
+        } finally {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            XmppUtils.disconnectIfNecessary(xmppConnection);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

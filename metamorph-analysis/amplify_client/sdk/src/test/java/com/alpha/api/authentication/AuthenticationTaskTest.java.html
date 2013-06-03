@@ -1,0 +1,203 @@
+<html><head><title>AuthenticationTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>AuthenticationTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/authentication/amplify_client/AuthenticationTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">12</span>
+    <progress max="100" value="12"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.authentication;
+
+import android.accounts.*;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import com.alpha.api.authentication.AuthenticationTask.AuthenticationResult;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.UserService;
+import com.alpha.api.utilities.AmplifyException;
+import com.google.common.base.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class AuthenticationTaskTest {
+
+    private static final String TEST_EMAIL = "UWOTM8@wut.kom";
+    private AuthenticationTask authTask;
+    @Mock
+    private AccountManager accountManager;
+    @Mock
+    private UserService userService;
+    @Mock
+    private GoogleAuthenticationCallback callback;
+    @Mock
+    private Activity activity;
+    @Mock
+    private AccountHelper accountHelper;
+    @Mock
+    private AccountManagerFuture<Bundle> future;
+    @Mock
+    private Bundle bundle;
+
+    private final Account account = new Account(TEST_EMAIL, AccountHelper.GOOGLE_ACCOUNT_TYPE);
+    private final Optional<Account> optionalWithAccount = Optional.of(account);
+    private final Optional<Account> emptyOptional = Optional.absent();
+
+    @Before
+    public void setup() throws IOException, AuthenticatorException, OperationCanceledException {
+        initMocks(this);
+        authTask = new AuthenticationTask(activity, callback, accountHelper, accountManager, userService);
+        given(accountManager.getAuthToken(account, AccountHelper.GOOGLE_TOKEN_TYPE, null, activity, null, null)).willReturn(future);
+        given(accountManager.addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, AccountHelper.GOOGLE_TOKEN_TYPE, null, null, activity, null, null)).willReturn(future);
+        given(future.getResult()).willReturn(bundle);
+        when(bundle.getString(AccountManager.KEY_ACCOUNT_NAME)).thenReturn(TEST_EMAIL);
+    }
+
+    @Test
+    public void shouldGetAuthTokenForExistingAccountIfOneExists() throws Exception {
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(optionalWithAccount);
+        when(accountHelper.isAccountFromValidDomain(TEST_EMAIL)).thenReturn(true);
+        authTask.call();
+        verify(accountManager).getAuthToken(account, AccountHelper.GOOGLE_TOKEN_TYPE, null, activity, null, null);
+    }
+
+    @Test
+    public void shouldAddNewAccountIfNoAccountOfCorrectDomainInPlace() throws Exception {
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(emptyOptional);
+        when(accountManager.addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, null, null, null, activity, null, null)).thenReturn(future);
+        authTask.call();
+        verify(accountManager).addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, null, null, null, activity, null, null);
+    }
+
+    @Test
+    public void shouldSaveAccountNameAfterObtainingToken() throws Exception {
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(optionalWithAccount);
+        authTask.call();
+        verify(userService).saveAccountName(TEST_EMAIL);
+    }
+
+    @Test
+    public void shoudlCallSuccessCallbackIfAuthenticationSucceeded() throws Exception {
+        authTask.onSuccess(AuthenticationResult.success(bundle));
+        verify(callback).onAuthenticationSuccess(bundle);
+    }
+
+    @Test
+    public void shoudlCallFailureCallbackIfAuthenticationFailed() throws Exception {
+        authTask.onSuccess(AuthenticationResult.failure());
+        verify(callback).onAuthenticationFailure(isA(AuthenticationException.class));
+    }
+
+    @Test
+    public void shouldRequestTokenFromNewlyCreatedAccount() throws Exception {
+        Account newAccount = new Account("new@email.uwotm8", AccountHelper.GOOGLE_ACCOUNT_TYPE);
+
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(emptyOptional);
+        when(accountManager.addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, null, null, null, activity, null, null)).thenReturn(future);
+        when(accountHelper.isAccountFromValidDomain("new@email.uwotm8")).thenReturn(true);
+        when(accountManager.getAuthToken(newAccount, AccountHelper.GOOGLE_TOKEN_TYPE, null, activity, null, null)).thenReturn(future);
+
+        when(bundle.getString(AccountManager.KEY_ACCOUNT_NAME)).thenReturn("new@email.uwotm8");
+        authTask.call();
+        verify(accountManager).getAuthToken(newAccount, AccountHelper.GOOGLE_TOKEN_TYPE, null, activity, null, null);
+    }
+
+    @Test
+    public void shouldCallAuthenticationFailureOnException() throws Exception {
+        RuntimeException e = new RuntimeException();
+        authTask.onException(e);
+        verify(callback).onAuthenticationFailure(e);
+    }
+
+    @Test
+    public void shouldWrapThrowableAndSpecifyFailureOnThrowable() {
+        Throwable t = new Throwable();
+        authTask.onThrowable(t);
+        verify(callback).onAuthenticationFailure(isA(AmplifyException.class));
+    }
+
+    @Test
+    public void shouldReturnFailiureIfAccountAddedDoesNotHaveValidDomain() throws Exception {
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(emptyOptional);
+        when(accountManager.addAccount(AccountHelper.GOOGLE_ACCOUNT_TYPE, null, null, null, activity, null, null)).thenReturn(future);
+        when(bundle.getString(AccountManager.KEY_ACCOUNT_NAME)).thenReturn("invalid@email.com");
+        when(accountHelper.isAccountFromValidDomain("invalid@email.com")).thenReturn(false);
+        AuthenticationResult authResult = authTask.call();
+        assertThat(authResult.authenticationSucceeded(), is(false));
+        verify(accountManager, never()).getAuthToken(any(Account.class), anyString(), any(Bundle.class), any(Activity.class), any(AccountManagerCallback.class), any(Handler.class));
+
+    }
+
+    @Test
+    public void shouldSaveAccountNameWhenGooglePlayServicesAPKIsNotInstalled() throws Exception {
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(optionalWithAccount);
+        when(accountHelper.isGooglePlayServicesApkInstalled(activity)).thenReturn(false);
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(optionalWithAccount);
+        authTask.call();
+        verify(userService).saveAccountName(TEST_EMAIL);
+    }
+
+    @Test
+    public void shouldObtainGoogleDrivePermission() throws Exception {
+        when(accountHelper.isGooglePlayServicesApkInstalled(activity)).thenReturn(true);
+        when(accountHelper.getFirstAccountByDomain()).thenReturn(optionalWithAccount);
+        authTask.call();
+        verify(accountHelper).getGDriveToken(any(Activity.class), any(String.class));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<html><head><title>PostsByDateCursorLoaderTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PostsByDateCursorLoaderTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/adapters/amplify_client/PostsByDateCursorLoaderTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">5</span>
+    <progress max="100" value="5"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.adapters;
+
+
+import android.content.Context;
+import com.alpha.api.repository.sqlite.Order;
+import com.alpha.api.repository.sqlite.Table;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.Section;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.Calendar;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class PostsByDateCursorLoaderTest {
+    private PostsByDateCursorLoader postsByDateCursorLoader;
+    @Mock
+    private Context context;
+    @Mock
+    private Section section;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2000, 10, 30);
+        when(section.getId()).thenReturn(1L);
+
+        postsByDateCursorLoader = new PostsByDateCursorLoader(context, section, calendar.getTimeInMillis());
+    }
+
+    @Test
+    public void shouldFilterPostsWhichAreNotRemovedAndBySectionId() {
+        assertThat(postsByDateCursorLoader.getSelection(), is("section_id = ? and date(datetime(created_on/1000, 'unixepoch', 'localtime'))== ?"));
+        assertThat(postsByDateCursorLoader.getSelectionArgs(), is(new String[]{"1", "2000-11-30"}));
+    }
+
+    @Test
+    public void shouldQueryTheAllPostsUri() {
+        assertThat(postsByDateCursorLoader.getUri(), is(Table.POSTS.uri()));
+    }
+
+    @Test
+    public void shouldProjectExpectedColumnsInResultSet() {
+        assertThat(postsByDateCursorLoader.getProjection(), is(new String[]{TableColumn._id.name(), TableColumn.created_on.name(),
+                TableColumn.content.name()}));
+    }
+
+    @Test
+    public void shouldHaveDescOrderByCreatedOnColumn() {
+        assertThat(postsByDateCursorLoader.getSortOrder(), is(Order.DESC.by(TableColumn.created_on)));
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

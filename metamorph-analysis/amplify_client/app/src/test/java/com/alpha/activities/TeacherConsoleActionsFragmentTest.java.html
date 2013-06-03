@@ -1,0 +1,1141 @@
+<html><head><title>TeacherConsoleActionsFragmentTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>TeacherConsoleActionsFragmentTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/TeacherConsoleActionsFragmentTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">94</span>
+    <progress max="100" value="94"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.view.View;
+import android.widget.Button;
+import com.alpha.activities.actions.*;
+import com.alpha.activities.view.ProgressBarViewGroup;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.SundaeAppInfo;
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.messaging.CountdownTimerSettings;
+import com.alpha.api.repository.ForceFieldDataStore;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.events.*;
+import com.alpha.api.services.network.NetworkConnectivity;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.google.common.eventbus.EventBus;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowAlertDialog;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+
+import java.util.Set;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass", "PMD"})
+@RunWith(SundaeRobolectricTestRunner.class)
+public class TeacherConsoleActionsFragmentTest {
+
+    private static final String GOORU_PACKAGE = "org.ednovo";
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private Teacher teacher;
+    @Mock
+    private Section currentSection;
+    @Mock
+    private ControlSettingsModel controlSettingsModel;
+    @Mock
+    private DeviceLockRequestSucceededEvent deviceLockRequestSucceededEvent;
+    @Mock
+    private DeviceUnlockRequestSucceededEvent deviceUnlockRequestSucceededEvent;
+    @Mock
+    private DeviceLockingRequestFailureEvent deviceLockingRequestFailureEvent;
+    @Mock
+    private ConnectionClosedEvent connectionCloseEvent;
+    @Mock
+    private TeacherSessionEndedEvent sessionEnded;
+    @Mock
+    private ConnectionClosedEvent connectionClosed;
+    @Mock
+    private ForceFieldDataStore forceFieldDataStore;
+    @Mock
+    private TeacherConsoleAction teacherConsoleAction;
+    @Mock
+    private CountdownTimerSettings countdownTimerSettings;
+    @Mock
+    private TimeTickerEndEvent timeTickerEndEvent;
+    @Mock
+    private Toaster toaster;
+    @Mock
+    private ModeratorSessionServiceConnection moderatorSessionServiceConnection;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private ModeratorSessionService moderatorSessionService;
+    @Mock
+    private PostService postService;
+    @Mock
+    private PostsDataStore postDataStore;
+    @Mock
+    private Post post;
+    @Mock
+    private ApplicationUtils applicationUtils;
+    @Mock
+    private ClassSession classSession;
+    @Mock
+    private NetworkConnectivity networkConnectivity;
+
+    private TeacherConsoleActionsFragment fragment;
+
+    private Button appBlockerButton;
+    private ProgressBarViewGroup appBlockerProgressBar;
+    private View studentMonitorButton;
+    private Button eyesOnTeacherButton;
+
+    private Button sessionToggleButton;
+    private Button timerButton;
+    private Button callOnSomeoneButton;
+    private Button quickPollButton;
+    private Button shortAnswerButton;
+    private Button goResearchButton;
+    private Button spotCheckButton;
+    private Button countOffButton;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        given(userService.getUser()).willReturn(teacher);
+        given(userService.getCurrentUserSection()).willReturn(currentSection);
+        given(userService.session()).willReturn(classSession);
+        given(classSession.getCountdownTimerSettings()).willReturn(countdownTimerSettings);
+
+        given(teacher.getCurrentSection()).willReturn(currentSection);
+        given(teacher.getCurrentControlSettingsModel()).willReturn(controlSettingsModel);
+        given(controlSettingsModel.isLocked()).willReturn(false);
+
+        given(moderatorSessionServiceConnection.getService()).willReturn(moderatorSessionService);
+        given(teacher.getSession()).willReturn(classSession);
+        given(networkConnectivity.isConnected()).willReturn(true);
+
+        setUpFragment();
+    }
+
+    private void setUpFragment() {
+        fragment = newInjector(this, TeacherConsoleActionsFragment.class)
+                .bindInstance(ForceFieldDataStore.class, forceFieldDataStore)
+                .bindInstance(TeacherConsoleAction.class, teacherConsoleAction)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(EventBus.class, eventBus)
+                .bindInstance(ModeratorSessionService.class, moderatorSessionService)
+                .bindInstance(ModeratorSessionServiceConnection.class, moderatorSessionServiceConnection)
+                .bindInstance(Toaster.class, toaster)
+                .bindInstance(PostService.class, postService)
+                .bindInstance(PostsDataStore.class, postDataStore)
+                .bindInstance(ApplicationUtils.class, applicationUtils)
+                .bindInstance(NetworkConnectivity.class, networkConnectivity)
+                .configureFragment();
+
+        View rootView = fragment.getView();
+
+        studentMonitorButton = rootView.findViewById(R.id.student_monitor_layout);
+        appBlockerButton = (Button) rootView.findViewById(R.id.app_blocker_button);
+        appBlockerProgressBar = (ProgressBarViewGroup) rootView.findViewById(R.id.app_blocker_progress_bar);
+        eyesOnTeacherButton = (Button) rootView.findViewById(R.id.eyes_on_teacher_button);
+        callOnSomeoneButton = (Button) rootView.findViewById(R.id.call_on_someone_button);
+        shortAnswerButton = (Button) rootView.findViewById(R.id.quick_short_answer_button);
+        sessionToggleButton = (Button) rootView.findViewById(R.id.session_toggle_button);
+        goResearchButton = (Button) rootView.findViewById(R.id.go_research_button);
+        spotCheckButton = (Button) rootView.findViewById(R.id.spot_check_button);
+        quickPollButton = (Button) rootView.findViewById(R.id.quick_poll_button);
+        countOffButton = (Button) rootView.findViewById(R.id.count_off_button);
+        timerButton = (Button) rootView.findViewById(R.id.timer_button);
+    }
+
+    @Test
+    public void shouldRegisterListenerOnEventBusOnResume() {
+        fragment.onResume();
+        verify(eventBus).register(fragment.listeners);
+    }
+
+    @Test
+    public void shouldUnregisterListenerOnEventBusOnPause() {
+        fragment.onPause();
+        verify(eventBus).unregister(fragment.listeners);
+    }
+
+    @Test
+    public void shouldBindToSessionServiceOnResume() {
+        fragment.onResume();
+        verify(moderatorSessionServiceConnection).open();
+    }
+
+    @Test
+    public void shouldUnbindToSessionServiceOnPause() {
+        fragment.onPause();
+        verify(moderatorSessionServiceConnection).close();
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableButtonIfNotAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(false);
+        fragment.onResume();
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldEnableTimerButtonIfAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(true);
+        fragment.onResume();
+        assertThat(timerButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldSendLockMessageWhenLockButtonClickedIfSessionIsNotCurrentlyLocked() {
+        setDevicesAsLocked(false);
+        eyesOnTeacherButton.performClick();
+        verify(moderatorSessionService).sendLockMessage(eq(teacher));
+    }
+
+    @Test
+    public void shouldSendUnlockMessageWhenLockButtonClickedIfSessionIsCurrentlyLocked() {
+        setDevicesAsLocked(true);
+        eyesOnTeacherButton.performClick();
+        verify(moderatorSessionService).sendUnlockMessage(eq(teacher));
+    }
+
+    @Test
+    public void shouldDisableEyesOnTeacherButtonWhenAttemptingToSendRequest() {
+        eyesOnTeacherButton.performClick();
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldEnableEyesOnTeacherButtonAfterSuccessfulLock() {
+        eyesOnTeacherButton.setEnabled(false);
+        setAssociatedWithSession(true);
+        fragment.listeners.eyesOnTeacherEnabled(deviceLockRequestSucceededEvent);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldEnableLockButtonWhenEyesOnTeacherFails() {
+        setAssociatedWithSession(true);
+        eyesOnTeacherButton.setEnabled(false);
+        fragment.listeners.enableEyesOnTeacherFailure(deviceLockingRequestFailureEvent);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldReenableEyesOnTeacherButtonWhenEyesOnTeacherisDisabled() {
+        eyesOnTeacherButton.setEnabled(false);
+        setAssociatedWithSession(true);
+        fragment.listeners.eyesOnTeacherDisabled(deviceUnlockRequestSucceededEvent);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldDisableEyesOnTeacherButtonOnSessionConnectionBeingDropped() {
+        eyesOnTeacherButton.setEnabled(true);
+        setAssociatedWithSession(false);
+        fragment.listeners.sessionConnectionDropped(connectionCloseEvent);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldDisableEyesOnTeacherButtonOnSessionEnding() {
+        eyesOnTeacherButton.setEnabled(true);
+        fragment.listeners.sessionEnded(sessionEnded);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldResetTextOnEyesOnTeacherButtonOnConnectionBeingDropped() {
+        eyesOnTeacherButton.setEnabled(true);
+        fragment.listeners.sessionConnectionDropped(connectionClosed);
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }
+
+    private void setDevicesAsLocked(boolean isLocked) {
+        when(teacher.getCurrentControlSettingsModel()).thenReturn(controlSettingsModel);
+        when(controlSettingsModel.isLocked()).thenReturn(isLocked);
+    }
+
+    @Test
+    public void shouldLaunchMonitoringActivityWhenMonitorButtonClicked() {
+        studentMonitorButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(MonitoringActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchCountdownTimerActivityWhenTimerButtonClicked() {
+        when(countdownTimerSettings.isRunning()).thenReturn(false);
+
+        timerButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(CountdownTimerConfigurationActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldLaunchCountdownTimerDetailsActivityOnlyWhenTheTimerIsCurrentlyRunning() {
+        when(countdownTimerSettings.isRunning()).thenReturn(true);
+
+        timerButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(CountdownTimerDetailActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldShowTimerAsRunning() {
+        setAssociatedWithSession(true);
+        when(classSession.getCountdownTimerSettings()).thenReturn(countdownTimerSettings);
+        when(countdownTimerSettings.isRunning()).thenReturn(true);
+
+        fragment.onResume();
+
+        assertThat(timerButton.isActivated(), is(true));
+    }
+
+    @Test
+    public void shouldNotShowTimerAsRunningWhenTimerIsStopped() {
+        setAssociatedWithSession(true);
+        when(classSession.getCountdownTimerSettings()).thenReturn(countdownTimerSettings);
+        when(countdownTimerSettings.isRunning()).thenReturn(false);
+
+        fragment.onResume();
+
+        assertThat(timerButton.isActivated(), is(false));
+    }
+
+    @Test
+    public void shouldEnableAppBlockerButtonIfAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(true);
+        fragment.onResume();
+        assertThat(appBlockerButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldDisableAppBlockerButtonIfNotAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(false);
+        fragment.onResume();
+        assertThat(appBlockerButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldEnableEyesOnTeacherButtonIfAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(true);
+        fragment.onResume();
+        assertThat(eyesOnTeacherButton.isEnabled(), is(true));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldDisableEyesOnTeacherButtonIfNotAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(false);
+        fragment.onResume();
+        assertThat(eyesOnTeacherButton.isEnabled(), is(false));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldShowTheForceFieldEditActivityWhenAppBlockerIsLongClicked() {
+        appBlockerButton.performLongClick();
+
+        ComponentName componentName = new ComponentName(Robolectric.application, ForceFieldEditActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+    }
+
+    @Test
+    public void shouldDisengageTheForceFieldWhenSessionEnds() {
+        fragment.listeners.sessionEnded(sessionEnded);
+        verify(teacher).disengageForceField();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldEnableTheForceFieldWhenForceFieldIsDisabledAndAppBlockerIsClicked() {
+        setAssociatedWithSession(true);
+        when(teacher.isForceFieldEngaged()).thenReturn(false);
+
+        appBlockerButton.performClick();
+
+        verify(moderatorSessionService).engageForceField(any(Set.class), same(teacher), same(currentSection),
+                same(appBlockerProgressBar.getProgressBar()));
+    }
+
+    @Test
+    public void shouldDisableTheForceFieldWhenForceFieldIsEnabledAndAppBlockerIsClicked() {
+        setAssociatedWithSession(true);
+        when(teacher.isForceFieldEngaged()).thenReturn(true);
+
+        appBlockerButton.performClick();
+
+        verify(moderatorSessionService).disengageForceField(same(teacher), same(appBlockerProgressBar.getProgressBar()));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSetOnTextForAppBlockerButtonToWhiteListCountWhenForceFieldEngageOccurs() {
+        final int appCount = 5;
+
+        Set<SundaeAppInfo> appInfoList = mock(Set.class);
+        when(appInfoList.size()).thenReturn(appCount);
+        when(forceFieldDataStore.getWhitelistApps(any(Section.class))).thenReturn(appInfoList);
+        when(teacher.isForceFieldEngaged()).thenReturn(true);
+
+        fragment.listeners.onForceFieldChangeSuccess(null);
+
+        assertThat(appBlockerButton.getText().toString(), is("App Control\n5 Apps Allowed"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSetOnTextForAppBlockerButtonToWhiteListCountOnResume() {
+        final int appCount = 5;
+
+        Set<SundaeAppInfo> appInfoList = mock(Set.class);
+        when(appInfoList.size()).thenReturn(appCount);
+        when(forceFieldDataStore.getWhitelistApps(any(Section.class))).thenReturn(appInfoList);
+        when(teacher.isForceFieldEngaged()).thenReturn(true);
+
+        fragment.onResume();
+
+        assertThat(appBlockerButton.getText().toString(), is("App Control\n5 Apps Allowed"));
+    }
+
+    @Test
+    public void shouldSetAppBlockerButtonActivatedOnResumeIfForceFieldEngaged() {
+        when(teacher.isForceFieldEngaged()).thenReturn(true);
+
+        fragment.onResume();
+
+        assertThat(appBlockerButton.isActivated(), is(true));
+    }
+
+    @Test
+    public void shouldSetAppBlockerButtonNotActivatedOnResumeIfForceFieldDisengaged() {
+        when(teacher.isForceFieldEngaged()).thenReturn(false);
+
+        fragment.onResume();
+
+        assertThat(appBlockerButton.isActivated(), is(false));
+    }
+
+    @Test
+    public void shouldSetTheEyesOnTeacherButtonAsActiveAfterEnablingEyesOnTeacher() {
+        eyesOnTeacherButton.setActivated(false);
+        setAssociatedWithSession(true);
+        setDevicesAsLocked(true);
+        fragment.listeners.eyesOnTeacherEnabled(deviceLockRequestSucceededEvent);
+        assertThat(eyesOnTeacherButton.isActivated(), is(true));
+    }
+
+    @Test
+    public void shouldSetTheEyesOnTeacherButtonAsInactiveAfterDisablingEyesOnTeacher() {
+        eyesOnTeacherButton.setActivated(true);
+        fragment.listeners.eyesOnTeacherDisabled(deviceUnlockRequestSucceededEvent);
+        assertThat(eyesOnTeacherButton.isActivated(), is(false));
+    }
+
+    @Test
+    public void shouldSetButtonTextToEndClassOnStartClass() {
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        Resources resources = fragment.getResources();
+        assertThat(sessionToggleButton.getText().toString(), is(resources.getString(R.string.end_class)));
+    }
+
+    @Test
+    public void shouldStayInSessionWhenEndSessionFails() {
+        fragment.onResume();
+
+        setAssociatedWithSession(true);
+        fragment.listeners.sessionEnded(sessionEnded);
+
+        assertTrue(sessionToggleButton.isEnabled());
+
+        Resources resources = fragment.getResources();
+        assertThat(sessionToggleButton.getText().toString(), is(resources.getString(R.string.end_class)));
+    }
+
+    @Test
+    public void shouldSetViewToInSessionWhenSessionStarted() {
+        fragment.onResume();
+
+        setAssociatedWithSession(true);
+        fragment.listeners.sessionStarted(SessionStartEvent.success());
+
+        Resources resources = fragment.getResources();
+        assertThat(sessionToggleButton.getText().toString(), is(resources.getString(R.string.end_class)));
+    }
+
+    @Test
+    public void shouldUpdateParticipantsWhenSessionIsEnded() {
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+        sessionToggleButton.performClick();
+
+        verify(teacherConsoleAction).updateParticipants();
+    }
+
+    @Test
+    public void shouldDeActivateTheTimerButtonWhenTheCurrentTimerEnds() {
+        timerButton.setActivated(true);
+        setAssociatedWithSession(true);
+        when(classSession.getCountdownTimerSettings()).thenReturn(countdownTimerSettings);
+        when(countdownTimerSettings.isRunning()).thenReturn(true);
+
+        fragment.onResume();
+        fragment.listeners.onFinish(timeTickerEndEvent);
+
+        assertThat(timerButton.isActivated(), is(false));
+    }
+
+    @Test
+    public void shouldEnableCallOnSomeoneOnlyWhenInSession() {
+        callOnSomeoneButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+        fragment.onViewCreated(null, null);
+
+        assertTrue(callOnSomeoneButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableCallOnSomeoneWhenNotInSession() {
+        callOnSomeoneButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertFalse(callOnSomeoneButton.isEnabled());
+    }
+
+    @Test
+    public void shouldEnableCountOffOnlyWhenInSession() {
+        countOffButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+        fragment.onViewCreated(null, null);
+
+        assertTrue(countOffButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableCountOffWhenNotInSession() {
+        countOffButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertFalse(countOffButton.isEnabled());
+    }
+
+    @Test
+    public void shouldEnableQuickPollWhenInSession() {
+        quickPollButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        assertTrue(quickPollButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableQuickPollWhenNotInSession() {
+        quickPollButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertThat(quickPollButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldEnableQuickShortAnswerWhenInSession() {
+        shortAnswerButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        assertTrue(shortAnswerButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableQuickShortAnswerWhenNotInSession() {
+        shortAnswerButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertFalse(shortAnswerButton.isEnabled());
+    }
+
+    @Test
+    public void shouldEnableSpotCheckWhenInSession() {
+        spotCheckButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        assertTrue(spotCheckButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableSpotCheckWhenNotInSession() {
+        spotCheckButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertFalse(spotCheckButton.isEnabled());
+    }
+
+    @Test
+    public void shouldDisableGoResearchWhenNotInSession() {
+        goResearchButton.setEnabled(true);
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertFalse(goResearchButton.isEnabled());
+    }
+
+    @Test
+    public void shouldEnableGoResearchWhenInSession() {
+        goResearchButton.setEnabled(false);
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        assertTrue(goResearchButton.isEnabled());
+    }
+
+    @Test
+    public void shouldLaunchQuickPollWhenQuickPollButtonIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(QuickPollActionContext.class)).thenReturn(false);
+
+        quickPollButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(QuickPollTeacherActivity.class.getName()));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldLaunchQuickShortAnswerWhenQuickShortAnswerButtonIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(QuickShortAnswerActionContext.class)).thenReturn(false);
+
+        shortAnswerButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), QuickShortAnswerActionContext.class);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldLaunchCallOnSomeoneActivityWhenCallOnSomeoneButtonIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)).thenReturn(false);
+        when(currentSection.hasActiveParticipants()).thenReturn(true);
+
+        callOnSomeoneButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), CallOnSomeoneActionContext.class);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldNotLaunchCallOnSomeoneWhenCallOnSomeoneButtonIsClickedWithoutParticipants() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)).thenReturn(false);
+        when(currentSection.hasActiveParticipants()).thenReturn(false);
+
+        callOnSomeoneButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertNull(intent);
+
+        verify(toaster).makeToast(fragment.getString(R.string.not_enough_participants_to_start_quick_activity));
+    }
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldSetShortAnswerContextWhenQuickShortAnswerButtonIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(QuickShortAnswerActionContext.class)).thenReturn(false);
+
+        shortAnswerButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), QuickShortAnswerActionContext.class);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void shouldSetCallOnSomeoneContextWhenCallOnSomeoneIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)).thenReturn(false);
+        when(currentSection.hasActiveParticipants()).thenReturn(true);
+        callOnSomeoneButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), CallOnSomeoneActionContext.class);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldStartSpotCheckWhenCallOnSomeoneIsClicked() {
+        when(teacherConsoleAction.isActive()).thenReturn(false);
+        when(teacherConsoleAction.isRunning(SpotCheckActionContext.class)).thenReturn(false);
+
+        spotCheckButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), SpotCheckActionContext.class);
+    }
+
+    @Test
+    public void shouldDisplayDialogWhenTeacherTriesToLaunchCallOnSomeoneWhenAnotherActionIsAlreadyRunning() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)).thenReturn(false);
+
+        callOnSomeoneButton.performClick();
+
+        assertNotNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldDisplayDialogWhenTeacherTriesToLaunchShortAnswerWhenAnotherActionIsAlreadyRunning() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(QuickShortAnswerActionContext.class)).thenReturn(false);
+
+        shortAnswerButton.performClick();
+
+        assertNotNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldDisplayDialogWhenTeacherTriesToLaunchQuickPollWhenAnotherActionIsAlreadyRunning() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(QuickPollActionContext.class)).thenReturn(false);
+
+        quickPollButton.performClick();
+
+        assertNotNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldRelaunchActiveCallOnSomeoneActivity() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(CallOnSomeoneActionContext.class)).thenReturn(true);
+
+        callOnSomeoneButton.performClick();
+
+        verify(teacherConsoleAction).relaunch();
+    }
+
+    @Test
+    public void shouldRelaunchActiveQuickShortAnswerActivity() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(QuickShortAnswerActionContext.class)).thenReturn(true);
+
+        shortAnswerButton.performClick();
+
+        verify(teacherConsoleAction).relaunch();
+    }
+
+    @Test
+    public void shouldRelaunchActiveQuickPollActivity() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(QuickPollActionContext.class)).thenReturn(true);
+
+        quickPollButton.performClick();
+
+        verify(teacherConsoleAction).relaunch();
+    }
+
+    @Test
+    public void shouldDismissDialogOnCancel() {
+        fragment.showActionSwitcherDialog();
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+        dialog.cancel();
+
+        assertThat(dialog.isShowing(), is(false));
+    }
+
+    @Test
+    public void shouldDismissDialogOnOk() {
+        fragment.showActionSwitcherDialog();
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+
+        Button okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        okButton.performClick();
+
+        assertThat(dialog.isShowing(), is(false));
+    }
+
+    @Test
+    public void shouldCompleteConsoleActionAndEndActivityOnOk() {
+        fragment.showActionSwitcherDialog();
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+
+        Button okButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        okButton.performClick();
+
+        InOrder inOrder = inOrder(teacherConsoleAction, eventBus);
+        inOrder.verify(teacherConsoleAction).finishInClassActivity(false);
+    }
+
+    @Test
+    public void shouldLaunchSpotCheckActivityOnClickOfSpotCheckButton() {
+        when(networkConnectivity.isConnected()).thenReturn(true);
+        spotCheckButton.performClick();
+
+        verify(teacherConsoleAction).startAndLaunch(fragment.getActivity(), SpotCheckActionContext.class);
+    }
+
+    @Test
+    public void shouldEnableCountOffButtonIfAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(true);
+
+        fragment.onResume();
+
+        assertThat(countOffButton.isEnabled(), is(true));
+    }
+
+    @Test
+    public void shouldDisableCountoffButtonIfNotAssociatedWithSessionOnResume() {
+        setAssociatedWithSession(false);
+
+        fragment.onResume();
+
+        assertThat(countOffButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void shouldLaunchCountOffActivityWhenTeacherStartsCountOff() {
+        setAssociatedWithSession(true);
+        when(currentSection.hasEnoughActiveParticipantsForCountOff()).thenReturn(true);
+
+        countOffButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(CountOffActivity.class.getName()));
+    }
+
+    @Test
+    public void shouldStartGoResearchTaskWhenPressingGoResearch() {
+        goResearchButton.performClick();
+
+        verify(teacherConsoleAction).startGoResearch();
+    }
+
+    @Test
+    public void shouldLaunchNotLaunchActivityWhenPressingGoResearchAndAppIsNotPresent() {
+        setAssociatedWithSession(true);
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GOORU_PACKAGE))).thenReturn(false);
+
+        goResearchButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertNull(intent);
+    }
+
+    @Test
+    public void shouldNotLaunchCountOffActivityWhenThereAreNoParticipants() {
+        setAssociatedWithSession(true);
+        when(currentSection.hasEnoughActiveParticipantsForCountOff()).thenReturn(false);
+
+        countOffButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertNull(intent);
+
+        verify(toaster).makeToast(fragment.getString(R.string.not_enough_participants_to_start_quick_activity));
+    }
+
+    private void setAssociatedWithSession(boolean isAssociated) {
+        when(userService.getCurrentUserSection()).thenReturn(currentSection);
+        when(classSession.isOngoingFor(eq(currentSection))).thenReturn(isAssociated);
+        when(userService.isSessionOngoingForCurrentSection()).thenReturn(isAssociated);
+    }
+
+    @Test
+    public void shouldToastStudentUnlockMessageIfSettingsIsLockedOnCallOnSomeoneLaunch() {
+        when(currentSection.hasActiveParticipants()).thenReturn(true);
+        when(controlSettingsModel.isLocked()).thenReturn(true);
+
+        fragment.setUpCallOnSomeoneButton();
+        callOnSomeoneButton = (Button) fragment.getView().findViewById(R.id.call_on_someone_button);
+        callOnSomeoneButton.performClick();
+
+        verify(toaster).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldNotToastStudentUnlockMessageIfSettingsIsNotLockedOnCallOnSomeoneLaunch() {
+        when(currentSection.hasActiveParticipants()).thenReturn(true);
+        when(controlSettingsModel.isLocked()).thenReturn(false);
+
+        fragment.setUpCallOnSomeoneButton();
+        callOnSomeoneButton = (Button) fragment.getView().findViewById(R.id.call_on_someone_button);
+        callOnSomeoneButton.performClick();
+
+        verify(toaster, never()).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldToastStudentUnlockMessageIfSettingsIsLockedOnSpotCheckLaunch() {
+        when(controlSettingsModel.isLocked()).thenReturn(true);
+
+        fragment.setUpSpotCheckButton();
+        spotCheckButton = (Button) fragment.getView().findViewById(R.id.spot_check_button);
+        spotCheckButton.performClick();
+
+        verify(toaster).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldNotToastStudentUnlockMessageIfSettingsIsNotLockedOnSpotCheckLaunch() {
+        when(controlSettingsModel.isLocked()).thenReturn(false);
+
+        fragment.setUpSpotCheckButton();
+        spotCheckButton = (Button) fragment.getView().findViewById(R.id.spot_check_button);
+        spotCheckButton.performClick();
+
+        verify(toaster, never()).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldToastStudentUnlockMessageIfSettingsIsLockedOnShortAnswerLaunch() {
+        when(controlSettingsModel.isLocked()).thenReturn(true);
+
+        fragment.setUpQuickShortAnswerButton();
+        spotCheckButton = (Button) fragment.getView().findViewById(R.id.quick_short_answer_button);
+        spotCheckButton.performClick();
+
+        verify(toaster).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldNotToastStudentUnlockMessageIfSettingsIsNotLockedOnShortAnswerLaunch() {
+        when(controlSettingsModel.isLocked()).thenReturn(false);
+
+        fragment.setUpQuickShortAnswerButton();
+        spotCheckButton = (Button) fragment.getView().findViewById(R.id.quick_short_answer_button);
+        spotCheckButton.performClick();
+
+        verify(toaster, never()).makeToast(R.string.student_tablets_unlocked);
+    }
+
+    @Test
+    public void shouldDisplayDialogWhenTeacherTriesToLaunchCountOffWhenAnotherActionIsAlreadyRunning() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(CountOffActionContext.class)).thenReturn(false);
+
+        countOffButton.performClick();
+
+        assertNotNull(ShadowAlertDialog.getLatestAlertDialog());
+    }
+
+    @Test
+    public void shouldRelaunchActiveCountOffActivity() {
+        when(teacherConsoleAction.isActive()).thenReturn(true);
+        when(teacherConsoleAction.isRunning(CountOffActionContext.class)).thenReturn(true);
+
+        countOffButton.performClick();
+
+        verify(teacherConsoleAction).relaunch();
+    }
+
+    @Test
+    public void shouldDisableSessionToggleWhenReconnectionIsBeingAttempted() throws Exception {
+        fragment.listeners.onReconnectAttempted(SessionReconnectEvent.IN_PROGRESS);
+
+        assertThat(sessionToggleButton.isEnabled(), is(false));
+        assertThat(sessionToggleButton.getText().toString(), is("End Class"));
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchTimerIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        timerButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchCallOnSomeoneIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        callOnSomeoneButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchQuickPollIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        quickPollButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchShortAnswerIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        shortAnswerButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchMoodCheckIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        spotCheckButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchCountOffIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        countOffButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+
+    }
+
+    @Test
+    public void shouldToastAndNotLaunchGooruIfNoNetworkConnection() {
+        when(networkConnectivity.isConnected()).thenReturn(false);
+        goResearchButton.performClick();
+        verify(toaster).makeToast(R.string.network_not_connected);
+        verifyZeroInteractions(teacherConsoleAction);
+
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

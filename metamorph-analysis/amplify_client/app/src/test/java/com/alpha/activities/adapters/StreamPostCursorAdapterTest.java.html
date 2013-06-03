@@ -1,0 +1,188 @@
+<html><head><title>StreamPostCursorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamPostCursorAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/StreamPostCursorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.view.LayoutInflater;
+import android.view.View;
+import com.alpha.activities.renderers.StreamPostSummaryRenderer;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.google.inject.assistedinject.Assisted;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import roboguice.activity.RoboActivity;
+
+import java.util.Calendar;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamPostCursorAdapterTest {
+    private StreamPostCursorAdapterTestClass adapter;
+    private View postView;
+
+    private static final int POST_SAME_DAY_A_CURSOR_POSITION = 0;
+    private static final int POST_SAME_DAY_B_CURSOR_POSITION = 1;
+    private static final int POST_PREVIOUS_DAY_CURSOR_POSITION = 2;
+
+    @Mock
+    private Post post;
+
+    @Mock
+    private StreamPostSummaryRenderer postSummaryRenderer;
+    private Post postSameDayA;
+    private Post postSameDayB;
+    private Post postPreviousDay;
+
+    @Mock
+    private Cursor cursor;
+    private Activity activity;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        activity = new RoboActivity();
+        adapter = new StreamPostCursorAdapterTestClass(activity, postSummaryRenderer);
+        postView = LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(2012, 11, 9, 12, 0);
+        postSameDayA = new Post(PostType.DISCUSSION, null, cal.getTime(), null, null, null, null);
+        cal.set(2012, 11, 9, 11, 0);
+        postSameDayB = new Post(PostType.DISCUSSION, null, cal.getTime(), null, null, null, null);
+        cal.set(2012, 11, 7, 12, 0);
+        postPreviousDay = new Post(PostType.DISCUSSION, null, cal.getTime(), null, null, null, null);
+    }
+
+    @Test
+    public void shouldCallPostRendererOnAdapterOnPopulateView() {
+        adapter.populateView(postView, post);
+
+        verify(postSummaryRenderer).populateView(postView, post, true, activity);
+    }
+
+    @Test
+    public void shouldHaveDateViewOnMostRecentPost() {
+        when(cursor.getPosition()).thenReturn(POST_SAME_DAY_A_CURSOR_POSITION);
+
+        adapter.populateView(postView, postSameDayA);
+
+        verify(postSummaryRenderer).populateView(postView, postSameDayA, true, activity);
+    }
+
+    @Test
+    public void shouldNotHaveDateViewOnPostFromEarlierInTheSameDay() {
+        when(cursor.getPosition()).thenReturn(POST_SAME_DAY_B_CURSOR_POSITION);
+
+        adapter.populateView(postView, postSameDayB);
+
+        verify(postSummaryRenderer).populateView(postView, postSameDayB, false, activity);
+    }
+
+    @Test
+    public void shouldHaveDateViewOnYesterdaysLastPost() {
+        when(cursor.getPosition()).thenReturn(POST_PREVIOUS_DAY_CURSOR_POSITION);
+
+        adapter.populateView(postView, postPreviousDay);
+
+        verify(postSummaryRenderer).populateView(postView, postPreviousDay, true, activity);
+    }
+
+
+    public class StreamPostCursorAdapterTestClass extends StreamPostCursorAdapter {
+
+        public StreamPostCursorAdapterTestClass(@Assisted Activity activity, @Assisted StreamPostSummaryRenderer postSummaryRenderer) {
+            super(activity, postSummaryRenderer);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public Cursor getCursor() {
+            return cursor;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public Post getItem(int position) {
+            switch( position ) {
+                case POST_SAME_DAY_A_CURSOR_POSITION:
+                    return postSameDayA;
+
+                case POST_SAME_DAY_B_CURSOR_POSITION:
+                    return postSameDayB;
+
+                case POST_PREVIOUS_DAY_CURSOR_POSITION:
+                    return postPreviousDay;
+                default: throw new IndexOutOfBoundsException();
+            }
+
+
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

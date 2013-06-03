@@ -1,0 +1,106 @@
+<html><head><title>ControlEvents.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlEvents.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/events/amplify_client/ControlEvents.java</p>
+<a href='../../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp.events;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.services.ControlEvent;
+
+import java.util.List;
+
+import static com.alpha.api.messaging.xmpp.events.EventPredicates.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Lists.newArrayList;
+
+public class ControlEvents {
+    private final ControlSettingsModel originalSettings;
+
+    public ControlEvents(ControlSettingsModel originalSettings) {
+        checkNotNull(originalSettings, "Given current student control settings cannot be null.");
+        this.originalSettings = originalSettings;
+    }
+
+    public List<ControlEvent> detectEvents(ControlSettingsModel newSettings) {
+        checkNotNull(newSettings, "Given new student control settings cannot be null.");
+
+        return collect(
+                new ForceFieldPredicate(originalSettings, newSettings),
+                new ForceFieldChangePredicate(originalSettings, newSettings),
+                new QuickPollPredicate(originalSettings, newSettings),
+                new CountOffPredicate(originalSettings, newSettings),
+                new CallOnSomeonePredicate(originalSettings, newSettings),
+                new QuickShortAnswerPredicate(originalSettings, newSettings),
+                new SpotCheckPredicate(originalSettings, newSettings),
+                new CountdownTimerPredicate(originalSettings, newSettings),
+                new LockPredicate(originalSettings, newSettings));
+    }
+
+    private <Model> List<ControlEvent> collect(EventPredicate<Model, ControlEvent>... predicates) {
+        List<ControlEvent> events = newArrayList();
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        for (EventPredicate<Model, ControlEvent> predicate : predicates) {
+            if (predicate.matches()) {
+                events.add(predicate.event());
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        return events;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

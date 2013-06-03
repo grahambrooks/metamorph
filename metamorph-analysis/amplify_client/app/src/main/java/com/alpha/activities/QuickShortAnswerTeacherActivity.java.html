@@ -1,0 +1,305 @@
+<html><head><title>QuickShortAnswerTeacherActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>QuickShortAnswerTeacherActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/QuickShortAnswerTeacherActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">24</span>
+    <progress max="100" value="24"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.events.QuickShortAnswerResponseEvent;
+import com.alpha.api.adapters.ContentJsonCursorAdapter;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.domains.QuickShortAnswerResponse;
+import com.alpha.api.messaging.QuickShortAnswerSettings;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.alpha.api.services.events.QuickShortAnswerEndEvent;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import javax.annotation.Nullable;
+import java.util.Date;
+
+import static com.alpha.api.repository.sqlite.Table.RESPONSES;
+import static com.alpha.api.repository.sqlite.TableColumn._id;
+import static com.alpha.api.repository.sqlite.TableColumn.asStrings;
+import static com.alpha.api.repository.sqlite.TableColumn.content;
+import static com.alpha.api.repository.sqlite.TableColumn.post_id;
+import static com.alpha.utils.CharSequences.highlight;
+import static com.google.common.collect.Lists.newArrayList;
+
+public class QuickShortAnswerTeacherActivity extends BaseQuickActivity<QuickShortAnswerSettings> {
+    public static final int QUICK_SHORT_ANSWER_LOADER_ID = 4;
+
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+    @Inject
+    private EventBus eventBus;
+
+    protected QuickShortAnswerListeners quickShortAnswerListeners = new QuickShortAnswerListeners();
+
+    @InjectView(R.id.quick_short_answer_stats)
+    private TextView shortAnswerStats;
+    @InjectView(R.id.quick_short_answer_responses)
+    private ListView responsesListView;
+    @InjectView(R.id.quick_short_answer_new_participants)
+    private ListView studentsListView;
+
+    @VisibleForTesting
+    ArrayAdapter<Participant> participantArrayAdapter;
+    @VisibleForTesting
+    QuickShortAnswerResponsesCursorAdapter responsesCursorAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.quick_short_answer_teacher);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(quickShortAnswerListeners);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(quickShortAnswerListeners);
+        super.onPause();
+    }
+
+    @Override
+    protected void updateUI(Long postId) {
+        participantArrayAdapter = new ArrayAdapter<Participant>(this, R.layout.quick_activity_students_list_item, newArrayList(getAllActiveParticipants()));
+        studentsListView.setAdapter(participantArrayAdapter);
+        monitorResponses(postId);
+        updateShortAnswerResponseStats();
+    }
+
+    @Override
+    protected Post getNewPost() {
+        User user = userService.getUser();
+        return new Post(PostType.SHORT_ANSWER, user.asAuthor(), new Date(),
+                user.createPostSectionFromCurrentSection(),
+                getString(R.string.short_answer),
+                getString(R.string.short_answer_post_description));
+    }
+
+    @Override
+    protected void startQuickActivityTask(Post post) {
+        sessionTaskFactory.createQuickShortAnswerTask().execute();
+    }
+
+    @Override
+    protected void sessionParticipantAdded(Participant participant) {
+        if (participantArrayAdapter.getPosition(participant) == -1) {
+            participantArrayAdapter.add(participant);
+        }
+        updateShortAnswerResponseStats();
+    }
+
+    protected void setStudentAsResponded(final PostAuthor author) {
+        Optional<Participant> participant = Iterables.tryFind(getAllActiveParticipants(), new Predicate<Participant>() {
+            @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public boolean apply(@Nullable Participant input) {
+                return input.getId() == author.getId();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        });
+        participantArrayAdapter.remove(participant.get());
+
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected QuickShortAnswerSettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getQuickShortAnswerSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    class QuickShortAnswerListeners {
+        @Subscribe
+        public void onEndSuccess(QuickShortAnswerEndEvent event) {
+            getActivitySettings().clearPost();
+            finish();
+        }
+
+        @Subscribe
+        public void setupStudentAsAnswered(QuickShortAnswerResponseEvent event) {
+            setStudentAsResponded(event.getPostAuthor());
+            updateShortAnswerResponseStats();
+        }
+    }
+
+    private void updateShortAnswerResponseStats() {
+        int numResponses = responsesCursorAdapter.getCount();
+        int numInSession = getAllActiveParticipants().size();
+        String text = getString(R.string.short_answer_students_responded, numResponses, numInSession);
+        shortAnswerStats.setText(highlight(text, getResources(), R.color.primary_orange));
+    }
+
+    private void monitorResponses(final Long postId) {
+        responsesCursorAdapter = new QuickShortAnswerResponsesCursorAdapter(this, eventBus);
+        getLoaderManager().initLoader(QUICK_SHORT_ANSWER_LOADER_ID, null, new ResponseCursorLoaderCallbacks(postId, responsesCursorAdapter, this));
+        responsesListView.setAdapter(responsesCursorAdapter);
+    }
+
+    static class ResponseCursorLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+        private final Long postId;
+        private final CursorAdapter adapter;
+        private final Context context;
+
+        ResponseCursorLoaderCallbacks(Long postId, CursorAdapter adapter, Context context) {
+            this.postId = postId;
+            this.adapter = adapter;
+            this.context = context;
+        }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(context, RESPONSES.uri(postId), asStrings(_id, content), post_id.equalTo(), new String[]{postId.toString()}, _id.name() + " DESC");
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            adapter.swapCursor(cursor);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            adapter.swapCursor(null);
+        }
+    }
+
+    static class QuickShortAnswerResponsesCursorAdapter extends ContentJsonCursorAdapter<QuickShortAnswerResponse> {
+
+        private final int[] backgrounds = {
+                R.color.pale_grey,
+                R.color.white
+        };
+
+        private final int[] foregrounds = {
+                R.color.convo_color_green,
+                R.color.convo_color_light_blue,
+                R.color.convo_color_purple,
+                R.color.convo_color_light_orange
+        };
+
+        private final EventBus eventBus;
+
+        public QuickShortAnswerResponsesCursorAdapter(Context context, EventBus eventBus) {
+            super(context, R.layout.quick_short_answer_response_teacher);
+            this.eventBus = eventBus;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+
+            changeBackgroundAndTextColors(position, view);
+
+            return view;
+        }
+
+        protected void changeBackgroundAndTextColors(int position, View view) {
+            Resources resources = getContext().getResources();
+            view.getRootView().setBackgroundColor(resources.getColor(backgrounds[position % 2]));
+
+            TextView responseView = (TextView) view.findViewById(R.id.student_response);
+            responseView.setTextColor(resources.getColor(foregrounds[position % 3]));
+        }
+
+        @Override
+        protected void populateView(View view, QuickShortAnswerResponse response) {
+            TextView name = (TextView) view.findViewById(R.id.student_name);
+            name.setText(response.getAuthor().getName());
+            TextView answer = (TextView) view.findViewById(R.id.student_response);
+            answer.setText(response.getAnswer());
+            eventBus.post(new QuickShortAnswerResponseEvent(response.getAuthor()));
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

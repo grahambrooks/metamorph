@@ -1,0 +1,273 @@
+<html><head><title>CallOnSomeoneActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>CallOnSomeoneActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/CallOnSomeoneActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">19</span>
+    <progress max="100" value="19"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostType;
+import com.alpha.api.messaging.CallOnSomeoneSettings;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.PostService;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.User;
+import com.alpha.api.services.factory.SessionTaskFactory;
+import com.alpha.utils.DelayedExecutor;
+import com.alpha.utils.DelayedRunnable;
+import com.alpha.utils.HandlerExecutor;
+import com.amplify.R;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+import roboguice.inject.InjectView;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.transform;
+
+public class CallOnSomeoneActivity extends BaseQuickActivity<CallOnSomeoneSettings> {
+
+    @InjectView(R.id.select_participant_again)
+    private Button selectParticipantAgain;
+    @InjectView(R.id.random_participant_name)
+    private TextView selectedParticipantName;
+
+    @Inject
+    private PostService postService;
+    @Inject
+    private SessionTaskFactory sessionTaskFactory;
+
+    private final DelayedExecutor executor;
+    private Participant student;
+
+    public CallOnSomeoneActivity() {
+        this(new HandlerExecutor());
+    }
+
+    @VisibleForTesting
+    protected CallOnSomeoneActivity(DelayedExecutor executor) {
+        this.executor = executor;
+    }
+
+    @Override
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.call_on_someone_teacher_view);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showStudentName(200);
+    }
+
+    @Override
+    protected Post getNewPost() {
+        User user = userService.getUser();
+        student = selectRandomParticipant();
+        if (student != null) {
+            return new Post(PostType.CALL_ON_SOMEONE,
+                    user.asAuthor(),
+                    new Date(),
+                    user.createPostSectionFromCurrentSection(),
+                    getString(R.string.call_on),
+                    getString(R.string.call_on_post_description, student.getName()));
+        }
+        return null;
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected CallOnSomeoneSettings getActivitySettings() {
+        return userService.getUser().getCurrentControlSettingsModel().getCallOnSomeoneSettings();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void sessionParticipantAdded(Participant participant) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override
+    protected void updateUI(Long postId) {
+        selectParticipantAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                student = selectRandomParticipant();
+                if (student != null) {
+                    postService.addCallOnSomeoneParticipant(getCurrentActivityPostId(), student.getId());
+                }
+                showStudentName(0);
+            }
+        });
+    }
+
+    @Override
+    public void onSuccess(Post post) {
+        super.onSuccess(post);
+        if (student != null) {
+            postService.addCallOnSomeoneParticipant(post.getId(), student.getId());
+        }
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    protected void startQuickActivityTask(Post post) {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private Participant selectRandomParticipant() {
+        Section section = userService.getUser().getCurrentSection();
+        Long studentIdToIgnore = getActivitySettings().getCalledOnParticipantId();
+        Optional<Participant> participant = section.selectRandomActiveParticipant(studentIdToIgnore);
+        if (participant.isPresent()) {
+            Participant selectedStudent = participant.get();
+            sessionTaskFactory.createCallOnSomeoneTask().execute();
+            getActivitySettings().callOnParticipant(selectedStudent.getId());
+            return selectedStudent;
+        } else {
+            getActivitySettings().resetCallOnSomeone();
+            return null;
+        }
+    }
+
+    private void showStudentName(int delayTime) {
+        if (getActivitySettings().isSomeoneAlreadyBeingCalledOn()) {
+            shuffleParticipantsAnimation(
+                    delayTime,
+                    userService.getCalledOnStudentName(),
+                    getAllActiveParticipants()
+            );
+        }
+
+    }
+
+    private void shuffleParticipantsAnimation(int initialDelay, String selectedName, Collection<Participant> students) {
+        List<Participant> random = newArrayList(students);
+        Collections.shuffle(random);
+
+        int limit = Math.min(random.size(), 10);
+        List<String> names = newArrayList(transform(random.subList(0, limit), new Function<Participant, String>() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            public String apply(Participant participant) {
+                return participant.getName();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }));
+        names.add(selectedName);
+
+        int delay = initialDelay;
+        for (String name : names) {
+            executor.execute(new ProfileUpdater(delay, name));
+            delay += 50 + (delay / 5);
+        }
+    }
+
+    private class ProfileUpdater implements DelayedRunnable {
+        private final long delay;
+        private final String name;
+
+        public ProfileUpdater(long delay, String name) {
+            this.delay = delay;
+            this.name = name;
+        }
+
+        @Override
+        public long delay() {
+            return delay;
+        }
+
+        @Override
+        public void run() {
+            selectedParticipantName.setText(name);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

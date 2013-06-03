@@ -1,0 +1,205 @@
+<html><head><title>HandRaisingListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>HandRaisingListener.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/HandRaisingListener.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ProgressBar;
+import com.alpha.api.callbacks.SendRaiseLowerHandCallbacks;
+import com.alpha.api.services.ApiErrorReason;
+import com.alpha.api.services.ParticipantSessionService;
+import com.alpha.api.services.Student;
+import com.alpha.api.services.UserService;
+import com.google.common.base.Optional;
+import com.google.inject.Inject;
+
+public class HandRaisingListener implements SendRaiseLowerHandCallbacks, OnClickListener {
+
+    private final Optional<ProgressBar> progressBar = Optional.absent();
+    private final ParticipantSessionService participantSessionService;
+    private final UserService userService;
+    private final Toaster toaster;
+
+    private View handView;
+
+    @Inject
+    public HandRaisingListener(ParticipantSessionService participantSessionService,
+                               UserService userService,
+                               Toaster toaster) {
+
+        this.participantSessionService = participantSessionService;
+        this.userService = userService;
+        this.toaster = toaster;
+    }
+
+    public void setHandView(View handView) {
+        this.handView = handView;
+        this.handView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        handView.setEnabled(false); // stop repeat click
+        handView.setActivated(!handView.isActivated()); // give feedback
+        participantSessionService.toggleHand(student(), this, progressBar);
+    }
+
+    @Override
+    public void onFailure(ApiErrorReason errorReason) {
+        raiseOrLowerHand(); // reset hand to match current state
+        toaster.errorToast(errorReason);
+    }
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onRaiseHandSuccess() {
+        raiseStudentHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onLowerHandSuccess() {
+        lowerStudentHand();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void updateVisibilityState() {
+        setHandVisible(userService.isSessionOngoingForCurrentSection());
+    }
+
+    private void setHandVisible(boolean visible) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (visible) {
+            showHand();
+        } else {
+            hideHand();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private void hideHand() {
+        handView.setEnabled(false);
+        handView.setActivated(false);
+        handView.setVisibility(View.GONE);
+    }
+
+    private void showHand() {
+        handView.setVisibility(View.VISIBLE);
+        raiseOrLowerHand();
+    }
+
+    private void raiseOrLowerHand() {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (student().hasHandRaised()) {
+            raiseStudentHand();
+        } else {
+            lowerStudentHand();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private Student student() {
+        return userService.getUser();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private void raiseStudentHand() {
+        handView.setActivated(true);
+        handView.setEnabled(true);
+    }
+
+    private void lowerStudentHand() {
+        handView.setActivated(false);
+        handView.setEnabled(true);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

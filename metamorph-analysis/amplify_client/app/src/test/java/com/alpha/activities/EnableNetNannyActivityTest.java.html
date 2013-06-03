@@ -1,0 +1,269 @@
+<html><head><title>EnableNetNannyActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EnableNetNannyActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/EnableNetNannyActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">16</span>
+    <progress max="100" value="16"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.UserRole;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.NetNannyConfigurationEvent;
+import com.alpha.receivers.NetNannyBroadcastReceiver;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.services.PackageServiceManager.PackageServiceFactory;
+import com.alpha.services.PackageServiceManager.PackageServiceManager;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import com.xtremelabs.robolectric.shadows.ShadowApplication;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class EnableNetNannyActivityTest {
+
+    @Inject
+    private EnableNetNannyActivity enableNetNannyActivity;
+    @Inject
+    private Environment environment;
+    @Inject
+    private EventBus eventBus;
+    @Inject
+    private UserService userService;
+    @Mock
+    private Intent intent;
+    @Mock
+    private PackageServiceManager packageServiceManager;
+    @Mock
+    private PackageServiceFactory packageServiceFactory;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        ActivityTestInjector.newInjector(this, EnableNetNannyActivity.class)
+                .bindInstance(PackageServiceFactory.class, packageServiceFactory)
+                .configureActivity();
+
+        given(intent.getBooleanExtra(EnableNetNannyActivity.EXTRA_ENABLE, false)).willReturn(true);
+        given(packageServiceFactory.getPackageServiceManager()).willReturn(packageServiceManager);
+
+        enableNetNannyActivity.setIntent(intent);
+    }
+
+    @Test
+    public void shouldInitPackageServiceManagerOnCreate() {
+        enableNetNannyActivity.onCreate(null);
+
+        verify(packageServiceManager).init(enableNetNannyActivity, enableNetNannyActivity.packageServiceCallback);
+    }
+
+    @Test
+    public void shouldDisableNetNanny() {
+        when(intent.getBooleanExtra(EnableNetNannyActivity.EXTRA_ENABLE, false)).thenReturn(false);
+        enableNetNannyActivity.onCreate(null);
+
+        enableNetNannyActivity.packageServiceCallback.onInitSuccess();
+
+        verify(packageServiceManager).enablePackage(eq(EnableNetNannyActivity.NET_NANNY_PACKAGE_NAME), eq(false));
+    }
+
+    @Test
+    public void shouldShutdownPackageServiceManagerOnDestroy() {
+        when(intent.getSerializableExtra(EnableNetNannyActivity.EXTRA_USER_ROLE)).thenReturn(UserRole.STUDENT);
+
+        enableNetNannyActivity.onCreate(null);
+
+        enableNetNannyActivity.onDestroy();
+
+        verify(packageServiceManager).shutDown();
+    }
+
+    @Test
+    public void shouldNOTShutdownPackageServiceManagerOnDestroyIfTeacher() {
+        when(intent.getSerializableExtra(EnableNetNannyActivity.EXTRA_USER_ROLE)).thenReturn(UserRole.TEACHER);
+
+        enableNetNannyActivity.onCreate(null);
+
+        enableNetNannyActivity.onDestroy();
+
+        verify(packageServiceManager, times(0)).shutDown();
+        verify(eventBus, times(0)).unregister(enableNetNannyActivity.listeners);
+    }
+
+    @Test
+    public void shouldSetResultAndFinishAfterEnablingNetNanny() {
+        enableNetNannyActivity.onCreate(null);
+
+        enableNetNannyActivity.packageServiceCallback.onInitSuccess();
+        enableNetNannyActivity.packageServiceCallback.onEnablePackage(true, "");
+
+        assertThat(shadowOf(enableNetNannyActivity).isFinishing(), Matchers.is(true));
+        assertThat(shadowOf(enableNetNannyActivity).getResultCode(), Matchers.is(Activity.RESULT_OK));
+    }
+
+    @Test
+    public void shouldSetResultAndFinishIfEnablingNetNannyFails() {
+        enableNetNannyActivity.onCreate(null);
+
+        enableNetNannyActivity.packageServiceCallback.onEnablePackage(false, "");
+
+        assertThat(shadowOf(enableNetNannyActivity).isFinishing(), Matchers.is(true));
+        assertThat(shadowOf(enableNetNannyActivity).getResultCode(), Matchers.is(RegistrationActivity.NET_NANNY_ENABLE_FAILED));
+    }
+
+    @Test
+    public void shouldSetResultAndFinishIfDisablingNetNannyFails() {
+        when(intent.getBooleanExtra(EnableNetNannyActivity.EXTRA_ENABLE, false)).thenReturn(false);
+
+        enableNetNannyActivity.onCreate(null);
+        enableNetNannyActivity.packageServiceCallback.onEnablePackage(false, "");
+
+        assertThat(shadowOf(enableNetNannyActivity).isFinishing(), Matchers.is(true));
+        assertThat(shadowOf(enableNetNannyActivity).getResultCode(), Matchers.is(RegistrationActivity.NET_NANNY_DISABLE_STEP_FAILED));
+    }
+
+    @Test
+    public void shouldFinishWhenNetNannyIsRequiredAndSetupIsSuccessful() {
+        when(environment.isNetNannyRequired()).thenReturn(true);
+
+        enableNetNannyActivity.listeners.onNetNannyConfigurationFinished(new NetNannyConfigurationEvent(true));
+
+        assertThat(shadowOf(enableNetNannyActivity).isFinishing(), Matchers.is(true));
+        assertThat(shadowOf(enableNetNannyActivity).getResultCode(), Matchers.is(Activity.RESULT_OK));
+    }
+
+    @Test
+    public void shouldRegisterListenersOnCreate() {
+        enableNetNannyActivity.onCreate(null);
+
+        verify(eventBus).register(eq(enableNetNannyActivity.listeners));
+    }
+
+    @Test
+    public void shouldUnregisterListenersOnDestroy() {
+        enableNetNannyActivity.onCreate(null);
+        enableNetNannyActivity.onDestroy();
+
+        verify(eventBus).unregister(eq(enableNetNannyActivity.listeners));
+    }
+
+    @Test
+    public void shouldStartNetNannyIfUserIsStudent() {
+        when(intent.getBooleanExtra(EnableNetNannyActivity.EXTRA_ENABLE, false)).thenReturn(true);
+        when(userService.isStudent()).thenReturn(true);
+        when(environment.isNetNannyRequired()).thenReturn(true);
+
+        enableNetNannyActivity.onCreate(null);
+        enableNetNannyActivity.packageServiceCallback.onEnablePackage(true, "");
+
+        Intent launchedIntent = shadowOf(enableNetNannyActivity).getNextStartedActivity();
+        assertThat(launchedIntent.getComponent().getPackageName(), is(EnableNetNannyActivity.NET_NANNY_PACKAGE_NAME));
+    }
+
+    @Test
+    public void shouldUnregisterNetNannyReceiverOnDestroy(){
+        enableNetNannyActivity.onCreate(null);
+        enableNetNannyActivity.onDestroy();
+
+        List<ShadowApplication.Wrapper> wrappers = Robolectric.getShadowApplication().getRegisteredReceivers();
+        Optional<ShadowApplication.Wrapper> optional = Iterables.tryFind(wrappers, new Predicate<ShadowApplication.Wrapper>() {
+            @Override
+            public boolean apply(@Nullable ShadowApplication.Wrapper input) {
+                return input.getBroadcastReceiver() instanceof NetNannyBroadcastReceiver;
+            }
+        });
+        assertThat(optional.isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldNotLaunchNetNannyWhenNetNannyIsAlreadyEnabled(){
+        enableNetNannyActivity.needToLaunchNetNanny = false;
+        ArgumentCaptor<NetNannyConfigurationEvent> argumentCaptor = ArgumentCaptor.forClass(NetNannyConfigurationEvent.class);
+
+        Intent intent = new Intent().setPackage(EnableNetNannyActivity.NET_NANNY_PACKAGE_NAME);
+        enableNetNannyActivity.launchNetNanny(intent);
+
+        verify(eventBus).post(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().isSuccess(), is(true));
+    }
+
+    @Test
+    public void shouldLaunchNetNannyWhenNetNannyIsNotRunning(){
+        enableNetNannyActivity.needToLaunchNetNanny = true;
+        Intent intent = new Intent().setPackage(EnableNetNannyActivity.NET_NANNY_PACKAGE_NAME);
+        enableNetNannyActivity.launchNetNanny(intent);
+
+        Intent launchedApp = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(launchedApp, is(intent));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

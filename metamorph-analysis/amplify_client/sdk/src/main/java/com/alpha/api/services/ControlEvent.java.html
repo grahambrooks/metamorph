@@ -1,0 +1,166 @@
+<html><head><title>ControlEvent.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ControlEvent.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/ControlEvent.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">13</span>
+    <progress max="100" value="13"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.messaging.ControlSettingsModel;
+import com.alpha.api.services.events.*;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+import org.slf4j.Logger;
+
+import java.util.List;
+
+public enum ControlEvent {
+    LOCK {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            Optional<Section> liveSection = user.getLiveSectionOld();
+            if (liveSection.isPresent()) {
+                user.getSession().engageEyesOnTeacher();
+                eventBus.post(new ActivateDeviceLockEvent());
+            }
+        }
+    },
+    UNLOCK {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            Optional<Section> liveSection = user.getLiveSectionOld();
+            if (liveSection.isPresent()) {
+                user.getSession().disengageEyesOnTeacher();
+                eventBus.post(new DeactivateDeviceLockEvent());
+            }
+        }
+    },
+    FORCE_FIELD_ENGAGED {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            user.engageForceField(controlSettings.getAllowedApps());
+            eventBus.post(new ForceFieldEvent.Engaged());
+        }
+    },
+    FORCE_FIELD_DISENGAGED {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            user.disengageForceField();
+            eventBus.post(new ForceFieldEvent.Disengaged());
+        }
+    },
+    FORCE_FIELD_WHITELIST_UPDATED {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            user.updateWhiteList(controlSettings.getAllowedApps());
+            eventBus.post(new ForceFieldEvent.Changed());
+        }
+    },
+    CALL_ON_SOMEONE {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            eventBus.post(new CallOnSomeoneEvent(controlSettings.getCallOnSomeoneSettings()));
+        }
+    },
+
+    QUICK_POLL {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            ClassSession session = user.getSession();
+            if (session.isOngoing()) {
+                eventBus.post(new QuickPollEvent(controlSettings.getQuickPollSettings()));
+            }
+        }
+    },
+
+    QUICK_SHORT_ANSWER {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            eventBus.post(new QuickShortAnswerEvent(controlSettings.getQuickShortAnswerSettings()));
+        }
+    },
+
+    SPOT_CHECK {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            ClassSession session = user.getSession();
+            if (session.isOngoing()) {
+                eventBus.post(new SpotCheckEvent(controlSettings.getSpotCheckSettings()));
+            }
+        }
+    },
+
+    COUNT_OFF {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            eventBus.post(new CountOffEvent(controlSettings.getCountOffSettings()));
+        }
+    },
+
+    COUNTDOWN_TIMER {
+        @Override
+        public void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus) {
+            ClassSession session = user.getSession();
+            if (session.isOngoing()) {
+                eventBus.post(new CountdownTimerEvent(controlSettings.getCountdownTimerSettings()));
+            }
+        }
+    };
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    public static void dispatchEvents(List<ControlEvent> events, ControlSettingsModel controlSettings,
+                                      User user, EventBus eventBus) {
+        LOGGER.info("Converted to events: " + events);
+        for (ControlEvent event : events) {
+            event.handle(controlSettings, user, eventBus);
+        }
+    }
+
+    public abstract void handle(ControlSettingsModel controlSettings, User user, EventBus eventBus);
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

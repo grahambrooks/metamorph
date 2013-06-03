@@ -1,0 +1,106 @@
+<html><head><title>MonitorViewPresenter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MonitorViewPresenter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/presenters/amplify_client/MonitorViewPresenter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.presenters;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.services.Section;
+import com.alpha.api.services.UserService;
+import com.amplify.R;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import java.text.MessageFormat;
+
+import static com.alpha.utils.CharSequences.highlight;
+
+public class MonitorViewPresenter {
+
+    private final Resources resources;
+    private final TextView studentsInSessionCount;
+    private final UserService userService;
+
+    @Inject
+    public MonitorViewPresenter(@Assisted View view, Context context, UserService userService) {
+        this.studentsInSessionCount = (TextView) view.findViewById(R.id.students_in_session_count);
+        this.resources = context.getResources();
+        this.userService = userService;
+    }
+
+    public void setViewToOutOfSession() {
+        updateCounts(false);
+    }
+
+    public void setViewToInSession() {
+        updateCounts(true);
+    }
+
+    public void updateSessionCounts(boolean inSession) {
+        updateCounts(inSession);
+    }
+
+    private void updateCounts(boolean inSession) {
+        String inSessionCount;
+        Section currentUserSection = userService.getCurrentUserSection();
+
+        if (inSession) {
+            inSessionCount = MessageFormat.format(resources.getString(R.string.students_in_session_count),
+                    currentUserSection.getInSessionParticipantsCount(),
+                    currentUserSection.getAllParticipantsCount());
+        } else {
+            inSessionCount = resources.getString(R.string.no_class_in_session_count);
+        }
+
+        studentsInSessionCount.setText(highlight(inSessionCount, resources, R.color.primary_orange));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

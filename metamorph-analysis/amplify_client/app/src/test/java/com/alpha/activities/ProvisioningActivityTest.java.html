@@ -1,0 +1,158 @@
+<html><head><title>ProvisioningActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ProvisioningActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/ProvisioningActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">7</span>
+    <progress max="100" value="7"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Intent;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.services.PackageServiceManager.PackageServiceFactory;
+import com.alpha.services.PackageServiceManager.PackageServiceManager;
+import com.alpha.utils.FileUtils;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class ProvisioningActivityTest {
+
+    @Inject
+    private ProvisioningActivity activity;
+    @Mock
+    private FileUtils fileUtils;
+
+    @Mock
+    private PackageServiceFactory packageServiceFactory;
+
+    @Mock
+    private PackageServiceManager packageServiceManager;
+
+
+    @Before
+    public void setup() {
+        initMocks(this);
+
+        ActivityTestInjector.newInjector(this, ProvisioningActivity.class)
+                .bindInstance(FileUtils.class, fileUtils)
+                .bindInstance(PackageServiceFactory.class, packageServiceFactory)
+                .configureActivity();
+        when(packageServiceFactory.getPackageServiceManager()).thenReturn(packageServiceManager);
+    }
+
+    @Test
+    public void shouldInitPackageServiceManager()  {
+        when(fileUtils.fileExists(ProvisioningActivity.PROVISION_APK_DIR, ProvisioningActivity.PROVISION_APK_FILENAME)).thenReturn(true);
+
+        activity.onCreate(null);
+        verify(packageServiceManager).init(activity, activity.packageServiceCallback);
+    }
+
+    @Test
+    public void shouldInstallProvisioningApkOnInit()  {
+        when(fileUtils.fileExists(ProvisioningActivity.PROVISION_APK_DIR, ProvisioningActivity.PROVISION_APK_FILENAME)).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.packageServiceCallback.onInitSuccess();
+        verify(packageServiceManager).silentInstall(ProvisioningActivity.PROVISION_APK_PATH);
+    }
+
+    @Test
+    public void shouldNotGetProvisioningFileIfItDoesntExist() {
+        when(fileUtils.fileExists(ProvisioningActivity.PROVISION_APK_DIR, ProvisioningActivity.PROVISION_APK_FILENAME)).thenReturn(false);
+
+        activity.onCreate(null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldStartProvisioningIntentOnMDMInstalled() {
+        activity.packageServiceCallback.onInstalled(true, "");
+
+        final Intent nextStartedActivity = Robolectric.getShadowApplication().getNextStartedActivity();
+
+        assertThat(nextStartedActivity.getComponent(), is(ProvisioningActivity.PROVISIONING_COMPONENT) );
+    }
+
+    @Test
+    public void shouldFinishActivityInOnActivityResult(){
+        Intent intent = new Intent();
+        intent.setComponent(ProvisioningActivity.PROVISIONING_COMPONENT);
+        intent.setAction(Intent.ACTION_MAIN);
+
+        when(fileUtils.fileExists(ProvisioningActivity.PROVISION_APK_DIR, ProvisioningActivity.PROVISION_APK_FILENAME)).thenReturn(true);
+
+        activity.onCreate(null);
+        activity.packageServiceCallback.onInstalled(true, "");
+        activity.onActivityResult(ProvisioningActivity.PROVISIONING_APK_REQUEST_CODE, 0, null);
+
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldShutdownPackageServiceManagerOnDestroy() {
+        when(fileUtils.fileExists(ProvisioningActivity.PROVISION_APK_DIR, ProvisioningActivity.PROVISION_APK_FILENAME)).thenReturn(true);
+
+
+        activity.onCreate(null);
+        activity.onDestroy();
+
+        verify(packageServiceManager).shutDown();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

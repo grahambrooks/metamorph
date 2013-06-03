@@ -1,0 +1,334 @@
+<html><head><title>Section.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Section.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/Section.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">43</span>
+    <progress max="100" value="43"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.content.ContentValues;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.logging.LogUtils;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.base.Predicates.not;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.getFirst;
+import static com.google.common.collect.Lists.newArrayList;
+
+@SuppressWarnings("PMD.TooManyMethods")
+public class Section implements Serializable {
+
+    private static final Logger LOG = LogUtils.getLogger();
+
+    private final Long id;
+    private final String sectionName;
+    private final Map<Long, Participant> participants;
+    private final Course course;
+    private final String groupEmail;
+
+    public static final Function GET_SECTION_IDS = new Function<Section, Long>() {
+        @Override
+        public Long apply(Section input) {
+            return input.getId();
+        }
+    };
+
+    public static final Function GET_GROUP_EMAIL = new Function<Section, String>() {
+        @Override
+        public String apply(Section input) {
+            return input.getGroupEmail();
+        }
+    };
+
+    public Section(Course course, Long id, String sectionName, String groupEmail) {
+        this.course = course;
+        this.id = id;
+        this.sectionName = sectionName;
+        this.participants = Maps.newHashMap();
+        this.groupEmail = groupEmail;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getName() {
+        return sectionName;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    protected void resetParticipantStatus() {
+        for (Participant participant : participants.values()) {
+            participant.leaveSession();
+        }
+    }
+
+    @Override
+    public boolean equals(Object other) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        Section section = (Section) other;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    protected void addParticipantToSession(Participant participant) {
+        participants.put(participant.getId(), participant);
+    }
+
+    public Participant getParticipant(Long participantId) {
+        return participants.get(participantId);
+    }
+
+    public List<Participant> getAllParticipants() {
+        return ImmutableList.copyOf(Ordering.from(Participant.NAME_COMPARATOR).sortedCopy(participants.values()));
+    }
+
+    public List<Participant> getActiveParticipants() {
+        return ImmutableList.copyOf(Ordering.from(Participant.NAME_COMPARATOR).sortedCopy(activeParticipants()));
+    }
+
+    public List<Participant> getInactiveParticipants() {
+        return newArrayList(filter(participants.values(), Predicates.not(Participant.PRESENCE_FILTER)));
+    }
+
+    private List<Participant> activeParticipants() {
+        return newArrayList(filter(participants.values(), Participant.PRESENCE_FILTER));
+    }
+
+    public Optional<Participant> selectRandomActiveParticipant(Long... studentIdsToIgnore) {
+        List<Participant> activeParticipants = activeParticipants();</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (activeParticipants.isEmpty()) {
+            return Optional.absent();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (activeParticipants.size() == 1) {
+            return Optional.of(activeParticipants.get(0));
+        }
+        Collections.shuffle(activeParticipants);
+        Iterable<Participant> availableParticipants = filter(activeParticipants, not(ignored(studentIdsToIgnore)));
+        return Optional.fromNullable(getFirst(availableParticipants, null));
+    }
+
+    public List<Participant> getParticipantsFromIds(Collection<Long> participantIds) {
+        Participant participant;
+        List<Participant> matchedParticipants = newArrayList();
+        for (Long participantId : participantIds) {
+            participant = getParticipant(participantId);
+            if( participant == null ) {
+                LOG.error("Participant id is null");
+            }
+            matchedParticipants.add(participant);
+        }
+
+        return matchedParticipants;
+    }
+
+    private Predicate<Participant> ignored(final Long[] studentIdsToIgnore) {
+        return new Predicate<Participant>() {
+            public boolean apply(Participant participant) {
+                return ArrayUtils.contains(studentIdsToIgnore, participant.getId());
+            }
+        };
+    }
+
+    public boolean participantExistsInSession(Long participantId) {
+        return participants.containsKey(participantId);
+    }
+
+    public int getAllParticipantsCount() {
+        return participants.size();
+    }
+
+    public int getInSessionParticipantsCount() {
+        return activeParticipants().size();
+    }
+
+    public boolean hasActiveParticipants() {
+        return activeParticipants().size() > 0;
+    }
+
+    public boolean hasEnoughActiveParticipantsForCountOff() {
+        return activeParticipants().size() > 1;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String toString() {
+        return sectionName;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public ContentValues asValues() {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), id);
+        values.put(TableColumn.name.name(), sectionName);
+        values.put(TableColumn.course_id.name(), course.getId());
+        values.put(TableColumn.group_email.name(), groupEmail);
+        return values;
+    }
+
+    public void loadParticipantsFromStudents(List<Participant> students) {
+        participants.clear();
+        for (Participant student : students) {
+            participants.put(student.getId(), student);
+        }
+    }
+
+    public boolean areAllStudentsSelected(Collection<Participant> students) {
+        return students != null
+                && participants.size() == students.size()
+                && participants.values().containsAll(students);
+    }
+
+    public int countRaisedHands() {
+        int count = 0;
+        for (Participant participant : participants.values()) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (participant.hasHandRaised()) {
+                count++;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+        return count;
+    }
+
+    public Long getCourseId() {
+        return course.getId();
+    }
+
+    public String getCourseName() {
+        return course.getName();
+    }
+
+    public String getGroupEmail() {
+        return groupEmail;
+    }
+
+    public boolean hasNoParticipants() {
+        return participants.isEmpty();
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

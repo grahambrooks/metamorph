@@ -1,0 +1,208 @@
+<html><head><title>MainLauncherActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>MainLauncherActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/MainLauncherActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">11</span>
+    <progress max="100" value="11"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.Activity;
+import android.content.Intent;
+import com.alpha.api.messaging.notifications.PushNotificationRegistrationService;
+import com.alpha.api.repository.sqlite.SundaeDatabase;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.services.ControlMessageListeningService;
+import com.google.inject.Inject;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.activities.MainLauncherActivity.RequestCode;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+@RunWith(SundaeRobolectricTestRunner.class)
+public class MainLauncherActivityTest {
+
+    private MainLauncherActivity activity;
+    @Inject
+    private UserService userService;
+    @Inject
+    private DeviceLockingService lockingService;
+    @Mock
+    private SundaeDatabase database;
+
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        activity = new MainLauncherActivity();
+        ActivityTestInjector<MainLauncherActivity> testInjector =
+                new ActivityTestInjector<MainLauncherActivity>(this, MainLauncherActivity.class);
+
+        testInjector.bindInstance(SundaeDatabase.class, database);
+        testInjector.configureActivity(activity);
+    }
+
+    @Test
+    public void shouldRestartLockedActivityIfDeviceIsLockedAndUserHasRegistered(){
+        when(lockingService.isLocked()).thenReturn(true);
+        when(userService.hasUserRegistered()).thenReturn(true);
+        when(lockingService.getLockedActivity()).thenReturn((Class)getClass());
+        activity.onCreate(null);
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(getClass().getName()));
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldStartNotebooksActivityIfNotLockedAndUserRegistered(){
+        when(lockingService.isLocked()).thenReturn(false);
+        when(userService.hasUserRegistered()).thenReturn(true);
+        activity.onCreate(null);
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(NotebooksActivity.class.getName()));
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldStartServicesIfNotLockedAndUserRegistered(){
+        when(lockingService.isLocked()).thenReturn(false);
+        when(userService.hasUserRegistered()).thenReturn(true);
+        activity.onCreate(null);
+        assertServicesStarted();
+    }
+
+
+    @Test
+    public void shouldStartRegistrationActivityIfNotLockedAndNotRegistered(){
+        when(lockingService.isLocked()).thenReturn(false);
+        when(userService.hasUserRegistered()).thenReturn(false);
+
+        activity.onCreate(null);
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(RegistrationActivity.class.getName()));
+        assertThat(activity.isFinishing(), is(false));
+    }
+
+    @Test
+    public void shouldStartMigrationActivityIfRegisteredAndMigrationRequired(){
+        when(database.requiresMigration()).thenReturn(true);
+        when(userService.hasUserRegistered()).thenReturn(true);
+        activity.onCreate(null);
+
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(DBMigrationActivity.class.getName()));
+        assertThat(activity.isFinishing(), is(false));
+
+        assertThat(Robolectric.getShadowApplication().getNextStartedService(), is(nullValue()));
+
+    }
+
+    @Test
+    public void shouldStartNotebooksActivityOnOKResultForRegistrationSuccessCode(){
+        activity.onCreate(null);
+        //Clear the registration activity that has been started
+        Robolectric.getShadowApplication().getNextStartedActivity();
+
+        activity.onActivityResult(RequestCode.REGISTRATION.code(), Activity.RESULT_OK, null);
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(NotebooksActivity.class.getName()));
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    @Test
+    public void shouldNotStartServicesOnOKResultForRegistration(){
+        activity.onCreate(null);
+        //Clear the started services
+        Robolectric.getShadowApplication().clearStartedServices();
+
+        activity.onActivityResult(RequestCode.REGISTRATION.code(), Activity.RESULT_OK, null);
+        assertThat(Robolectric.getShadowApplication().getNextStartedService(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldStartServicesOnMigrationSuccessResult(){
+        activity.onCreate(null);
+        //Clear the started services
+        Robolectric.getShadowApplication().clearStartedServices();
+
+        activity.onActivityResult(RequestCode.MIGRATION.code(), Activity.RESULT_OK, null);
+        assertServicesStarted();
+    }
+
+    @Test
+    public void shouldStartNotebooksActivityOnMigrationSuccess(){
+        activity.onCreate(null);
+        //Clear the registration activity that has been started
+        Robolectric.getShadowApplication().getNextStartedActivity();
+
+        activity.onActivityResult(RequestCode.MIGRATION.code(), Activity.RESULT_OK,null);
+        Intent intent  = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent().getClassName(), is(NotebooksActivity.class.getName()));
+        assertThat(activity.isFinishing(), is(true));
+    }
+
+    private void assertServicesStarted() {
+        Intent nextStartedService = Robolectric.getShadowApplication().getNextStartedService();
+        assertThat(nextStartedService.getComponent().getClassName(), is(ControlMessageListeningService.class.getName()));
+        nextStartedService = Robolectric.getShadowApplication().getNextStartedService();
+        assertThat(nextStartedService.getComponent().getClassName(), is(PushNotificationRegistrationService.class.getName()));
+        nextStartedService = Robolectric.getShadowApplication().getNextStartedService();
+        assertThat(nextStartedService.getComponent().getClassName(), is(RetrievePostsService.class.getName()));
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<html><head><title>LearningElementJsonAdapterSerializationTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LearningElementJsonAdapterSerializationTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/json/amplify_client/LearningElementJsonAdapterSerializationTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.json;
+
+import com.alpha.api.domains.VideoLearningElement;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import static com.alpha.api.json.LearningElementJsonAdapter.ID;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+public class LearningElementJsonAdapterSerializationTest {
+
+    public static final long ELEMENT_ID = 1L;
+    public static final String JSON = "{}";
+
+    @Mock
+    private JsonSerializationContext context;
+    @Mock
+    private JsonElement jsonElement;
+
+    @Before</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setUp() throws Exception {
+        initMocks(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Test
+    public void shouldSerializeIdIntoLearningElementJson() throws Exception {
+        VideoLearningElement element = new VideoLearningElement(null, null, null);
+        element.setId(ELEMENT_ID);
+        given(context.serialize(element)).willReturn(jsonElement);
+        given(jsonElement.toString()).willReturn(JSON);
+
+        LearningElementJsonAdapter adapter = new LearningElementJsonAdapter();
+        JsonObject serialized = adapter.serialize(element, null, context).getAsJsonObject();
+
+        assertThat(serialized.get(ID).getAsLong(), is(ELEMENT_ID));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

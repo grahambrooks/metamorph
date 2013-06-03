@@ -1,0 +1,150 @@
+<html><head><title>XmppUtils.java</title>
+<link rel="stylesheet" href="../../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>XmppUtils.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/messaging/xmpp/amplify_client/XmppUtils.java</p>
+<a href='../../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">15</span>
+    <progress max="100" value="15"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.messaging.xmpp;
+
+import com.alpha.api.utilities.AmplifyException;
+import com.google.common.base.Strings;
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
+import org.jivesoftware.smackx.muc.RoomInfo;
+
+public final class XmppUtils {
+    public static final String NAME_DELIMITER = "/";
+    public static final int NUMBER_OF_PARTS = 2;
+    public static final String PREFIX = "amp_";
+
+    private XmppUtils() {
+    }
+
+    public static void connectIfNecessary(AmplifyXmppConnection xmppConnection) throws XMPPException {
+        xmppConnection.turnOnAutoReconnection();
+        if (!xmppConnection.isConnected()) {
+            xmppConnection.connect();
+        }
+    }
+
+    public static void disconnectIfNecessary(AmplifyXmppConnection xmppConnection) {
+        if (xmppConnection.isConnected()) {
+            xmppConnection.disconnect();
+        }
+        xmppConnection.turnOffAutoReconnection();
+    }
+
+    public static void connectAndAuthenticateIfNecessary(AmplifyXmppConnection xmppConnection, String loginId, String password) throws XMPPException {
+        connectIfNecessary(xmppConnection);
+        authenticateIfNecessary(xmppConnection, loginId, password);
+    }
+
+    public static boolean isRoomNotFound(XMPPException e) {
+        XMPPError xmppError = e.getXMPPError();
+        return (xmppError != null) && XMPPError.Condition.item_not_found.toString().equals(xmppError.getCondition());
+    }
+
+    public static void authenticateIfNecessary(Connection xmppConnection, String loginId, String password) throws XMPPException {
+        if (!xmppConnection.isAuthenticated()) {
+            xmppConnection.login(loginId, password);
+        }
+    }
+
+    public static void cleanUpAndRethrow(AmplifyXmppConnection xmppConnection, Exception e) {
+        XmppUtils.disconnectIfNecessary(xmppConnection);
+        throw new AmplifyException(e);
+    }
+
+    public static String getNickName(String from) {
+        return split(from);
+    }
+
+    protected static String split(String from) {
+        String[] split = from.split(NAME_DELIMITER);
+        if (NUMBER_OF_PARTS == split.length) {
+            return split[1].trim();
+        }
+        return null;
+    }
+
+    public static boolean roomExists(String roomName, MultiUserChatAdapter chatAdapter) throws XMPPException {
+        try {
+            RoomInfo roomInfo = chatAdapter.getRoomInfo(roomName);
+            return roomInfo != null;
+        } catch (XMPPException e) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (XmppUtils.isRoomNotFound(e)) {
+                return false;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            throw e;
+        }
+    }
+
+    public static String addPrefixAndSanitize(String value) {
+        return PREFIX + Strings.nullToEmpty(value).trim()
+                .toLowerCase()
+                .replaceAll("\\s+", "_")
+                .replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
+    public static DiscussionHistory noHistory() {
+        DiscussionHistory history = new DiscussionHistory();
+        history.setMaxChars(XmppSession.NO_HISTORY);
+        return history;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

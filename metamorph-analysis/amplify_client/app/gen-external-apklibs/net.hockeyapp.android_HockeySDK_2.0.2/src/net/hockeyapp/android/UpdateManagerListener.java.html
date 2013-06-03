@@ -1,0 +1,70 @@
+<html><head><title>UpdateManagerListener.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><h1>UpdateManagerListener.java</h1>
+<p>Scanned path = app/gen-external-apklibs/net.hockeyapp.android_HockeySDK_2.0.2/src/net/hockeyapp/android/amplify_client/UpdateManagerListener.java</p>
+<a href='../../../../../../../../index.html'>Index</a><table>
+<tr><th class='duplicate'>amplify_client : UpdateManagerListener.java</th><th class='duplicate'>amplify_client : UpdateManagerListener.java</th></tr><tr><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+public abstract class UpdateManagerListener {
+  /**
+   * Return your own subclass of UpdateActivity for customization. 
+   */
+  public Class<? extends UpdateActivity> getUpdateActivityClass() {
+    return UpdateActivity.class;
+  }
+
+  /**
+   * Return your own subclass of UpdateFragment for customization. 
+   */
+  public Class<? extends UpdateFragment> getUpdateFragmentClass() {
+    return UpdateFragment.class;
+  }
+  
+  /**
+   * Called when the update manager found no update. 
+   */
+  public void onNoUpdateAvailable() {
+    // Do nothing
+  }
+  
+  /**
+   * Called when the update manager found an update. 
+   */
+  public void onUpdateAvailable() {
+    // Do nothing
+  }
+}</code></pre></td><td class='duplicate'><pre class="prettyprint"><code class="prettyprint language-java">
+package net.hockeyapp.android;
+
+public abstract class UpdateManagerListener {
+  /**
+   * Return your own subclass of UpdateActivity for customization. 
+   */
+  public Class<? extends UpdateActivity> getUpdateActivityClass() {
+    return UpdateActivity.class;
+  }
+
+  /**
+   * Return your own subclass of UpdateFragment for customization. 
+   */
+  public Class<? extends UpdateFragment> getUpdateFragmentClass() {
+    return UpdateFragment.class;
+  }
+  
+  /**
+   * Called when the update manager found no update. 
+   */
+  public void onNoUpdateAvailable() {
+    // Do nothing
+  }
+  
+  /**
+   * Called when the update manager found an update. 
+   */
+  public void onUpdateAvailable() {
+    // Do nothing
+  }
+}</code></pre></td></tr></body>
+</html>

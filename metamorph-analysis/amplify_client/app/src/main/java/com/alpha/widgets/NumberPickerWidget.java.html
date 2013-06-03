@@ -1,0 +1,120 @@
+<html><head><title>NumberPickerWidget.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>NumberPickerWidget.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/widgets/amplify_client/NumberPickerWidget.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">6</span>
+    <progress max="100" value="6"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.widgets;
+
+import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
+import com.alpha.api.services.events.CountOffGroupChangeEvent;
+import com.alpha.utils.NumberPicker;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.google.common.eventbus.EventBus;
+
+public class NumberPickerWidget {
+
+    private final TextView countValue;
+    private final NumberPicker numberPicker;
+    private final Optional<EventBus> eventBus;
+
+    public NumberPickerWidget(Activity parent, int min, int max) {
+        this(parent, new NumberPicker(min, max), Optional.<EventBus>absent());
+    }
+
+    public NumberPickerWidget(Activity parent, int min, int max, int current, EventBus eventBus) {
+        this(parent, new NumberPicker(min, max, current), Optional.fromNullable(eventBus));
+    }
+
+    private NumberPickerWidget(Activity parent, NumberPicker picker, Optional<EventBus> eventBus) {
+        this.numberPicker = picker;
+        this.eventBus = eventBus;
+
+        this.countValue = (TextView) parent.findViewById(R.id.number_picker_count);
+        setCurrentValue(numberPicker.getCurrent());
+
+        View countUp = parent.findViewById(R.id.number_picker_up_button);
+        countUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCurrentValue(numberPicker.increment());
+                postChangeEvent();
+            }
+        });
+
+        View countDown = parent.findViewById(R.id.number_picker_down_button);
+        countDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCurrentValue(numberPicker.decrement());
+                postChangeEvent();
+            }
+        });
+    }
+
+    private void postChangeEvent() {
+        if (eventBus.isPresent()) {
+            eventBus.get().post(new CountOffGroupChangeEvent());
+        }
+    }
+
+    public int getCurrent() {
+        return numberPicker.getCurrent();
+    }
+
+    public void setCurrent(Integer current) {
+        numberPicker.setCurrent(Optional.fromNullable(current).or(0));
+        setCurrentValue(numberPicker.getCurrent());
+    }
+
+    private void setCurrentValue(int value) {
+        countValue.setText(String.valueOf(value));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

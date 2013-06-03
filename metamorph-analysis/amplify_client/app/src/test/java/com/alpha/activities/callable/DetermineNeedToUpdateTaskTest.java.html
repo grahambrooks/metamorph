@@ -1,0 +1,182 @@
+<html><head><title>DetermineNeedToUpdateTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>DetermineNeedToUpdateTaskTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/callable/amplify_client/DetermineNeedToUpdateTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.callable;
+
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask.DetermineNeedToUpdateCallback;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.VersionCheckResponse;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.services.events.ProgressEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.FileUtils;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class DetermineNeedToUpdateTaskTest {
+    private DetermineNeedToUpdateTask determineNeedToUpdateTask;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private Context context;
+    @Mock
+    private Environment environment;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private FileUtils fileUtils;
+    @Mock
+    private DetermineNeedToUpdateCallback callback;
+    @Mock
+    private Response response;
+    @Mock
+    private VersionCheckResponse versionCheckResponse;
+
+    @Mock
+    private EventBus eventBus;
+
+    @Mock
+    private File apkFile;
+    public static final String URL_TO_APK = "urlToApk";
+
+    @Before
+    public void setUp() throws NameNotFoundException, IOException {
+        initMocks(this);
+        determineNeedToUpdateTask = new DetermineNeedToUpdateTask(context, eventBus, webServices, environment, fileUtils, callback);
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.versionCode = 0;
+        given(context.getPackageManager().getPackageInfo(anyString(), anyInt())).willReturn(packageInfo);
+        given(webServices.get(any(ApiRequest.class))).willReturn(response);
+        given(response.getBodyAs(VersionCheckResponse.class)).willReturn(versionCheckResponse);
+        given(versionCheckResponse.needToUpdate()).willReturn(true);
+
+        given(versionCheckResponse.getApkUrl()).willReturn(URL_TO_APK);
+        given(fileUtils.downloadFileToExternalCache(context, URL_TO_APK, DetermineNeedToUpdateTask.FILE_APK_NAME)).willReturn(apkFile);
+
+    }
+
+    @Test
+    public void shouldSetFileUriIfNeedToUpdate() throws Exception{
+        determineNeedToUpdateTask.call();
+
+        verify(versionCheckResponse).setApkFile(apkFile);
+    }
+
+    @Test
+    public void shouldDeletePreviouslyCachedFiles() throws Exception{
+        determineNeedToUpdateTask.call();
+
+        verify(fileUtils).deleteFromExternalCache(context);
+    }
+
+    @Test
+    public void shouldNotSetFileUriIfNoNeedToUpdate() throws Exception{
+        when(webServices.get(any(ApiRequest.class))).thenReturn(response);
+        when(response.getBodyAs(VersionCheckResponse.class)).thenReturn(versionCheckResponse);
+        when(versionCheckResponse.needToUpdate()).thenReturn(false);
+
+        determineNeedToUpdateTask.call();
+
+        verify(versionCheckResponse, times(0)).setApkFile(any(File.class));
+    }
+
+    @Test
+    public void shouldRegisterEventBusOnCall() throws Exception {
+        determineNeedToUpdateTask.call();
+
+        verify(eventBus).register(determineNeedToUpdateTask.listener);
+    }
+
+    @Test
+    public void shouldUnRegisterEventBusOnFinally() {
+        determineNeedToUpdateTask.onFinally();
+
+        verify(eventBus).unregister(determineNeedToUpdateTask.listener);
+    }
+
+    @Test
+    public void shouldSendCallbackForProgressUpdate() {
+        determineNeedToUpdateTask.listener.onDownloadProgress(new ProgressEvent(anyInt()));
+
+        verify(callback).onUpdateDownloadProgress(anyInt());
+    }
+
+    @Test
+    public void shouldSendOnNotDeterminedWhenExceptionOccurs() {
+        determineNeedToUpdateTask.onException(mock(Exception.class));
+
+        verify(callback).onNotDetermined();
+    }
+}
+
+</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

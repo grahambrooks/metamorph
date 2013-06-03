@@ -1,0 +1,192 @@
+<html><head><title>StartSessionTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StartSessionTaskTest.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/services/amplify_client/StartSessionTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.ApiRequest;
+import com.alpha.api.domains.Post;
+import com.alpha.api.http.HttpClient.Response;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.runner.AmplifySDKTestRunner;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.google.common.eventbus.EventBus;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.api.services.ApiErrorReason.START_SESSION_FAILED;
+import static com.alpha.api.services.events.SessionStartEvent.failure;
+import static com.alpha.api.services.events.SessionStartEvent.success;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(AmplifySDKTestRunner.class)
+public class StartSessionTaskTest {
+
+    private StartSessionTask task;
+    @Mock
+    private TeacherSession teacherSession;
+    @Mock
+    private Teacher user;
+    @Mock
+    private Section section;
+    @Mock
+    private Event event;
+    @Mock
+    private WebServices webServices;
+    @Mock
+    private EventBus eventBus;
+    @Mock
+    private AnalyticsAgent analyticsAgent;
+    @Mock
+    private ProgressBar progressBar;
+    @Mock
+    private Response apiResponse;
+    @Mock
+    private Post post;
+    @Mock
+    private ClassSession classSession;
+
+    private static final boolean SUCCESS = true;
+
+    @Before
+    @Ignore
+    public void setUp() throws Exception {
+        initMocks(this);
+        task = new StartSessionTask(teacherSession, webServices, eventBus, analyticsAgent, user, progressBar);
+        given(user.getCurrentSection()).willReturn(section);
+        given(webServices.post(any(ApiRequest.class))).willReturn(apiResponse);
+        given(apiResponse.isSuccess()).willReturn(true);
+        given(apiResponse.getBodyAs(Post.class)).willReturn(post);
+        given(user.getSession()).willReturn(classSession);
+    }
+
+    @Test
+    public void shouldAssociateSectionWithSessionSpecifyingSessionPostId() throws Exception {
+        when(post.getId()).thenReturn(22L);
+        setupApiForResponse(SUCCESS);
+        task.call();
+        task.onSuccess(SessionTaskResult.SESSION_STARTED_SUCCESSFULLY);
+    }
+
+    @Test
+    public void shouldStartClassXmppSession() {
+        task.call();
+
+        verify(teacherSession).createSession(user);
+    }
+
+    @Test
+    public void shouldSendStartSessionEvent() {
+        Event startSessionEvent = mock(Event.class);
+        when(user.startSessionEvent()).thenReturn(startSessionEvent);
+
+        task.call();
+
+        verify(webServices).send(startSessionEvent);
+    }
+
+    @Test
+    public void shouldMaintainSessionAssociationIfTaskResultIsSuccess() {
+        task.onSuccess(SessionTaskResult.SESSION_STARTED_SUCCESSFULLY);
+        verify(section, never()).resetParticipantStatus();
+    }
+
+
+    @Test
+    public void shouldReturnSuccessCodeWhenSessionInitiationSucceeds() throws Exception {
+        setupApiForResponse(SUCCESS);
+        assertThat(task.call(), equalTo(SessionTaskResult.SESSION_STARTED_SUCCESSFULLY));
+    }
+
+    @Test
+    public void shouldCallOnSuccessCallbackWhenSessionSuccessfullyStarted() throws Exception {
+        setupApiForResponse(SUCCESS);
+        task.onSuccess(SessionTaskResult.SESSION_STARTED_SUCCESSFULLY);
+        verify(eventBus).post(success());
+    }
+
+    @Test
+    public void shouldCallOnFailureCallbackWhenXmppConnectionFailed() throws Exception {
+        task.onException(new Exception());
+        verify(eventBus).post(failure(START_SESSION_FAILED));
+    }
+
+    @Test
+    public void shouldInvokeStartSessionWithCorrectCallbacks() throws Exception {
+        setupApiForResponse(SUCCESS);
+        task.call();
+        verify(teacherSession).createSession(eq(user)
+        );
+    }
+
+    private void setupApiForResponse(boolean isSuccess) throws Exception {
+        when(user.startSessionEvent()).thenReturn(event);
+        when(webServices.send(event)).thenReturn(isSuccess);
+        when(webServices.post(any(ApiRequest.class))).thenReturn(apiResponse);
+        when(apiResponse.isSuccess()).thenReturn(isSuccess);
+
+        if(isSuccess){
+            when(user.getCurrentSection()).thenReturn(section);
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

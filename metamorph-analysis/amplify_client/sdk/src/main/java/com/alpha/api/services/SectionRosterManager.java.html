@@ -1,0 +1,89 @@
+<html><head><title>SectionRosterManager.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>SectionRosterManager.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/SectionRosterManager.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import com.alpha.api.authentication.APIRequestBuilder;
+import com.alpha.api.domains.SectionUser;
+import com.alpha.api.http.HttpClient;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.ParticipantDataStore;
+import com.alpha.api.services.web.WebServices;
+import com.google.inject.Inject;
+
+import java.util.List;
+
+class SectionRosterManager {
+
+    private final Environment environment;
+    private final WebServices webServices;
+    private final ParticipantDataStore participantDataStore;
+    private final APIRequestBuilder apiRequestBuilder;
+
+
+    @Inject
+    public SectionRosterManager(Environment environment, WebServices webServices, ParticipantDataStore participantDataStore,
+                                APIRequestBuilder apiRequestBuilder) {
+        this.environment = environment;
+        this.webServices = webServices;
+        this.participantDataStore = participantDataStore;
+        this.apiRequestBuilder = apiRequestBuilder;
+    }
+
+    public void updateUsersSectionParticipants(User user){
+        String userSectionsUri = environment.getSectionUsersURI(user.getId());
+        HttpClient.Response response = webServices.get(apiRequestBuilder.getRequest(userSectionsUri).build());
+        List<SectionUser> sectionUsers = response.getBodyAs(SectionUser.LIST_TYPE);
+        participantDataStore.replaceAll(sectionUsers);
+        for(SectionUser sectionUser : sectionUsers){
+            user.getSectionWithId(sectionUser.getSectionId()).loadParticipantsFromStudents(sectionUser.getStudents());
+        }
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

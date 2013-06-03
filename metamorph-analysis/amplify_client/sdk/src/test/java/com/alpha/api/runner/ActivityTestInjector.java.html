@@ -1,0 +1,431 @@
+<html><head><title>ActivityTestInjector.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ActivityTestInjector.java</h1>
+<p>Scanned path = sdk/src/test/java/com/alpha/api/runner/amplify_client/ActivityTestInjector.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">20</span>
+    <progress max="100" value="20"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.runner;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.os.Bundle;
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
+import com.google.inject.Stage;
+import com.google.inject.util.Modules;
+import com.xtremelabs.robolectric.Robolectric;
+import roboguice.RoboGuice;
+import roboguice.activity.RoboActivity;
+import roboguice.inject.ContextScope;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+//TODO This is duplicated from App, need to refactor and consolidate
+public class ActivityTestInjector<T> {
+    private final Map<Class, Object> classesToBindToMocks = new HashMap<Class, Object>();
+    private final Object testCase;
+    private final Class<T> activityOrFragmentClass;
+
+    public ActivityTestInjector(Object testCase, Class<T> activityOrFragmentClass) {
+        this.testCase = testCase;
+        this.activityOrFragmentClass = activityOrFragmentClass;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public static <T> ActivityTestInjector<T> newInjector(Object testCase, Class<T> activityOrFragmentClass) {
+        return new ActivityTestInjector<T>(testCase, activityOrFragmentClass);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public <Type> ActivityTestInjector<T> bindInstance(Class<Type> classToMock, Type instanceOfClassToMock) {
+        classesToBindToMocks.put(classToMock, instanceOfClassToMock);
+        return this;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void configureActivity() {
+        bindMocksToContext();
+        injectObjectsToTest(activityOrFragmentClass);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public void configureActivity(T activity) {
+        bindMocksToContext();
+        injectObjectsToTest(activity);
+    }
+
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public T configureFragment() {
+        return setFragmentWithTestActivity();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void configureTestSubject(){
+        bindMocksToContext();
+        injectObjectsIntoSubject();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public T configureFragment(Activity parentActivity) {
+        return setupFragment(parentActivity);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public T configureFragmentWithArgs(Object... args) {
+        TestActivity activity = new TestActivity();
+        activity.onCreate(null);
+
+        return setupFragmentWithArgs(activity, args);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private T setupFragmentWithArgs(Activity activity, Object... args) {
+        bindMocksToContext();
+        T fragment;
+        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        try {
+            fragment = activityOrFragmentClass.newInstance();
+
+            List<Class> methodSignature = newArrayList();
+
+            for (Object object: args) {
+                methodSignature.add(object.getClass());
+            }
+
+            Method newInstance = activityOrFragmentClass.getDeclaredMethod("newInstance", methodSignature.toArray(new Class<?>[methodSignature.size()]));
+            newInstance.setAccessible(true);
+            fragment = (T) newInstance.invoke(fragment, args);
+
+            fragmentTransaction.add((Fragment) fragment, "test");
+        } catch (Exception e) {
+            throw new RuntimeException("Do you have Fragment.newInstance() method with given args as paramenter?" , e);
+        }
+        fragmentTransaction.commit();
+
+
+        Injector activityInjector = RoboGuice.getInjector(activity);
+        activityInjector.getInstance(ContextScope.class).enter(activity);
+
+        activityInjector.injectMembers(testCase);
+        return fragment;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void injectObjectsIntoSubject(){
+        try {
+            TestActivity activity = new TestActivity();
+            Injector activityInjector = RoboGuice.getInjector(activity);
+            activityInjector.getInstance(ContextScope.class).enter(activity);
+            activityInjector.injectMembers(testCase);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem when entering scope", e);
+        }
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private T setupFragment(Activity activity) {
+        bindMocksToContext();
+        return setupFragmentForActivity(activity);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private T setFragmentWithTestActivity(){
+        TestActivity activity = new TestActivity();
+        bindMocksToContext();
+        activity.onCreate(null);
+
+        return setupFragmentForActivity(activity);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private T setupFragmentForActivity(Activity activity) {
+        T fragment;
+        FragmentTransaction fragmentTransaction = activity.getFragmentManager().beginTransaction();
+        try {
+            fragment = activityOrFragmentClass.newInstance();
+            fragmentTransaction.add((Fragment) fragment, "test");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        fragmentTransaction.commit();
+
+
+        Injector activityInjector = RoboGuice.getInjector(activity);
+        activityInjector.getInstance(ContextScope.class).enter(activity);
+
+        activityInjector.injectMembers(testCase);
+        return fragment;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public static <T> ActivityTestInjector<T> create(Object testClassInstance, Class<T> activityClass) {
+        return new ActivityTestInjector<T>(testClassInstance, activityClass);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private static class TestActivity extends RoboActivity {
+        @Override
+        @SuppressWarnings("PMD.UselessOverridingMethod")</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    public void bindMocksToContext() {
+        RoboGuice.setBaseApplicationInjector(Robolectric.application, Stage.DEVELOPMENT,
+                Modules.override(new UnitTestModule()).with(new UnitTestOverrideModule()),
+                RoboGuice.newDefaultRoboModule(Robolectric.application));
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void injectObjectsToTest(Class<T> activity) {
+        try {
+            injectObjectsToTest(activity.newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException("Problem when entering scope", e);
+        }
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private void injectObjectsToTest(T activity) {
+        try {
+            T activityInstance = activity;
+            Injector activityInjector = RoboGuice.getInjector((Activity) activityInstance);
+            activityInjector.getInstance(ContextScope.class).enter((Activity) activityInstance);
+            activityInjector.injectMembers(testCase);
+        } catch (Exception e) {
+            throw new RuntimeException("Problem when entering scope", e);
+        }
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    private class UnitTestOverrideModule extends AbstractModule {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        protected void configure() {
+            for (Entry<Class, Object> entry : classesToBindToMocks.entrySet()) {
+                bind(entry.getKey()).toInstance(entry.getValue());
+            }
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public <T extends Activity> T getCurrentActivityContext(){
+        WeakReference<Context> context = RoboGuice.getInjector(Robolectric.application).getInstance(ContextScope.class).getContextStack().get(1);
+        return (T)context.get();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

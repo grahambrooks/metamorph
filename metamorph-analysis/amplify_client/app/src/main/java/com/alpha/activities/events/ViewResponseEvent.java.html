@@ -1,0 +1,93 @@
+<html><head><title>ViewResponseEvent.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>ViewResponseEvent.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/events/amplify_client/ViewResponseEvent.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">17</span>
+    <progress max="100" value="17"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.events;
+
+import com.alpha.api.domains.Post;
+
+public class ViewResponseEvent {
+    public final Long authorId;
+    public final Post post;
+
+    public ViewResponseEvent(Long authorId, Post post) {
+        this.authorId = authorId;
+        this.post = post;
+    }
+
+    @Override
+    public boolean equals(Object o) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        ViewResponseEvent that = (ViewResponseEvent) o;
+
+        if (authorId != null ? !authorId.equals(that.authorId) : that.authorId != null) return false; //NOPMD
+        if (post != null ? !post.equals(that.post) : that.post != null) return false; //NOPMD
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = authorId != null ? authorId.hashCode() : 0; //NOPMD
+        result = 31 * result + (post != null ? post.hashCode() : 0); //NOPMD
+        return result;
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

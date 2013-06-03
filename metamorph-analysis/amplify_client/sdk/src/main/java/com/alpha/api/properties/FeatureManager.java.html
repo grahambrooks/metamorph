@@ -1,0 +1,120 @@
+<html><head><title>FeatureManager.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>FeatureManager.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/properties/amplify_client/FeatureManager.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.properties;
+
+import com.google.common.annotations.VisibleForTesting;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.introspector.BeanAccess;
+
+public class FeatureManager {
+
+    public enum Feature implements FeatureKey {
+        //EXAMPLE_TOGGLE_ONE
+        MY_LIBRARY
+        ;
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public String getKey() {
+            return name().toLowerCase();
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    }
+
+    private final FeatureMap features; // populated by the parser
+    private final Environment environment;
+    private final Yaml yaml;
+
+    public FeatureManager(Environment environment, String featureFileContents) {
+        this(environment, featureFileContents, new Yaml());
+    }
+
+    @VisibleForTesting
+    protected FeatureManager(Environment environment, String featureFileContents, Yaml yamlParser) {
+        this.environment = environment;
+        this.yaml = configureFieldAccess(yamlParser);
+        this.features = parse(featureFileContents);
+
+        features.validateKeys(Feature.values());
+    }
+
+    private Yaml configureFieldAccess(Yaml yamlParser) {
+        // Forces SnakeYaml to use reflection to directly populate private class fields, rather than getters and setters
+        yamlParser.setBeanAccess(BeanAccess.FIELD);
+        return yamlParser;
+    }
+
+    private FeatureMap parse(String featureFileContents) {
+        return configureFieldAccess(yaml).loadAs(featureFileContents, FeatureMap.class);
+    }
+
+    public boolean isActive(FeatureKey feature) {
+        FeatureInfo featureInfo = features.getFeature(feature.getKey());
+        if (featureInfo == null) {
+            throw new IllegalArgumentException("Feature " + feature.getKey() + " not defined");
+        }
+
+        return featureInfo.isActive(environment);
+    }
+
+    // Package protected scope for internal use within this class and also unit tests
+    interface FeatureKey {
+        String getKey();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

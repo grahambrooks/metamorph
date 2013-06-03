@@ -1,0 +1,288 @@
+<html><head><title>PlaylistActivityTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistActivityTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/amplify_client/PlaylistActivityTest.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">18</span>
+    <progress max="100" value="18"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.alpha.activities.adapters.PlaylistCursorAdapter;
+import com.alpha.activities.factories.CursorLoaderFactory;
+import com.alpha.api.domains.Playlist;
+import com.alpha.api.repository.PlaylistDataStore;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.api.services.events.PlaylistRetrievedEvent;
+import com.alpha.api.services.factory.UserTaskFactory;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.utils.ApplicationUtils;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static com.xtremelabs.robolectric.Robolectric.shadowOf;
+import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class PlaylistActivityTest {
+
+    private static final String BROWSER_PACKAGE = "com.android.browser";
+    private static final String GOOGLE_DRIVE_PACKAGE = "com.google.android.apps.docs";
+    private static final String EREADER_PACKAGE = "com.kaldorgroup.amplify";
+    private static final String GALLERY_PACKAGE = "com.android.gallery3d";
+
+    @Mock
+    private ApplicationUtils applicationUtils;
+    @Mock
+    private PlaylistCursorAdapter playlistCursorAdapter;
+    @Mock
+    private CursorLoaderFactory cursorLoaderFactory;
+    @Mock
+    private UserTaskFactory userTaskFactory;
+    @Mock
+    private UserService userService;
+    @Mock
+    private PlaylistDataStore playlistDataStore;
+    @Mock
+    private User user;
+    @Mock
+    private Playlist playlist;
+
+    @Inject
+    private PlaylistActivity playlistActivity;
+
+    private Button doneButton;
+    private Button browserButton;
+    private Button eReaderButton;
+    private Button googleDriveButton;
+    private Button khanAcademyButton;
+    private ListView playlistItems;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+
+        PlaylistCursorLoaderInitializer playlistCursorLoaderInitializer = mock(PlaylistCursorLoaderInitializer.class);
+
+        given(cursorLoaderFactory.createPlaylistCursorLoaderInitializer((Long) anyObject(), (PlaylistCursorAdapter) anyObject())).willReturn(playlistCursorLoaderInitializer);
+        given(userService.getUser()).willReturn(user);
+        given(playlistDataStore.getPlaylistFor(user)).willReturn(newArrayList(playlist));
+
+        ActivityTestInjector.newInjector(this, PlaylistActivity.class)
+                .bindInstance(ApplicationUtils.class, applicationUtils)
+                .bindInstance(PlaylistCursorAdapter.class, playlistCursorAdapter)
+                .bindInstance(CursorLoaderFactory.class, cursorLoaderFactory)
+                .bindInstance(UserTaskFactory.class, userTaskFactory)
+                .bindInstance(UserService.class, userService)
+                .bindInstance(PlaylistDataStore.class, playlistDataStore)
+                .configureActivity();
+
+        playlistActivity.onCreate(null);
+
+        doneButton = (Button) playlistActivity.findViewById(R.id.done_button);
+        browserButton = (Button) playlistActivity.findViewById(R.id.browser_button);
+        eReaderButton = (Button) playlistActivity.findViewById(R.id.ereader_button);
+        khanAcademyButton = (Button) playlistActivity.findViewById(R.id.gallery_button);
+        googleDriveButton = (Button) playlistActivity.findViewById(R.id.gdrive_button);
+        playlistItems = (ListView) playlistActivity.findViewById(R.id.playlist_items);
+    }
+
+    @Test
+    public void shouldShowShareTitle() {
+        TextView shareText = (TextView) playlistActivity.findViewById(R.id.share_app_heading);
+        assertThat(shareText.getText().toString(), is("Share"));
+    }
+
+    @Test
+    public void shouldFinishActivityWhenClickCancelButton() {
+        doneButton.performClick();
+
+        assertTrue(shadowOf(playlistActivity).isFinishing());
+    }
+
+    @Test
+    public void shouldShowGoogleDriveButtonAndTextIfAppIsInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GOOGLE_DRIVE_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(GOOGLE_DRIVE_PACKAGE, googleDriveButton);
+        assertThat(googleDriveButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldLaunchGoogleDriveWhenGoogleDriveButtonClicked() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GOOGLE_DRIVE_PACKAGE))).thenReturn(true);
+        playlistActivity.setUpAppButton(GOOGLE_DRIVE_PACKAGE, googleDriveButton);
+
+        googleDriveButton.performClick();
+
+        Intent gdriveIntent = shadowOf(playlistActivity).getNextStartedActivity();
+        assertThat(gdriveIntent.getComponent().getPackageName(), is(GOOGLE_DRIVE_PACKAGE));
+    }
+
+    @Test
+    public void shouldShowReaderButtonIfAppIsInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(EREADER_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(EREADER_PACKAGE, eReaderButton);
+        assertThat(eReaderButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldShowKhanAcademyButtonIfAppIsInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GALLERY_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(GALLERY_PACKAGE, khanAcademyButton);
+        assertThat(khanAcademyButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldLaunchReaderWhenReaderButtonClicked() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(EREADER_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(EREADER_PACKAGE, eReaderButton);
+
+        eReaderButton.performClick();
+
+        Intent ereaderIntent = shadowOf(playlistActivity).getNextStartedActivity();
+        assertThat(ereaderIntent.getComponent().getPackageName(), is(EREADER_PACKAGE));
+    }
+
+    @Test
+    public void shouldLaunchGalleryWhenKhanAcademyButtonClicked() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(GALLERY_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(GALLERY_PACKAGE, khanAcademyButton);
+
+        khanAcademyButton.performClick();
+
+        Intent ereaderIntent = shadowOf(playlistActivity).getNextStartedActivity();
+        assertThat(ereaderIntent.getComponent().getPackageName(), is(GALLERY_PACKAGE));
+    }
+
+    @Test
+    public void shouldShowBrowserButtonIfAppIsInstalled() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(BROWSER_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(BROWSER_PACKAGE, browserButton);
+        assertThat(browserButton.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void shouldLaunchBrowserWhenBrowserButtonClicked() {
+        when(applicationUtils.isAppInstalled(any(Context.class), eq(BROWSER_PACKAGE))).thenReturn(true);
+
+        playlistActivity.setUpAppButton(BROWSER_PACKAGE, browserButton);
+
+        browserButton.performClick();
+
+        Intent browserIntent = shadowOf(playlistActivity).getNextStartedActivity();
+        assertThat(browserIntent.getComponent().getPackageName(), is(BROWSER_PACKAGE));
+    }
+
+    @Test
+    public void shouldSetupCursorAdapterOnCreateIfPlaylistExistsInLocalDatabase() {
+        List<Playlist> playlists = newArrayList(playlist);
+
+        when(playlistDataStore.getPlaylistFor(user)).thenReturn(playlists);
+
+        playlistActivity.onCreate(null);
+        playlistItems = (ListView) playlistActivity.findViewById(R.id.playlist_items);
+
+        assertThat(playlistItems.getAdapter() == null, is(false));
+    }
+
+    @Test
+    public void shouldNotSetupCursorAdapterOnCreateIfPlaylistDoesNotExistInLocalDatabase() {
+        List<Playlist> playlists = newArrayList();
+
+        when(playlistDataStore.getPlaylistFor(user)).thenReturn(playlists);
+        playlistActivity.onCreate(null);
+        playlistItems = (ListView) playlistActivity.findViewById(R.id.playlist_items);
+
+        assertThat(playlistItems.getAdapter() == null, is(true));
+    }
+
+    @Test
+    public void shouldSetupCursorAdapterWhenPlaylistRetrievedEventIsReceived() {
+        List<Playlist> emptyPlaylists = newArrayList();
+        when(playlistDataStore.getPlaylistFor(user)).thenReturn(emptyPlaylists);
+
+        playlistActivity.onCreate(null);
+        playlistItems = (ListView) playlistActivity.findViewById(R.id.playlist_items);
+        assertThat(playlistItems.getAdapter() == null, is(true));
+
+        List<Playlist> populatedPlaylists = newArrayList(playlist);
+        when(playlistDataStore.getPlaylistFor(user)).thenReturn(populatedPlaylists);
+
+        playlistActivity.listeners.onPlaylistRetrieved(new PlaylistRetrievedEvent());
+
+        assertThat(playlistItems.getAdapter() == null, is(false));
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

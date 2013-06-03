@@ -1,0 +1,87 @@
+<html><head><title>RestfulEndpoints.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>RestfulEndpoints.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/http/amplify_client/RestfulEndpoints.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">1</span>
+    <progress max="100" value="1"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.http;
+
+public enum RestfulEndpoints {
+    POSTS_FOR_SECTION("/section/%s/posts"),
+    SECTION("/section"),
+    EVENT_LOGS("/event_logs"),
+    POSTS("/posts"),
+    POST("/posts/%s"),
+    ADD_USER_REGISTRATION_ID("/add_user_registration"),
+    DELETE_USER_REGISTRATION_ID("/delete_user_registration/%s"),
+    CURRENT_USER("/user/current"),
+    COURSE("/course/%s"),
+    POST_COMMENTS("/posts/%s/comments"),
+    COMMENT("/posts/%s/comments/%s"),
+    RESPONSES("/posts/%s/responses"),
+    PARTICIPANTS_BY_SECTION_FOR_USER("/user/%s/sectionusers"),
+    PUSH_MESSAGE_RECEIVED("/push_message_received/%s/%s"),
+    POSTS_FOR_USER("/posts/user/%s"),
+    ADD_CALL_ON_SOMONE("/posts/%s/calledOnStudents/%s"),
+    ADD_POST_PARTICPANTS("/posts/%s/participants"),
+
+    EVENTS("/events"),
+
+    VERSION("/version/%s");
+
+
+    @SuppressWarnings("PMD.SingularField")
+    private final String endpointPath;
+
+    private RestfulEndpoints(String endpointPath) {
+        this.endpointPath = endpointPath;
+    }
+
+    public String endpointPath(Object... args){
+        return String.format(endpointPath, args);
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

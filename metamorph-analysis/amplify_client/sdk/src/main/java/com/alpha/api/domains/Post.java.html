@@ -1,0 +1,534 @@
+<html><head><title>Post.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>Post.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/domains/amplify_client/Post.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">58</span>
+    <progress max="100" value="58"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.domains;
+
+import android.content.ContentValues;
+import com.alpha.api.json.AmplifyJsonHelper;
+import com.alpha.api.repository.sqlite.TableColumn;
+import com.alpha.api.services.Participant;
+import com.alpha.api.services.User;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
+
+@SuppressWarnings({"OverlyComplexClass", "PMD.TooManyFields", "PMD.ExcessivePublicCount"})
+public class Post implements ElementsHolder, Serializable {
+
+    public static final int NOT_REMOVED = 0;
+    public static final int REMOVED = 1;
+
+    @SuppressWarnings("EmptyClass")
+    public static final Type LIST_TYPE = new TypeToken<List<Post>>() {
+    }.getType();
+
+    private long id;
+    private Integer numberOfQuickPollAnswers;
+    private String note;
+    protected String description;
+
+    protected String additionalContent;
+    protected final PostType postType;
+
+    protected final PostAuthor author;
+    protected final Date createdOn;
+    protected final PostSection section;
+    protected final String title;
+    protected final List<Participant> users;
+    protected final List<Comment> comments = newArrayList();
+    protected final List<Response> responses;
+
+    public Date getModifiedOn() {
+        return modifiedOn;
+    }
+
+    private final Date modifiedOn;
+    private final int removed;
+    private final List<LearningElement> elements;
+
+    private final List<Participant> activeParticipants = newArrayList();
+    private final List<Participant> calledOnStudents = newArrayList();
+
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public Post(List<LearningElement> elements, PostType postType, PostAuthor author, Date createdOn, PostSection section, String title,
+                String description, List<Participant> users, List<Response> responses) {
+        checkNotNull(elements, "Learning Elements list cannot be null.");
+        this.elements = elements;
+        this.postType = postType;
+        this.author = author;
+        this.createdOn = createdOn;
+        this.modifiedOn = createdOn;
+        this.section = section;
+        this.title = title;
+        this.description = description;
+        this.users = users;
+        this.responses = responses;
+        this.removed = NOT_REMOVED;
+    }
+
+
+    // Action Post Constructor
+    public Post(PostType postType, PostAuthor author, Date createdDate, PostSection section, String title, String description, List<Participant> users) {
+        this(Collections.<LearningElement>emptyList(), postType, author, createdDate, section, title, description, users, new ArrayList<Response>());
+    }
+
+    public Post(PostType postType, PostAuthor author, Date createdDate, PostSection section, String title, String description) {
+        this(postType, author, createdDate, section, title, description, allStudentsInSection());
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private static List<Participant> allStudentsInSection() {
+        return newArrayList();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    //Action Post Constructor - Quick Poll
+    public Post(PostType postType, PostAuthor author, Date createdDate, PostSection section, String title, String description, Integer numberOfQuickPollAnswers, List<Participant> users) {
+        this(Collections.<LearningElement>emptyList(), postType, author, createdDate, section, title, description, users, new ArrayList<Response>());
+        this.numberOfQuickPollAnswers = numberOfQuickPollAnswers;
+    }
+
+    // Share Post Constructor
+    public Post(List<LearningElement> elements, PostType postType, PostAuthor author, Date createdDate, PostSection section, String title, String description, List<Participant> users) {
+        this(elements, postType, author, createdDate, section, title, description, users, new ArrayList<Response>());
+    }
+
+    public List<Participant> getStudentsSharedWith() {
+        return (users == null) ? Collections.<Participant>emptyList() : Collections.unmodifiableList(users);
+    }
+
+    public int countOfStudentsSharedWith() {
+        return getStudentsSharedWith().size();
+    }
+
+    public ContentValues asValues() {
+        ContentValues values = new ContentValues();
+        values.put(TableColumn._id.name(), id);
+        values.put(TableColumn.section_id.name(), section.getId());
+        values.put(TableColumn.post_type.name(), postType.name());
+        values.put(TableColumn.created_on.name(), createdOn.getTime());
+        values.put(TableColumn.modified_on.name(), modifiedOn.getTime());
+        values.put(TableColumn.content.name(), asJson());
+        return values;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asJson() {
+        return AmplifyJsonHelper.toJson(this);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void setId(long id) {
+        this.id = id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public PostSection getPostSection() {
+        return section;
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Long getId() {
+        return id;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public boolean isDeleted() {
+        return removed == REMOVED;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getDescription() {
+        return description;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String getTitle() {
+        return title;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public Date getCreatedOn() {
+        return createdOn;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public PostAuthor getAuthor() {
+        return author;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public PostType getPostType() {
+        return postType;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public String asRequestJson() {
+        return asJsonObject().toString();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public String asRequestJson(List<Long>sectionIds) {
+        JsonObject jsonObject = asJsonObject();
+        jsonObject.add("sectionIds", getSectionIdJsonArray(sectionIds));
+        return jsonObject.toString();
+    }
+
+    private JsonArray getSectionIdJsonArray(List<Long> sectionIds) {
+        JsonArray ids = new JsonArray();
+        for (Long sectionId : sectionIds) {
+            ids.add(new JsonPrimitive(sectionId));
+        }
+        return ids;
+    }
+
+    public JsonArray participantIdsAsJsonArray(Collection<Participant> participants) {
+        JsonArray ids = new JsonArray();
+        for (Participant participant : participants) {
+            ids.add(new JsonPrimitive(participant.getId()));
+        }
+        return ids;
+    }
+
+    @SuppressWarnings("PMD.ConfusingTernary")
+    protected JsonObject asJsonObject() {
+        JsonObject jsonObject = new JsonObject();
+
+        if (section != null) {
+            JsonArray sectionIds = new JsonArray();
+            sectionIds.add(new JsonPrimitive(section.getId()));
+            jsonObject.add("sectionIds", sectionIds);
+        }
+
+        if (author != null) {
+            jsonObject.addProperty("authorId", author.getId());
+        }
+
+        if (!elements.isEmpty()) {
+            jsonObject.add("elements", elementsAsJsonArray());
+        }
+
+        if (note != null) {
+            jsonObject.addProperty("note", note);
+        }
+
+        if (numberOfQuickPollAnswers != null) {
+            jsonObject.addProperty("numberOfQuickPollAnswers", numberOfQuickPollAnswers);
+        }
+
+        jsonObject.addProperty("removed", removed);
+        jsonObject.addProperty("title", title);
+        jsonObject.addProperty("description", description);
+
+        if (postType != null) {
+            jsonObject.addProperty("postType", postType.toString());
+        }
+
+        jsonObject.addProperty("additionalContent", additionalContent);
+        jsonObject.add("activeParticipants", participantIdsAsJsonArray(activeParticipants));
+        jsonObject.add("calledOnStudents", participantIdsAsJsonArray(calledOnStudents));
+        jsonObject.add("usersIds", participantIdsAsJsonArray(users));
+
+        return jsonObject;
+    }
+
+    private JsonElement elementsAsJsonArray() {
+        JsonArray jsonElements = new JsonArray();
+        for (LearningElement element : elements) {
+            jsonElements.add(AmplifyJsonHelper.toJsonTree(element, new TypeToken<LearningElement>() {
+            }.getType()));
+        }
+        return jsonElements;
+    }
+
+    public List<QuickShortAnswerResponse> getQuickShortAnswerResponses() {
+        return newArrayList(filter(responses, QuickShortAnswerResponse.class));
+    }
+
+    public List<QuickPollResponse> getQuickPollResponses() {
+        return newArrayList(filter(responses, QuickPollResponse.class));
+    }
+
+    public List<SpotCheckResponse> getSpotCheckResponses() {
+        return newArrayList(filter(responses, SpotCheckResponse.class));
+    }
+
+    public List<Response> getResponses() {
+        return Collections.unmodifiableList(responses);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, "createdOn", "modifiedOn");
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, "createdOn", "modifiedOn");
+    }
+
+    @Override
+    public List<LearningElement> elements() {
+        return ImmutableList.copyOf(elements);
+    }
+
+    public int numberOfComments() {
+        int count = 0;
+        for (Comment comment : comments) {</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            if (!comment.isRemoved()) {
+                count++;
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+        return count;
+    }
+
+    public List<Comment> getComments() {
+        return Collections.unmodifiableList(comments);
+    }
+
+    public String getContentDescription() {
+        return elements().iterator().hasNext() ? elements().iterator().next().getDescription() : getDescription();
+    }
+
+    protected void setShortAnswerResponses(List<QuickShortAnswerResponse> shortAnswerResponses) {
+        responses.addAll(shortAnswerResponses);
+    }
+
+    public LearningElement getFirstLearningElement() {
+        return Iterables.getFirst(elements(), null);
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public Integer getNumberOfQuickPollAnswers() {
+        return numberOfQuickPollAnswers;
+    }
+
+    public void setNumberOfQuickPollAnswers(Integer numberOfQuickPollAnswers) {
+        this.numberOfQuickPollAnswers = numberOfQuickPollAnswers;
+    }
+
+    public boolean isUserSameAsAuthor(User user) {
+        return author.getId().equals(user.getId());
+    }
+
+    public List<Participant> getCalledOnStudents() {
+        return calledOnStudents;
+    }
+
+    public CountOffDetails getCountOffDetails() {
+        return AmplifyJsonHelper.fromJson(additionalContent, CountOffDetails.class);
+    }
+
+    public void setCountOffDetails(CountOffDetails countOffDetails) {
+        additionalContent = countOffDetails.asJson();
+    }
+
+    public List<Participant> getActiveParticipants() {
+        return activeParticipants;
+    }
+
+    public boolean containsSpotCheckResponseFor(final User user) {
+        return null != spotCheckResponseFor(user);
+    }
+
+    public SpotCheckResponse spotCheckResponseFor(final User user) {
+        Predicate<Response> responseByUser = new Predicate<Response>() {
+            @Override
+            public boolean apply(Response response) {
+                return response.getAuthor().equals(user.asAuthor());
+            }
+        };
+        return Iterables.find(getSpotCheckResponses(), responseByUser, null);
+    }
+
+    public boolean wasActiveWhenShared(final User student) {
+        Predicate<Participant> predicate = new Predicate<Participant>() {
+            @Override
+            public boolean apply(Participant participant) {
+                return participant.equals(student);
+            }
+        };
+        return Iterables.any(getActiveParticipants(), predicate);
+    }
+
+    public String getAuthorName() {
+        return author.getName();
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

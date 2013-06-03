@@ -1,0 +1,137 @@
+<html><head><title>LogUtils.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>LogUtils.java</h1>
+<p>Scanned path = core-utils/src/main/java/com/amplify/log/amplify_client/LogUtils.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">8</span>
+    <progress max="100" value="8"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.amplify.log;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class LogUtils {
+    private static final Pattern CLASS_NAME_PATTERN = Pattern.compile("\\.(\\w+)$");
+    private static final String LOG_IDENTIFIER = "sundaelog.";
+    private static final String LOGGER_NAME_PATTERN = LOG_IDENTIFIER + "%s";
+    private static final int LOGGER_NAME_LENGTH_LIMIT = 23;
+
+    private LogUtils(){}
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public static Logger getLogger(){
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        String fullClassNameOfRequestingClass = stackTraceElements[3].getClassName();
+        Matcher matcher = CLASS_NAME_PATTERN.matcher(fullClassNameOfRequestingClass);
+        if(!matcher.find()){
+            return LoggerFactory.getLogger(String.format(LOGGER_NAME_PATTERN, "Unidentified"));
+        }
+        String className = matcher.group(1);
+        if(loggerNameIsTooLong(className)){
+            className = truncateClassName(className);
+        }
+        return LoggerFactory.getLogger(String.format(LOGGER_NAME_PATTERN, className));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private static String truncateClassName(String className) {
+        int charsAllowed = LOGGER_NAME_LENGTH_LIMIT - LOG_IDENTIFIER.length();
+        return className.substring(0, charsAllowed);
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private static boolean loggerNameIsTooLong(String className) {
+        return String.format(LOGGER_NAME_PATTERN, className).length() > LOGGER_NAME_LENGTH_LIMIT;
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+    public static void info(Logger log, String format, Object... args){
+        log.info(String.format(format, args));
+    }
+
+    public static void error(Logger log, Exception e, String format, Object... args){
+        log.error(String.format(format, args), e);
+    }
+
+    public static void error(Logger log, String format,Object... args){
+        log.error(String.format(format, args));
+    }
+
+    public static void error(Logger log, String format,Exception e){
+        log.error(format, e);
+    }
+
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

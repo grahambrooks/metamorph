@@ -1,0 +1,298 @@
+<html><head><title>UpdateApplicationActivity.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UpdateApplicationActivity.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/amplify_client/UpdateApplicationActivity.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">21</span>
+    <progress max="100" value="21"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.alpha.activities.callable.DetermineNeedToUpdateTask.DetermineNeedToUpdateCallback;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.api.domains.VersionCheckResponse;
+import com.alpha.api.services.DeviceLockingService;
+import com.alpha.logging.LogUtils;
+import com.alpha.services.PackageServiceManager.PackageServiceCallback;
+import com.alpha.services.PackageServiceManager.PackageServiceFactory;
+import com.alpha.services.PackageServiceManager.PackageServiceManager;
+import com.alpha.utils.ProcessUtils;
+import com.amplify.R;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import roboguice.inject.InjectView;
+
+import java.io.File;
+
+public class UpdateApplicationActivity extends SundaeTimedActivity {
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @InjectView(R.id.update_button)
+    Button actionButton;
+    @InjectView(R.id.update_title_text)
+    TextView title;
+    @InjectView(R.id.sub_text)
+    TextView subTitle;
+    @InjectView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @InjectView(R.id.progress_bar_determinate)
+    ProgressBar progressBarDeterminate;
+    @Inject
+    ProcessUtils processUtils;
+    @Inject
+    private BackgroundTaskFactory backgroundTaskFactory;
+    @Inject
+    private DeviceLockingService deviceLockingService;
+    @Inject
+    private PackageServiceFactory packageServiceFactory;
+
+    private VersionCheckResponse versionCheckResponse;
+    private PackageServiceManager packageServiceManager;
+    protected boolean isBoundToService = false;
+
+    protected final DetermineNeedToUpdateCallback needToUpdateCallback = new DetermineNeedToUpdateCallback(){
+        @Override
+        public void onUpdateStatusDetermined(VersionCheckResponse versionCheckResponse) {
+            UpdateApplicationActivity.this.versionCheckResponse = versionCheckResponse;
+            if(versionCheckResponse.needToUpdate()) {
+                switchToNeedToUpdateView();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+            else {
+                setResult(RESULT_OK);
+                finish();
+            }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        }
+        @Override
+        public void onNotDetermined() {
+            switchToRetryView();
+        }
+
+        @Override
+        public void onUpdateDownloadProgress(final int percentComplete) {
+            progressBarDeterminate.post(new Runnable() {
+                @Override
+                public void run() {
+                    showProgress(percentComplete);
+                }
+            });
+
+        }
+    };
+
+    protected PackageServiceCallback packageServiceCallback = new PackageServiceCallback() {
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onInstalled(boolean success, String packageName) {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+        @Override
+        public void onInitSuccess() {
+            isBoundToService = true;
+        }
+
+        @Override
+        public void onInitFailed(String message) {
+            LOG.error("Failed on binding to PackageService: " + message);
+        }
+
+        @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+        public void onEnablePackage(boolean success, String packageName) {
+        }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.update_application_layout);
+
+        deviceLockingService.lock(this, true);
+
+        checkNeedToUpdate();
+
+        packageServiceManager = packageServiceFactory.getPackageServiceManager();
+        packageServiceManager.init(this, packageServiceCallback);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deviceLockingService.unlock(this);
+        packageServiceManager.shutDown();
+    }
+
+    private void checkNeedToUpdate() {
+        switchToCheckingUpdateView();
+        backgroundTaskFactory.createDetermineNeedToUpdateTask(needToUpdateCallback).execute();
+    }
+
+    private void showProgress(int progress){
+        if(progressBarDeterminate.getVisibility() == View.GONE){
+            progressBar.setVisibility(View.GONE);
+            actionButton.setVisibility(View.GONE);
+            progressBarDeterminate.setVisibility(View.VISIBLE);
+            subTitle.setText(R.string.downloading_latest_update);
+            title.setText(R.string.update_check_title);
+        }
+        progressBarDeterminate.setProgress(progress);
+    }
+
+    private void switchToCheckingUpdateView(){
+        progressBar.setVisibility(View.VISIBLE);
+        actionButton.setVisibility(View.GONE);
+        progressBarDeterminate.setVisibility(View.GONE);
+        subTitle.setText(R.string.please_wait);
+        title.setText(R.string.update_check_title);
+    }
+
+    private void switchToRetryView(){
+        progressBar.setVisibility(View.GONE);
+        progressBarDeterminate.setVisibility(View.GONE);
+        actionButton.setText(R.string.retry);
+        actionButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkNeedToUpdate();
+            }
+        });
+        actionButton.setVisibility(View.VISIBLE);
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        actionButton.startAnimation(fadeInAnimation);
+        subTitle.setText(R.string.click_to_retry);
+        subTitle.startAnimation(fadeInAnimation);
+    }
+
+    private void switchToNeedToUpdateView(){
+        progressBar.setVisibility(View.GONE);
+        progressBarDeterminate.setVisibility(View.GONE);
+        actionButton.setText(R.string.update);
+        actionButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installApkFile(versionCheckResponse.getApkFile());
+            }
+        });
+        actionButton.setVisibility(View.VISIBLE);
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        actionButton.startAnimation(fadeInAnimation);
+        subTitle.setText(R.string.press_here);
+        title.setText(R.string.update_header_title);
+        subTitle.startAnimation(fadeInAnimation);
+        title.startAnimation(fadeInAnimation);
+    }
+
+    private void installApkFile(File apkFile) {
+        if(isBoundToService){
+            packageServiceManager.silentInstall(apkFile.getAbsolutePath());
+            exitAndRelaunch();
+        }
+    }
+
+    private void exitAndRelaunch() {
+        Intent intent = new Intent(this, MainLauncherActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 20000, pi);
+        onDestroy();
+        LOG.trace("about to commit suicide");
+        processUtils.commitSuicide();
+        LOG.trace("have committed suicide???");
+    }
+
+
+    @Override</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    public void onBackPressed() {
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

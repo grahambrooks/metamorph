@@ -1,0 +1,248 @@
+<html><head><title>PlaylistCursorAdapterTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>PlaylistCursorAdapterTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/adapters/amplify_client/PlaylistCursorAdapterTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">10</span>
+    <progress max="100" value="10"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.alpha.activities.PlaylistActivity;
+import com.alpha.activities.ShareTextToNotebooksActivity;
+import com.alpha.activities.ShareVideoToNotebooksActivity;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.LearningElement;
+import com.alpha.api.domains.LearningElementType;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.launchers.LearningElementLauncher;
+import com.alpha.runner.ActivityTestInjector;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.amplify.R;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static com.alpha.runner.ActivityTestInjector.newInjector;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class PlaylistCursorAdapterTest {
+    private static final String TITLE = "title";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String BOOK = "book";
+    private static final Uri SAMPLE_URI = Uri.parse("sample.com");
+    private static final String BOOK_URI = "http://com.kaldorgroup.amplify/CK12AlgebraISecondEdition/1#0";
+    private static final String MEDIA_PATH = "file:///mnt/sdcard/Movies/Khan/algebra/algebra.mp4";
+
+    private LinearLayout playlistItem;
+    private PlaylistCursorAdapter playlistCursorAdapter;
+    private View playlistRow;
+    private TextView playlistItemTitle;
+    private TextView playlistItemType;
+    private View shareButton;
+
+    @Mock
+    private LearningElementLauncher learningElementLauncher;
+
+    @Before
+    public void setUp() {
+        initMocks(this);
+        playlistRow = LayoutInflater.from(Robolectric.application).inflate(R.layout.playlist_item, null);
+
+        ActivityTestInjector<PlaylistCursorAdapter> injector = newInjector(this, PlaylistCursorAdapter.class);
+        injector.bindInstance(LearningElementLauncher.class, learningElementLauncher);
+        injector.configureTestSubject();
+
+        playlistCursorAdapter = new PlaylistCursorAdapter(Robolectric.application, learningElementLauncher);
+    }
+
+    private void setupPlaylistItemViews() {
+        shareButton = playlistRow.findViewById(R.id.playlist_share_button);
+        playlistItem = (LinearLayout) playlistRow.findViewById(R.id.playlist_item_title_container);
+        playlistItemTitle = (TextView) playlistRow.findViewById(R.id.playlist_item_title);
+        playlistItemType = (TextView) playlistRow.findViewById(R.id.playlist_item_type);
+    }
+
+    @Test
+    public void shouldShowElementTitleAndType() {
+        setupPlaylistItemViews();
+        GoogleDriveLearningElement element = mock(GoogleDriveLearningElement.class);
+        when(element.getTitle()).thenReturn(TITLE);
+        when(element.getName()).thenReturn(NAME);
+        when(element.getType()).thenReturn(LearningElementType.GOOGLE_DRIVE);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        assertThat(playlistItemTitle.getText().toString(), is(TITLE));
+        assertThat(playlistItemType.getText().toString(), is(NAME));
+    }
+
+    @Test
+    public void shouldShareToNotebookWhenShareButtonIsClickedForGDriveElement() {
+        setupPlaylistItemViews();
+
+        GoogleDriveLearningElement element = new GoogleDriveLearningElement(TITLE, DESCRIPTION, "0", 0);
+        element.setFileUri(SAMPLE_URI.toString());
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        shareButton.performClick();
+
+        ComponentName componentName = new ComponentName(Robolectric.application, ShareTextToNotebooksActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getStringExtra(PlaylistActivity.EXTRA_NOTES), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldShareToNotebookWhenShareButtonIsClickedForWebPageElement() {
+        setupPlaylistItemViews();
+
+        WebPageLearningElement element = new WebPageLearningElement(TITLE, DESCRIPTION, SAMPLE_URI);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        shareButton.performClick();
+
+        ComponentName componentName = new ComponentName(Robolectric.application, ShareTextToNotebooksActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getStringExtra(PlaylistActivity.EXTRA_NOTES), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldShareToNotebookWhenShareButtonIsClickedForVideoElement() {
+        setupPlaylistItemViews();
+
+        VideoLearningElement element = new VideoLearningElement(TITLE, DESCRIPTION, MEDIA_PATH);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        shareButton.performClick();
+
+        ComponentName componentName = new ComponentName(Robolectric.application, ShareVideoToNotebooksActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getStringExtra(PlaylistActivity.EXTRA_NOTES), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldShareToNotebookWhenShareButtonIsClickedForEReaderElement() {
+        setupPlaylistItemViews();
+
+        EReaderLearningElement element = new EReaderLearningElement(TITLE, DESCRIPTION, BOOK, SAMPLE_URI, BOOK_URI);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        shareButton.performClick();
+
+        ComponentName componentName = new ComponentName(Robolectric.application, ShareTextToNotebooksActivity.class);
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getComponent(), is(componentName));
+        assertThat(intent.getStringExtra(PlaylistActivity.EXTRA_NOTES), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldShareToNotebookWhenShareButtonIsClickedForMapsElement() {
+        setupPlaylistItemViews();
+
+        GoogleMapsLearningElement element = new GoogleMapsLearningElement(TITLE, DESCRIPTION);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        shareButton.performClick();
+
+        Intent intent = Robolectric.getShadowApplication().getNextStartedActivity();
+        assertThat(intent.getStringExtra(Intent.EXTRA_SUBJECT), is(TITLE));
+        assertThat(intent.getStringExtra(Intent.EXTRA_TEXT), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldCallElementLauncherWhenClickingOnRow() {
+        setupPlaylistItemViews();
+        LearningElement element = new WebPageLearningElement(TITLE, DESCRIPTION, SAMPLE_URI);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+        playlistItem.performClick();
+
+        verify(learningElementLauncher).launchIntentForLearningElement(eq(Robolectric.application), eq(element));
+    }
+
+    @Test
+    public void shouldSetTagWhenAdapterViewIsPopulated() {
+        setupPlaylistItemViews();
+        GoogleMapsLearningElement element = mock(GoogleMapsLearningElement.class);
+
+        playlistCursorAdapter.populateView(playlistRow, element);
+
+        LinearLayout playlistItem = (LinearLayout) playlistRow.findViewById(R.id.playlist_item_title_container);
+        GoogleMapsLearningElement tagElement = (GoogleMapsLearningElement) playlistItem.getTag();
+        assertThat(tagElement, is(element));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

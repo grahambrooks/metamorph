@@ -1,0 +1,258 @@
+<html><head><title>StreamSummarySharedLearningElementRendererTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StreamSummarySharedLearningElementRendererTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/renderers/amplify_client/StreamSummarySharedLearningElementRendererTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">14</span>
+    <progress max="100" value="14"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.renderers;
+
+import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.alpha.api.domains.EReaderLearningElement;
+import com.alpha.api.domains.GoogleDriveLearningElement;
+import com.alpha.api.domains.GoogleMapsLearningElement;
+import com.alpha.api.domains.Post;
+import com.alpha.api.domains.PostAuthor;
+import com.alpha.api.domains.VideoLearningElement;
+import com.alpha.api.domains.WebPageLearningElement;
+import com.alpha.api.services.User;
+import com.alpha.api.services.UserService;
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.widgets.text.AmplifyCollapsibleView;
+import com.amplify.R;
+import com.google.common.base.Optional;
+import com.xtremelabs.robolectric.Robolectric;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class StreamSummarySharedLearningElementRendererTest {
+
+    public static final String URL_STRING = "http://google.com";
+    public static final String DESCRIPTION = "description";
+    public static final String TEACHER = "Teacher";
+    public static final String BOOK = "Algebra";
+    public static final String TITLE = "Title";
+    public static final long USER_ID = 5L;
+    public static final long AUTHOR_ID = 6L;
+
+    private StreamSummarySharedLearningElementRenderer renderer;
+    private ViewGroup parentView;
+
+    @Mock
+    private Post post;
+    @Mock
+    private PostAuthor author;
+    @Mock
+    private UserService userService;
+    @Mock
+    private User user;
+    @Mock
+    private VideoLearningElement videoLearningElement;
+    @Mock
+    private GoogleDriveLearningElement googleDriveLearningElement;
+    @Mock
+    private WebPageLearningElement webPageLearningElement;
+    @Mock
+    private EReaderLearningElement eReaderLearningElement;
+    @Mock
+    private GoogleMapsLearningElement mapsLearningElement;
+    @Mock
+    private CollapsibleViewStateHolder stateHolder;
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+
+        given(userService.getUser()).willReturn(user);
+        given(post.getAuthor()).willReturn(author);
+        given(user.getId()).willReturn(USER_ID);
+        given(author.getId()).willReturn(AUTHOR_ID);
+
+        renderer = new StreamSummarySharedLearningElementRenderer(post, Robolectric.application, userService, stateHolder);
+        parentView = (ViewGroup) LayoutInflater.from(Robolectric.application).inflate(R.layout.learning_activity_stream_sectioned, null);
+    }
+
+    @Test
+    public void shouldRenderVideoLearningElementWithSharePostLayout() {
+        View view = renderer.visit(videoLearningElement, parentView);
+
+        assertThat(view, is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldRenderGoogleDriveLearningElementWithSharePostLayout() {
+        Optional<Uri> fileUri = Optional.of(Uri.parse(URL_STRING));
+        when(googleDriveLearningElement.getFileUri()).thenReturn(fileUri);
+
+        View view = renderer.visit(googleDriveLearningElement, parentView);
+
+        assertThat(view, is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldRenderWebPageLearningElementWithSharePostLayout() throws Exception {
+        when(post.getDescription()).thenReturn(URL_STRING);
+
+        View view = renderer.visit(webPageLearningElement, parentView);
+
+        TextView uriView = (TextView) view.findViewById(R.id.shared_post_uri);
+        assertThat(uriView.getText().toString(), is(URL_STRING));
+    }
+
+    @Test
+    public void shouldRenderEReaderLearningElement() {
+        View view = renderer.visit(eReaderLearningElement, parentView);
+
+        assertThat(view, is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldRenderEReaderLearningElementWithSharePostLayout() throws Exception {
+        when(eReaderLearningElement.getTitle()).thenReturn(TITLE);
+
+        View view = renderer.visit(eReaderLearningElement, parentView);
+
+        TextView descriptionText = (TextView) view.findViewById(R.id.shared_post_title);
+        assertThat(descriptionText.getText().toString(), is(TITLE));
+    }
+
+    @Test
+    public void shouldRenderEReaderLearningElementDescriptionWithSharePostLayout() throws Exception {
+        when(post.getNote()).thenReturn(DESCRIPTION);
+
+        View view = renderer.visit(eReaderLearningElement, parentView);
+
+        AmplifyCollapsibleView descriptionText = (AmplifyCollapsibleView) view.findViewById(R.id.shared_post_description);
+        assertThat(descriptionText.getText().toString(), is(DESCRIPTION));
+    }
+
+    @Test
+    public void shouldRenderTitleForTeacherWhenEReaderIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(true);
+        when(eReaderLearningElement.getBook()).thenReturn(BOOK);
+
+        renderer.visit(eReaderLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is("You shared book content from Algebra"));
+    }
+
+    @Test
+    public void shouldRenderTitleForStudentWhenEReaderIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(false);
+        when(author.getName()).thenReturn(TEACHER);
+        when(eReaderLearningElement.getBook()).thenReturn(BOOK);
+
+        renderer.visit(eReaderLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is("Teacher shared book content from Algebra"));
+    }
+
+    @Test
+    public void shouldRenderTitleForTeacherWhenKhanAcademyVideoIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(true);
+
+        renderer.visit(videoLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is("You shared a video"));
+    }
+
+    @Test
+    public void shouldRenderTitleForStudentWhenKhanAcademyVideoIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(false);
+        when(author.getName()).thenReturn(TEACHER);
+
+        renderer.visit(videoLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is("Teacher shared a video"));
+    }
+
+    @Test
+    public void shouldRenderGoogleMapsLearningElementWhenMapIsShared() {
+        View view = renderer.visit(mapsLearningElement, parentView);
+        assertThat(view, is(not(nullValue())));
+    }
+
+    @Test
+    public void shouldRenderTitleForTeacherWhenMapIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(true);
+        when(author.getName()).thenReturn(TEACHER);
+
+        renderer.visit(mapsLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is(Robolectric.application.getString(R.string.location_shared_by_you)));
+    }
+
+    @Test
+    public void shouldRenderTitleForStudentWhenMapIsShared() {
+        when(post.isUserSameAsAuthor(user)).thenReturn(false);
+        when(author.getName()).thenReturn(TEACHER);
+
+        renderer.visit(mapsLearningElement, parentView);
+
+        TextView postTitle = (TextView) parentView.findViewById(R.id.notebook_post_title);
+        assertThat(postTitle.getText().toString(), is(Robolectric.application.getString(R.string.location_shared,TEACHER)));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

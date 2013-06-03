@@ -1,0 +1,140 @@
+<html><head><title>UnitTestModule.java</title>
+<link rel="stylesheet" href="../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UnitTestModule.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/runner/amplify_client/UnitTestModule.java</p>
+<a href='../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">2</span>
+    <progress max="100" value="2"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.runner;
+
+import com.alpha.activities.NotebookStreamFragmentManager;
+import com.alpha.activities.Toaster;
+import com.alpha.activities.adapters.*;
+import com.alpha.activities.factories.BackgroundTaskFactory;
+import com.alpha.activities.factories.PresenterFactory;
+import com.alpha.activities.factories.RendererFactory;
+import com.alpha.activities.listeners.StudentNotebookStateMonitor;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.activities.renderers.StreamSummarySingleLearningElementRenderer;
+import com.alpha.api.authentication.GoogleAuthenticationService;
+import com.alpha.api.messaging.notifications.gcm.PushNotificationsFacade;
+import com.alpha.api.properties.Environment;
+import com.alpha.api.repository.ForceFieldDataStore;
+import com.alpha.api.repository.PostsDataStore;
+import com.alpha.api.services.*;
+import com.alpha.api.services.factory.*;
+import com.alpha.api.services.tasks.RetrievePostsService;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.api.utilities.TimerProvider;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.utils.ApplicationUtils;
+import com.caribou.lib.mdm.MDMServiceController;
+import com.caribou.lib.mdm.MDMServiceManager;
+import com.google.api.services.drive.Drive;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.AbstractModule;
+
+import static org.mockito.Mockito.mock;
+
+@SuppressWarnings({"PMD.CouplingBetweenObjects"})
+public class UnitTestModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bindAsMock(UserService.class);
+        bindAsMock(ParticipantSessionService.class);
+        bindAsMock(DeviceLockingService.class);
+        //TODO need to find a better way to bind SDK mock injections - Mustafa
+        bindAsMock(RetrievePostsService.class);
+        bindAsMock(TimerProvider.class);
+        bindAsMock(Toaster.class);
+        bindAsMock(NotebooksCoverMappings.class);
+        bindAsMock(PresenterFactory.class);
+        bindAsMock(RendererFactory.class);
+        bindAsMock(NotebookStreamFragmentManager.class);
+        bindAsMock(Environment.class);
+        bindAsMock(PostService.class);
+        bindAsMock(Drive.class);
+        bindAsMock(ForceFieldDataStore.class);
+        bindAsMock(EventBus.class);
+        bindAsMock(ModeratorSessionServiceConnection.class);
+        bindAsMock(PostResponseRecordsCursorAdapter.class);
+        bindAsMock(CommentsCursorAdapter.class);
+        bindAsMock(CursorAdapterFactory.class);
+        bindAsMock(StreamPostCursorAdapter.class);
+        bindAsMock(StreamSummarySingleLearningElementRenderer.class);
+        bindAsMock(AnalyticsAgent.class);
+        bindAsMock(SectionTaskFactory.class);
+        bindAsMock(SessionTaskFactory.class);
+        bindAsMock(GoogleAuthenticationService.class);
+        bindAsMock(PostsDataStore.class);
+        bindAsMock(StudentMonitoringArrayAdapter.class);
+        bindAsMock(ModeratorSessionService.class);
+        bindAsMock(PushNotificationsFacade.class);
+        bindAsMock(ApplicationUtils.class);
+        bindAsMock(StudentNotebookStateMonitor.class);
+        bindAsMock(BackgroundTaskFactory.class);
+        bindAsMock(MDMServiceController.class);
+        bindAsMock(MDMServiceManager.class);
+        bindAsMock(WebServices.class);
+        bindAsMock(UserTaskFactory.class);
+        bindAsMock(ForceFieldEditAdapter.class);
+
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private <T> void bindAsMock(Class<T> clazz) {
+        bind(clazz).toInstance(mock(clazz));
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

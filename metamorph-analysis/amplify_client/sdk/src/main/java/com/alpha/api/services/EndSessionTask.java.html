@@ -1,0 +1,120 @@
+<html><head><title>EndSessionTask.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>EndSessionTask.java</h1>
+<p>Scanned path = sdk/src/main/java/com/alpha/api/services/amplify_client/EndSessionTask.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">4</span>
+    <progress max="100" value="4"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.api.services;
+
+import android.widget.ProgressBar;
+import com.alpha.api.authentication.AuthenticationException;
+import com.alpha.api.messaging.TeacherSession;
+import com.alpha.api.services.events.EndSessionFailureEvent;
+import com.alpha.api.services.events.TeacherSessionEndedEvent;
+import com.alpha.api.services.web.WebServices;
+import com.alpha.logging.AnalyticsAgent;
+import com.alpha.logging.LogUtils;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+
+import static com.alpha.api.services.ApiErrorReason.SESSION_END_FAILED;
+import static com.alpha.api.services.SessionTaskResult.SESSION_ENDED_SUCCESSFULLY;
+import static com.alpha.api.services.events.SessionEndedEvent.Reason.TEACHER_INITIATED;
+
+public class EndSessionTask extends SafeProgressAsyncTask<SessionTaskResult> {
+    private final TeacherSession teacherSession;
+    private final WebServices webServices;
+    private final Teacher teacher;
+    private final EventBus eventBus;
+    private static final Logger LOG = LogUtils.getLogger();
+
+    @Inject
+    public EndSessionTask(TeacherSession teacherSession, WebServices webServices, EventBus eventBus,
+                          AnalyticsAgent analyticsAgent,
+                          @Assisted Teacher teacher,
+                          @Assisted ProgressBar progressBar) {
+        super(progressBar, analyticsAgent);
+        this.teacherSession = teacherSession;
+        this.webServices = webServices;
+        this.eventBus = eventBus;
+        this.teacher = teacher;
+    }
+
+    @Override
+    public SessionTaskResult call() {
+
+        teacherSession.endSession();
+
+        Event endSessionEvent = teacher.endSessionEvent();
+
+        webServices.post(endSessionEvent);
+        return SESSION_ENDED_SUCCESSFULLY;
+    }
+
+    @Override
+    protected void onAuthenticationException(AuthenticationException e) {
+        LOG.error("Error when ending session", e);
+        eventBus.post(new EndSessionFailureEvent(e.getApiErrorReason()));
+    }
+
+    @Override
+    protected void onOtherException(Exception e) {
+        LOG.error("Error when ending session", e);
+        eventBus.post(new EndSessionFailureEvent(SESSION_END_FAILED));
+    }
+
+    @Override
+    protected void onSuccess(SessionTaskResult result) {
+        if (SESSION_ENDED_SUCCESSFULLY.equals(result)) {
+            eventBus.post(new TeacherSessionEndedEvent(TEACHER_INITIATED));
+            return;
+        }
+        eventBus.post(new EndSessionFailureEvent(SESSION_END_FAILED));
+    }
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

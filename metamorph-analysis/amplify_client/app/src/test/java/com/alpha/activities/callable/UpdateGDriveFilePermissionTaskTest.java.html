@@ -1,0 +1,111 @@
+<html><head><title>UpdateGDriveFilePermissionTaskTest.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>UpdateGDriveFilePermissionTaskTest.java</h1>
+<p>Scanned path = app/src/test/java/com/alpha/activities/callable/amplify_client/UpdateGDriveFilePermissionTaskTest.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">3</span>
+    <progress max="100" value="3"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.callable;
+
+import com.alpha.runner.SundaeRobolectricTestRunner;
+import com.alpha.runner.TestInjector;
+import com.alpha.widgets.googledrive.GoogleDriveProvider;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.Permission;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+
+import java.io.IOException;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+@RunWith(SundaeRobolectricTestRunner.class)
+public class UpdateGDriveFilePermissionTaskTest {
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    GoogleDriveProvider googleDriveProvider;
+    @Mock
+    Drive.Permissions.Insert permissionInsert;
+    @Mock
+    UpdateGDriveFilePermissionTask.UpdateGDrivePermissionCallback callback;
+
+    private static final String FILENAME = "filename";
+    private static final GoogleDriveProvider.PermissionRole READER = GoogleDriveProvider.PermissionRole.READER;
+    private static final GoogleDriveProvider.PermissionType GROUP = GoogleDriveProvider.PermissionType.GROUP;
+    private static final String SECTION_EMAIL = "test@amplifydev.net";
+
+    private UpdateGDriveFilePermissionTask task;
+
+    @Before
+    public void setup() throws IOException {
+        initMocks(this);
+        task = new UpdateGDriveFilePermissionTask(callback, FILENAME, READER, GROUP, SECTION_EMAIL);
+        TestInjector<UpdateGDriveFilePermissionTask> testInjector = new TestInjector<UpdateGDriveFilePermissionTask>();
+        testInjector.bindInstance(GoogleDriveProvider.class, googleDriveProvider);
+        testInjector.injectMocks(task);
+
+        given(googleDriveProvider.get().permissions().insert(eq(FILENAME), any(Permission.class))).willReturn(permissionInsert);
+    }
+
+    @Test
+    public void shouldInsertPermission() throws Exception {
+        task.call();
+        verify(permissionInsert).execute();
+    }
+
+    @Test
+    public void shouldNotSendOutEmail() throws Exception {
+        task.call();
+        verify(permissionInsert).setSendNotificationEmails(false);
+    }
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>

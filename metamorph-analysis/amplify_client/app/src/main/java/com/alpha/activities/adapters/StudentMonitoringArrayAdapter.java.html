@@ -1,0 +1,177 @@
+<html><head><title>StudentMonitoringArrayAdapter.java</title>
+<link rel="stylesheet" href="../../../../../../../../../prettify.css" type="text/css"><link rel="stylesheet" href="../../../../../../../../../sunburst.css" type="text/css"><script type="text/javascript" src="../../../../../../../../../prettify.js"></script>
+<link rel="stylesheet" href="../../../../../../../../../site.css" type="text/css"></head>
+<body onload="prettyPrint()"><div class="content"><div class="banner"><div class="header"><h1>StudentMonitoringArrayAdapter.java</h1>
+<p>Scanned path = app/src/main/java/com/alpha/activities/adapters/amplify_client/StudentMonitoringArrayAdapter.java</p>
+<a href='../../../../../../../../../index.html'>Index</a></div>
+<div class="stats panel"> <ul>
+  <li>
+    <span class="title">Code size</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Cyclomatic complexity</span>
+    <span class="toxicity">0</span>
+    <span class="value">9</span>
+    <progress max="100" value="9"/>
+  </li>  <li>
+    <span class="title">Methods</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Depth in inheritance tree</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Afferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li>  <li>
+    <span class="title">Efferant coupling</span>
+    <span class="toxicity">0</span>
+    <span class="value">0</span>
+    <progress max="100" value="0"/>
+  </li></div>
+</div>
+<div class="code-block"><table>
+<tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+package com.alpha.activities.adapters;
+
+import android.app.Activity;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.alpha.activities.mappings.NotebooksCoverMappings;
+import com.alpha.api.messaging.ParticipantPresenceModel;
+import com.alpha.api.services.Participant;
+import com.alpha.logging.LogUtils;
+import com.amplify.R;
+import com.amplify.R.id;
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+public class StudentMonitoringArrayAdapter extends ArrayAdapter<Participant> {
+    private static final Logger LOG = LogUtils.getLogger();
+    private final NotebooksCoverMappings notebooksCoverMappings;
+
+    @Inject
+    public StudentMonitoringArrayAdapter(Activity context, NotebooksCoverMappings notebooksCoverMappings) {
+        super(context, R.layout.monitor_student_row, R.id.student_name_text);
+        this.notebooksCoverMappings = notebooksCoverMappings;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+
+        TextView studentNameText = (TextView) view.findViewById(R.id.student_name_text);
+        TextView studentLocationText = (TextView) view.findViewById(R.id.student_location_text);
+        ImageView studentLocationIcon = (ImageView) view.findViewById(R.id.student_location_icon);
+
+        Participant student = getItem(position);
+        setViewForStudentPresence(student, view);
+
+
+        setUpStudentName(studentNameText, student);
+        setUpStudentHandView(student, view, studentNameText, studentLocationText);
+        setStudentWhereabouts(student, studentLocationIcon, studentLocationText);
+        return view;
+    }
+
+    private void setUpStudentName(TextView studentNameText, Participant student) {
+        studentNameText.setText(student.getName());
+    }
+
+    private void setStudentWhereabouts(Participant student, ImageView studentLocationIcon, TextView studentLocationTextView) {
+        if (!student.isPresent()) {
+            studentLocationTextView.setText(StringUtils.EMPTY);
+            studentLocationIcon.setImageDrawable(drawable(R.drawable.icn_student_absent));
+            return;
+        }
+
+        studentLocationIcon.setVisibility(View.VISIBLE);
+
+        ParticipantPresenceModel participantPresenceModel = student.getParticipantPresence();
+        LOG.debug("the presence model on the teacher side id: {}", participantPresenceModel.toString());
+        Drawable applicationIcon;
+        if (participantPresenceModel.isInASection()) {
+            String currentSectionName = participantPresenceModel.getDisplayName();
+            studentLocationTextView.setText(currentSectionName);
+            applicationIcon = drawable(notebooksCoverMappings.getMonitorCoverImage(currentSectionName));
+        } else if (participantPresenceModel.isInHomeScreen()) {
+            studentLocationTextView.setText(R.string.homescreen);
+            applicationIcon = drawable(R.drawable.icn_watch_home);
+        } else if (participantPresenceModel.isInLockScreen()) {
+            studentLocationTextView.setText(R.string.eyes_on_teacher);
+            applicationIcon = drawable(R.drawable.icn_eyesonteach);
+        } else {
+            studentLocationTextView.setText(participantPresenceModel.getDisplayName());
+            try {
+                applicationIcon = getContext().getPackageManager().getApplicationIcon(participantPresenceModel.getPackageName());
+            } catch (NameNotFoundException e) {
+                applicationIcon = drawable(R.drawable.icn_watch_apps);
+            }
+        }
+        studentLocationIcon.setImageDrawable(applicationIcon);
+
+    }
+
+    private void setViewForStudentPresence(Participant student, View view) {
+        view.setBackgroundDrawable(student.isPresent() ? drawable(R.drawable.student_background_present) : drawable(R.drawable.student_background_default));
+    }
+
+    private void setUpStudentHandView(Participant student, View view, TextView studentNameView, TextView studentLocationText) {
+        if (student.hasHandRaised()) {
+            view.setBackgroundDrawable(drawable(R.drawable.student_background_handraised));
+            studentNameView.setTextColor(color(R.color.white));
+            studentLocationText.setTextColor(color(R.color.white));
+            view.findViewById(id.student_raised_hand).setVisibility(View.VISIBLE);
+        } else {
+            studentNameView.setTextColor(color(R.color.black));
+            studentLocationText.setTextColor(color(R.color.medium_grey));
+            view.findViewById(id.student_raised_hand).setVisibility(View.GONE);
+        }
+    }
+
+    private int color(int colorId) {
+        return resources().getColor(colorId);
+    }
+
+    private Drawable drawable(int id) {
+        return resources().getDrawable(id);
+    }
+</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th class="duplicate">Duplicate</th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+    private Resources resources() {
+        return getContext().getResources();
+    }</code>
+      </pre>
+    </td>
+    </tr><tr>
+    <th></th>
+    <td><pre class="prettyprint"><code class="prettyprint language-java">
+
+}</code></pre></code>
+      </pre>
+    </td>
+    </tr></table>
+</div>
+</div>
+</body>
+</html>
