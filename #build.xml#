@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<?xml version="1.0"?>
+<project name="metamorph" default="build" basedir=".">
+
+    <property name="java.sources.dir" value="${basedir}/src/java"/>
+    <property name="scala.sources.dir" value="${basedir}/src/scala"/>
+    <property name="scala.test.sources.dir" value="${basedir}/test/scala"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="scala.home" value="${basedir}/Tools/scala-2.10.0-RC5/"/>
+    <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
+
+    <path id="runtime.classpath">
+        <pathelement location="lib/runtime/antlr-3.4-complete.jar"/>
+        <pathelement location="lib/runtime/antlr-4.0b1-complete.jar"/>
+	<pathelement location="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
+    </path>
+
+    <path id="test.classpath">
+        <pathelement location="lib/test/mockito-all-1.9.5-rc1.jar"/>
+        <pathelement location="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+    </path>
+
+    <path id="build.classpath">
+        <pathelement location="${scala-library.jar}"/>
+        <path refid="runtime.classpath"/>
+        <path refid="test.classpath"/>
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <path id="scala.classpath">
+        <pathelement location="${scala.home}/lib/scala-compiler.jar"/>
+        <pathelement location="${scala-library.jar}"/>
+        <pathelement location="${scala.home}/lib/scala-reflect.jar"/>
+    </path>
+
+    <target name="init">
+        <taskdef resource="scala/tools/ant/antlib.xml">
+            <classpath refid="scala.classpath">
+            </classpath>
+        </taskdef>
+
+    </target>
+
+    <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
+        <classpath refid="test.classpath"/>
+        <classpath refid="scala.classpath"/>
+        <classpath refid="build.classpath"/>
+    </taskdef>
+
+    <target name="grammar">
+        <java jar="Tools/antlr-4.0b1-complete.jar" fork="yes" dir="src/antlr">
+            <arg value="Java.g4"/>
+            <arg value="-o"/>
+            <arg value="${basedir}/src/java/metamorph/Java"/>
+            <arg value="-visitor"/>
+        </java>
+    </target>
+
+    <target name="compile" depends="init, grammar">
+        <mkdir dir="${build.dir}"/>
+
+        <javac srcdir="${java.sources.dir}"
+               destdir="${build.dir}"
+               classpathref="build.classpath"
+               includeantruntime="no"
+                />
+
+        <scalac srcdir="${scala.sources.dir}"
+                destdir="${build.dir}"
+                classpathref="build.classpath">
+            <include name="**/*.scala"/>
+        </scalac>
+        <scalac srcdir="${scala.test.sources.dir}"
+                destdir="${build.dir}"
+                classpathref="build.classpath">
+            <include name="**/*.scala"/>
+        </scalac>
+    </target>
+
+    <target name="test" depends="compile">
+        <scalatest fork="true" runpath="build">
+            <reporter type="stdout"/>
+            <reporter type="junitxml" directory="build"/>
+        </scalatest>
+    </target>
+
+
+    <target name="build" depends="test">
+    </target>
+
+    <target name="package" depends="build">
+        <jar destfile="metamorph.jar">
+            <fileset dir="build"/>
+            <restrict>
+                <name name="**/*.class"/>
+                <archives>
+                    <zips>
+                        <file file="lib/runtime/antlr-4.0b1-complete.jar"/>
+                        <file file="lib/test/scalatest_2.10.0-RC5-2.0.M5-B1.jar"/>
+                        <file file="${scala-library.jar}"/>
+                        <file file="${scala.home}/lib/scala-reflect.jar"/>
+			<file file="lib/runtime/scopt_2.10.0-RC5-2.1.0.jar"/>
+                    </zips>
+                </archives>
+            </restrict>
+            <manifest>
+                <attribute name="Main-Class"
+                           value="metamorph.Tool"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="clean">
+        <delete dir="build"/>
+        <delete file="src/java/metamorph/Java/Java.tokens"/>
+        <delete file="src/java/metamorph/Java/JavaBaseListener.java"/>
+        <delete file="src/java/metamorph/Java/JavaBaseVisitor.java"/>
+        <delete file="src/java/metamorph/Java/JavaLexer.java"/>
+        <delete file="src/java/metamorph/Java/JavaLexer.tokens"/>
+        <delete file="src/java/metamorph/Java/JavaListener.java"/>
+        <delete file="src/java/metamorph/Java/JavaParser.java"/>
+        <delete file="src/java/metamorph/Java/JavaVisitor.java"/>
+    </target>
+</project>

@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="Scala 2.10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/akka-actors.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/jline.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-actors-migration.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-actors.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-compiler.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-partest.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-reflect.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scala-swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/scalap.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Tools/scala-2.10.0-RC5/lib/typesafe-config.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
