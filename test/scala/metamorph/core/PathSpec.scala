@@ -3,7 +3,7 @@ package metamorph.core
 import org.scalatest.FunSpec
 import io.Source
 import java.io.File
-import metamorph.Java.{SourceCodeFile, SourceCodeReader}
+import metamorph.Java.{SourceCodeFile, AntlrSourceCodeReader}
 import metamorph.util.RootPath
 import metamorph.ContentSource
 
@@ -44,7 +44,7 @@ class PathSpec extends FunSpec {
 
       assert(sizes == Set(expected, expected))
 
-      val models = scan(new File(".")).map(file =>  new SourceCodeReader(new SourceCodeFile(new ContentSource("test", new RootPath(".")), file)).read)
+      val models = scan(new File(".")).map(file => new AntlrSourceCodeReader(new SourceCodeFile(new ContentSource("test", new RootPath(".")), file)).read)
 
       models.foreach(model => println(model.name, model.typeSignature))
 

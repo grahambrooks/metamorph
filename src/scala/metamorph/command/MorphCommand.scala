@@ -15,7 +15,7 @@ object MorphCommand {
       case "analyse" => analyse
       case "analyze" => analyse
       case "migrate" => migrate
-      case _ => throw new IllegalArgumentException(cmdName + " is not a valid command name. Valid command names are merge")
+      case _ => throw new IllegalArgumentException(cmdName + " is not a valid command name. Valid command names are merge, analyze and migrate")
     }
   }
 

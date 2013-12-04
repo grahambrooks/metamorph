@@ -26,6 +26,7 @@
     <orderEntry type="library" name="test" level="project" />
     <orderEntry type="library" name="sources" level="project" />
     <orderEntry type="library" name="Scala 2.10" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
 

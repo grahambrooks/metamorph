@@ -1,7 +1,7 @@
 package metamorph.analysis
 
 import metamorph.model.{Warning, BlockDeclaration, MethodDeclaration, CodeModel}
-import metamorph.Java.SourceCodeReader
+import metamorph.Java.CodeReader
 import metamorph.util.{Signature, BucketSet}
 
 
@@ -16,7 +16,7 @@ class SourceCodeAnalyser {
     var models = List[CodeModel]()
 
     provider.each(sourceCode => {
-      val reader = new SourceCodeReader(sourceCode)
+      val reader = CodeReader(sourceCode) // AntlrSourceCodeReader(sourceCode)
 
       val model = reader.read
 

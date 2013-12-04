@@ -6,7 +6,7 @@
     <property name="scala.test.sources.dir" value="${basedir}/test/scala"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="classes" value="${build.dir}/classes"/>
-    <property name="scala.home" value="${basedir}/Tools/scala-2.10.0/"/>
+    <property name="scala.home" value="${basedir}/Tools/scala-2.10/"/>
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar"/>
     <property name="one-jar.dist.dir" value="Tools/one-jar-ant"/>
     <property name="scalatest.jar" value="scalatest_2.10-2.0.M5b.jar"/>

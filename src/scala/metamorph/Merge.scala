@@ -52,7 +52,7 @@ class Merge(importMap: Map[String, String]) {
 
 
   private def modelFromSource(originalSource: SourceCode): CodeModel = {
-    val reader = new SourceCodeReader(originalSource)
+    val reader = new AntlrSourceCodeReader(originalSource)
     reader.read
   }
 

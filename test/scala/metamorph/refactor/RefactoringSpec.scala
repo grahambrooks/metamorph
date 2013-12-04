@@ -82,7 +82,7 @@ class RefactoringSpec extends FunSpec {
   }
 
   def modelFromSource(originalSource: SourceCodeString): CodeModel = {
-    val reader = new SourceCodeReader(originalSource)
+    val reader = new AntlrSourceCodeReader(originalSource)
     reader.read
   }
 }

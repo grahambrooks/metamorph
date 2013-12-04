@@ -1,10 +1,9 @@
 package metamorph.command
 
 import java.io.File
-import metamorph.Java.{SourceCodeReader, SourceCodeFile}
+import metamorph.Java.{AntlrSourceCodeReader, SourceCodeFile}
 import metamorph.model.{MethodDeclaration, CodeModel}
 import metamorph._
-import metamorph.MorphConfig
 import reporting.ReportWriter
 import util._
 import metamorph.MorphConfig
@@ -21,7 +20,7 @@ class MergeCommand extends MorphCommand {
 
           val originalSource = new SourceCodeFile(contentSource, p)
 
-          val reader = new SourceCodeReader(originalSource)
+          val reader = new AntlrSourceCodeReader(originalSource)
 
           val model = reader.read
 

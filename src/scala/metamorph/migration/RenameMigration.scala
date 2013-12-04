@@ -1,6 +1,5 @@
 package metamorph.migration
 
-import model.QualifiedName
 
 class RenameMigration(val predicate: Predicate, val newName: String) extends Migration {
   def count = 0

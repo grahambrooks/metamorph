@@ -8,7 +8,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
     it("recognises imports") {
       val originalSource = new SourceCodeString("import metamorph.foo.bar;")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
 
       val model = reader.read
 
@@ -20,7 +20,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
     it("recognises package declarations") {
       val originalSource = new SourceCodeString("\n\n\npackage metamorph.foo.bar;")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
 
       val model = reader.read
 
@@ -32,7 +32,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
     it("Identifies named methods") {
       val originalSource = new SourceCodeString("class X { void foo() {}; }")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
 
       val model = reader.read
 
@@ -48,7 +48,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
         "\n" +
         "\n  }; }")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
 
       val model = reader.read
 
@@ -64,7 +64,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
         "\n" +
         "\n  }; }")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
 
       val model = reader.read
 
@@ -77,7 +77,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
         "\n" +
         "\n  }; } // End of class")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
       reader.read
     }
 
@@ -87,7 +87,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
         "\n" +
         "class Y {}")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
       val model = reader.read
 
       assert(model.typeDeclarations.size == 2)
@@ -99,7 +99,7 @@ class SourceCodeReaderSpec extends FunSpec with ShouldMatchers {
         "\n   }" +
         "\n}")
 
-      val reader = new SourceCodeReader(originalSource)
+      val reader = new AntlrSourceCodeReader(originalSource)
       val model = reader.read
 
       assert(model.typeDeclarations.size == 2)

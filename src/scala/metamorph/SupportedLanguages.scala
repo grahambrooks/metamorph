@@ -29,7 +29,7 @@ object SupportedLanguages {
 
     def parser = new ParserFactory {
       def parse(code: SourceCode) = {
-        new SourceCodeReader(code).read
+        new AntlrSourceCodeReader(code).read
       }
     }
   }
