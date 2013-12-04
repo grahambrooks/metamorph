@@ -1,24 +1,17 @@
 body {
-    font: x-small Oxygen, sans-serif;
+    font: x-small Calibri, Arial, sans-serif;
     max-width: 1000px;
     margin: 0 auto;
-    background-color: #00021c;
-    color: rgb(164, 164, 164);
-    font-family: Oxygen, sans-serif;
-}
-
-a {
-    color: rgb(76, 180, 232);
 }
 
 h1 {
-    font: bold Oxygen, sans-serif;
+    font: bold Calibri, Arial, sans-serif;
     margin-top: 2em;
     margin-bottom: 0.5em;
 }
 
 h2 {
-    font: bold 100% Oxygen, sans-serif;
+    font: bold 100% Arial, sans-serif;
     margin-top: 2em;
     margin-bottom: 0.5em;
 }
@@ -26,7 +19,6 @@ h2 {
 table {
     padding: 0;
     border-collapse: collapse;
-    width: 100%;
 }
 
 tr {
@@ -54,78 +46,19 @@ pre {
 }
 
 .duplicate {
-    background-color: #00021c;
-    /*background-color: #000;*/
+    background-color: #000;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     -o-border-radius: 8px;
     -ms-border-radius: 8px;
     -khtml-border-radius: 8px;
     border-radius: 8px;
-    margin: 1em auto;
-    padding: 1em;
-    white-space: pre-wrap;
+    color: white;
 }
 
-.header {
-    float: left;
+.duplicate a {
+    color: white;
 }
-
-.code-block {
-    clear: left;
-    margin: 0;
-    padding: 0;
+.duplicate a:visited {
+    color: lightgray;
 }
-
-.panel {
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    -o-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -khtml-border-radius: 8px;
-    border-radius: 8px;
-    margin: 1em auto;
-    padding: 1em;
-
-    border: 2px solid;
-    border-color: #303030;
-    background-color: #101010;
-}
-
-.stats {
-    float: right;
-}
-
-.stats li {
-    list-style: none;
-}
-
-.stats ul {
-    margin: 0;
-    padding: 0;
-}
-
-.stats .title {
-    color: rgb(76, 180, 232);
-    width: 150px;
-    display: inline-block;
-}
-
-.stats .value {
-    width: 30px;
-    padding-left: 10px;
-    display: inline-block;
-}
-
-pre.prettyprint {
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-
-.emph {
-    color: rgb(76, 180, 232);
-}
-
-pre.prettyprint, code.prettyprint {
-    background-color: #00021c;
